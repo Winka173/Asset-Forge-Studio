@@ -1,0 +1,63 @@
+{
+  "status": "PASS_NATIVE_REAL_FX_ALTERNATIVES_REFINEMENT_AND_PLAYBACK",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fx-candidates-native\\2026-10-21T20-00-25-443Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "two_real_Maximum_quality_seed_alternatives_one_asset_one_shared_GPU_slot_native_package_import_each",
+      "passed": true,
+      "peak_running_gpu_jobs": 1,
+      "frame_hashes": [
+        "4284a544d9ea485fc42edea6ce70b36433dbd9650cc9ffa3b8be87b8a9f33092",
+        "ccdd515380d94f822c098279b8cad04759267fa24c25f32a9a435d2ebd6272b9"
+      ],
+      "packages": [
+        "d3b102746c0771bf51560ac2893295537eaeaaa9e812883d6c00cda25cdd6601",
+        "12ed01c84bfa63fe2fa016b2f186dfa28e8b457e8a4ba61152fc08043e733fd7"
+      ]
+    },
+    {
+      "name": "actual_frames_select_play_pause_nonloop_end_step_speed_and_one_asset_completion_inbox",
+      "passed": true
+    },
+    {
+      "name": "refine_chosen_alternative_retains_seed_and_identity_and_original_packages",
+      "passed": true,
+      "revision_job": "c0c879535fde445c918f722e5598fc83"
+    },
+    {
+      "name": "native_close_reopen_same_versions_and_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual procedural effect, runtime sources/shader/prefab and Unity GPU captures; no character rig/retarget or artistic acceptance claim",
+  "asset_id": "0f10d4a444d75b838780b39fc161356b",
+  "project_id": "4648b9b3487a422ea715d4bd4aedcfa2",
+  "measured_resources": [
+    {
+      "job_id": "677e97e72c6045fb82dd550d938ef0e1",
+      "elapsed_seconds": 26.48399999999674,
+      "worker_tree_peak_ram_bytes": 2020790272,
+      "whole_device_peak_vram_mib": 4588.0,
+      "whole_device_peak_gpu_utilization_percent": 20.0,
+      "gpu_scope": "Whole-device nvidia-smi samples, not engine-exclusive allocation"
+    },
+    {
+      "job_id": "c0c879535fde445c918f722e5598fc83",
+      "elapsed_seconds": 26.687000000005355,
+      "worker_tree_peak_ram_bytes": 1939320832,
+      "whole_device_peak_vram_mib": 4621.0,
+      "whole_device_peak_gpu_utilization_percent": 21.0,
+      "gpu_scope": "Whole-device nvidia-smi samples, not engine-exclusive allocation"
+    },
+    {
+      "job_id": "fe5699da68584c1ebf6867e6df9271cf",
+      "elapsed_seconds": 36.687000000005355,
+      "worker_tree_peak_ram_bytes": 2003181568,
+      "whole_device_peak_vram_mib": 4577.0,
+      "whole_device_peak_gpu_utilization_percent": 23.0,
+      "gpu_scope": "Whole-device nvidia-smi samples, not engine-exclusive allocation"
+    }
+  ]
+}

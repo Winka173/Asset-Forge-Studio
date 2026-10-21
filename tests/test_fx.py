@@ -51,3 +51,48 @@ def test_revision_plan_inherits_recipe_and_preserves_explicit_overrides(client):
     assert explicit['recipe']['element']=='fire' and explicit['recipe']['duration']==3 and explicit['recipe']['intensity']==3
     assert explicit['recipe']['radius']==3.2 and explicit['recipe']['segments']==96
     assert len(jobs.listing())==1
+
+def test_multiple_fx_results_share_asset_queue_and_retry_without_duplicates(client):
+    body=dict(recipe=dict(project_id='runavelle',name='Five alternatives',element='ice',seed=2147483646),request_id='fx-multi-result-request',count=5)
+    response=client.post('/api/fx/build-candidates',json=body);assert response.status_code==201,response.text
+    result=response.json();assert result['count']==5 and result['gpu_concurrency']==1 and result['quality']=='Maximum'
+    assert len({r['asset_id'] for r in result['results']})==1 and len(jobs.listing())==5
+    workspace=client.get('/api/fx/assets/'+result['asset_id']).json()
+    assert [r['recipe']['seed'] for r in workspace['recipes']]==[2147483646,2147483647,0,1,2]
+    assert all(jobs.resource_class(j['payload'])=='gpu' and j['payload']['effective_config']['quality']=='Maximum' for j in jobs.listing())
+    assert all(r['artifact']['metadata']['candidate_group']==result['candidate_group'] for r in workspace['recipes'])
+    assert client.post('/api/fx/build-candidates',json=body).json()==result and len(jobs.listing())==5
+    assert client.post('/api/fx/build-candidates',json=body|dict(count=4)).status_code==409
+    assert client.post('/api/fx/build-candidates',json=body|dict(count=6)).status_code==422
+    assert client.post('/api/fx/build-candidates',json=body|dict(count=0)).status_code==422
+    assert studio.asset(result['asset_id'])['original_prompt']==''
+
+
+def test_partial_fx_admission_retries_only_missing_children(client,monkeypatch):
+    from apps.api import fx
+    from fastapi import HTTPException
+    real=fx.build;calls=[]
+    def interrupted(body):
+        calls.append(body.request_id)
+        if len(calls)==2:raise HTTPException(503,'Test interrupted admission; no generated output simulated')
+        return real(body)
+    monkeypatch.setattr(fx,'build',interrupted)
+    body=dict(recipe=dict(project_id='runavelle',name='Crash safe alternatives'),request_id='fx-partial-admission',count=3)
+    assert client.post('/api/fx/build-candidates',json=body).status_code==503
+    assert len(jobs.listing())==1
+    monkeypatch.setattr(fx,'build',real)
+    result=client.post('/api/fx/build-candidates',json=body);assert result.status_code==201,result.text
+    assert len(jobs.listing())==3 and len({j['payload']['asset_id'] for j in jobs.listing()})==1
+    assert len(client.get('/api/fx/assets/'+result.json()['asset_id']).json()['recipes'])==3
+
+
+def test_alternative_status_includes_running_sibling_at_pause_boundary(client):
+    from apps.api import statuses
+    result=client.post('/api/fx/build-candidates',json=dict(recipe=dict(project_id='runavelle',name='Group status'),request_id='fx-group-status-123',count=2)).json()
+    first=result['results'][0]['job']['id'];jobs.transition(first,'RUNNING')
+    assert statuses.refresh_all()[result['asset_id']]['production_status']=='generating'
+    client.post('/api/production/control',json=dict(scope='all',action='pause'))
+    assert statuses.refresh_all()[result['asset_id']]['production_status']=='generating'
+    jobs.transition(first,'FAILED','Test failure projection only; no successful output simulated')
+    current=statuses.refresh_all()[result['asset_id']]
+    assert current['production_status']=='failed' and current['attention_required']

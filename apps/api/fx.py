@@ -110,6 +110,40 @@ def build(body:Build):
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('fx:'+body.request_id,checksum,json.dumps(result)))
     return result
 
+class CandidateBuild(Build):
+    count:int=Field(default=1,ge=1,le=5)
+
+
+@router.post('/build-candidates',status_code=201)
+def build_candidates(body:CandidateBuild):
+    """Durable admission of seed alternatives, all using the existing single GPU queue.
+
+    Reserving the request before the first child makes a retry after partial
+    admission safe. It never changes recipe quality or creates five asset identities.
+    """
+    studio.project(body.recipe.project_id)
+    request_key='fx-candidates:'+body.request_id;checksum=fingerprint(body.model_dump())
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE');prior=studio.cached(db,request_key,checksum)
+        if prior and prior.get('state')=='admitted':return prior
+        if not prior:db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(request_key,checksum,json.dumps(dict(state='admitting'))))
+    asset_id=body.asset_id;results=[]
+    group=uuid.uuid5(uuid.NAMESPACE_URL,'afs-fx-candidates:'+body.recipe.project_id+':'+body.request_id).hex
+    for index in range(body.count):
+        recipe=body.recipe.model_copy(update=dict(seed=(body.recipe.seed+index)%2147483648))
+        child_id=uuid.uuid5(uuid.NAMESPACE_URL,'afs-fx-child:'+group+':'+str(index)).hex
+        child=build(Build(recipe=recipe,asset_id=asset_id,request_id=child_id))
+        asset_id=child['asset_id'];results.append(child)
+        with store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row=db.execute('SELECT metadata FROM artifacts WHERE id=?',(child['recipe_id'],)).fetchone()
+            metadata=json.loads(row['metadata']);metadata.update(candidate_group=group,candidate_index=index+1,candidate_count=body.count)
+            db.execute('UPDATE artifacts SET metadata=? WHERE id=?',(json.dumps(metadata),child['recipe_id']))
+    result=dict(state='admitted',asset_id=asset_id,candidate_group=group,count=len(results),results=results,quality='Maximum',gpu_concurrency=1)
+    with store.connect() as db:db.execute('UPDATE studio_requests SET response=? WHERE id=?',(json.dumps(result),request_key))
+    return result
+
+
 @router.get('/assets/{asset_id}')
 def workspace(asset_id:str):
     model=studio.asset(asset_id)

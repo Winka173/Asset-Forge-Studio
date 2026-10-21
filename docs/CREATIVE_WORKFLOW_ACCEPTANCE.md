@@ -27,3 +27,5 @@ These documents inform independent AFS implementation. No proprietary applicatio
 ## Gates that remain open
 
 Character skin quality, deformation/contact/root motion, retarget accuracy, target-player VFX performance, arbitrary semantic map planning, full commercial model clearance and Meshy artistic acceptance require real outputs and separate verification. Unsupported capabilities must remain unavailable. Unreal installation remains deferred by the user.
+
+0.8.4 native acceptance: effects have 1-5 seed admission, actual two-result comparison, selected-result prompt refinement and real captured-frame transport. See evidence/fx_candidates_native.json.

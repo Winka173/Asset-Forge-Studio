@@ -1,3 +1,11 @@
+# Effect alternatives and playback - 2026-10-22 (Asia/Saigon)
+
+Windows 0.8.4 passed 69 backend tests, native GLB/export/restart smoke and real effect acceptance. Effects now request 1-5 Maximum-quality seed alternatives within one stable asset and the shared one-heavy-GPU scheduler. Admission is durable/idempotent across partial failures. Native acceptance actually generated two different Ice alternatives, imported each Unity package into an empty project, compared real frame hashes, selected an alternative and generated an inherited Fire revision. Previous packages remained byte-identical. Play/pause, frame stepping, speed, non-loop end, grouped completion inbox and Windows close/reopen passed. Evidence: evidence/fx_candidates_native.json. This is procedural Unity output, not arbitrary AI VFX or target-device artistic/performance acceptance.
+
+The UI also has a recoverable error boundary instead of an unhandled blank rendering screen. Captured effect camera/background remain baked; the interface says so explicitly.
+
+---
+
 # Workspace utilities acceptance - 2026-10-22 (Asia/Saigon)
 
 0.8.3 delivered on main adds project-scoped Ctrl+K search, Home continuation, grouped opt-in production notifications, saved Library filters/scroll, reload-safe archive Undo, stable keyboard review order with a separate review-later tag, and Focused/Detailed/reduced-motion preferences. Select explanations are now portalled and bounded by the viewport. Bulk actions explicitly say loaded assets when the backend result is capped; no misleading all-assets claim beyond the loaded set. Metadata updates reread under a SQLite write lock and preserve worker-owned masters and revision history.

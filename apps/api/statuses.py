@@ -65,7 +65,13 @@ def refresh_all():
         pair=grouped.get(identifier);g,i=pair if pair else ({},{})
         related=[j for j in all_jobs if j['payload'].get('asset_id')==identifier and (not pair or j['payload'].get('batch_id')==g['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0))]
         if model.get('asset_type')=='vfx' and model.get('settings',{}).get('current_fx_recipe_id'):
-            related=[j for j in related if j['payload'].get('artifact_id')==model['settings']['current_fx_recipe_id']]
+            current_recipe=model['settings']['current_fx_recipe_id']
+            current_record=next((a for a in artifacts if a['id']==current_recipe),None)
+            candidate_group=current_record['metadata'].get('candidate_group') if current_record else None
+            recipe_ids={a['id'] for a in artifacts if a.get('asset_id')==identifier and a['role']=='fx_recipe' and candidate_group and a['metadata'].get('candidate_group')==candidate_group} if candidate_group else {current_recipe}
+            # The first alternative may still be running while later ones are queued.
+            # Pausing the queue must not report this asset safely paused prematurely.
+            related=[j for j in related if j['payload'].get('artifact_id') in recipe_ids]
         retried={j['payload'].get('retry_of') for j in related};related=[j for j in related if j['id'] not in retried]
         # Revision jobs retain the stable identity and are included in the same status projection.
         revisions=model.get('revisions',[])
