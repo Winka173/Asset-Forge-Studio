@@ -11,6 +11,18 @@ from . import jobs, store
 router = APIRouter(prefix='/api')
 
 
+@router.get('/gpu')
+def gpu_status():
+    import subprocess
+    try:
+        result = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.used,memory.total,utilization.gpu', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=5)
+        if result.returncode: raise ValueError('nvidia-smi failed')
+        parts = result.stdout.splitlines()[0].split(',')
+        return dict(available=True, name=parts[0].strip(), used_mib=float(parts[1]), total_mib=float(parts[2]), utilization_percent=float(parts[3]))
+    except (OSError, ValueError, IndexError, subprocess.TimeoutExpired):
+        return dict(available=False, reason='Không đọc được GPU local')
+
+
 def project(identifier):
     with store.connect() as db:
         row = db.execute('SELECT payload FROM projects WHERE id=? AND archived=0', (identifier,)).fetchone()

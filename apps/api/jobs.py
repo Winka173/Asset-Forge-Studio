@@ -6,6 +6,7 @@ import subprocess
 import threading
 import time
 import uuid
+import re
 
 import psutil
 
@@ -37,7 +38,22 @@ def get(identifier):
 
 def listing():
     with store.connect() as db:
-        return [decode(r) for r in db.execute('SELECT * FROM jobs ORDER BY created_at DESC')]
+        values = [decode(r) for r in db.execute('SELECT * FROM jobs ORDER BY created_at DESC')]
+    for value in values:
+        progress = {'stage': value['status'], 'percent': None, 'scope': 'current_stage_only'}
+        log = store.DATA / 'jobs' / value['id'] / 'worker.log'
+        if value['status'] not in TERMINAL and log.exists():
+            with log.open('rb') as stream:
+                stream.seek(max(0, log.stat().st_size - 12000)); tail = stream.read().decode('utf-8', errors='replace')
+            lines = re.split(r'[\r\n]', tail)
+            matches = [re.search(r'([^\r\n:]+):\s*(\d+)%\|', line) for line in lines]
+            matches = [m for m in matches if m]
+            if matches:
+                progress.update(stage=matches[-1][1].strip(), percent=int(matches[-1][2]))
+            stages = [line.removeprefix('STAGE ').strip() for line in lines if line.startswith('STAGE ')]
+            if stages: progress.update(stage=stages[-1], percent=None)
+        value['progress'] = progress
+    return values
 
 
 def transition(identifier, target, error=None):
