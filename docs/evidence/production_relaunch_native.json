@@ -1,6 +1,6 @@
 {
   "status": "PASS_FINAL_NATIVE_PRODUCTION_RELAUNCH",
-  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-relaunch\\2026-10-21T17-08-55-929Z",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-relaunch\\2026-10-21T17-11-55-166Z",
   "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.6.0\\20261021T170457Z\\Asset Forge Studio.exe",
   "checks": [
     {
@@ -36,6 +36,10 @@
     },
     {
       "name": "production_selection_real_glb_relaunch_no_duplicate_jobs",
+      "passed": true
+    },
+    {
+      "name": "library_asset_to_sidebar_create_opens_empty_new_draft_not_old_asset",
       "passed": true
     }
   ],

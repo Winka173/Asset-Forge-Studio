@@ -1,0 +1,402 @@
+{
+  "status": "PASS_REAL_NATIVE_ASSET_MANAGEMENT_CHECKPOINT_RECOVERY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\management-recovery-native\\2026-10-21T17-12-19-572Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.6.0\\20261021T170457Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_refinement_cpu_real_blender_v2_18m_maximum_original_constraints_and_v1_game_pointer_preserved_no_ai",
+      "passed": true,
+      "revision": {
+        "id": "70368b8a9b234923b5f9a66f4106a0ae",
+        "number": 2,
+        "parent_artifact_id": "ed47f419f21041f88d735e6873e90b47",
+        "parent_sha256": "d9812be6e9a378fb71ad69621889a5cdea9e9db1512154351ef1a2f1851abbb3",
+        "prompt": "Uniformly scale to height 18 m",
+        "effective_prompt": "# BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower — ARCHER TOWER T3 Royal Ballista Tower\n\n**Status:** proposed art contract, must confirm dimensions against actual Runavelle Unity grid before paid batch.\n\n## 1. Production settings and budget\n- Generation: Meshy 7.1 Image-to-3D using a preapproved concept image, Standard 3D Model, Ultra 4K only if price justifies it, PBR textures ON, source texture 4096 for hero buildings / 2048 for ordinary pieces. Tripo H3.1 optional second opinion; do NOT regenerate without preview sign-off.\n- Target size: **7m wide (X) × 7m deep (Z) × 17m high (Y)**.\n- Footprint / collision / placement notes: building.\n- Suggested source master triangle budget: **1,500,000 tris**. This is a flexible authoring ceiling/profile, not a demanded minimum, and never runtime tris.\n- **Runtime optimization:** high-fidelity source retained losslessly; create LOD0/LOD1/LOD2/LOD3 and normal-bake in Blender after 3D generation. Optimize draw calls/material count and GPU fill-rate along with triangle counts. Do not directly ship master as a repeatable mobile object.\n- Source deliverable: textured GLB plus FBX (if animation/rig), editable project/source when available, PBR BaseColor/Normal/Roughness/Metallic/AO maps with no baked sun shadows; license proof.\n\n## 2. Fixed project-wide visual identity\nRUNAVELLE — SHARED VISUAL DNA (mandatory for every asset)\nCreate an ORIGINAL, premium, spectacular yet readable fantasy kingdom for realtime Unity URP. Inspired by Thronefall's readable elevated camera and charming strategic scale, NOT a recreation of its copyrighted art. Heroic fairy-tale medieval architecture with monumental, engineered mass, painterly hand-crafted PBR surfaces, beveled geometry, crisp and coherent ornamentation. Core palette: warm ivory limestone, rich chestnut oak, midnight/navy slate, antique warm bronze, royal navy/ivory/gold banners, selective cyan mana. Strong large-to-small visual hierarchy: 70% major silhouette, 25% architectural features, 5% microdetail. Tall noble forms, satisfying massing, elevated towers and imposing gates, strong foundation-to-roof transitions. Do NOT make toys, chibi, flat primitive low-poly, generic realistic photogrammetry, noisy ornament soup, oversaturated glow, or isolated tabletop dioramas. Preserve functional architecture. Compatible with 35–45° elevated isometric tactical camera: details and silhouettes readable when small. Day looks cozy/aspirational; night looks threatening and magical. The premium feel comes from shape, texture, lighting, animation, and feedback, not polygon count alone.\nGolden architectural reference: the approved Runavelle Archer Tower T3 concept and Meshy 7.1 3D master (ivory stone, navy-blue high roof, wood beams, blue banners, two gargoyles, cyan crystal). If images are supplied, honor THEIR approved distinctive design for continuity, without blindly copying their imperfections. Preserve a unified authored art universe.\n\n## 3. Specific creative brief for THIS asset\nARCHER TOWER T3 Royal Ballista Tower. Tall imposing octagonal royal archer tower, two layered stone stages, reinforced timber shooting gallery, broad crenellated battlements, elevated large ballista platform and royal banners. True three-dimensional functional structure; architectural clarity from every side; no ground diorama.\n\n## 4. Physical geometry and interaction requirements\nWORLD SCALE LOCK — design estimates pending Claude/Unity repo measurement\nUnit: 1 Unity unit = 1 meter; X width, Y vertical, Z depth. Asset's nominal W×D is the occupied footprint, excluding removable eaves/banners. Base bottom Y=0, centered X=0/Z=0. Buildings face -Z with entrance centered; characters face +Z in neutral rig and get corrected by importer as needed. Separate render mesh from simple collider; no baked ground disk. Sizes are PROPOSED design locks and must be confirmed against build grid, navigation clearance and the imported approved ArcherTower T3 before any paid batch. If the currently approved ArcherTower proportions differ, preserve it as the scale anchor and normalize nearby structures coherently, not by arbitrary rescaling. Suggested construction grid is 1m subgrid with 2m major snapping; widths of 5m, 7m etc must snap via integer-meter subcells. Confirm game grid and allowed footprints in Unity before commissioning. Use matching wall and gate attachment coordinates. A nominal height includes building roof/spire/ornaments unless specified; floating VFX extents listed separately.\n\n**Asset-specific:** Architectural composition: coherent structure with real architectural hierarchy (foundation > mass > functional floor > roof/spire), usable access, functional hero-height doors (min clear 1.2×2.2m), supported balconies, no decorative floating pieces except approved mana focus. Construct as named submeshes: foundation, load-bearing walls, timber, roof, detail, banners, crystal, detachable accessories. Emphasize upgrade pay-off: compared with previous tier, visibly taller and more imposing, with increased fortification, but still looks like the same building family. Windows emit warm light at night; selected mana areas glow cyan without flooding other materials.\n\n**Nominal design dimensions (post-export normalization required):** exterior nominal 7m X × 7m Z, total height 17m Y. building. The generator cannot guarantee exact dimensions from a prompt; importer MUST measure and normalize it after export, and commission shape corrections if rescale alone distorts functional geometry. Do not allow eaves, gargoyles, flags, or muzzle sockets to collide with adjacent modular assets or obscure projectile firing arcs. Keep the usable door/roof deck/clearance aligned to intended gameplay.\n\n## 5. Make it spectacular AND satisfying in gameplay\nThis asset must evoke *reward, progress, and battlefield power* without visually confusing interaction: bold readable silhouette, unmistakable upgrade jump, dramatic but tasteful highlights, strong material response in daylight, striking torch/mana rim lighting at night. Use spectacle appropriate to the actual asset category: upgraded buildings gain bold architectural mass; generals and bosses support exaggerated anticipation; towers include readable weapon or casting silhouettes; mundane props stay grounded. Do not add gratuitous crystals everywhere. Explosions, sparks, magic trails, shockwaves, debris and cinematic shake should be authored as separate Unity VFX and audio cues with proper damage timing—not permanently sculpted into a static model. Keep buildability and AI legibility at 1440p and mobile display sizes.\n\n## 6. Export contract, validation and acceptance\n1. Deliver geometry from all sides; no incomplete rear surfaces, collapsed roofs, disconnected floating islands, fused accessories, texture text artifacts or unrequested terrain pedestal.\n2. Use physically meaningful component separation (`Body`, `Foundation`, `Roof`, `Wood`, `Metal`, `Banner`, `Emissive`, `Damage`, `Socket_*`) where achievable. For movable assemblies provide pivots. Rig-ready models need deformation-friendly joints and separate attachment bones.\n3. Prove model proportions with orthographic front/back/left/right/top plus 3/4 perspective and a 2m humanoid height ruler. Verify unit/axis conversion and grounding in Blender.\n4. Check actual UV, PBR channels, normals/tangents, transparency, texture seams and emissive masks in Unity URP; no implicit support without importer tests.\n5. Report face/vertex/material/texture counts, source file names, defects, expected cleanup and license/export terms. A beautiful screenshot alone is not approval.\n6. Compare alongside the approved Runavelle Archer Tower T3 and Castle at game camera, both cozy daylight and dramatic night siege; judge silhouette and role clarity at phone-size preview. Request edits before paying for replacement generations when possible.\n7. This prompt specifies **one asset** only. Multiple details on the asset should be attached components, not separate unrelated assets or background scenery.\n\n\n\n---\n\n\n\nRevision instructions (preserve all other explicit constraints):\nUniformly scale to height 18 m",
+        "original_prompt_sha256": "1fa54b0551db9a278a91165c0df92778edaea82c950cd6bb175c7a46899f3169",
+        "plan": {
+          "method": "blender_transform",
+          "earliest_stage": "blender",
+          "target_height_m": 18,
+          "explanation": "Uniform scaling through the installed Blender pipeline; original geometry and textures remain available.",
+          "parent_artifact_id": "ed47f419f21041f88d735e6873e90b47",
+          "parent_sha256": "d9812be6e9a378fb71ad69621889a5cdea9e9db1512154351ef1a2f1851abbb3",
+          "capabilities": {
+            "direct_mesh_edit": false,
+            "direct_material_edit": false,
+            "uniform_blender_scale": true
+          },
+          "artistic_evaluation": "not_available"
+        },
+        "group_id": "aef93843119042c2ac9ca23114e02268",
+        "state": "published",
+        "created_at": "2026-10-21T16:52:31.299625+00:00",
+        "job_ids": [
+          "056fcd35cba449cba7ec7dddc91dc195"
+        ],
+        "quality": "Maximum",
+        "effective_config": {
+          "schema_version": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "engine_id": "trellis2_community",
+          "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+          "checkpoint": {
+            "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+            "files": {
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+            }
+          },
+          "input_prompt": "# BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower — ARCHER TOWER T3 Royal Ballista Tower\n\n**Status:** proposed art contract, must confirm dimensions against actual Runavelle Unity grid before paid batch.\n\n## 1. Production settings and budget\n- Generation: Meshy 7.1 Image-to-3D using a preapproved concept image, Standard 3D Model, Ultra 4K only if price justifies it, PBR textures ON, source texture 4096 for hero buildings / 2048 for ordinary pieces. Tripo H3.1 optional second opinion; do NOT regenerate without preview sign-off.\n- Target size: **7m wide (X) × 7m deep (Z) × 17m high (Y)**.\n- Footprint / collision / placement notes: building.\n- Suggested source master triangle budget: **1,500,000 tris**. This is a flexible authoring ceiling/profile, not a demanded minimum, and never runtime tris.\n- **Runtime optimization:** high-fidelity source retained losslessly; create LOD0/LOD1/LOD2/LOD3 and normal-bake in Blender after 3D generation. Optimize draw calls/material count and GPU fill-rate along with triangle counts. Do not directly ship master as a repeatable mobile object.\n- Source deliverable: textured GLB plus FBX (if animation/rig), editable project/source when available, PBR BaseColor/Normal/Roughness/Metallic/AO maps with no baked sun shadows; license proof.\n\n## 2. Fixed project-wide visual identity\nRUNAVELLE — SHARED VISUAL DNA (mandatory for every asset)\nCreate an ORIGINAL, premium, spectacular yet readable fantasy kingdom for realtime Unity URP. Inspired by Thronefall's readable elevated camera and charming strategic scale, NOT a recreation of its copyrighted art. Heroic fairy-tale medieval architecture with monumental, engineered mass, painterly hand-crafted PBR surfaces, beveled geometry, crisp and coherent ornamentation. Core palette: warm ivory limestone, rich chestnut oak, midnight/navy slate, antique warm bronze, royal navy/ivory/gold banners, selective cyan mana. Strong large-to-small visual hierarchy: 70% major silhouette, 25% architectural features, 5% microdetail. Tall noble forms, satisfying massing, elevated towers and imposing gates, strong foundation-to-roof transitions. Do NOT make toys, chibi, flat primitive low-poly, generic realistic photogrammetry, noisy ornament soup, oversaturated glow, or isolated tabletop dioramas. Preserve functional architecture. Compatible with 35–45° elevated isometric tactical camera: details and silhouettes readable when small. Day looks cozy/aspirational; night looks threatening and magical. The premium feel comes from shape, texture, lighting, animation, and feedback, not polygon count alone.\nGolden architectural reference: the approved Runavelle Archer Tower T3 concept and Meshy 7.1 3D master (ivory stone, navy-blue high roof, wood beams, blue banners, two gargoyles, cyan crystal). If images are supplied, honor THEIR approved distinctive design for continuity, without blindly copying their imperfections. Preserve a unified authored art universe.\n\n## 3. Specific creative brief for THIS asset\nARCHER TOWER T3 Royal Ballista Tower. Tall imposing octagonal royal archer tower, two layered stone stages, reinforced timber shooting gallery, broad crenellated battlements, elevated large ballista platform and royal banners. True three-dimensional functional structure; architectural clarity from every side; no ground diorama.\n\n## 4. Physical geometry and interaction requirements\nWORLD SCALE LOCK — design estimates pending Claude/Unity repo measurement\nUnit: 1 Unity unit = 1 meter; X width, Y vertical, Z depth. Asset's nominal W×D is the occupied footprint, excluding removable eaves/banners. Base bottom Y=0, centered X=0/Z=0. Buildings face -Z with entrance centered; characters face +Z in neutral rig and get corrected by importer as needed. Separate render mesh from simple collider; no baked ground disk. Sizes are PROPOSED design locks and must be confirmed against build grid, navigation clearance and the imported approved ArcherTower T3 before any paid batch. If the currently approved ArcherTower proportions differ, preserve it as the scale anchor and normalize nearby structures coherently, not by arbitrary rescaling. Suggested construction grid is 1m subgrid with 2m major snapping; widths of 5m, 7m etc must snap via integer-meter subcells. Confirm game grid and allowed footprints in Unity before commissioning. Use matching wall and gate attachment coordinates. A nominal height includes building roof/spire/ornaments unless specified; floating VFX extents listed separately.\n\n**Asset-specific:** Architectural composition: coherent structure with real architectural hierarchy (foundation > mass > functional floor > roof/spire), usable access, functional hero-height doors (min clear 1.2×2.2m), supported balconies, no decorative floating pieces except approved mana focus. Construct as named submeshes: foundation, load-bearing walls, timber, roof, detail, banners, crystal, detachable accessories. Emphasize upgrade pay-off: compared with previous tier, visibly taller and more imposing, with increased fortification, but still looks like the same building family. Windows emit warm light at night; selected mana areas glow cyan without flooding other materials.\n\n**Nominal design dimensions (post-export normalization required):** exterior nominal 7m X × 7m Z, total height 17m Y. building. The generator cannot guarantee exact dimensions from a prompt; importer MUST measure and normalize it after export, and commission shape corrections if rescale alone distorts functional geometry. Do not allow eaves, gargoyles, flags, or muzzle sockets to collide with adjacent modular assets or obscure projectile firing arcs. Keep the usable door/roof deck/clearance aligned to intended gameplay.\n\n## 5. Make it spectacular AND satisfying in gameplay\nThis asset must evoke *reward, progress, and battlefield power* without visually confusing interaction: bold readable silhouette, unmistakable upgrade jump, dramatic but tasteful highlights, strong material response in daylight, striking torch/mana rim lighting at night. Use spectacle appropriate to the actual asset category: upgraded buildings gain bold architectural mass; generals and bosses support exaggerated anticipation; towers include readable weapon or casting silhouettes; mundane props stay grounded. Do not add gratuitous crystals everywhere. Explosions, sparks, magic trails, shockwaves, debris and cinematic shake should be authored as separate Unity VFX and audio cues with proper damage timing—not permanently sculpted into a static model. Keep buildability and AI legibility at 1440p and mobile display sizes.\n\n## 6. Export contract, validation and acceptance\n1. Deliver geometry from all sides; no incomplete rear surfaces, collapsed roofs, disconnected floating islands, fused accessories, texture text artifacts or unrequested terrain pedestal.\n2. Use physically meaningful component separation (`Body`, `Foundation`, `Roof`, `Wood`, `Metal`, `Banner`, `Emissive`, `Damage`, `Socket_*`) where achievable. For movable assemblies provide pivots. Rig-ready models need deformation-friendly joints and separate attachment bones.\n3. Prove model proportions with orthographic front/back/left/right/top plus 3/4 perspective and a 2m humanoid height ruler. Verify unit/axis conversion and grounding in Blender.\n4. Check actual UV, PBR channels, normals/tangents, transparency, texture seams and emissive masks in Unity URP; no implicit support without importer tests.\n5. Report face/vertex/material/texture counts, source file names, defects, expected cleanup and license/export terms. A beautiful screenshot alone is not approval.\n6. Compare alongside the approved Runavelle Archer Tower T3 and Castle at game camera, both cozy daylight and dramatic night siege; judge silhouette and role clarity at phone-size preview. Request edits before paying for replacement generations when possible.\n7. This prompt specifies **one asset** only. Multiple details on the asset should be attached components, not separate unrelated assets or background scenery.\n\n\n\n---\n\n",
+          "reference_hashes": [
+            "0a3ec03caa56e1fd71db8f08a814b4d80408fef4d6850ca7fb434497b2d1c4c3"
+          ],
+          "project_style_hash": "1ce601f09a3f5f200282f8aba44216421f558ffc3d830634b34836270744106f",
+          "resolution": 1024,
+          "inference_steps": 32,
+          "guidance": {
+            "sparse_structure_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.7,
+              "guidance_interval": [
+                0.6,
+                1
+              ],
+              "rescale_t": 5
+            },
+            "shape_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.5,
+              "guidance_interval": [
+                0.6,
+                1
+              ],
+              "rescale_t": 3
+            },
+            "tex_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 1,
+              "guidance_rescale": 0,
+              "guidance_interval": [
+                0.6,
+                0.9
+              ],
+              "rescale_t": 3
+            }
+          },
+          "seeds": [
+            42
+          ],
+          "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+          "geometry": {
+            "pipeline_type": "1024_cascade",
+            "octree_depth": null,
+            "decode_chunk_size": null,
+            "export_triangle_target": 1000000
+          },
+          "texture": {
+            "size": 4096,
+            "pbr": "native basecolor/metallic-roughness"
+          },
+          "blender": {
+            "enabled": true,
+            "profile": "existing_quality_pipeline_v1",
+            "height_m": 18,
+            "render_views": [
+              "front",
+              "three_quarter",
+              "side",
+              "back",
+              "top",
+              "gameplay"
+            ],
+            "render_resolutions": [
+              "mobile",
+              "pc1440"
+            ],
+            "bake": "not_requested"
+          },
+          "lod": {
+            "ratios": [
+              0.65,
+              0.35,
+              0.15
+            ]
+          },
+          "export": {
+            "formats": [
+              "glb",
+              "fbx"
+            ],
+            "preserve_master": true
+          },
+          "candidate_count": 1,
+          "qa": {
+            "mesh_validity": true,
+            "geometry_defects": true,
+            "dimensions": true,
+            "uv_texture_inventory": true,
+            "export_reopen": true,
+            "per_asset": true,
+            "human_concept_approval": true,
+            "human_master_approval": true,
+            "visual_parity": "NOT_TESTED"
+          },
+          "seed": 42,
+          "revision": {
+            "id": "70368b8a9b234923b5f9a66f4106a0ae",
+            "parent": "ed47f419f21041f88d735e6873e90b47",
+            "method": "explicit_uniform_scale",
+            "parent_config_hash": "7b782d37ed4cf32c0fbe6231310e7287566674fc7aa13455360e51135e0711bf"
+          }
+        },
+        "effective_config_hash": "26b7d5ce1f265c592bd9c5aa3776a55cfddfeb799b82ae20471dcd854fead3bd",
+        "effective_specification": {
+          "dimension_provenance": {
+            "kind": "inferred",
+            "source": "Measured selected parent GLB bounds",
+            "value": {
+              "target_width_m": 17.014148712158203,
+              "target_height_m": 17,
+              "target_depth_m": 11.718147277832031
+            }
+          },
+          "provenance": {
+            "target_height_m": {
+              "kind": "explicit",
+              "source": "Revision uniform-scale instruction",
+              "value": 18
+            }
+          },
+          "dimensions": {
+            "target_width_m": 18.01498098934398,
+            "target_height_m": 18,
+            "target_depth_m": 12.407450058880974
+          }
+        },
+        "project_style_snapshot": {
+          "name": "Runavelle Production Workspace QA",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {},
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {
+            "selective_export": {
+              "preset": "glb_only",
+              "glb": true,
+              "manifest": true,
+              "zip": false,
+              "fbx": false,
+              "blend": false,
+              "textures": false,
+              "lods": false,
+              "high_poly": false,
+              "unity_package": false,
+              "unreal_package": false,
+              "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\GameAssets"
+            }
+          },
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "63d61de155f34d09b7a27d630efe4770"
+        },
+        "reference_ids": [
+          "2aaff3db00da4323b9007a10bbabd64c"
+        ],
+        "export_settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\GameAssets"
+        },
+        "auto_replace": false,
+        "previous_delivery_ids": [
+          "f293109729315421aed0a29893899df0"
+        ],
+        "stage": "Technically validated",
+        "artifact_id": "a487358caa684809a47833574b21a004",
+        "artifact_sha256": "fde85ebfbd03534f282d045e51b98dbf422556b5db01d1d88da0484ce904705f",
+        "export_id": "70e21504b52b517b88dd74e75d29cc20",
+        "qa_status": "passed",
+        "completed_at": "2026-10-21T17:08:47.282352+00:00",
+        "published_export_id": "1277dcde1d3751d4807267c2891e1c9e"
+      },
+      "staged_export": {
+        "id": "70e21504b52b517b88dd74e75d29cc20",
+        "status": "COMPLETED",
+        "delivery_scope": "staged",
+        "asset_id": "83af57a836084780ac6e8f6f847109e0",
+        "project_id": "63d61de155f34d09b7a27d630efe4770",
+        "source_asset_id": "83af57a836084780ac6e8f6f847109e0",
+        "artifact_id": "a487358caa684809a47833574b21a004",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\Library\\revision-previews"
+        },
+        "created_at": "2026-10-21T17:08:47.223609+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\Library\\revision-previews\\63d61de155f34d09b7a27d630efe4770\\selective\\83af57a836084780ac6e8f6f847109e0\\70e21504b52b517b88dd74e75d29cc20",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\Library\\revision-previews",
+        "filename": "83af57a836084780ac6e8f6f847109e0--e7889eb15b.glb",
+        "files": [
+          {
+            "name": "83af57a836084780ac6e8f6f847109e0--e7889eb15b.glb",
+            "bytes": 66917752,
+            "sha256": "fde85ebfbd03534f282d045e51b98dbf422556b5db01d1d88da0484ce904705f",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/70e21504b52b517b88dd74e75d29cc20/files/83af57a836084780ac6e8f6f847109e0--e7889eb15b.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4241,
+            "sha256": "260056fc2cf8d4e43fa38331f534d426d8568d5290591872f38012c748941863",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/70e21504b52b517b88dd74e75d29cc20/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 969026,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            18.014981269836426,
+            18.000000953674316,
+            12.407450675964355
+          ],
+          "bounds_xyz_m": [
+            [
+              -9.007490344811231,
+              0,
+              -6.203725300729275
+            ],
+            [
+              9.007490925025195,
+              18.000000953674316,
+              6.203725375235081
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 969026,
+              "vertices": 743688,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-native\\2026-10-21T15-48-30-788Z\\Library\\revision-previews\\63d61de155f34d09b7a27d630efe4770\\manifest.json",
+        "revision_id": "70368b8a9b234923b5f9a66f4106a0ae"
+      }
+    },
+    {
+      "name": "native_v1_v2_actual_glb_synchronized_comparison",
+      "passed": true
+    },
+    {
+      "name": "manual_policy_holds_unapproved_publish_native_use_v2_and_restore_v1_atomic_game_manifest_no_deleted_outputs",
+      "passed": true,
+      "published_v2": "1277dcde1d3751d4807267c2891e1c9e",
+      "restored_v1": "f293109729315421aed0a29893899df0"
+    },
+    {
+      "name": "final_native_restart_persists_statuses_versions_publication_without_duplicate_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "gpu": "Reuse actual completed SDXL + TRELLIS.2 checkpoints; no GPU regeneration in recovery/revision"
+}
