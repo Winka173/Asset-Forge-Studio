@@ -361,7 +361,7 @@ class Generate(BaseModel):
     quality: Literal['Fast', 'Balanced', 'Maximum'] = 'Maximum'
     artifact_id: str
     prompt: str | None = Field(default=None, max_length=100000)
-    seeds: list[int] = Field(default=[42], min_length=1, max_length=4)
+    seeds: list[int] = Field(default=[42], min_length=1, max_length=5)
     steps: int | None = Field(default=None, ge=1, le=100)
     pipeline_type: Literal['512', '1024_cascade'] | None = None
     texture_size: Literal[2048, 4096] | None = None

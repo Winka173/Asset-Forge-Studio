@@ -343,7 +343,7 @@ class Single(BaseModel):
     request_id:str=Field(min_length=8,max_length=100)
     quality:Literal['Fast','Balanced','Maximum']='Maximum'
     engine:Literal['auto','trellis2_community','triposg']='auto'
-    seeds:list[int]=Field(default=[42],min_length=1,max_length=4)
+    seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     reference_id:str|None=None
     workflow:Workflow|None=None
 
@@ -352,7 +352,7 @@ class Single(BaseModel):
 def single(body:Single):
     from . import batch
     model=studio.asset(body.asset_id)
-    if len(set(body.seeds))!=len(body.seeds) or any(seed<0 or seed>=2**32 for seed in body.seeds):raise HTTPException(400,'Use 1–4 distinct seeds in 0..4294967295')
+    if len(set(body.seeds))!=len(body.seeds) or any(seed<0 or seed>=2**32 for seed in body.seeds):raise HTTPException(400,'Use 1–5 distinct seeds in 0..4294967295')
     if body.reference_id:
         reference=studio.scoped_artifact(body.reference_id,model['project_id'])
         if reference['role'] not in ('concept','reference'):raise HTTPException(400,'A reference image is required')

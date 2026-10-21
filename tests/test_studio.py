@@ -88,3 +88,21 @@ def test_old_database_migrates_without_changing_bytes(tmp_path, monkeypatch):
     record = store.get_artifact('old')
     assert record['sha256'] == 'original-digest' and record['metadata']['kept']
     assert record['project_id'] == 'runavelle' and record['asset_id'] == 'archer_tower_t3'
+
+
+def test_five_distinct_results_are_durable_idempotent_and_never_parallel_gpu(client):
+    from engines.adapters import ADAPTERS
+    if not ADAPTERS['triposg'].installed:pytest.skip('Real installed TripoSG needed for admission only')
+    asset=client.post('/api/assets',json=dict(project_id='runavelle',name='Five seed admission',prompt='Blue roof archer tower',settings={'inspirationGame':'Reference game context'})).json()
+    image=io.BytesIO();Image.new('RGBA',(16,16),(0,0,0,0)).save(image,format='PNG')
+    reference=client.post('/api/import/reference',params={'asset_id':asset['id']},files={'file':('input.png',image.getvalue())}).json()
+    body=dict(asset_id=asset['id'],artifact_id=reference['id'],request_id='five-real-admission',engine='triposg',seeds=[42,43,44,45,46])
+    response=client.post('/api/studio/generate',json=body);assert response.status_code==201,response.text
+    queued=response.json()['jobs'];assert len(queued)==5 and len(jobs.listing())==5
+    assert [j['payload']['seed'] for j in queued]==body['seeds']
+    assert all(j['status']=='QUEUED' and jobs.resource_class(j['payload'])=='gpu' for j in queued)
+    assert client.post('/api/studio/generate',json=body).json()==response.json()
+    assert len(jobs.listing())==5
+    assert client.post('/api/studio/generate',json=body|dict(seeds=[1,2,3,4,5,6],request_id='six-blocked-results')).status_code==422
+    restored=client.get('/api/studio?project_id=runavelle').json()['assets'][0]
+    assert restored['settings']['inspirationGame']=='Reference game context'

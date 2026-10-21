@@ -36,7 +36,7 @@ class ManifestItem(BaseModel):
     asset_family: str = ''
     quality: Literal['Fast','Balanced','Maximum'] = 'Balanced'
     preferred_engine: Literal['auto','triposg','trellis2_community'] = 'auto'
-    candidates: int = Field(default=1,ge=1,le=4)
+    candidates: int = Field(default=1,ge=1,le=5)
     target_outputs: list[Literal['glb','fbx']] = Field(default=['glb'],min_length=1,max_length=2)
     selected: bool = True
     confirmed: bool = False
