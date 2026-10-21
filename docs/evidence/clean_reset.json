@@ -1,0 +1,20 @@
+﻿{
+    "performed_at_utc":  "20261021T181054Z",
+    "authorization":  "User explicitly requested a clean reset of all AFS data for retry",
+    "backup_directory":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\data-reset-backups\\20261021T181054Z",
+    "active_library":  "C:\\Users\\Winka\\AppData\\Local\\AssetForgeStudio\\Library",
+    "previous_counts":  {
+                            "projects":  1,
+                            "artifacts":  32,
+                            "assets":  1048,
+                            "jobs":  15,
+                            "batches":  3
+                        },
+    "preserved":  [
+                      "AI environments and weights",
+                      "Blender and Unity installations",
+                      "Windows executables",
+                      "external game directories"
+                  ],
+    "method":  "Native PowerShell checked absolute directory moves; prior data isolated outside active Library"
+}

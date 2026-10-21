@@ -31,7 +31,7 @@ try{
  const prompt='Archer Tower T3 Runavelle. Supplied concept reference. Single and Batch Maximum reproducibility benchmark; technical QA only.';
  await page.locator('.prompt-input').fill(prompt);
  const imported=page.waitForResponse(r=>r.url().includes('/api/import/reference')&&r.request().method()==='POST');
- await page.getByLabel('Upload concept image').setInputFiles(path.join(root,'data/generation/trellis2/20261021T140717_42_c0d7b7/output/source_alpha.png'));
+ await page.getByLabel('Upload concept image').setInputFiles(path.join(root,'.local/fixtures/ArcherTowerSource.png'));
  const reference=await(await imported).json();
  const submitted=page.waitForResponse(r=>r.url().endsWith('/api/studio/generate')&&r.request().method()==='POST',{timeout:180000});
  await page.getByRole('button',{name:'Generate 3D',exact:true}).click();

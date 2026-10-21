@@ -1,0 +1,25 @@
+{
+  "status": "PASS_NATIVE_CLEAN_PROFILE_CREATE_WIZARD_AND_349_REIMPORT",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workspace-native\\2026-10-21T18-23-47-233Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "default_user_profile_empty_no_projects_assets_jobs_or_production_items",
+      "passed": true,
+      "data_path": "C:\\Users\\Winka\\AppData\\Local\\AssetForgeStudio\\Library"
+    },
+    {
+      "name": "actual_349_source_reimport_retains_ids_full_prompts_312_primary_37_future_and_no_duplicate_assets",
+      "passed": true,
+      "source_sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
+      "batch_id": "d8dfbf5ea7ab48ffa94b39be8c77843d"
+    },
+    {
+      "name": "native_three_step_wizard_refresh_fresh_create_one_production_row_and_explicit_generation_only",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows empty production profile, stepped Create and real 349-source repeated import; GPU queue held paused",
+  "tested_build_note": "0.7.1 native candidate; final spacing rebuild is verified separately in desktop_build/workspace_native"
+}

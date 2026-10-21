@@ -1,0 +1,35 @@
+{
+  "status": "PASS_REAL_NATIVE_FX_GENERATION_REVISIONS_PACKAGE_IMPORT_AND_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fx-native\\2026-10-21T18-26-31-039Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_prompt_to_real_ice_effect_editable_package_gpu_timeline_play_scrub_and_clean_project_import",
+      "passed": true,
+      "job_id": "f9471976862545069eb5afa041fd7ddf",
+      "package_sha256": "af10f0bbc56b0e7f6e7f2fcfcbb14b5f934c8834dafd80ff41084f1c22e2a456",
+      "package_import": {
+        "checks_passed": true,
+        "unity_version": "6000.4.8f1",
+        "config_hash": "74fd47c6031d9dd6c8fc9dc52f826da2b8e1f757088ece5ebf10286d47ab897e",
+        "scope": "Imported unitypackage into a separate empty project; runtime source, shader, prefab and trail reconstruction",
+        "failure": ""
+      }
+    },
+    {
+      "name": "native_prompt_revision_changes_inherited_element_duration_preserves_original_ice_sources_and_identity",
+      "passed": true,
+      "second_job": "cdacb30a36ad4764af8b29762f96423a"
+    },
+    {
+      "name": "effect_recipe_outputs_and_native_workspace_survive_restart_without_duplicate_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual procedural effect, runtime sources/shader/prefab and Unity GPU captures; no character rig/retarget or artistic acceptance claim",
+  "asset_id": "1d97b1ea3e575d969944edbf9ad9e32b",
+  "project_id": "145374969c854a8c9a4d9c068d5fc22c",
+  "job_id": "f9471976862545069eb5afa041fd7ddf",
+  "tested_build_note": "0.7.1 native candidate; final spacing rebuild is verified separately in desktop_build/workspace_native"
+}

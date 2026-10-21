@@ -8,6 +8,7 @@ import { ProductionWorkspace } from "./production";
 import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
+import { FxStudio } from "./fx-studio";
 import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
@@ -113,7 +114,7 @@ type Draft = {
   height: number | null;
 };
 const initialDraft: Draft = {
-  mode: "Image",
+  mode: "Text",
   prompt: "",
   name: "",
   source: "",
@@ -225,7 +226,8 @@ function route(): Page {
 }
 
 export function Studio() {
-  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'>('single');
+  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'>('single');
+  const [createStep,setCreateStep]=useState(0);
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
       localStorage.getItem("afs.project") || "",
@@ -241,6 +243,8 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
+  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');if(saved&&['single','batch','world','fx'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
+  useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep}));},[projectId,loadedProject,creationMode,createStep]);
   const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
@@ -397,7 +401,7 @@ export function Studio() {
       setDraft(restored);
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
-      if(routeAsset?.asset_type==='map_environment')setCreationMode('world');
+      if(routeAsset?.asset_type==='map_environment')setCreationMode('world');else if(routeAsset?.asset_type==='vfx')setCreationMode('fx');
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -477,14 +481,14 @@ export function Studio() {
             setNotice("Draft saved locally · Ctrl+Enter to generate from an image.");
           });
       }
-      if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && (source || draft.prompt.trim()) && !busy) {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && creationMode === "single" && createStep > 0 && (source || draft.prompt.trim()) && !busy) {
         event.preventDefault();
-        generate();
+        if(createStep===1)setCreateStep(2);else generate();
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [modal, busy, page, projectId, loadedProject, draft, data.assets, source]);
+  }, [modal, busy, page, projectId, loadedProject, draft, data.assets, source, creationMode, createStep, workflow, workflowReady]);
   useEffect(() => {
     request<{ engines: Engine[] }>("/api/engines")
       .then((r) => setEngines(r.engines))
@@ -681,6 +685,7 @@ export function Studio() {
     });
   }
   function newAsset(mode: Draft["mode"] = "Text") {
+    setCreateStep(0);
     setCreationMode('single');
     if (!projectId) {
       editProject(false);
@@ -697,7 +702,8 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
-    setCreationMode(asset.asset_type==='map_environment'?'world':'single');
+    setCreateStep(asset.asset_type==='map_environment'||asset.asset_type==='vfx'?1:2);
+    setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
     setDraft({
@@ -974,7 +980,7 @@ export function Studio() {
             </span>
             <button className="quiet-button" onClick={() => navigate("Production")}>
               <Icon name="Jobs" size={15} />
-              {globalQueue ? `${globalQueue.running} active ? ${globalQueue.queued} queued${globalQueue.paused?' ? paused':''}` : 'Queue status unavailable'}
+              {globalQueue ? `${globalQueue.running} active · ${globalQueue.queued} queued${globalQueue.paused?' · paused':''}` : 'Queue status unavailable'}
             </button>
           </div>
         </header>
@@ -988,13 +994,14 @@ export function Studio() {
             <div className="onboarding-steps"><span><b>01</b> Create a game project</span><span><b>02</b> Add a prompt or reference</span><span><b>03</b> Generate, review & export</span></div>
             <small>AI chạy local. Các file export được sắp theo project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
-          {projectId && page==='Create' && <div className="segmented creation-mode" role="tablist" aria-label="Creation workflow">
-            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='single'} onClick={()=>setCreationMode('single')}>Single Asset</button>
-            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='batch'} onClick={()=>setCreationMode('batch')}>Batch Assets</button>
-            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='world'} onClick={()=>{setCreationMode('world');setAssetId('');change({assetId:''});location.hash='create';}}>Map / World</button>
-          </div>}
-          {projectId && page==='Create' && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
-          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
+          {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
+            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
+            <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
+            {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Preview',tone:'purple'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
+          </section>}
+          {projectId && page==='Create' && createStep>0 && creationMode==='fx' && <FxStudio key={`${projectId}:${selectedAsset?.asset_type==='vfx'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='vfx'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
+          {projectId && page==='Create' && createStep>0 && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
+          {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">
               {error}
@@ -1136,20 +1143,12 @@ export function Studio() {
               )}
             </>
           )}
-          {projectId && page === "Create" && creationMode==='single' && (
+          {projectId && page === "Create" && createStep>0 && creationMode==='single' && (
             <>
-              <div className="page-heading compact single-studio-heading">
-                <div>
-                  <div className="overline">CREATE / LOCAL ASSET PRODUCTION</div>
-                  <h1>{selectedAsset?.name || "Create an asset"}</h1>
-                </div>
-                <span className="draft-indicator">{draftStatus}</span>
-                {workflow.mode!=='expert' && <button className="primary generate-button single-header-generate" disabled={busy||!workflowReady||loadedProject!==projectId||(!draft.prompt.trim()&&!source)} onClick={generate}><Icon name="Cube" size={18}/>{busy?'Preparing pipeline…':'Generate asset'}</button>}
-              </div>
-              <div className="create-workspace">
-                <section className="create-controls">
-                  <label className="studio-field">Workflow<Select aria-label="Single workflow mode" value={workflow.mode} disabled={!workflowReady||busy} onChange={event=>void changeWorkflow({mode:event.target.value as typeof workflow.mode})}><option value="auto">Auto · prompt to exported model</option><option value="assisted">Assisted · review checkpoints</option><option value="expert">Expert · manual stages</option></Select></label>
-                  {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
+              <div className="create-flow-draft"><span className="draft-indicator" role="status">{draftStatus}</span>{selectedAsset&&<span>Editing {selectedAsset.name}</span>}</div>
+              <div className={`create-workspace create-single-flow step-${createStep}`}>
+                <section className="create-controls" aria-label={createStep===1?'Asset description':'Generation settings'}>
+                  {createStep===1&&<div className="create-input-step">
                   <div
                     className="input-tabs"
                     role="tablist"
@@ -1193,7 +1192,7 @@ export function Studio() {
                     </label>
                   )}
                   {draft.mode === "Text" ? (
-                    <div className="capability-note">
+                    <details className="capability-note" open={!data.capabilities.text_to_concept}><summary>{data.capabilities.text_to_concept?'How automatic generation works':'Text-to-concept engine unavailable'}</summary>
                       <Icon name="Image" size={22} />
                       <h3>{data.capabilities.text_to_concept ? 'SDXL local → Concept Preview' : 'Text-to-concept chưa sẵn sàng'}</h3>
                       <p>
@@ -1205,7 +1204,7 @@ export function Studio() {
                       >
                         Use a reference image
                       </button>
-                    </div>
+                    </details>
                   ) : (
                     <>
                       <label
@@ -1264,6 +1263,10 @@ export function Studio() {
                       </label>
                     </>
                   )}
+                  <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
+                  </div>}
+                  {createStep===2&&<div className="create-settings-step">
+                  <div className="create-input-recap"><div><strong>{draft.name.trim()||'New asset'}</strong><p>{draft.mode==='Image'?(source?.name||'Reference image'):draft.prompt}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <div
                     className="studio-field"
                     role="group"
@@ -1340,11 +1343,45 @@ export function Studio() {
                       Chỉ engine đã tạo output thật mới xuất hiện ở đây.
                     </small>
                   </label>
-                  <OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/>
+                  <div className="generate-actions">
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
+                    <button
+                      className="primary generate-button"
+                      disabled={
+                        busy ||
+                        !workflowReady ||
+                        (workflow.mode==='expert' && sourceNeedsApproval) ||
+                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
+                        loadedProject !== projectId
+                      }
+                      onClick={generate}
+                    >
+                      <Icon name="Cube" size={18} />
+                      {busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
+                      <Icon name="Arrow" size={17} />
+                    </button>
+                    <button
+                      className="quiet-button"
+                      disabled={busy || !draft.name.trim()}
+                      onClick={() =>
+                        run(async () => {
+                          await ensureAsset();
+                          await reload();
+                          setNotice("Asset draft đã lưu vào Library.");
+                        })
+                      }
+                    >
+                      Save draft to library
+                    </button>
+                  </div>
+                  <details className="advanced"><summary>Output requirements & compatibility</summary><OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/></details>
                   <details className="advanced">
                     <summary>
                       Advanced settings <span>Seeds, steps & processing</span>
                     </summary>
+                  <label className="studio-field">Workflow<Select aria-label="Single workflow mode" value={workflow.mode} disabled={!workflowReady||busy} onChange={event=>void changeWorkflow({mode:event.target.value as typeof workflow.mode})}><option value="auto">Auto · prompt to exported model</option><option value="assisted">Assisted · review checkpoints</option><option value="expert">Expert · manual stages</option></Select></label>
+                  {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
+
                     <label className="studio-field">
                       Seeds · up to 4
                       <input
@@ -1422,45 +1459,12 @@ export function Studio() {
                       engine; không đổi môi trường Python đang cài.
                     </p>
                   </details>
-                  <details className="selective-export-history"><summary>Export settings ? GLB Only by default</summary><BatchExportSettings key={projectId} projectId={projectId}/></details>
+                  <details className="selective-export-history"><summary>Export settings · GLB Only by default</summary><BatchExportSettings key={projectId} projectId={projectId}/></details>
                   {(busy || activeJobs.some(job=>job.payload.asset_id===selectedAsset?.id)) && <ActivityIndicator label={busy?"Preparing local pipeline":"Local pipeline is running"} detail="Measured job stages appear in Jobs. You can leave this screen without losing progress."/>}
-                  <div className="generate-actions">
-                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
-                    <button
-                      className="primary generate-button"
-                      disabled={
-                        busy ||
-                        !workflowReady ||
-                        (workflow.mode==='expert' && sourceNeedsApproval) ||
-                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
-                        loadedProject !== projectId
-                      }
-                      onClick={generate}
-                    >
-                      <Icon name="Cube" size={18} />
-                      {busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
-                      <Icon name="Arrow" size={17} />
-                    </button>
-                    <button
-                      className="quiet-button"
-                      disabled={busy || !draft.name.trim()}
-                      onClick={() =>
-                        run(async () => {
-                          await ensureAsset();
-                          await reload();
-                          setNotice("Asset draft đã lưu vào Library.");
-                        })
-                      }
-                    >
-                      Save draft to library
-                    </button>
-                  </div>
-                  <p className="control-footnote">
-                    Local inference · ưu tiên chất lượng · mọi candidate cần
-                    human review
-                  </p>
+                  <p className="control-footnote">Local pipeline. Technical QA and exports run automatically in Auto mode. Artistic review stays optional and independent.</p>
+                  </div>}
                 </section>
-                <section className="create-preview">
+                <section className="create-preview" hidden={createStep===1&&!source&&!candidate}>
                   <div className="preview-tabs">
                     <div>
                       {["Model", "Concept"].map((tab) => (

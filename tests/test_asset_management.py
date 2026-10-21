@@ -67,7 +67,7 @@ def test_short_prompt_enrichment_preserves_explicit_values_and_original(client):
     automation.startup_recovery();assert batch.batch(result['batch_id'])['paused']
 
 def test_library_real_import_hash_dedup_and_bounded_349_listing(client):
-    actual=store.WORKSPACE/'data/jobs/0cd41c06dfa040908ead8f880ff6593b/output/LOD2.glb'
+    actual=store.WORKSPACE/'.local/fixtures/ArcherTowerLOD2.glb'
     if not actual.exists():pytest.skip('Actual Archer Tower GLB fixture unavailable')
     first=client.post('/api/library/import',files={'file':('Archer.glb',actual.read_bytes(),'model/gltf-binary')},data={'project_id':'runavelle'})
     assert first.status_code==201,first.text

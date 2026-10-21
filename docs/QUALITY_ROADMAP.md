@@ -13,7 +13,7 @@ The user authorized implementation of the proposed quality improvements and aske
 | Unity | Native static asset and procedural terrain/roads/zones/prefab/NavMesh slices tested | Production player budgets and broader render pipeline coverage |
 | Engines | Actual outputs from TRELLIS.2, TripoSG, research TRELLIS v1 and Hi3DGen | Full comparative tournament, other engines/access gates and commercial provenance clearance |
 | Map | Experimental structured World Plan and real Unity scene already implemented | Prompt planning, richer biomes/rivers/bridges/materials and performance |
-| Animation / VFX | Previously no complete validated native slice | Rig/retarget, combat and editable runtime effects |
+| Animation / VFX | Procedural editable Unity effect recipes: six actual element outputs, GPU frame captures, cold reopen and clean-project package import | Rig/retarget, character combat, player performance and artistic polish |
 | Artistic acceptance | Output screenshots and technical reports exist | User approval and Meshy comparison remain open; image-only reference cannot establish geometry/PBR equivalence |
 | Unreal | Deferred by the user's explicit instruction | Resume when Editor/account setup is available; no automatic EULA acceptance |
 

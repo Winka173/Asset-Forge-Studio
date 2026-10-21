@@ -1,0 +1,51 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "screen": "1280x800",
+      "generateBounds": {
+        "x": 267,
+        "y": 542.591552734375,
+        "width": 394.59375,
+        "height": 52
+      }
+    },
+    {
+      "fxHeader": {
+        "display": "block",
+        "padding": "0px 0px 24px"
+      },
+      "previewPadding": 24
+    },
+    {
+      "screen": "1536x1000",
+      "generateBounds": {
+        "x": 312,
+        "y": 711.1417846679688,
+        "width": 469.296875,
+        "height": 52
+      }
+    },
+    {
+      "fxHeader": {
+        "display": "block",
+        "padding": "0px 0px 24px"
+      },
+      "previewPadding": 24
+    }
+  ],
+  "screens": [
+    ".local/spacing-audit/1280-create.png",
+    ".local/spacing-audit/1280-fx.png",
+    ".local/spacing-audit/1280-batch.png",
+    ".local/spacing-audit/1280-library.png",
+    ".local/spacing-audit/1280-production.png",
+    ".local/spacing-audit/1536-create.png",
+    ".local/spacing-audit/1536-fx.png",
+    ".local/spacing-audit/1536-batch.png",
+    ".local/spacing-audit/1536-library.png",
+    ".local/spacing-audit/1536-production.png"
+  ],
+  "status": "PASS_ACTUAL_349_IMPORT_AND_5_WORKSPACES_AT_TWO_DESKTOP_SIZES",
+  "tested_build_note": "0.7.1 native candidate; final spacing rebuild is verified separately in desktop_build/workspace_native"
+}

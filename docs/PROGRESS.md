@@ -1,3 +1,17 @@
+# Current implementation - 2026-10-22 (Asia/Saigon)
+
+The current Windows candidate is 0.7.1 on main. The latest user priorities are a genuinely empty personal Library, one stable asset item with nested stages/versions, and a shorter stepped Create flow with consistent spacing. Test runs live under .local with independent desktop configurations; no sample project is seeded into production.
+
+The previous mixed workspace data contained 1,048 assets from three 349-item imports plus one older asset. It was moved to a recovery archive at the user's explicit reset request. Desktop now points to %LOCALAPPDATA%/AssetForgeStudio/Library. Original tools, weights, environments and external game directories were preserved. Same project/source ID reuses the asset; identical source/configuration reuses the import. Re-import appends provenance without overwriting a current master, original prompt or concurrent worker changes.
+
+Create has workflow selection, prompt/reference input, then generation settings. Prompt and step restore across refresh; clicking the sidebar Create begins a fresh draft. Advanced controls remain available. Production nests standalone stages under one stable asset and persists asset Pause across stage handoff. Single-item groups do not create an extra duplicate heading row.
+
+Editable procedural Unity sword-slash recipes now have actual native output for fire, ice, lightning, wind, earth and poison. Each uses the shared heavy-GPU scheduler, real 24-frame captures, cold reopen and package import into an empty project. Recipe revisions preserve prior parameters and immutable outputs. This is a procedural weapon demonstration, not validated character animation, retargeting, unrestricted prompt-to-VFX, artistic acceptance or target-player performance. See the release evidence for final native UI validation.
+
+Still unfinished: Meshy-quality artistic acceptance; comprehensive engine/commercial benchmark clearance; local visual prompt-fidelity inference; rig/deformation/retarget and character combat animation; richer map biomes/rivers/material/performance. Unreal remains deferred. Historical entries below are superseded by this section.
+
+---
+
 # Current verified baseline - 2026-10-22 (Asia/Saigon)
 
 Stable 0.6.0 is unified on main at a98a4e0. 55 backend tests and native Windows build/smoke passed. Real 349-source import/admission (312 primary, 37 FUTURE), shared Single/Batch queue, incremental GLB delivery, stage checkpoint recovery, Production/Library UI, separate technical/artistic statuses, short-prompt enrichment, CPU scale revisions, staged publication/rollback and Create reset are recorded in evidence/stable_0_6_release.json. No full 349-GPU development run was launched.
