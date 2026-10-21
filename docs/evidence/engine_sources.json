@@ -1,0 +1,366 @@
+{
+  "recorded_at_utc": "2026-10-21T06:54:20.800923+00:00",
+  "weights_downloaded": false,
+  "engines": {
+    "triposg": {
+      "repo": "https://github.com/VAST-AI-Research/TripoSG",
+      "model": "https://huggingface.co/VAST-AI/TripoSG",
+      "inference": "NOT_TESTED",
+      "code_revision": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+      "model_revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "gated": false,
+      "license_metadata": "mit",
+      "all_repo_file_bytes": 7946494238,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1564
+        },
+        {
+          "path": "README.md",
+          "bytes": 1465
+        },
+        {
+          "path": "feature_extractor_dinov2/preprocessor_config.json",
+          "bytes": 436
+        },
+        {
+          "path": "image_encoder_dinov2/config.json",
+          "bytes": 1104
+        },
+        {
+          "path": "image_encoder_dinov2/model.safetensors",
+          "bytes": 1217522888
+        },
+        {
+          "path": "model_index.json",
+          "bytes": 525
+        },
+        {
+          "path": "scheduler/scheduler_config.json",
+          "bytes": 158
+        },
+        {
+          "path": "transformer/config.json",
+          "bytes": 191
+        },
+        {
+          "path": "transformer/diffusion_pytorch_model.safetensors",
+          "bytes": 5758280104
+        },
+        {
+          "path": "vae/config.json",
+          "bytes": 335
+        },
+        {
+          "path": "vae/diffusion_pytorch_model.safetensors",
+          "bytes": 970685468
+        }
+      ]
+    },
+    "sf3d": {
+      "repo": "https://github.com/Stability-AI/stable-fast-3d",
+      "model": "https://huggingface.co/stabilityai/stable-fast-3d",
+      "inference": "NOT_TESTED",
+      "code_revision": "ff21fc491b4dc5314bf6734c7c0dabd86b5f5bb2",
+      "model_revision": "f0c9a8ffd62cb1bbc8a7a53c9f87a0be1b6be778",
+      "gated": "auto",
+      "license_metadata": "other",
+      "all_repo_file_bytes": 4027120684,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1564
+        },
+        {
+          "path": "LICENSE.md",
+          "bytes": 11726
+        },
+        {
+          "path": "README.md",
+          "bytes": 5430
+        },
+        {
+          "path": "config.yaml",
+          "bytes": 2405
+        },
+        {
+          "path": "model.safetensors",
+          "bytes": 4024289892
+        },
+        {
+          "path": "sf3d.gif",
+          "bytes": 2809667
+        }
+      ]
+    },
+    "hunyuan21": {
+      "repo": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+      "model": "https://huggingface.co/tencent/Hunyuan3D-2.1",
+      "inference": "NOT_TESTED",
+      "code_revision": "82920d643c0dc2f7bfd7255f45f62d386edfe60c",
+      "model_revision": "0b94677654c57bb9a6b6845cd7b704ccf551d327",
+      "gated": false,
+      "license_metadata": "other",
+      "all_repo_file_bytes": 14909683275,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "LICENSE",
+          "bytes": 17915
+        },
+        {
+          "path": "Notice.txt",
+          "bytes": 16644
+        },
+        {
+          "path": "README.md",
+          "bytes": 3998
+        },
+        {
+          "path": "demo.py",
+          "bytes": 1490
+        },
+        {
+          "path": "hunyuan3d-dit-v2-1/config.yaml",
+          "bytes": 2078
+        },
+        {
+          "path": "hunyuan3d-dit-v2-1/model.fp16.ckpt",
+          "bytes": 7366389768
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/README.md",
+          "bytes": 1801
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/feature_extractor/preprocessor_config.json",
+          "bytes": 342
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/image_encoder/config.json",
+          "bytes": 554
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/image_encoder/model.safetensors",
+          "bytes": 1264217240
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/model_index.json",
+          "bytes": 617
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/scheduler/scheduler_config.json",
+          "bytes": 387
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/text_encoder/config.json",
+          "bytes": 613
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/text_encoder/pytorch_model.bin",
+          "bytes": 1361671895
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/tokenizer/merges.txt",
+          "bytes": 524619
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/tokenizer/special_tokens_map.json",
+          "bytes": 460
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/tokenizer/tokenizer_config.json",
+          "bytes": 807
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/tokenizer/vocab.json",
+          "bytes": 1059962
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/unet/attn_processor.py",
+          "bytes": 35104
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/unet/config.json",
+          "bytes": 911
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/unet/diffusion_pytorch_model.bin",
+          "bytes": 3925293863
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/unet/model.py",
+          "bytes": 25514
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/unet/modules.py",
+          "bytes": 45181
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/vae/config.json",
+          "bytes": 553
+        },
+        {
+          "path": "hunyuan3d-paintpbr-v2-1/vae/diffusion_pytorch_model.bin",
+          "bytes": 334707217
+        },
+        {
+          "path": "hunyuan3d-vae-v2-1/config.yaml",
+          "bytes": 409
+        },
+        {
+          "path": "hunyuan3d-vae-v2-1/model.fp16.ckpt",
+          "bytes": 655648152
+        },
+        {
+          "path": "hy3dpaint/textureGenPipeline.py",
+          "bytes": 8126
+        },
+        {
+          "path": "hy3dpaint/utils/multiview_utils.py",
+          "bytes": 5536
+        }
+      ]
+    },
+    "spar3d": {
+      "repo": "https://github.com/Stability-AI/stable-point-aware-3d",
+      "model": "https://huggingface.co/stabilityai/stable-point-aware-3d",
+      "inference": "NOT_TESTED",
+      "code_revision": "fdc311b16809e6a8adc2f5a3407ebb3db1a95bd1",
+      "model_revision": "5699918cb34f55cd7d828493d2725f3038313761",
+      "gated": "auto",
+      "license_metadata": "other",
+      "all_repo_file_bytes": 7334551700,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1566
+        },
+        {
+          "path": "LICENSE.md",
+          "bytes": 11716
+        },
+        {
+          "path": "README.md",
+          "bytes": 6401
+        },
+        {
+          "path": "config.yaml",
+          "bytes": 3996
+        },
+        {
+          "path": "model.safetensors",
+          "bytes": 7326949440
+        },
+        {
+          "path": "spar3d.gif",
+          "bytes": 7578581
+        }
+      ]
+    },
+    "trellis2": {
+      "repo": "https://github.com/microsoft/TRELLIS.2",
+      "model": "https://huggingface.co/microsoft/TRELLIS.2-4B",
+      "inference": "NOT_TESTED",
+      "code_revision": "75fbf0183001ed9876c8dbb35de6b68552ee08bd",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "gated": false,
+      "license_metadata": "mit",
+      "all_repo_file_bytes": 16237485044,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "README.md",
+          "bytes": 6417
+        },
+        {
+          "path": "ckpts/shape_dec_next_dc_f16c32_fp16.json",
+          "bytes": 678
+        },
+        {
+          "path": "ckpts/shape_dec_next_dc_f16c32_fp16.safetensors",
+          "bytes": 948490494
+        },
+        {
+          "path": "ckpts/shape_enc_next_dc_f16c32_fp16.json",
+          "bytes": 653
+        },
+        {
+          "path": "ckpts/shape_enc_next_dc_f16c32_fp16.safetensors",
+          "bytes": 708797208
+        },
+        {
+          "path": "ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16.json",
+          "bytes": 458
+        },
+        {
+          "path": "ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors",
+          "bytes": 2584574424
+        },
+        {
+          "path": "ckpts/slat_flow_img2shape_dit_1_3B_512_bf16.json",
+          "bytes": 458
+        },
+        {
+          "path": "ckpts/slat_flow_img2shape_dit_1_3B_512_bf16.safetensors",
+          "bytes": 2584574424
+        },
+        {
+          "path": "ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json",
+          "bytes": 458
+        },
+        {
+          "path": "ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors",
+          "bytes": 2584672728
+        },
+        {
+          "path": "ckpts/slat_flow_imgshape2tex_dit_1_3B_512_bf16.json",
+          "bytes": 458
+        },
+        {
+          "path": "ckpts/slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors",
+          "bytes": 2584672728
+        },
+        {
+          "path": "ckpts/ss_flow_img_dit_1_3B_64_bf16.json",
+          "bytes": 467
+        },
+        {
+          "path": "ckpts/ss_flow_img_dit_1_3B_64_bf16.safetensors",
+          "bytes": 2584426920
+        },
+        {
+          "path": "ckpts/tex_dec_next_dc_f16c32_fp16.json",
+          "bytes": 705
+        },
+        {
+          "path": "ckpts/tex_dec_next_dc_f16c32_fp16.safetensors",
+          "bytes": 948458812
+        },
+        {
+          "path": "ckpts/tex_enc_next_dc_f16c32_fp16.json",
+          "bytes": 676
+        },
+        {
+          "path": "ckpts/tex_enc_next_dc_f16c32_fp16.safetensors",
+          "bytes": 708797208
+        },
+        {
+          "path": "pipeline.json",
+          "bytes": 4186
+        },
+        {
+          "path": "texturing_pipeline.json",
+          "bytes": 2965
+        }
+      ]
+    }
+  }
+}

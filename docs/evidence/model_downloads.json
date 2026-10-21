@@ -1,0 +1,7 @@
+{
+  "sf3d": {
+    "status": "BLOCKED",
+    "exception_type": "GatedRepoError",
+    "reason": "Access/network failure; gated models require user license/access acceptance"
+  }
+}

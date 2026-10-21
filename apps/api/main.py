@@ -56,6 +56,15 @@ def environment():
     return audit()
 
 
+@app.get('/api/engines')
+def engine_status():
+    registry = json.loads((store.ROOT / 'engines/registry.json').read_text(encoding='utf-8'))
+    for engine in registry['engines']:
+        if engine['id'] == 'trellis2_community':
+            engine['installed'] = (Path.home() / 'Tools/trellis2/code/venv/Scripts/python.exe').is_file()
+    return registry
+
+
 @app.post("/api/import/{role}", status_code=201)
 async def import_file(role: Literal["concept", "golden", "candidate", "reference"], file: UploadFile = File(...)):
     extension = Path(file.filename or "").suffix.lower()

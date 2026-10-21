@@ -1,0 +1,29 @@
+[
+  {
+    "run": "20261021T135941_42_0e5892",
+    "status": "GENERATED_NEEDS_REVIEW",
+    "seconds": 112.25,
+    "raw_triangles": 1684058,
+    "torch_end_phase_allocated_bytes": 3364545536,
+    "peak_note": "Older runs had upstream counter resets: Torch value is a lower bound; use sampled all-process GPU usage separately",
+    "gpu_peak_all_processes_mib": 7565.0
+  },
+  {
+    "run": "20261021T140519_42_33aade",
+    "status": "FAILED",
+    "seconds": 58.76499999999942,
+    "raw_triangles": null,
+    "torch_end_phase_allocated_bytes": null,
+    "peak_note": "Older runs had upstream counter resets: Torch value is a lower bound; use sampled all-process GPU usage separately",
+    "gpu_peak_all_processes_mib": 3153.0
+  },
+  {
+    "run": "20261021T140717_42_c0d7b7",
+    "status": "GENERATED_NEEDS_REVIEW",
+    "seconds": 169.90600000000268,
+    "raw_triangles": 6085784,
+    "torch_end_phase_allocated_bytes": 3364545536,
+    "peak_note": "Older runs had upstream counter resets: Torch value is a lower bound; use sampled all-process GPU usage separately",
+    "gpu_peak_all_processes_mib": 7577.0
+  }
+]
