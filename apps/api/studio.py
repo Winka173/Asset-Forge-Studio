@@ -283,7 +283,7 @@ def generate(body: Generate):
         queued = [jobs.enqueue(payload | dict(seed=s), db=db) for s in body.seeds]
         result = dict(tournament_id=payload['tournament_id'], engine=engine, jobs=queued)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)', (body.request_id, request_digest(body), json.dumps(result)))
-        value.update(prompt=payload['prompt'], settings=body.model_dump(exclude={'request_id'}), reference_ids=list(dict.fromkeys(value['reference_ids'] + [source['id']])), updated_at=store.now())
+        value.update(prompt=payload['prompt'], settings=value.get('settings', {}) | body.model_dump(exclude={'request_id'}), reference_ids=list(dict.fromkeys(value['reference_ids'] + [source['id']])), updated_at=store.now())
         db.execute('UPDATE assets SET payload=? WHERE id=?', (json.dumps(value), value['id']))
     return result
 
@@ -311,8 +311,14 @@ def export(identifier: str, body: Export):
             result.update(validation='PASS_FILE_CHECKSUM', files=[dict(name=record['name'] + '.glb', bytes=path.stat().st_size, url=record['url'])])
         else:
             # Existing pipeline preserves source and produces all formats/LODs before success.
+            options = {}
+            if body.preset != 'Master':
+                target = 25000 if body.preset == 'Unity Mobile' else 100000
+                ratio = min(.95, target / max(record['metadata'].get('triangles', target), 1))
+                options['lod_ratios'] = [min(.95, ratio * 2), ratio, ratio / 2] if body.preset == 'Unity Mobile' else [ratio, ratio / 2, ratio / 4]
+                result.update(target_triangles=target, budget_scope='whole source target; per-object minimum can exceed it', quality='NEEDS_REVIEW', baking='NOT_REQUESTED')
             queued = jobs.enqueue(dict(kind='blender', artifact_id=record['id'], project_id=value['project_id'], asset_id=identifier,
-                normalize=False, render=False, export_preset=body.preset), db=db)
+                normalize=False, render=False, export_preset=body.preset, **options), db=db)
             result.update(job_id=queued['id'], job=queued)
         db.execute('INSERT INTO asset_exports VALUES (?,?,?)', (result['id'], identifier, json.dumps({k:v for k,v in result.items() if k != 'id'})))
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)', (body.request_id, fingerprint, json.dumps(result)))
