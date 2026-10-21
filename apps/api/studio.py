@@ -64,6 +64,8 @@ class ProjectInput(BaseModel):
     units: Literal['m', 'cm'] = 'm'
     target_height_m: float | None = Field(default=None, gt=0, le=1000)
     export_settings: dict = Field(default_factory=dict)
+    target_engines: list[Literal['unity','unreal']] = Field(default_factory=list,max_length=2)
+    engine_profiles: dict = Field(default_factory=dict)
 
 
 @router.get('/projects')
@@ -124,6 +126,7 @@ def draft(identifier: str, body: Draft):
 
 class AssetInput(BaseModel):
     project_id: str
+    asset_type: Literal['static_3d'] = 'static_3d'
     name: str = Field(min_length=1, max_length=200)
     prompt: str = Field(default='', max_length=100000)
     reference_ids: list[str] = Field(default_factory=list, max_length=50)

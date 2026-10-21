@@ -21,13 +21,11 @@
     {
       "name": "completed_batch_configuration_revision_preserves_real_outputs_and_requires_run",
       "passed": true,
-      "attempt": 2
+      "attempt": 3
     }
   ],
   "errors": [],
-  "shutdownNetworkEvents": [
-    "Expected polling request failed after managed backend shutdown"
-  ],
+  "shutdownNetworkEvents": [],
   "scope": "Real native output reopening, texture loading, export, configuration revision; no artistic approval",
   "meshy_parity": "NOT_TESTED"
 }

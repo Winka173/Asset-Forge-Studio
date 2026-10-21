@@ -26,7 +26,7 @@ $afsCandidate=Assert-WorkspacePath (Join-Path $afsRoot ".local/desktop-build/can
 New-Item -ItemType Directory -Force -Path $afsCandidate | Out-Null
 $afsVersion=(Get-Content -LiteralPath package.json -Raw | ConvertFrom-Json).version
 $afsCommit=(& git rev-parse HEAD).Trim()
-$afsReport=[ordered]@{version=$afsVersion;timestamp_utc=$afsStamp;git_commit=$afsCommit;git_dirty=[bool](& git status --porcelain);changed_files=@(& git status --short);changed_features=@('Tauri Windows shell and bundled API','Hybrid shared scheduler and Batch Studio','Immutable quality configuration and local SDXL concept approval');status='BUILDING';build_type='Bundled native desktop and Python API; external AI environments, model weights and Blender required';candidate=$afsCandidate;tests=@();known_issues=@('Unsigned local build; clean-machine installation not yet verified','Editor/browser tests do not establish mobile performance or Meshy visual parity')}
+$afsReport=[ordered]@{version=$afsVersion;timestamp_utc=$afsStamp;git_commit=$afsCommit;git_branch=(& git branch --show-current).Trim();git_dirty=[bool](& git status --porcelain);changed_files=@(& git status --short);changed_features=@('Tauri Windows shell and bundled API','Hybrid shared scheduler and Batch Studio','Immutable quality configuration and local SDXL concept approval');status='BUILDING';build_type='Bundled native desktop and Python API; external AI environments, model weights and Blender required';candidate=$afsCandidate;tests=@();known_issues=@('Unsigned local build; clean-machine installation not yet verified','Editor/browser tests do not establish mobile performance or Meshy visual parity')}
 $afsReportFile=Join-Path $afsCandidate 'build-report.json'
 try{
   Frontend-Check;$afsReport.tests+=@('Frontend TypeScript and production build PASS')
@@ -38,6 +38,8 @@ try{
   $afsInstaller=Join-Path $afsRoot "src-tauri/target/release/bundle/nsis/Asset Forge Studio_${afsVersion}_x64-setup.exe"
   if(-not(Test-Path -LiteralPath $afsInstaller)){throw 'Current-version installer missing'}
   Copy-Item -LiteralPath $afsInstaller -Destination $afsCandidate
+  $afsReport.artifact_sha256=@{}
+  Get-ChildItem -LiteralPath $afsCandidate -Filter '*.exe' | ForEach-Object {$afsReport.artifact_sha256[$_.Name]=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower()}
   $afsReport.status='BUILT_PENDING_SMOKE';$afsReport | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $afsReportFile -Encoding UTF8
   $env:AFS_SMOKE_EXE=Join-Path $afsCandidate 'Asset Forge Studio.exe'
   & node desktop/smoke.mjs;Assert-Exit 'Newly built native desktop smoke'

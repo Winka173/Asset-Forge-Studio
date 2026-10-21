@@ -1,0 +1,36 @@
+{
+  "status": "PASS_REAL_TEXTURED_NATIVE_OUTPUT",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z",
+  "checks": [
+    {
+      "name": "actual_textured_model_and_export",
+      "asset_id": "ccd6dc5ae40549379728eaf1885e7111",
+      "version": "53fb1ba55fb14bb7b4f62a219735d8f6",
+      "texture_count": "1",
+      "glb_bytes": 66408436,
+      "passed": true
+    },
+    {
+      "name": "actual_textured_model_and_export",
+      "asset_id": "23e189dc73575f72938ba5e0d421d819",
+      "version": "c30341182a864e9fbdfc5e9f5aa04e4d",
+      "texture_count": "1",
+      "glb_bytes": 66323092,
+      "passed": true
+    },
+    {
+      "name": "completed_batch_configuration_revision_preserves_real_outputs_and_requires_run",
+      "passed": true,
+      "attempt": 3
+    }
+  ],
+  "errors": [],
+  "shutdownNetworkEvents": [],
+  "scope": "Real native output reopening, texture loading, export, configuration revision; no artistic approval",
+  "meshy_parity": "NOT_TESTED",
+  "baseline_commit": "d1b1e49",
+  "baseline_version": "0.2.1",
+  "branch": "feature/universal-expansion-v2-reviewed",
+  "inference_repeated": false,
+  "validation": "Reopened existing real Maximum Archer outputs, checked embedded textures, real GLB export and preserved versions; no new inference or artistic approval"
+}

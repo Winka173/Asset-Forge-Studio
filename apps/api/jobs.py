@@ -118,6 +118,16 @@ def resource_class(payload):
     return 'cpu' if payload['kind']=='blender' and not payload.get('use_gpu',False) else 'gpu'
 
 
+def dependency_readiness(job):
+    """Persisted stage dependencies; scheduler changes admission, never quality settings."""
+    for identifier in job['payload'].get('depends_on',[]):
+        try:parent=get(identifier)
+        except KeyError:return 'blocked',f'Missing dependency {identifier}; no automatic replacement'
+        if parent['status'] in {'FAILED','BLOCKED','CANCELLED'}:return 'blocked',f'Dependency {identifier} is {parent["status"]}; retry the failed stage explicitly'
+        if parent['status']!='REVIEW_REQUIRED':return 'waiting',None
+    return 'ready',None
+
+
 @contextlib.contextmanager
 def resource_slot(kind):
     if kind=='gpu':
@@ -182,6 +192,9 @@ class Worker:
                                     value=json.loads(parent['payload']);item=next((i for i in value['items'] if i['asset_id']==job['payload'].get('asset_id')),None)
                                     if value['paused'] or not item or item.get('skipped'):continue
                                     priority=item['priority']
+                                readiness,reason=dependency_readiness(job)
+                                if readiness=='blocked':transition(job['id'],'BLOCKED',reason);continue
+                                if readiness=='waiting':continue
                                 candidates.append((priority,job))
                         counts={kind:sum(v[1]==kind for v in self.active.values()) for kind in ['gpu','cpu']}
                         for _,job in sorted(candidates,key=lambda x:-x[0]):
@@ -396,7 +409,7 @@ class Worker:
                          'batch_attempt':payload.get('batch_attempt',0),
                          'project_id': payload.get('project_id') or record.get('project_id'), 'asset_id': payload.get('asset_id') or record.get('asset_id'),
                          'render': True, 'resolutions': ['mobile', 'pc1440'], 'views': ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'],
-                         'parent_job': identifier})
+                         'parent_job': identifier,'depends_on':[identifier]})
         finally:
             if process and process.poll() is None: kill_tree(process)
             (folder / 'gpu_samples.json').write_text(json.dumps(samples, indent=2), encoding='utf-8')

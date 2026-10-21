@@ -1,0 +1,513 @@
+{
+  "$defs": {
+    "ArtifactFile": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Id"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "integrity": {
+          "default": "recorded",
+          "enum": [
+            "recorded",
+            "verified"
+          ],
+          "title": "Integrity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "role"
+      ],
+      "title": "ArtifactFile",
+      "type": "object"
+    },
+    "AssetType": {
+      "enum": [
+        "static_3d",
+        "character",
+        "animation",
+        "map_environment",
+        "vfx",
+        "material",
+        "sprite_2d",
+        "ui",
+        "audio",
+        "cinematic"
+      ],
+      "title": "AssetType",
+      "type": "string"
+    },
+    "Operation": {
+      "enum": [
+        "analyze",
+        "plan",
+        "prepare",
+        "generate",
+        "postprocess",
+        "validate",
+        "review",
+        "export",
+        "import_test"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "source_code": {
+          "default": "UNKNOWN",
+          "title": "Source Code",
+          "type": "string"
+        },
+        "model_weights": {
+          "default": "UNKNOWN",
+          "title": "Model Weights",
+          "type": "string"
+        },
+        "input_asset_rights": {
+          "default": "UNKNOWN",
+          "title": "Input Asset Rights",
+          "type": "string"
+        },
+        "commercial": {
+          "default": "review_required",
+          "enum": [
+            "blocked",
+            "review_required",
+            "cleared"
+          ],
+          "title": "Commercial",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "restrictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Restrictions",
+          "type": "array"
+        }
+      },
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Stage": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "plugin": {
+          "title": "Plugin",
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Depends On",
+          "type": "array"
+        },
+        "resource": {
+          "enum": [
+            "cpu",
+            "io",
+            "gpu",
+            "human"
+          ],
+          "title": "Resource",
+          "type": "string"
+        },
+        "input_artifacts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Artifacts",
+          "type": "array"
+        },
+        "input_hashes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "object"
+        },
+        "expected_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Outputs",
+          "type": "array"
+        },
+        "skip_condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Skip Condition"
+        },
+        "checkpoint": {
+          "title": "Checkpoint",
+          "type": "string"
+        },
+        "recovery": {
+          "default": "retry_exact_config",
+          "enum": [
+            "retry_exact_config",
+            "reuse_verified_output",
+            "human_review"
+          ],
+          "title": "Recovery",
+          "type": "string"
+        },
+        "requires_approval": {
+          "default": false,
+          "title": "Requires Approval",
+          "type": "boolean"
+        },
+        "acceptance": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Acceptance",
+          "type": "array"
+        },
+        "evidence_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Paths",
+          "type": "array"
+        },
+        "effective_config_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective Config Hash"
+        },
+        "status": {
+          "default": "planned",
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "validated",
+            "review_required",
+            "blocked",
+            "failed",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "plugin",
+        "operation",
+        "resource",
+        "checkpoint",
+        "acceptance"
+      ],
+      "title": "Stage",
+      "type": "object"
+    },
+    "StageGraph": {
+      "additionalProperties": false,
+      "properties": {
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/Stage"
+          },
+          "title": "Stages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stages"
+      ],
+      "title": "StageGraph",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "asset_id": {
+      "title": "Asset Id",
+      "type": "string"
+    },
+    "asset_type": {
+      "$ref": "#/$defs/AssetType",
+      "default": "static_3d"
+    },
+    "family_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Family Id"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "default": "draft",
+      "enum": [
+        "draft",
+        "source_generated",
+        "exported",
+        "imported",
+        "engine_validated",
+        "human_approved",
+        "game_ready"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "target_engines": {
+      "items": {
+        "enum": [
+          "unity",
+          "unreal"
+        ],
+        "type": "string"
+      },
+      "title": "Target Engines",
+      "type": "array"
+    },
+    "units": {
+      "default": "m",
+      "enum": [
+        "m",
+        "cm"
+      ],
+      "title": "Units",
+      "type": "string"
+    },
+    "coordinate_system": {
+      "default": "per_file; GLB/FBX Y-up, Blender source Z-up; native conversion must be verified",
+      "title": "Coordinate System",
+      "type": "string"
+    },
+    "prompt": {
+      "default": "",
+      "title": "Prompt",
+      "type": "string"
+    },
+    "references": {
+      "items": {
+        "$ref": "#/$defs/ArtifactFile"
+      },
+      "title": "References",
+      "type": "array"
+    },
+    "art_bible": {
+      "additionalProperties": true,
+      "title": "Art Bible",
+      "type": "object"
+    },
+    "golden_reference_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Golden Reference Ids",
+      "type": "array"
+    },
+    "effective_configs": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Effective Configs",
+      "type": "array"
+    },
+    "effective_config_hashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Effective Config Hashes",
+      "type": "array"
+    },
+    "graph": {
+      "$ref": "#/$defs/StageGraph"
+    },
+    "source_master": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ArtifactFile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/ArtifactFile"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "derivatives": {
+      "items": {
+        "$ref": "#/$defs/ArtifactFile"
+      },
+      "title": "Derivatives",
+      "type": "array"
+    },
+    "expected_outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Expected Outputs",
+      "type": "array"
+    },
+    "actual_outputs": {
+      "items": {
+        "$ref": "#/$defs/ArtifactFile"
+      },
+      "title": "Actual Outputs",
+      "type": "array"
+    },
+    "licenses": {
+      "items": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "title": "Licenses",
+      "type": "array"
+    },
+    "toolchain_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Toolchain Versions",
+      "type": "object"
+    },
+    "import_tests": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Import Tests",
+      "type": "array"
+    },
+    "previews": {
+      "items": {
+        "$ref": "#/$defs/ArtifactFile"
+      },
+      "title": "Previews",
+      "type": "array"
+    },
+    "approvals": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Approvals",
+      "type": "array"
+    },
+    "engine_metadata": {
+      "additionalProperties": true,
+      "title": "Engine Metadata",
+      "type": "object"
+    },
+    "qa_profile": {
+      "default": "technical_validation_plus_separate_human_review",
+      "title": "Qa Profile",
+      "type": "string"
+    },
+    "platform_budget_criteria": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Platform Budget Criteria"
+    }
+  },
+  "required": [
+    "project_id",
+    "asset_id",
+    "version",
+    "graph"
+  ],
+  "title": "AssetManifest",
+  "type": "object"
+}

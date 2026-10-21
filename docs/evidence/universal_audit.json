@@ -1,0 +1,80 @@
+{
+  "branch": "feature/universal-expansion-v2-reviewed",
+  "base_commit": "d1b1e49",
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.5",
+  "engine_environments": {
+    "triposg": {
+      "python": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\envs\\triposg\\Scripts\\python.exe",
+      "exists": true,
+      "returncode": 0,
+      "versions": "{\"torch\": \"2.8.0+cu128\", \"numpy\": \"1.26.4\"}",
+      "error": null
+    },
+    "trellis_v1": {
+      "python": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\envs\\trellis_v1\\Scripts\\python.exe",
+      "exists": true,
+      "returncode": 0,
+      "versions": "{\"torch\": \"2.8.0+cu128\", \"numpy\": \"1.26.4\"}",
+      "error": null
+    },
+    "hi3dgen": {
+      "python": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\envs\\hi3dgen\\Scripts\\python.exe",
+      "exists": true,
+      "returncode": 0,
+      "versions": "{\"torch\": \"2.8.0+cu128\", \"numpy\": \"1.26.4\"}",
+      "error": null
+    },
+    "trellis2_community": {
+      "python": "C:\\Users\\Winka\\Tools\\trellis2\\code\\venv\\Scripts\\python.exe",
+      "exists": true,
+      "returncode": 0,
+      "versions": "{\"torch\": \"2.8.0+cu128\", \"numpy\": \"2.4.6\"}",
+      "error": null
+    },
+    "sdxl": {
+      "python": "C:\\Users\\Winka\\Tools\\sdxl\\venv\\Scripts\\python.exe",
+      "exists": true,
+      "returncode": 0,
+      "versions": "{\"torch\": \"2.11.0+cu128\", \"numpy\": \"2.4.6\"}",
+      "error": null
+    }
+  },
+  "services": {
+    "ollama": {
+      "reachable": false,
+      "error": "<urlopen error timed out>"
+    },
+    "comfyui": {
+      "reachable": false,
+      "error": "<urlopen error timed out>"
+    }
+  },
+  "unreal_editor": "NOT_FOUND in Program Files/Epic Games or registered Epic install locations; no version pinned",
+  "unity_editors": [
+    "C:\\Program Files\\Unity\\Hub\\Editor\\6000.4.8f1\\Editor\\Unity.exe",
+    "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Unity.exe"
+  ],
+  "pinned_unity": {
+    "version": "6000.4.8f1",
+    "pipeline": "Built-in",
+    "existing_evidence": "docs/evidence/unity_import.json"
+  },
+  "blender_mcp": {
+    "configured": true,
+    "connected": false,
+    "tested": "get_addon_status: could not connect"
+  },
+  "unity_mcp": {
+    "configured": false,
+    "connected": false,
+    "tested": false
+  },
+  "unreal_mcp": {
+    "configured": false,
+    "connected": false,
+    "tested": false
+  },
+  "model_downloads_this_task": [],
+  "production_game_modifications": []
+}

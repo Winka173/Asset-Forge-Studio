@@ -1,0 +1,35 @@
+{
+  "ahujasid/mcp-for-blender": {
+    "url": "https://github.com/ahujasid/mcp-for-blender",
+    "default_branch": "main",
+    "archived": false,
+    "pushed_at": "2026-10-20T14:06:32Z",
+    "license": "MIT",
+    "commit": "5a3618fccb2d982d0dd61e7a1879912c3100073b",
+    "commit_date": "2026-10-20T14:06:26Z",
+    "installed_by_this_task": false
+  },
+  "CoplayDev/unity-mcp": {
+    "url": "https://github.com/CoplayDev/unity-mcp",
+    "default_branch": "beta",
+    "archived": false,
+    "pushed_at": "2026-10-19T18:48:57Z",
+    "license": "MIT",
+    "commit": "ed4e205d31a545bac3686d5e19210e67959aeddd",
+    "commit_date": "2026-10-19T18:48:53Z",
+    "installed_by_this_task": false
+  },
+  "DeVoe09/UnrealMCP": {
+    "url": "https://github.com/DeVoe09/UnrealMCP",
+    "default_branch": "main",
+    "archived": false,
+    "pushed_at": "2026-03-14T13:56:42Z",
+    "license": "MIT",
+    "commit": "4cafb4ebd9ee288cba0e9d6c814a6f1f2c804451",
+    "commit_date": "2026-03-14T13:56:42Z",
+    "installed_by_this_task": false
+  },
+  "configured_mcp_names": [
+    "blender"
+  ]
+}

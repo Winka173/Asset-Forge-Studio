@@ -3,6 +3,7 @@ import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
 import { BatchStudio } from "./batch-studio";
+import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
@@ -32,6 +33,8 @@ type Project = {
   units?: string;
   target_height_m?: number;
   export_settings?: Record<string, unknown>;
+  target_engines?: ('unity'|'unreal')[];
+  engine_profiles?: Record<string,unknown>;
 };
 type Asset = {
   id: string;
@@ -722,6 +725,8 @@ export function Studio() {
           .filter(Boolean),
         art_bible: JSON.parse(projectForm.artBible),
         export_settings: JSON.parse(projectForm.exportSettings),
+        target_engines: modal==='edit-project' ? project?.target_engines || [] : [],
+        engine_profiles: modal==='edit-project' ? project?.engine_profiles || {} : {},
         target_height_m: projectForm.height,
         units: projectForm.units,
         cover_artifact_id:
@@ -1279,6 +1284,7 @@ export function Studio() {
                       Chỉ engine đã tạo output thật mới xuất hiện ở đây.
                     </small>
                   </label>
+                  <OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/>
                   <details className="advanced">
                     <summary>
                       Advanced settings <span>Seeds, steps & processing</span>
@@ -1868,6 +1874,7 @@ export function Studio() {
                 </div>
               </div>
               <div className="settings-grid">
+                <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">
                   <div className="panel-heading">
