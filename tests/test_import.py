@@ -59,3 +59,17 @@ def test_image_and_path_safety(client):
 def test_review_requires_real_models(client):
     result = client.post("/api/reviews", json={"candidate": "missing", "golden": "missing", "reviewer": "artist", "scores": {}, "notes": "", "decision": "APPROVED"})
     assert result.status_code == 404
+
+
+def test_concept_review_never_implies_meshy_parity(client):
+    from apps.api.main import RUBRIC
+    mesh = trimesh.creation.box().export(file_type='glb')
+    candidate = client.post('/api/import/candidate', files={'file': ('qa.glb', mesh)}).json()
+    source = io.BytesIO(); Image.new('RGB', (32,32), 'gray').save(source, format='PNG')
+    concept = client.post('/api/import/concept', files={'file': ('qa.png', source.getvalue())}).json()
+    response = client.post('/api/reviews', json={'candidate': candidate['id'], 'concept': concept['id'], 'reviewer': 'QA',
+        'scores': {k: None for k in RUBRIC}, 'notes': 'concept only, no Meshy GLB', 'decision': 'NEEDS_REVIEW'})
+    assert response.status_code == 201
+    assert response.json()['mesh_quality_parity'] == 'NOT_TESTED'
+    assert response.json()['reference_kind'] == 'concept'
+    assert client.get('/api/status').json()['gate_a'] == 'BLOCKED'

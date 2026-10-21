@@ -12,6 +12,8 @@ import psutil
 from . import store
 from .inspection import inspect_glb
 
+WORKER_LOCK = store.ROOT / '.local/worker.lock'
+
 TERMINAL = {'REVIEW_REQUIRED', 'FAILED', 'CANCELLED', 'BLOCKED'}
 TRANSITIONS = {
     'QUEUED': {'RUNNING', 'CANCELLED', 'BLOCKED'},
@@ -63,7 +65,7 @@ def retry(identifier):
 @contextlib.contextmanager
 def exclusive_worker_lock():
     # Same checkout-wide lock across API processes and separate test databases.
-    path = store.ROOT / '.local/worker.lock'; path.parent.mkdir(parents=True, exist_ok=True)
+    path = WORKER_LOCK; path.parent.mkdir(parents=True, exist_ok=True)
     with path.open('a+b') as f:
         f.seek(0); f.write(b'0'); f.flush(); f.seek(0)
         if os.name == 'nt':

@@ -12,7 +12,17 @@ from apps.api.main import app
 @pytest.fixture
 def database(tmp_path, monkeypatch):
     monkeypatch.setattr(store, 'DATA', tmp_path)
+    # Blender QA uses CPU; isolate its lock so an active production GPU job cannot
+    # make these state-machine assertions time out. Each app still shares its lock.
+    monkeypatch.setattr(jobs, 'WORKER_LOCK', tmp_path / 'worker.lock')
     return tmp_path
+
+
+def test_lock_prevents_concurrent_workers(database):
+    with jobs.exclusive_worker_lock():
+        with pytest.raises(OSError):
+            with jobs.exclusive_worker_lock():
+                pytest.fail('Second worker acquired a held lock')
 
 
 def test_transitions_cancel_retry_and_recovery(database):

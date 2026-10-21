@@ -109,7 +109,8 @@ RUBRIC = ["silhouette_proportions", "roof_crenellations", "front_back_coherence"
 
 class Review(BaseModel):
     candidate: str
-    golden: str
+    golden: str | None = None
+    concept: str | None = None
     reviewer: str = Field(min_length=1, max_length=100)
     scores: dict[str, int | None]
     notes: str = Field(max_length=10000)
@@ -118,21 +119,25 @@ class Review(BaseModel):
 
 @app.post("/api/reviews", status_code=201)
 def review(body: Review):
+    if bool(body.golden) == bool(body.concept):
+        raise HTTPException(400, 'Choose exactly one real golden GLB or concept image reference')
     try:
-        candidate, golden = store.get_artifact(body.candidate), store.get_artifact(body.golden)
+        candidate, reference = store.get_artifact(body.candidate), store.get_artifact(body.golden or body.concept)
     except KeyError:
         raise HTTPException(404, "Unknown candidate/golden")
-    if candidate["role"] != "candidate" or golden["role"] != "golden":
-        raise HTTPException(400, "Review requires a real candidate and golden")
+    expected_role = 'golden' if body.golden else 'concept'
+    if candidate["role"] != "candidate" or reference["role"] != expected_role:
+        raise HTTPException(400, "Review requires correct candidate and reference roles")
     if set(body.scores) != set(RUBRIC) or any(v is not None and not 1 <= v <= 5 for v in body.scores.values()):
         raise HTTPException(400, "All nine rubric keys required, scores null or 1–5")
     if body.decision == "APPROVED" and any(v is None for v in body.scores.values()):
         raise HTTPException(400, "Approval requires all human scores")
     identifier = uuid.uuid4().hex
-    payload = body.model_dump() | {"candidate_sha256": candidate["sha256"], "golden_sha256": golden["sha256"],
-                                   "scope": "human_visual_review_only; Unity/production gate tracked separately"}
+    payload = body.model_dump() | {"candidate_sha256": candidate["sha256"], "reference_sha256": reference["sha256"],
+                                   "reference_kind": expected_role, "mesh_quality_parity": "NOT_TESTED",
+                                   "scope": "human_visual_review_only; concept-only review cannot establish Meshy 3D comparison; Unity/production gate separate"}
     with store.connect() as db:
-        db.execute("INSERT INTO reviews VALUES (?,?,?,?,?)", (identifier, body.candidate, body.golden, store.now(), json.dumps(payload)))
+        db.execute("INSERT INTO reviews VALUES (?,?,?,?,?)", (identifier, body.candidate, body.golden or '', store.now(), json.dumps(payload)))
     return {"id": identifier, **payload}
 
 
