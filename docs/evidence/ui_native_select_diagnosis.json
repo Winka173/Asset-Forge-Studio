@@ -1,0 +1,62 @@
+{
+  "viewport": {
+    "innerHeight": 934,
+    "innerWidth": 1372,
+    "dpr": 1.3125,
+    "vheight": 934.09521484375,
+    "vwidth": 1356.952392578125,
+    "scale": 1,
+    "offsetTop": 0
+  },
+  "menu": [
+    {
+      "style": "top: 832.357px; left: 303.524px; width: 270.476px; max-height: 320px;",
+      "rect": {
+        "x": 303.5238037109375,
+        "y": 831.7017211914062,
+        "width": 270.4761962890625,
+        "height": 52.52381134033203,
+        "top": 831.7017211914062,
+        "right": 574,
+        "bottom": 884.2255325317383,
+        "left": 303.5238037109375
+      },
+      "scrollHeight": 51,
+      "offsetHeight": 53,
+      "clientHeight": 51,
+      "zoom": "1",
+      "children": [
+        {
+          "rect": {
+            "x": 310.28570556640625,
+            "y": 838.463623046875,
+            "width": 256.952392578125,
+            "height": 39,
+            "top": 838.463623046875,
+            "right": 567.2380981445312,
+            "bottom": 877.463623046875,
+            "left": 310.28570556640625
+          },
+          "height": 39
+        }
+      ]
+    }
+  ],
+  "trigger": {
+    "x": 302.5238037109375,
+    "y": 891.357177734375,
+    "width": 1,
+    "height": 1,
+    "top": 891.357177734375,
+    "right": 303.5238037109375,
+    "bottom": 892.357177734375,
+    "left": 302.5238037109375
+  },
+  "sources": [
+    {
+      "url": "http://tauri.localhost/assets/index-C6JEEUaU.js",
+      "length": 949049,
+      "fragment": "||!d.current)return;const Q=d.current;Q.value=j.value,Q.dispatchEvent(new Event(\"change\",{bubbles:!0})),y(j.value),g(!1),(re=c.current)==null||re.focus()};ue.useLayoutEffect(()=>{var re,me;if(!m)return;const R=()=>{if(!c.current||!p.current)return;const se=c.current.getBoundingClientRect(),P=window.visualViewport,J=(P==null?void 0:P.offsetTop)||0,G=(P==null?void 0:P.offsetLeft)||0,ge=(P==null?void 0:P.height)||window.innerHeight,he=(P==null?void 0:P.width)||window.innerWidth,Ae=10,Ge=7,Ke=J+Ae,X=J+ge-Ae,_e=Math.max(0,X-se.bottom-Ge),ie=Math.max(0,se.top-Ge-Ke),oe=_e<Math.min(180,p.current.scrollHeight)&&ie>_e,Re=Math.max(1,Math.min(320,ge-Ae*2,oe?ie:_e)),je=Math.max(1,Math.min(he-Ae*2,Math.max(se.width,230)));p.current.style.width=`${je}px`;const Ne=Math.min(Re,p.current.scrollHeight+2),Ce=oe?se.top-Ge-Ne:se.bottom+Ge,Ze=Math.max(Ke,Math.min(Ce,X-Ne)),k=Math.max(G+Ae,Math.min(se.left,G+he-je-Ae));S({top:Ze,left:k,width:je,maxHeight:Re})};R();const j=se=>{var P;(P=p.current)!=null&&P.contains(se.target)||R()};window.addEventListener(\"resize\",R),window.addEventListener(\"scroll\",j,!0),(re=window.visualViewport)==null||re.addEventListener(\"resize\",R),(me=window.visualViewport)==null||me.addEventListener(\"scroll\",R);const Q=se=>{var P,J;!((P=c.current)!=null&&P.contains(se.target))&&!((J=p.current)!=null&&J.contains(se.target))&&g(!1)};return document.addEventListener(\"pointerdown\",Q),()=>{var se,P;window.removeEventListener(\"resize\",R),window.removeEventListener(\"scroll\",j,!0),(se=window.visualViewport)==null||se.removeEventListener(\"resize\",R),(P=window.visualViewport)==null||P.removeEventListener(\"scroll\",R),document.removeEventListener(\"pointerdown\",Q)}},[m]),ue.useEffect(()=>{if(!m||!p.current)return;const R=p.current,j=R.querySelector(`[data-index=\"${v}\"]`);if(!j)return;const Q=R.getBoundingClientRect(),re=j.getBoundingClientRect();re.top<Q.top+6?R.scrollTop-=Q.top+6-re.top:re.bottom>Q.bottom-6&&(R.scrollTop+=re.bottom-Q.bottom+6)},[v,m]),ue.useEffect(()=>{g(!1)},["
+    }
+  ]
+}

@@ -27,6 +27,7 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0, maxHeight: 300 });
   const search = useRef({ value: "", time: 0 });
   const choices = choicesOf(children);
+  const choicesSignature = JSON.stringify(choices.map(choice => [choice.value, choice.text, choice.disabled, choice.group]));
   const value = props.value === undefined ? uncontrolled : String(props.value);
   const selected = choices.find(c => c.value === value) ?? choices[0];
   const enabled = choices.map((c, i) => c.disabled ? -1 : i).filter(i => i >= 0);
@@ -49,23 +50,61 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
   useLayoutEffect(() => {
     if (!open) return;
     const place = () => {
-      const rect = trigger.current!.getBoundingClientRect();
-      const availableBelow = window.innerHeight - rect.bottom - 14;
-      const above = availableBelow < 180 && rect.top > availableBelow;
-      const maxHeight = Math.min(320, Math.max(100, above ? rect.top - 16 : availableBelow));
-      const width = Math.min(window.innerWidth - 24, Math.max(rect.width, 230));
-      setPosition({ top: above ? Math.max(8, rect.top - Math.min(maxHeight, menu.current?.scrollHeight || 320) - 7) : rect.bottom + 7, left: Math.max(12, Math.min(rect.left, window.innerWidth - width - 12)), width, maxHeight });
+      if (!trigger.current || !menu.current) return;
+      const rect = trigger.current.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const viewportTop = viewport?.offsetTop || 0;
+      const viewportLeft = viewport?.offsetLeft || 0;
+      const viewportHeight = viewport?.height || window.innerHeight;
+      const viewportWidth = viewport?.width || window.innerWidth;
+      const edge = 10, gap = 7;
+      const minTop = viewportTop + edge;
+      const maxBottom = viewportTop + viewportHeight - edge;
+      const availableBelow = Math.max(0, maxBottom - rect.bottom - gap);
+      const availableAbove = Math.max(0, rect.top - gap - minTop);
+      const above = availableBelow < Math.min(180, menu.current.scrollHeight) && availableAbove > availableBelow;
+      const maxHeight = Math.max(1, Math.min(320, viewportHeight - edge * 2, above ? availableAbove : availableBelow));
+      const width = Math.max(1, Math.min(viewportWidth - edge * 2, Math.max(rect.width, 230)));
+      // Measure at the final width: wrapped labels may change the popup height.
+      menu.current.style.width = `${width}px`;
+      const height = Math.min(maxHeight, menu.current.scrollHeight + 2);
+      const desiredTop = above ? rect.top - gap - height : rect.bottom + gap;
+      const top = Math.max(minTop, Math.min(desiredTop, maxBottom - height));
+      const left = Math.max(viewportLeft + edge, Math.min(rect.left, viewportLeft + viewportWidth - width - edge));
+      setPosition(previous => previous.top === top && previous.left === left && previous.width === width && previous.maxHeight === maxHeight ? previous : { top, left, width, maxHeight });
     };
     place();
+    // Options can arrive after the popup opens (API refresh, font or label layout).
+    // Re-anchor to the new height instead of leaving a short popup's old top edge.
+    const resize = new ResizeObserver(place);
+    if (menu.current) resize.observe(menu.current);
+    const onScroll = (event: Event) => {
+      // Scrolling options must not reposition the popup or scroll its trigger.
+      if (menu.current?.contains(event.target as Node)) return;
+      place();
+    };
     window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, true);
+    window.addEventListener("scroll", onScroll, true);
+    window.visualViewport?.addEventListener("resize", place);
+    window.visualViewport?.addEventListener("scroll", place);
     const outside = (event: PointerEvent) => {
       if (!trigger.current?.contains(event.target as Node) && !menu.current?.contains(event.target as Node)) setOpen(false);
     };
     document.addEventListener("pointerdown", outside);
-    return () => { window.removeEventListener("resize", place); window.removeEventListener("scroll", place, true); document.removeEventListener("pointerdown", outside); };
-  }, [open]);
-  useEffect(() => { if (open) menu.current?.querySelector(`[data-index="${active}"]`)?.scrollIntoView({ block: "nearest" }); }, [active, open]);
+    return () => { resize.disconnect(); window.removeEventListener("resize", place); window.removeEventListener("scroll", onScroll, true); window.visualViewport?.removeEventListener("resize", place); window.visualViewport?.removeEventListener("scroll", place); document.removeEventListener("pointerdown", outside); };
+  }, [open, choicesSignature]);
+  useEffect(() => {
+    if (!open || !menu.current) return;
+    const container = menu.current;
+    const option = container.querySelector<HTMLElement>(`[data-index="${active}"]`);
+    if (!option) return;
+    // scrollIntoView also scrolls the page behind a fixed portal, moving the trigger
+    // off-screen and causing a placement/scroll feedback loop on long forms.
+    const bounds = container.getBoundingClientRect();
+    const item = option.getBoundingClientRect();
+    if (item.top < bounds.top + 6) container.scrollTop -= bounds.top + 6 - item.top;
+    else if (item.bottom > bounds.bottom - 6) container.scrollTop += item.bottom - bounds.bottom + 6;
+  }, [active, open]);
   useEffect(() => { setOpen(false); }, [props.disabled]);
   useLayoutEffect(() => {
     const associated = Array.from(native.current?.labels || []);
