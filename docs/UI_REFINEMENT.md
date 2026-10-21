@@ -1,0 +1,13 @@
+# Shared PC and Expansion refinement
+
+User-authorized scope (2026-10-21): improve UI/UX in both distributions, start new libraries with zero sample games, and separate exports by project. Universal generators remain an independent Expansion workstream.
+
+The reusable custom select supports keyboard arrows, Home/End, typeahead, Enter, Escape, outside click, focus and accessible labels. Hidden native inputs preserve controlled values and project-switcher automation; visible menus use a portal and viewport positioning. The shared stylesheet adds more spacing, solid graphite surfaces with tonal hierarchy, restrained primary-action color, transitions and reduced-motion support. Real empty-workspace onboarding creates a user-named project without adding assets or jobs.
+
+Exports materialize verified source bytes into `Library/exports/<project-id>/<asset-id>/<export-id>/`. Each export supplies a ZIP containing named project/asset/preset directories and an export manifest with source identity and file checksums. Stable IDs separate games with identical names. GLB/FBX and textures remain available individually. Existing project data, immutable sources, approved masters and generation settings are preserved; legacy unscoped artifacts still migrate to their original benchmark project instead of becoming orphaned.
+
+Validation includes actual small GLB round trips, ZIP contents/checksums, repeated export idempotency, same-name project isolation, fresh empty workspace, existing migration, and real Blender validation in the backend regression suite. Browser evidence covers custom-select behavior, modal Escape, reduced motion, tablet overflow, real project creation/refresh and a loaded existing Archer Tower model (`evidence/ui_refinement.json` and screenshots). Native smoke exercises both the bundled local web assets and WebView UI, a real Archer Tower GLB, project ZIP download, source hash, persistence and relaunch. These checks do not imply new AI inference, artistic approval or Meshy parity.
+
+The original PC 0.3.1 EXE/installer remain rollback files. New PC builds are produced from `release/pc-stable` with the original app identity and separate install name from Expansion. Both editions share the heavy GPU resource lock. Native tests use explicit isolated profile directories so an open user application is not closed or modified.
+
+The user rejected tinted backgrounds and colored card outlines. The final graphite revision removes those treatments from surfaces, candidates, quality controls, actions and custom menus. Real loaded-model screenshots are `evidence/ui_graphite_create_model.png` and `evidence/ui_graphite_select.png`.

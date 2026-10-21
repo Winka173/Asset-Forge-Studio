@@ -11,8 +11,9 @@ from apps.api.main import app
 
 
 @pytest.fixture
-def client(tmp_path, monkeypatch):
+def client(tmp_path, monkeypatch, qa_project):
     monkeypatch.setattr(store, 'DATA', tmp_path)
+    qa_project()
     return TestClient(app)
 
 
@@ -48,10 +49,14 @@ def test_human_master_selection_and_actual_export_keep_versions(client):
     first = client.post(f'/api/assets/{a["id"]}/export', json=request).json()
     repeated = client.post(f'/api/assets/{a["id"]}/export', json=request).json()
     assert first['id'] == repeated['id'] and first['validation'] == 'PASS_FILE_CHECKSUM'
-    assert client.get(first['files'][0]['url']).content == raw
+    assert client.get(next(f['url'] for f in first['files'] if f['name']=='Master.glb')).content == raw
+    import zipfile
+    archive=zipfile.ZipFile(io.BytesIO(client.get(first['files'][0]['url']).content))
+    assert archive.read(next(n for n in archive.namelist() if n.endswith('/Master.glb')))==raw
+    assert all(n.startswith(first['archive_root']+'/') for n in archive.namelist())
     request['format'] = 'fbx'
     assert client.post(f'/api/assets/{a["id"]}/export', json=request).status_code == 409
-    restored = client.get('/api/studio').json()['assets'][0]
+    restored = client.get('/api/studio?project_id=runavelle').json()['assets'][0]
     assert len(restored['versions']) == 2 and restored['master_artifact_id'] == versions[1]['id']
 
 

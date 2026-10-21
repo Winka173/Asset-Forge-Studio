@@ -1,6 +1,6 @@
 {
   "name": "asset-forge-studio-desktop",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "private": true,
   "scripts": {
     "desktop:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Mode Dev",
@@ -9,5 +9,7 @@
     "desktop:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Mode Smoke",
     "desktop:clean": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Mode Clean"
   },
-  "devDependencies": {"@tauri-apps/cli": "2.12.3"}
+  "devDependencies": {
+    "@tauri-apps/cli": "2.12.3"
+  }
 }

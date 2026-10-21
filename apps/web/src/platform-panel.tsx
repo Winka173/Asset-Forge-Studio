@@ -1,3 +1,4 @@
+import { Select } from "./select";
 import {useEffect,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
 
@@ -15,8 +16,8 @@ export function OutputContract({projectId,assetId,mode,prompt,source,engine,auto
  async function preview(){setBusy(true);setError('');try{setResult(await call<Route>('/api/platform/route',{project_id:projectId,asset_type:'static_3d',input_mode:mode,prompt,reference_ids:source?[source]:[],engine,desired_outputs:output==='glb'?['glb']:['glb','fbx','lod'],auto_blender:autoBlender,policy:'Assisted'}));}catch(e){setError(String(e));}finally{setBusy(false);}}
  async function save(){setBusy(true);setError('');try{setSnapshot(await call<{url:string}>(`/api/platform/assets/${assetId}/manifest`,{}));}catch(e){setError(String(e));}finally{setBusy(false);}}
  return <details className="advanced output-contract"><summary>Output contract & readiness</summary>
-  <label className="studio-field">Asset type<select aria-label="Asset type" value="static_3d" disabled title="Additional types remain Planned until a real output and native import slice is verified">{(registry?.asset_types||[{id:'static_3d',label:'3D Model',status:'experimental'}]).map(t=><option key={t.id} value={t.id} disabled={t.id!=='static_3d'}>{t.label}{t.id!=='static_3d'?' · Planned':''}</option>)}</select></label>
-  <label className="studio-field">Expected output<select aria-label="Requested output contract" value={output} onChange={e=>setOutput(e.target.value)}><option value="glb">3D model · GLB</option><option value="fbx_lod">GLB + FBX + LODs via Blender</option></select></label>
+  <label className="studio-field">Asset type<Select aria-label="Asset type" value="static_3d" disabled title="Additional types remain Planned until a real output and native import slice is verified">{(registry?.asset_types||[{id:'static_3d',label:'3D Model',status:'experimental'}]).map(t=><option key={t.id} value={t.id} disabled={t.id!=='static_3d'}>{t.label}{t.id!=='static_3d'?' · Planned':''}</option>)}</Select></label>
+  <label className="studio-field">Expected output<Select aria-label="Requested output contract" value={output} onChange={e=>setOutput(e.target.value)}><option value="glb">3D model · GLB</option><option value="fbx_lod">GLB + FBX + LODs via Blender</option></Select></label>
   <p>Check the local route before spending GPU time. This preview submits no generation jobs; your quality settings stay unchanged.</p>
   <button disabled={busy} onClick={preview}>Check output route</button>
   {result&&<div role="status"><strong>{result.status==='blocked'?'Blocked · setup or review required':'Ready for review · no jobs submitted'}</strong><ol>{result.graph.stages.map(s=><li key={s.id}>{s.id} · {s.resource} → {s.expected_outputs.join(', ')}</li>)}</ol>{result.capability_gaps.map(g=><p key={g}>{g}</p>)}</div>}

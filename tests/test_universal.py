@@ -12,8 +12,9 @@ from engines.plugin_sdk import Stage,StageGraph,Plugin,Operation,generation_plug
 
 
 @pytest.fixture
-def client(tmp_path,monkeypatch):
+def client(tmp_path,monkeypatch,qa_project):
     monkeypatch.setattr(store,'DATA',tmp_path)
+    qa_project()
     return TestClient(app)
 
 

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Custom select End/Enter updates real React-controlled value",
+    "Home selects first option",
+    "Typeahead selects matching option",
+    "Escape closes popup and keeps focus",
+    "Outside click dismisses popup",
+    "Stable project switcher value retained with hidden native semantics",
+    "Reduced-motion disables popup animations",
+    "900px tablet has no page overflow"
+  ],
+  "errors": [],
+  "real_backend": "http://127.0.0.1:5173",
+  "empty_backend": "NOT_TESTED",
+  "scope": "UI controls and actual project persistence; no AI generation enqueued"
+}

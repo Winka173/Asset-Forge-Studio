@@ -1,5 +1,15 @@
 # Windows desktop development and operation
 
+## Separate PC and Expansion distributions (2026-10-21)
+
+The verified PC **0.3.1** release remains a rollback copy at `dist/windows/stable/Asset Forge Studio.exe`; its installer is alongside it. The existing `dist/windows/latest/` location remains unchanged for compatibility. SHA-256 values are recorded in `evidence/desktop_stable_release.json`. Following the user's explicit request, new stable UI/default/export updates are built on `release/pc-stable` and published to `dist/windows/stable/latest/Asset Forge Studio.exe` with the original application identity.
+
+Development builds now produce **Asset Forge Studio Expansion**, with a separate Windows application identifier (`com.assetforgestudio.expansion`), Start menu/install name, window title, and output directory `dist/windows/expansion/latest/`. Open `Asset Forge Studio Expansion.exe` there, or use its separate NSIS installer. Keep the adjacent `afs-backend.exe` with either portable EXE.
+
+Expansion starts with its own `%LOCALAPPDATA%/AssetForgeStudioExpansion` configuration and empty library. It does not automatically adopt the stable workspace database or migrate stable settings. Stable keeps `%LOCALAPPDATA%/AssetForgeStudio`. Fresh libraries in both editions start with no projects; existing projects stay intact. Existing AI environments and weights can be reused from the selected workspace. Users should keep separate libraries when using both editions. The global heavy GPU lock remains shared, so separate applications cannot bypass the one-heavy-job limit. Builds update their own edition's `latest/` folder; the original PC rollback files remain untouched.
+
+The distributions are not separate completed product roadmaps: Universal modules are available only after real output validation. A native shell test does not establish artistic quality, game readiness or Meshy parity.
+
 The primary application is Tauri 2 / React with a bundled Python API executable. Start `dist/windows/latest/Asset Forge Studio.exe`; keep its adjacent `afs-backend.exe`. The NSIS installer places both in the installation. No terminal, npm or separately installed backend Python is required to launch the production application. WebView2 is required; the installer can install Microsoft's runtime.
 
 AI engines, their isolated Python environments and model weights, and Blender remain external local dependencies. This is **not a fully self-contained AI installer**. Nothing downloads model weights on launch. This local build is unsigned and has not been tested on a clean machine.

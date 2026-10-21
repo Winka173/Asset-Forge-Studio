@@ -13,8 +13,9 @@ from apps.api.main import app
 
 
 @pytest.fixture
-def client(tmp_path, monkeypatch):
+def client(tmp_path, monkeypatch, qa_project):
     monkeypatch.setattr(store, "DATA", tmp_path)
+    qa_project()
     return TestClient(app)
 
 
