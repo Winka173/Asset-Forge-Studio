@@ -3,7 +3,7 @@ import * as T from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-export function CompareViewer({ left, right, conceptUrl, view, wireframe, onError }: {left?: string; right?: string; conceptUrl?: string; view: string; wireframe: boolean; onError: (s: string) => void}) {
+export function CompareViewer({ left, right, conceptUrl, view, wireframe, onError, single = false, mode = 'textured', background = 'studio', lighting = 'studio' }: {left?: string; right?: string; conceptUrl?: string; view: string; wireframe: boolean; onError: (s: string) => void; single?: boolean; mode?: 'textured'|'clay'|'wireframe'|'normals'; background?: 'studio'|'dark'|'light'; lighting?: 'studio'|'soft'}) {
   const host = useRef<HTMLDivElement>(null);
   const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[]} | null>(null);
   const [loaded, setLoaded] = useState(0);
@@ -21,7 +21,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 5, 0);
     controls.enableDamping = true;
-    const scenes = [new T.Scene(), new T.Scene()];
+    const scenes = single ? [new T.Scene()] : [new T.Scene(), new T.Scene()];
     let disposed = false;
     const models: T.Object3D[] = [];
     setLoaded(0);
@@ -39,19 +39,23 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     function disposeObject(object: T.Object3D) {
       object.traverse(child => { if (child instanceof T.Mesh) {
         child.geometry.dispose();
-        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        const original = child.userData.afsOriginalMaterial;
+        const materials = Array.isArray(original || child.material) ? (original || child.material) : [original || child.material];
+        if (original && child.material !== original) (Array.isArray(child.material) ? child.material : [child.material]).forEach(m => m.dispose());
         materials.forEach((m: T.Material) => { Object.values(m).forEach(v => { if (v instanceof T.Texture) v.dispose(); }); m.dispose(); });
       }});
     }
-    [left, right].forEach((url, i) => {
+    (single ? [right || left] : [left, right]).forEach((url, i) => {
       if (!url) return;
       new GLTFLoader().load(url, result => {
         if (disposed) { disposeObject(result.scene); return; }
+        result.scene.userData.afsModel = true;
+        result.scene.traverse(child => { if (child instanceof T.Mesh) child.userData.afsOriginalMaterial = child.material; });
         scenes[i].add(result.scene); models.push(result.scene); setLoaded(v => v + 1);
         const box = new T.Box3(); models.forEach(m => box.union(new T.Box3().setFromObject(m)));
         const center = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3());
         const dir = camera.position.clone().sub(controls.target).normalize();
-        const aspect = (div.clientWidth / 2) / div.clientHeight;
+        const aspect = (div.clientWidth / scenes.length) / div.clientHeight;
         const distance = Math.max(size.y, size.x / aspect, size.z / aspect) * 0.65 / Math.tan(T.MathUtils.degToRad(camera.fov / 2));
         controls.target.copy(center); camera.position.copy(center).addScaledVector(dir, Math.max(distance, 0.1)); controls.update();
       }, undefined, err => { if (!disposed) onError(`GLB viewer: ${String(err)}`); });
@@ -63,24 +67,40 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     function animate() {
       frame = requestAnimationFrame(animate); controls.update();
       const w = div.clientWidth, h = div.clientHeight;
-      camera.aspect = (w / 2) / h; camera.updateProjectionMatrix();
+      camera.aspect = (w / scenes.length) / h; camera.updateProjectionMatrix();
       renderer.setScissorTest(true);
-      scenes.forEach((scene, i) => { renderer.setViewport(i * w / 2, 0, w / 2, h); renderer.setScissor(i * w / 2, 0, w / 2, h); renderer.render(scene, camera); });
+      scenes.forEach((scene, i) => { renderer.setViewport(i * w / scenes.length, 0, w / scenes.length, h); renderer.setScissor(i * w / scenes.length, 0, w / scenes.length, h); renderer.render(scene, camera); });
     }
     animate();
     return () => { disposed = true; runtime.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); scenes.forEach(disposeObject); renderer.dispose(); renderer.domElement.remove(); };
-  }, [left, right]);
+  }, [left, right, single]);
   useEffect(() => {
     const rt = runtime.current; if (!rt) return;
-    const directions: Record<string, number[]> = {three_quarter: [1, 0.5, 1], front: [0, 0.15, 1], side: [1, 0.15, 0], back: [0, 0.15, -1], top: [0, 1, 0.001], gameplay: [1, 1, 1]};
+    const directions: Record<string, number[]> = {three_quarter: [1, 0.5, 1], front: [0, 0.15, 1], side: [1, 0.15, 0], back: [0, 0.15, -1], top: [0, 1, 0.001], bottom: [0, -1, 0.001], gameplay: [1, 1, 1]};
     const dir = new T.Vector3(...(directions[view] as [number, number, number])).normalize().multiplyScalar(25);
     const distance = rt.camera.position.distanceTo(rt.controls.target);
     rt.camera.position.copy(rt.controls.target).add(dir.normalize().multiplyScalar(distance)); rt.controls.update();
-  }, [view, left, right]);
+  }, [view, left, right, single]);
   useEffect(() => {
     runtime.current?.scenes.forEach(scene => scene.traverse(child => {
-      if (child instanceof T.Mesh) (Array.isArray(child.material) ? child.material : [child.material]).forEach((m: T.MeshStandardMaterial) => { m.wireframe = wireframe; });
+      if (child instanceof T.Mesh && child.userData.afsOriginalMaterial) {
+        const original = child.userData.afsOriginalMaterial as T.Material | T.Material[];
+        if (child.material !== original) (Array.isArray(child.material) ? child.material : [child.material]).forEach(m => m.dispose());
+        child.material = mode === 'clay' ? new T.MeshStandardMaterial({color: '#b8b9bd', roughness: .8}) : mode === 'normals' ? new T.MeshNormalMaterial() : original;
+        (Array.isArray(child.material) ? child.material : [child.material]).forEach(m => {
+          if ('wireframe' in m) m.wireframe = wireframe || mode === 'wireframe';
+        });
+      }
     }));
-  }, [wireframe, loaded]);
+  }, [wireframe, mode, loaded]);
+  useEffect(() => {
+    runtime.current?.scenes.forEach(scene => {
+      scene.background = new T.Color(background === 'light' ? '#cdd1d8' : background === 'dark' ? '#101216' : '#202733');
+      scene.traverse(child => {
+        if (child instanceof T.DirectionalLight) child.intensity = lighting === 'soft' ? 1.2 : 3;
+        if (child instanceof T.HemisphereLight) child.intensity = lighting === 'soft' ? 2 : 2.5;
+      });
+    });
+  }, [background, lighting, loaded, single]);
   return <div className="viewer" ref={host} data-loaded={loaded} aria-label="Hai GLB đồng bộ camera, scale giữ nguyên">{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · shared fit, giữ scale tương đối · kéo để orbit · cuộn để zoom</span></div>;
 }

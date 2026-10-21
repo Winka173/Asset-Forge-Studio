@@ -203,7 +203,7 @@ def output_files(export):
         if path.is_file(): export['files'].append(dict(name=name, bytes=path.stat().st_size, url=f'/api/jobs/{job["id"]}/files/output/{name}'))
         else: export['validation'] = 'FAILED'
         for path in folder.rglob('*.png'):
-            if path.parent.name == 'textures':
+            if 'textures' in path.relative_to(folder).parts:
                 relative = path.relative_to(folder).as_posix()
                 export['files'].append(dict(name=relative, bytes=path.stat().st_size, url=f'/api/jobs/{job["id"]}/files/output/{relative}'))
     return export

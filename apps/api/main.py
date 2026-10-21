@@ -29,6 +29,9 @@ async def lifespan(app):
 app = FastAPI(title="Asset Forge Studio", version="0.1.0", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
+local_port = os.environ.get('AFS_PORT', '8765')
+if local_port.isdecimal() and 1024 <= int(local_port) <= 65535:
+    ALLOWED_ORIGINS.update({f'http://127.0.0.1:{local_port}', f'http://localhost:{local_port}'})
 if os.environ.get('AFS_DESKTOP') == '1':
     ALLOWED_ORIGINS.update({'tauri://localhost', 'http://tauri.localhost'})
 app.add_middleware(CORSMiddleware, allow_origins=sorted(ALLOWED_ORIGINS), allow_methods=['GET', 'POST'], allow_headers=['Content-Type'])
