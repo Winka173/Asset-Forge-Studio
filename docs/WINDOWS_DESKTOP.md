@@ -2,11 +2,11 @@
 
 ## Separate PC and Expansion distributions (2026-10-21)
 
-The verified PC **0.3.1** release is frozen at `dist/windows/stable/Asset Forge Studio.exe`; its installer is alongside it. The existing `dist/windows/latest/` location remains unchanged for compatibility. SHA-256 values are recorded in `evidence/desktop_stable_release.json`.
+The verified PC **0.3.1** release remains a rollback copy at `dist/windows/stable/Asset Forge Studio.exe`; its installer is alongside it. The existing `dist/windows/latest/` location remains unchanged for compatibility. SHA-256 values are recorded in `evidence/desktop_stable_release.json`. Following the user's explicit request, new stable UI/default/export updates are built on `release/pc-stable` and published to `dist/windows/stable/latest/Asset Forge Studio.exe` with the original application identity.
 
 Development builds now produce **Asset Forge Studio Expansion**, with a separate Windows application identifier (`com.assetforgestudio.expansion`), Start menu/install name, window title, and output directory `dist/windows/expansion/latest/`. Open `Asset Forge Studio Expansion.exe` there, or use its separate NSIS installer. Keep the adjacent `afs-backend.exe` with either portable EXE.
 
-Expansion starts with its own `%LOCALAPPDATA%/AssetForgeStudioExpansion` configuration and empty library. It does not automatically adopt the stable workspace database or migrate stable settings. Existing AI environments and weights can be reused from the selected workspace. Users should keep separate libraries when using both editions. The global heavy GPU lock remains shared, so separate applications cannot bypass the one-heavy-job limit. Future builds update only Expansion; the pinned PC files are untouched.
+Expansion starts with its own `%LOCALAPPDATA%/AssetForgeStudioExpansion` configuration and empty library. It does not automatically adopt the stable workspace database or migrate stable settings. Stable keeps `%LOCALAPPDATA%/AssetForgeStudio`. Fresh libraries in both editions start with no projects; existing projects stay intact. Existing AI environments and weights can be reused from the selected workspace. Users should keep separate libraries when using both editions. The global heavy GPU lock remains shared, so separate applications cannot bypass the one-heavy-job limit. Builds update their own edition's `latest/` folder; the original PC rollback files remain untouched.
 
 The distributions are not separate completed product roadmaps: Universal modules are available only after real output validation. A native shell test does not establish artistic quality, game readiness or Meshy parity.
 

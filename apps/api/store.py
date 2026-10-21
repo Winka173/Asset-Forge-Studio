@@ -68,13 +68,14 @@ def _connect():
         if column not in columns:
             db.execute(f'ALTER TABLE artifacts ADD COLUMN {column} TEXT')
     if not db.execute("SELECT 1 FROM migrations WHERE id='studio_v1'").fetchone():
-        config = json.loads((ROOT / 'presets/runavelle.json').read_text(encoding='utf-8'))
-        project = dict(id='runavelle', name='Runavelle', description='Archer Tower quality benchmark',
-                       art_bible=config, palette=[], material_language='', default_style='', units='m',
-                       target_height_m=10, export_settings={}, cover_artifact_id=None)
-        db.execute('INSERT OR IGNORE INTO projects VALUES (?,?,0)', ('runavelle', json.dumps(project)))
-        rows = db.execute('SELECT id,role,metadata FROM artifacts').fetchall()
+        # Only migrate real pre-project artifacts; fresh libraries stay empty.
+        rows = db.execute('SELECT id,role,metadata FROM artifacts WHERE project_id IS NULL').fetchall()
         if rows:
+            config = json.loads((ROOT / 'presets/runavelle.json').read_text(encoding='utf-8'))
+            project = dict(id='runavelle', name='Runavelle', description='Archer Tower quality benchmark',
+                           art_bible=config, palette=[], material_language='', default_style='', units='m',
+                           target_height_m=10, export_settings={}, cover_artifact_id=None)
+            db.execute('INSERT OR IGNORE INTO projects VALUES (?,?,0)', ('runavelle', json.dumps(project)))
             references = [r['id'] for r in rows if r['role'] == 'concept']
             asset = dict(id='archer_tower_t3', project_id='runavelle', name='Archer Tower T3', prompt='',
                          category='Architecture', favorite=False, status='Candidate', master_artifact_id=None,

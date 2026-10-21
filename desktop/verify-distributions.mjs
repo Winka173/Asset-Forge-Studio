@@ -31,7 +31,7 @@ try{
  assert.equal(expansion.child.exitCode,null);
  if(pc){assert.notEqual(pc.session.backend_pid,expansion.session.backend_pid);assert.equal(pc.child.exitCode,null);assert.equal(pc.session.library,path.join(local,'AssetForgeStudio','Library'));assert.equal(pc.session.version,'0.3.1');}
  assert.equal(expansion.session.library,path.join(local,'AssetForgeStudioExpansion','Library'));
- assert.equal(expansion.session.version,'0.3.2');
+ assert.equal(expansion.session.version,JSON.parse(fs.readFileSync(path.join(root,'package.json'))).version);
  const p=JSON.parse(fs.readFileSync(path.join(local,'AssetForgeStudioExpansion','desktop-config.json')));
  assert.equal(p.library,expansion.session.library);
  if(!pc){const check=spawnSync('powershell',['-NoProfile','-Command',`Get-Process -Id ${existingPc[0].Id} -ErrorAction Stop | Out-Null`],{windowsHide:true});assert.equal(check.status,0);}

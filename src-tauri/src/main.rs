@@ -85,6 +85,15 @@ fn stop_backend(state:&Shared,cancel:bool)->Result<(),String>{
 #[tauri::command] fn desktop_request_close(app:tauri::AppHandle){if let Some(window)=app.get_webview_window("main"){let _=window.close();}}
 
 fn main(){
+    // Explicit profiles isolate QA/config/WebView state without touching an open
+    // user session. Ordinary launches retain the packaged single-instance ID.
+    let mut context=tauri::generate_context!();
+    if let Some(profile)=std::env::var_os("AFS_DESKTOP_CONFIG_DIR").filter(|v|!v.is_empty()) {
+        use std::hash::{Hash,Hasher};
+        let mut hash=std::collections::hash_map::DefaultHasher::new();
+        PathBuf::from(profile).to_string_lossy().to_lowercase().hash(&mut hash);
+        context.config_mut().identifier=format!("{}.profile{:x}",context.config().identifier,hash.finish());
+    }
     let root=settings_root();let config=load_config(&root);let state:Shared=Arc::new(Mutex::new(Backend{config,root,phase:"STARTING".into(),message:"Preparing your local workspace…".into(),token:String::new(),port:0,child:None,job:None}));
     let close_state=state.clone();
     tauri::Builder::default()
@@ -97,5 +106,5 @@ fn main(){
             let active=health(&state).map(|value|active_count(&value));let cancel=match active {Ok(0)=>false,Ok(count)=>{let yes=app.dialog().message(format!("{} active/queued local jobs. Cancel them, checkpoint outputs and exit?",count)).title("Local jobs are still running").buttons(MessageDialogButtons::OkCancelCustom("Cancel jobs and exit".into(),"Keep studio running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true},Err(_)=>{let yes=app.dialog().message("Backend is not responding. Exit may interrupt local jobs. Keep the studio open unless you intend to cancel them.").title("Check local backend").buttons(MessageDialogButtons::OkCancelCustom("Cancel and exit".into(),"Keep running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true}};
             match stop_backend(&state,cancel){Ok(())=>{ALLOW_EXIT.store(true,Ordering::SeqCst);app.exit(0);},Err(message)=>{app.dialog().message(message).title("Studio kept open").blocking_show();CLOSING.store(false,Ordering::SeqCst);}}
         });}})
-        .run(tauri::generate_context!()).expect("Asset Forge Studio desktop startup failed");
+        .run(context).expect("Asset Forge Studio desktop startup failed");
 }

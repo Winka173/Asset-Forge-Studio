@@ -25,8 +25,9 @@ $afsStamp=(Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
 $afsCandidate=Assert-WorkspacePath (Join-Path $afsRoot ".local/desktop-build/candidates/$afsStamp")
 New-Item -ItemType Directory -Force -Path $afsCandidate | Out-Null
 $afsVersion=(Get-Content -LiteralPath package.json -Raw | ConvertFrom-Json).version
-$afsProduct=(Get-Content -LiteralPath src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).productName
-$afsChannel='expansion'
+$afsConfig=Get-Content -LiteralPath src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
+$afsProduct=$afsConfig.productName
+$afsChannel=if($afsConfig.identifier -eq 'com.assetforgestudio.expansion'){'expansion'}else{'stable'}
 $afsCommit=(& git rev-parse HEAD).Trim()
 $afsReport=[ordered]@{version=$afsVersion;timestamp_utc=$afsStamp;git_commit=$afsCommit;git_branch=(& git branch --show-current).Trim();git_dirty=[bool](& git status --porcelain);changed_files=@(& git status --short);changed_features=@('Tauri Windows shell and bundled API','Hybrid shared scheduler and Batch Studio','Immutable quality configuration and local SDXL concept approval');status='BUILDING';build_type='Bundled native desktop and Python API; external AI environments, model weights and Blender required';candidate=$afsCandidate;tests=@();known_issues=@('Unsigned local build; clean-machine installation not yet verified','Editor/browser tests do not establish mobile performance or Meshy visual parity')}
 $afsReportFile=Join-Path $afsCandidate 'build-report.json'

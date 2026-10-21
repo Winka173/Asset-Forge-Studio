@@ -205,7 +205,14 @@ def job_project(job):
 
 
 def output_files(export):
-    if not export.get('job_id'): return export
+    from .export_files import deliver
+    if not export.get('job_id'):
+        if export.get('validation')=='PASS_FILE_CHECKSUM':
+            value=asset(export['asset_id']);record=scoped_artifact(export['artifact_id'],value['project_id'],value['id'])
+            path=store.safe_path(record['relative_path'])
+            if store.digest(path)!=record['sha256']:raise HTTPException(409,'Source checksum changed')
+            return deliver(export,[dict(name='Master.glb',_source=str(path))])
+        return export
     job = jobs.get(export['job_id']); export['job'] = job
     export['validation'] = job['status']
     export['files'] = []
@@ -218,20 +225,30 @@ def output_files(export):
         lod = 0 if export['preset'] == 'Master' else 2 if export['preset'] == 'Unity Mobile' else 1
         name = f'LOD{lod}.{export["format"]}'
         path = folder / name
-        if path.is_file(): export['files'].append(dict(name=name, bytes=path.stat().st_size, url=f'/api/jobs/{job["id"]}/files/output/{name}'))
+        if path.is_file(): export['files'].append(dict(name=name, _source=str(path)))
         else: export['validation'] = 'FAILED'
         for path in folder.rglob('*.png'):
             if 'textures' in path.relative_to(folder).parts:
                 relative = path.relative_to(folder).as_posix()
-                export['files'].append(dict(name=relative, bytes=path.stat().st_size, url=f'/api/jobs/{job["id"]}/files/output/{relative}'))
+                export['files'].append(dict(name=relative, _source=str(path)))
+        if export['validation']=='REVIEW_REQUIRED':return deliver(export,export['files'])
+        export['files']=[]
     return export
 
 
+@router.get('/exports/{identifier}/files/{name:path}')
+def export_download(identifier:str,name:str):
+    from fastapi.responses import FileResponse
+    from .export_files import download
+    path=download(identifier,name)
+    return FileResponse(path,filename=path.name)
+
+
 @router.get('/studio')
-def studio(project_id: str = 'runavelle'):
+def studio(project_id: str = ''):
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER
-    selected = project(project_id)
+    selected = project(project_id) if project_id else None
     with store.connect() as db:
         artifacts = [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE project_id=? ORDER BY created_at', (project_id,))]
         values = [json.loads(r['payload']) for r in db.execute('SELECT payload FROM assets WHERE project_id=?', (project_id,))]
@@ -424,4 +441,4 @@ def export(identifier: str, body: Export):
             result.update(job_id=queued['id'], job=queued)
         db.execute('INSERT INTO asset_exports VALUES (?,?,?)', (result['id'], identifier, json.dumps({k:v for k,v in result.items() if k != 'id'})))
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)', (body.request_id, fingerprint, json.dumps(result)))
-    return result
+    return output_files(result)

@@ -1,3 +1,4 @@
+import { Select } from "./select";
 import { apiFetch, apiUrl } from "./api";
 import { useEffect, useState } from "react";
 import { CompareViewer } from "./viewer";
@@ -289,7 +290,7 @@ export function QualityLab({
               <p>Giữ nguyên scale gốc · ánh sáng trung tính · camera đồng bộ</p>
             </div>
             <div className="tools">
-              <select
+              <Select
                 aria-label="Góc camera"
                 value={view}
                 onChange={(e) => setView(e.target.value)}
@@ -304,7 +305,7 @@ export function QualityLab({
                 ].map((v) => (
                   <option key={v}>{v}</option>
                 ))}
-              </select>
+              </Select>
               <label>
                 <input
                   type="checkbox"
@@ -325,7 +326,7 @@ export function QualityLab({
                       ? "MESHY 7.1 / GOLDEN"
                       : "CONCEPT / IMAGE ONLY"}
                 </strong>
-                <select
+                <Select
                   aria-label={role}
                   value={i ? candidateId : goldenId}
                   onChange={(e) => {
@@ -347,7 +348,7 @@ export function QualityLab({
                         {a.name} · {a.id.slice(0, 6)}
                       </option>
                     ))}
-                </select>
+                </Select>
               </div>
             ))}
           </div>
@@ -435,7 +436,7 @@ export function QualityLab({
               {Object.entries(rubric).map(([k, title]) => (
                 <label key={k}>
                   {title}
-                  <select
+                  <Select
                     aria-label={title}
                     value={scores[k] ?? ""}
                     onChange={(e) =>
@@ -449,7 +450,7 @@ export function QualityLab({
                     {[1, 2, 3, 4, 5].map((n) => (
                       <option key={n}>{n}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
               ))}
             </div>

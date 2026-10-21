@@ -1,3 +1,4 @@
+import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
@@ -219,8 +220,9 @@ export function Studio() {
   const [creationMode,setCreationMode]=useState<'single'|'batch'>('single');
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
-      localStorage.getItem("afs.project") || "runavelle",
+      localStorage.getItem("afs.project") || "",
     );
+  const [projectsReady, setProjectsReady] = useState(false);
   const [data, setData] = useState<StudioData>(emptyData),
     [engines, setEngines] = useState<Engine[]>([]),
     [draft, setDraft] = useState<Draft>(initialDraft);
@@ -277,6 +279,7 @@ export function Studio() {
   const [exportPreset, setExportPreset] = useState("Master"),
     [exportFormat, setExportFormat] = useState("glb"),
     [exportFiles, setExportFiles] = useState<JobFile[]>([]),
+    [exportDirectory, setExportDirectory] = useState(""),
     [environment, setEnvironment] = useState<unknown>(null);
   const projectRef = useRef(projectId),
     submitting = useRef(false),
@@ -398,6 +401,7 @@ export function Studio() {
     request<Project[]>("/api/projects")
       .then((projects) => {
         if (projectId !== projectRef.current) return;
+        setProjectsReady(true);
         if (!projects.some((p) => p.id === projectId)) {
           setData({ ...emptyData, projects });
           setProjectId(projects[0]?.id || "");
@@ -423,7 +427,7 @@ export function Studio() {
           document.querySelectorAll<HTMLElement>(
             ".studio-modal button:not(:disabled),.studio-modal input:not(:disabled),.studio-modal select:not(:disabled),.studio-modal textarea:not(:disabled),.studio-modal a[href]",
           ),
-        ).filter((e) => e.getClientRects().length);
+        ).filter((e) => e.getClientRects().length && e.tabIndex >= 0 && e.getAttribute("aria-hidden") !== "true");
         const first = elements[0],
           last = elements.at(-1);
         if (event.shiftKey && document.activeElement === first) {
@@ -762,7 +766,7 @@ export function Studio() {
           ? previous.requestId
           : crypto.randomUUID();
       localStorage.setItem(key, JSON.stringify({ fingerprint, requestId }));
-      const result = await request<{ files: JobFile[]; job?: Job }>(
+      const result = await request<{ files: JobFile[]; job?: Job; export_directory?: string }>(
         `/api/assets/${selectedAsset.id}/export`,
         {
           ...exportBody,
@@ -770,6 +774,7 @@ export function Studio() {
         },
       );
       setExportFiles(result.files || []);
+      setExportDirectory(result.export_directory || "");
       await reload();
       if (result.job)
         setNotice(
@@ -842,8 +847,9 @@ export function Studio() {
         </a>
         <div className="project-switch">
           <label htmlFor="project-switcher">WORKSPACE</label>
-          <select
+          <Select
             id="project-switcher"
+            disabled={!data.projects.length}
             value={projectId}
             onChange={(e) => setProjectId(e.target.value)}
           >
@@ -855,7 +861,7 @@ export function Studio() {
             {!data.projects.length && (
               <option value={projectId}>{projectId || "No projects"}</option>
             )}
-          </select>
+          </Select>
           <button className="project-new" onClick={() => editProject(false)}>
             <Icon name="Create" size={13} /> New project
           </button>
@@ -921,7 +927,7 @@ export function Studio() {
             >
               <Icon name="Compare" size={16} />
             </button>
-            {project?.name || projectId}
+            {project?.name || projectId || "Your workspace"}
             <span>/</span>
             <strong>{page}</strong>
           </div>
@@ -938,11 +944,20 @@ export function Studio() {
           </div>
         </header>
         <main className={`studio-main page-${page.toLowerCase()}`}>
-          {page==='Create' && <div className="segmented creation-mode" role="tablist" aria-label="Creation workflow">
+          {!projectId && page !== "Settings" && (projectsReady ? <section className="onboarding-workspace" aria-label="Create your first game project">
+            <div className="onboarding-symbol"><Icon name="Cube" size={36}/></div>
+            <div className="overline">YOUR STUDIO. YOUR WORLDS.</div>
+            <h1>Start with your first game.</h1>
+            <p>Tạo project để giữ Art Bible, reference và thư viện asset riêng cho từng game. Workspace mới bắt đầu trống, sẵn sàng cho ý tưởng của bạn.</p>
+            <button className="primary" onClick={() => editProject(false)}><Icon name="Create" size={17}/> Create your first project</button>
+            <div className="onboarding-steps"><span><b>01</b> Create a game project</span><span><b>02</b> Add a prompt or reference</span><span><b>03</b> Generate, review & export</span></div>
+            <small>AI chạy local. Các file export được sắp theo project.</small>
+          </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
+          {projectId && page==='Create' && <div className="segmented creation-mode" role="tablist" aria-label="Creation workflow">
             <button role="tab" aria-selected={creationMode==='single'} onClick={()=>setCreationMode('single')}>Single Asset</button>
             <button role="tab" aria-selected={creationMode==='batch'} onClick={()=>setCreationMode('batch')}>Batch Assets</button>
           </div>}
-          {page==='Create' && creationMode==='batch' && <BatchStudio projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
+          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">
               {error}
@@ -959,7 +974,7 @@ export function Studio() {
               </button>
             </div>
           )}
-          {page === "Home" && (
+          {projectId && page === "Home" && (
             <>
               <div className="page-heading">
                 <div>
@@ -1084,7 +1099,7 @@ export function Studio() {
               )}
             </>
           )}
-          {page === "Create" && creationMode==='single' && (
+          {projectId && page === "Create" && creationMode==='single' && (
             <>
               <div className="page-heading compact">
                 <div>
@@ -1189,7 +1204,7 @@ export function Studio() {
                       </label>
                       <label className="studio-field">
                         Or choose a project reference
-                        <select
+                        <Select
                           aria-label="Project reference"
                           value={draft.source}
                           onChange={(e) => change({ source: e.target.value })}
@@ -1205,7 +1220,7 @@ export function Studio() {
                                 {a.metadata.has_transparency ? " · alpha" : ""}
                               </option>
                             ))}
-                        </select>
+                        </Select>
                       </label>
                     </>
                   )}
@@ -1244,7 +1259,7 @@ export function Studio() {
                   </div>
                   <label className="studio-field">
                     Engine
-                    <select
+                    <Select
                       aria-label="Engine"
                       value={draft.engine}
                       onChange={(e) =>
@@ -1280,7 +1295,7 @@ export function Studio() {
                             {!e.installed && " · unavailable"}
                           </option>
                         ))}
-                    </select>
+                    </Select>
                     <small>
                       Chỉ engine đã tạo output thật mới xuất hiện ở đây.
                     </small>
@@ -1312,7 +1327,7 @@ export function Studio() {
                       </label>
                       <label className="studio-field">
                         Texture atlas
-                        <select
+                        <Select
                           aria-label="Texture atlas"
                           value={draft.textureSize}
                           onChange={(e) =>
@@ -1321,19 +1336,19 @@ export function Studio() {
                         >
                           <option value={2048}>2K</option>
                           <option value={4096}>4K</option>
-                        </select>
+                        </Select>
                       </label>
                     </div>
                     <label className="studio-field">
                       TRELLIS profile
-                      <select
+                      <Select
                         aria-label="TRELLIS profile"
                         value={draft.profile}
                         onChange={(e) => change({ profile: e.target.value })}
                       >
                         <option value="1024_cascade">1024 cascade</option>
                         <option value="512">512</option>
-                      </select>
+                      </Select>
                     </label>
                     <label className="studio-field">
                       Benchmark height (m)
@@ -1480,7 +1495,7 @@ export function Studio() {
                           </button>
                         ))}
                       </div>
-                      <select
+                      <Select
                         aria-label="View camera"
                         value={view}
                         onChange={(e) => setView(e.target.value)}
@@ -1498,8 +1513,8 @@ export function Studio() {
                             {v.replaceAll("_", " ")}
                           </option>
                         ))}
-                      </select>
-                      <select
+                      </Select>
+                      <Select
                         aria-label="Viewport background"
                         value={background}
                         onChange={(e) =>
@@ -1511,8 +1526,8 @@ export function Studio() {
                         <option value="studio">Studio</option>
                         <option value="dark">Dark</option>
                         <option value="light">Light</option>
-                      </select>
-                      <select
+                      </Select>
+                      <Select
                         aria-label="Viewport lighting"
                         value={light}
                         onChange={(e) =>
@@ -1521,7 +1536,7 @@ export function Studio() {
                       >
                         <option value="studio">Studio light</option>
                         <option value="soft">Soft light</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
                   <div className="result-panel">
@@ -1537,7 +1552,7 @@ export function Studio() {
                             </p>
                           </div>
                           {versions.length > 0 && (
-                            <select
+                            <Select
                               aria-label="Candidate version"
                               value={candidate?.id || ""}
                               onChange={(e) => setVersionId(e.target.value)}
@@ -1552,7 +1567,7 @@ export function Studio() {
                                       : ""}
                                   </option>
                                 ))}
-                            </select>
+                            </Select>
                           )}
                         </div>
                         <div className="result-actions">
@@ -1627,7 +1642,7 @@ export function Studio() {
                             disabled={!candidate || busy}
                             className="accent-outline"
                             onClick={() => {
-                              setExportFiles([]);
+                              setExportFiles([]); setExportDirectory("");
                               setModal("export");
                             }}
                           >
@@ -1670,7 +1685,7 @@ export function Studio() {
                             </label>
                             <label className="studio-field">
                               Review status
-                              <select
+                              <Select
                                 aria-label="Review status"
                                 value={selectedAsset.status}
                                 onChange={(e) =>
@@ -1689,7 +1704,7 @@ export function Studio() {
                                 <option>Candidate</option>
                                 <option>Rejected</option>
                                 <option>Failed</option>
-                              </select>
+                              </Select>
                             </label>
                             {selectedAsset.exports.length ? (
                               selectedAsset.exports.map((entry, index) => (
@@ -1745,7 +1760,7 @@ export function Studio() {
               </div>
             </>
           )}
-          {page === "Library" && (
+          {projectId && page === "Library" && (
             <>
               <div className="page-heading">
                 <div>
@@ -1771,7 +1786,7 @@ export function Studio() {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </label>
-                <select
+                <Select
                   aria-label="Asset folder"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -1780,8 +1795,8 @@ export function Studio() {
                   {categories.map((c) => (
                     <option key={c}>{c}</option>
                   ))}
-                </select>
-                <select
+                </Select>
+                <Select
                   aria-label="Asset status"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -1796,8 +1811,8 @@ export function Studio() {
                   ].map((s) => (
                     <option key={s}>{s}</option>
                   ))}
-                </select>
-                <select
+                </Select>
+                <Select
                   aria-label="Sort assets"
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
@@ -1805,7 +1820,7 @@ export function Studio() {
                   <option value="recent">Recently updated</option>
                   <option value="oldest">Oldest first</option>
                   <option value="name">Name A?Z</option>
-                </select>
+                </Select>
                 <button
                   className={`secondary${favorites ? " selected" : ""}`}
                   onClick={() => setFavorites(!favorites)}
@@ -1844,7 +1859,7 @@ export function Studio() {
               )}
             </>
           )}
-          {page === "Jobs" && (
+          {projectId && page === "Jobs" && (
             <JobHistory
               jobs={data.jobs}
               onRefresh={reload}
@@ -1853,7 +1868,7 @@ export function Studio() {
               run={run}
             />
           )}
-          {page === "Compare" && (
+          {projectId && page === "Compare" && (
             <div className="quality-lab">
               <QualityLab
                 key={projectId}
@@ -1883,9 +1898,9 @@ export function Studio() {
                     <h2>Project</h2>
                     <button
                       className="text-button"
-                      onClick={() => editProject(true)}
+                      onClick={() => editProject(Boolean(project))}
                     >
-                      Edit project
+                      {project ? "Edit project" : "Create project"}
                     </button>
                   </div>
                   <h3>{project?.name}</h3>
@@ -1939,7 +1954,7 @@ export function Studio() {
                   </details>
                   <label className="studio-field">
                     Project cover
-                    <select
+                    <Select
                       aria-label="Project cover"
                       value={project?.cover_artifact_id || ""}
                       onChange={(e) =>
@@ -1962,10 +1977,11 @@ export function Studio() {
                             {a.name}
                           </option>
                         ))}
-                    </select>
+                    </Select>
                   </label>
                   <button
                     className="danger-button"
+                    disabled={!project}
                     onClick={() => {
                       setModalName("");
                       setModal("archive-project");
@@ -2149,7 +2165,7 @@ export function Studio() {
                 </div>
                 <label className="studio-field">
                   Project units
-                  <select
+                  <Select
                     aria-label="Project units"
                     value={projectForm.units}
                     onChange={(e) =>
@@ -2158,7 +2174,7 @@ export function Studio() {
                   >
                     <option value="m">Meters</option>
                     <option value="cm">Centimeters</option>
-                  </select>
+                  </Select>
                 </label>
                 <label className="studio-field">
                   Material language
@@ -2312,13 +2328,14 @@ export function Studio() {
             )}
             {modal === "export" && (
               <>
+                <div className="export-organization-note"><Icon name="Library" size={18}/><span>Download ZIP để giữ cấu trúc <strong>Project / Asset / Preset</strong>. File xuất của mỗi game nằm trong thư mục riêng.</span></div>
                 <p>
                   Xuất từ version thật đang chọn. Preset Unity tạo file và LOD
                   bằng Blender; khả năng import trong Unity chưa được kiểm thử.
                 </p>
                 <label className="studio-field">
                   Export preset
-                  <select
+                  <Select
                     aria-label="Export preset"
                     value={exportPreset}
                     onChange={(e) => setExportPreset(e.target.value)}
@@ -2326,18 +2343,18 @@ export function Studio() {
                     {["Master", "Unity Mobile", "Unity PC"].map((p) => (
                       <option key={p}>{p}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="studio-field">
                   Format
-                  <select
+                  <Select
                     aria-label="Format"
                     value={exportFormat}
                     onChange={(e) => setExportFormat(e.target.value)}
                   >
                     <option value="glb">GLB · embedded materials</option>
                     <option value="fbx">FBX · textures / LOD</option>
-                  </select>
+                  </Select>
                 </label>
                 <button
                   className="primary"
@@ -2357,6 +2374,7 @@ export function Studio() {
                     ))}
                   </div>
                 )}
+                {exportDirectory && <p className="export-directory">Export folder: <code>{exportDirectory}</code></p>}
               </>
             )}
             {error && (

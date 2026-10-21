@@ -1,3 +1,4 @@
+import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
@@ -499,7 +500,7 @@ export function BatchStudio({
         </div>
         <div className="batch-history">
           <label htmlFor="batch-history">Saved batches</label>
-          <select
+          <Select
             id="batch-history"
             value={selectedBatch}
             onChange={(e) =>
@@ -521,7 +522,7 @@ export function BatchStudio({
                 {b.name}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
       {error && !editing && !approval && (
@@ -582,7 +583,7 @@ export function BatchStudio({
                 }}
               />
             </label>
-            <select
+            <Select
               aria-label="Manifest format"
               value={format}
               onChange={(e) => setFormat(e.target.value)}
@@ -591,7 +592,7 @@ export function BatchStudio({
               <option value="json">JSON manifest</option>
               <option value="csv">CSV manifest</option>
               <option value="markdown">Markdown manifest</option>
-            </select>
+            </Select>
             <button
               className="primary"
               disabled={busy || !projectId || !prompt.trim()}
@@ -609,7 +610,7 @@ export function BatchStudio({
           </div>
           <label className="studio-field">
             Batch quality
-            <select
+            <Select
               aria-label="Batch quality"
               value={mode}
               onChange={(e) => setMode(e.target.value as Mode)}
@@ -617,7 +618,7 @@ export function BatchStudio({
               {modes.map((m) => (
                 <option key={m}>{m}</option>
               ))}
-            </select>
+            </Select>
           </label>
           <div className="batch-mode-note">
             {mode === "Maximum Quality Batch"
@@ -933,7 +934,7 @@ export function BatchStudio({
                               Review candidates
                             </button>
                           )}
-                          <select
+                          <Select
                             aria-label={`Actions ${item.name}`}
                             value=""
                             disabled={busy}
@@ -949,7 +950,7 @@ export function BatchStudio({
                             <option value="regenerate">
                               Regenerate explicitly
                             </option>
-                          </select>
+                          </Select>
                         </div>
                       </td>
                     </tr>
@@ -1039,7 +1040,7 @@ export function BatchStudio({
               </p>
               <label className="studio-field">
                 Export selection
-                <select
+                <Select
                   aria-label="Batch export selection"
                   value={exportSelection}
                   onChange={(e) => setExportSelection(e.target.value)}
@@ -1047,7 +1048,7 @@ export function BatchStudio({
                   <option value="selected">Selected assets</option>
                   <option value="approved">Approved assets only</option>
                   <option value="all">Full batch</option>
-                </select>
+                </Select>
               </label>
               <div className="batch-export-links">
                 {hasModels(exportSelection) ? (
@@ -1216,7 +1217,7 @@ export function BatchStudio({
               <div className="batch-edit-pair">
                 <label className="studio-field">
                   Quality
-                  <select
+                  <Select
                     aria-label="Asset quality"
                     value={editing.quality}
                     onChange={(e) =>
@@ -1229,7 +1230,7 @@ export function BatchStudio({
                     {["Fast", "Balanced", "Maximum"].map((q) => (
                       <option key={q}>{q}</option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 <label className="studio-field">
                   Candidates
@@ -1249,7 +1250,7 @@ export function BatchStudio({
               </div>
               <label className="studio-field">
                 Preferred engine
-                <select
+                <Select
                   aria-label="Asset preferred engine"
                   value={editing.preferred_engine}
                   onChange={(e) =>
@@ -1261,7 +1262,7 @@ export function BatchStudio({
                     TRELLIS.2 community
                   </option>
                   <option value="triposg">TripoSG · shape only</option>
-                </select>
+                </Select>
               </label>
               <label className="studio-field">
                 Style overrides JSON

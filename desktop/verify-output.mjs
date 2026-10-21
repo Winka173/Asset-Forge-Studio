@@ -22,8 +22,8 @@ try{
   await page.evaluate(id=>{location.hash=`create/${id}`;},asset.id);await page.reload();
   await page.waitForFunction(()=>Number(document.querySelector('.viewer')?.dataset.loaded)>0&&Number(document.querySelector('.viewer')?.dataset.textures)>0,null,{timeout:120000});
   await page.screenshot({path:path.join(run,name.includes('Single')?'native-single-textured.png':'native-batch-textured.png'),fullPage:true});
-  const model=asset.versions.at(-1);const exported=await api(`/api/assets/${asset.id}/export`,{artifact_id:model.id,preset:'Master',format:'glb',request_id:crypto.randomUUID()});assert.equal(exported.files.length,1);
-  const bytes=await fetch(runtime.api_base+exported.files[0].url,{headers:{'X-AFS-Token':runtime.api_token}}).then(r=>r.arrayBuffer());assert(bytes.byteLength>1000000);
+  const model=asset.versions.at(-1);const exported=await api(`/api/assets/${asset.id}/export`,{artifact_id:model.id,preset:'Master',format:'glb',request_id:crypto.randomUUID()});assert(exported.files.some(f=>f.kind==='project_bundle'));const master=exported.files.find(f=>f.name==='Master.glb');assert(master);
+  const bytes=await fetch(runtime.api_base+master.url,{headers:{'X-AFS-Token':runtime.api_token}}).then(r=>r.arrayBuffer());assert(bytes.byteLength>1000000);
   checks.push({name:'actual_textured_model_and_export',asset_id:asset.id,version:model.id,texture_count:await page.locator('.viewer').getAttribute('data-textures'),glb_bytes:bytes.byteLength,passed:true});
  }
  const batches=await api('/api/batches?project_id=runavelle');const batch=batches.find(b=>b.name==='Desktop Maximum parity QA');assert(batch);

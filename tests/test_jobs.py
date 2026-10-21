@@ -10,8 +10,9 @@ from apps.api.main import app
 
 
 @pytest.fixture
-def database(tmp_path, monkeypatch):
+def database(tmp_path, monkeypatch, qa_project):
     monkeypatch.setattr(store, 'DATA', tmp_path)
+    qa_project()
     # Blender QA uses CPU; isolate its lock so an active production GPU job cannot
     # make these state-machine assertions time out. Each app still shares its lock.
     monkeypatch.setattr(jobs, 'WORKER_LOCK', tmp_path / 'worker.lock')

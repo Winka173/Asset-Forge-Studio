@@ -28,7 +28,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.3.2", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.3.3", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
 local_port = os.environ.get('AFS_PORT', '8765')
