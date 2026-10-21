@@ -1,0 +1,192 @@
+{
+  "engines": {
+    "hi3dgen": {
+      "repo": "https://huggingface.co/Stable-X/trellis-normal-v0-1",
+      "revision": "fdfac1d0e0cb3f86adcac69239c1abdd82228e17",
+      "license_metadata": "mit",
+      "status": "DOWNLOADED_SHA256_VERIFIED",
+      "path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\hi3dgen",
+      "inference": "NOT_TESTED",
+      "files": [
+        {
+          "name": "README.md",
+          "bytes": 136,
+          "sha256": "fa5003b0ee9fa5b9e31e1d2c757f7529b26c95661544e795e662d662a3aba9f5",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "3c96cc0e58f27a85e5b4f25af9d29e58ee385681",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.json",
+          "bytes": 372,
+          "sha256": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "28802825e9ba04bcc2cfdffb491dc9dbb72c8a38",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors",
+          "bytes": 181903412,
+          "sha256": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+          "remote_lfs_sha256": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+          "remote_git_blob": "da28e99a05f40ab6f63172aaef5d695dfb1ab899",
+          "transport": "copied independent file from read-only TRELLIS v1 cache after remote LFS SHA-256 match"
+        },
+        {
+          "name": "ckpts/slat_flow_normal_dit_L_64l8p2_fp16.json",
+          "bytes": 442,
+          "sha256": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "22f500ab89867eb147f04d313cffac98e54ca163",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "ckpts/slat_flow_normal_dit_L_64l8p2_fp16.safetensors",
+          "bytes": 1200919136,
+          "sha256": "f9a5896bba3b876e0560fc4a19c335d171b97502e7358b026260b76e0c4557dc",
+          "remote_lfs_sha256": "f9a5896bba3b876e0560fc4a19c335d171b97502e7358b026260b76e0c4557dc",
+          "remote_git_blob": "8c0df53527fdec2ddcb78907b8a231e34311f5c0",
+          "transport": "official HF HTTPS bounded range"
+        },
+        {
+          "name": "ckpts/ss_dec_conv3d_16l8_fp16.json",
+          "bytes": 245,
+          "sha256": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "9f3affaf13ab29fe48105229da9fab72ea8de716",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "ckpts/ss_dec_conv3d_16l8_fp16.safetensors",
+          "bytes": 147591972,
+          "sha256": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+          "remote_lfs_sha256": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+          "remote_git_blob": "a4b577752af35caab154c83b72427d9cc92285f6",
+          "transport": "copied independent file from read-only TRELLIS v1 cache after remote LFS SHA-256 match"
+        },
+        {
+          "name": "ckpts/ss_flow_normal_dit_L_16l8_fp16.json",
+          "bytes": 385,
+          "sha256": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "d228f99cd828a54695ebd1f0fd1ad1b1f3179f42",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "ckpts/ss_flow_normal_dit_L_16l8_fp16.safetensors",
+          "bytes": 1119525912,
+          "sha256": "b5f9f3aafead23fe5ee49ca01e57fcc0c3e0345635c05a0d83b39a7e5ccaf281",
+          "remote_lfs_sha256": "b5f9f3aafead23fe5ee49ca01e57fcc0c3e0345635c05a0d83b39a7e5ccaf281",
+          "remote_git_blob": "51ec22cd0cdd6ea961b68f2a623a1cfbf0bac5da",
+          "transport": "official HF HTTPS bounded range"
+        },
+        {
+          "name": "pipeline.json",
+          "bytes": 1847,
+          "sha256": "6522730dc55018bca3b786da265ce233b5ad701edb7710e8e456a6a4c9e4e060",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "2f4116221472c7f1c14296760b176d408813f8c2",
+          "transport": "official HF HTTPS"
+        }
+      ],
+      "downloaded_bytes": 2649943859,
+      "cache_reuse_bytes": 329495384,
+      "verified_at_utc": "2026-10-21T08:30:36.960225+00:00"
+    },
+    "hi3dgen_normal": {
+      "repo": "https://huggingface.co/Stable-X/yoso-normal-v1-8-1",
+      "revision": "4dd7d000d76febb68254ebe27251c2cb79dc1c2a",
+      "license_metadata": "apache-2.0",
+      "status": "DOWNLOADED_SHA256_VERIFIED",
+      "path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\hi3dgen_normal",
+      "inference": "NOT_TESTED",
+      "files": [
+        {
+          "name": "README.md",
+          "bytes": 974,
+          "sha256": "200a2d1cae113c0e56be8974fcfcdb40645b2f48ba1d14bca21b63ccb6c34e42",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "6f431dee28ed351c5adc1dc6356ad3a536da2523",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "controlnet/config.json",
+          "bytes": 1355,
+          "sha256": "08bd0d32f13da08d17a1d181fcd95f88ad210a0aaf4dada791e27c734f2b1388",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "8ee2bb45101912ff5061cf4d56caf37f896bfbee",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "controlnet/controlnetvae.py",
+          "bytes": 11660,
+          "sha256": "12db63c03bc5bed7efd81c3356d790802061695b6e178eee3f57d56536f2719b",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "cc1c5200556abbd7a030fe0e76060643095c6748",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "controlnet/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 728496840,
+          "sha256": "21480dc74282a13d663da0afaf4b454d03b469045742560cf3f5e9527cd98361",
+          "remote_lfs_sha256": "21480dc74282a13d663da0afaf4b454d03b469045742560cf3f5e9527cd98361",
+          "remote_git_blob": "3a33c2c137d0d1c89e3f641a934f3e120307c02c",
+          "transport": "official HF HTTPS bounded range"
+        },
+        {
+          "name": "model_index.json",
+          "bytes": 294,
+          "sha256": "c50f0f828e5a512e48b251465de53bf009b0b8e0cdd29e95b83fa88e8262e7ce",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "43061ae6b4857857103ccf4999b0fa7de9f53373",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "unet/config.json",
+          "bytes": 1867,
+          "sha256": "714de17e7a2b8dbe837eb66c9ebb3fc0ddb4168c5add94a06d3f4705d84dfaf6",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "7dc67b027fabe253416638d93b1295d5568f1884",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "unet/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 1731904736,
+          "sha256": "ac542d8fe8e94768c005445c75fd1105b33a1d4064c90b63fb39f4770396bdf1",
+          "remote_lfs_sha256": "ac542d8fe8e94768c005445c75fd1105b33a1d4064c90b63fb39f4770396bdf1",
+          "remote_git_blob": "559cee49aba92a09f3936226579bc68bc427f9ba",
+          "transport": "official HF HTTPS bounded range"
+        },
+        {
+          "name": "vae/config.json",
+          "bytes": 702,
+          "sha256": "8de04463023da8ed47b49e099158e69d8ff3e4a13f9b5e1619be6a2f6671d693",
+          "remote_lfs_sha256": null,
+          "remote_git_blob": "b7e29a0c4cc53f7b2d6fa1199fcb924da0c20601",
+          "transport": "official HF HTTPS"
+        },
+        {
+          "name": "vae/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 167335342,
+          "sha256": "3e4c08995484ee61270175e9e7a072b66a6e4eeb5f0c266667fe1f45b90daf9a",
+          "remote_lfs_sha256": "3e4c08995484ee61270175e9e7a072b66a6e4eeb5f0c266667fe1f45b90daf9a",
+          "remote_git_blob": "9a75e3c8e7cf4387be816cdebb751fbd5fc4e1e2",
+          "transport": "official HF HTTPS bounded range"
+        }
+      ],
+      "downloaded_bytes": 2627753770,
+      "cache_reuse_bytes": 0,
+      "verified_at_utc": "2026-10-21T08:30:40.433643+00:00"
+    }
+  },
+  "network_failures": [],
+  "recorded_at_utc": "2026-10-21T08:30:33.428060+00:00",
+  "normal_code": {
+    "repo": "https://github.com/hugoycj/StableNormal",
+    "revision": "1b7203c988384cb62286a25865d7354be8fdbbf7",
+    "license": "Apache-2.0",
+    "license_sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "license_source": "https://github.com/hugoycj/StableNormal/blob/1b7203c988384cb62286a25865d7354be8fdbbf7/LICENSE.txt",
+    "installed": false
+  }
+}
