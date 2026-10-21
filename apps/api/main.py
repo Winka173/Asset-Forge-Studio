@@ -1,6 +1,7 @@
 import json
 import shutil
 import uuid
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
@@ -12,8 +13,18 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from . import store
 from .inspection import inspect_glb, inspect_image
+from . import jobs
 
-app = FastAPI(title="Asset Forge Studio", version="0.1.0")
+@asynccontextmanager
+async def lifespan(app):
+    jobs.worker.start()
+    try:
+        yield
+    finally:
+        jobs.worker.close()
+
+
+app = FastAPI(title="Asset Forge Studio", version="0.1.0", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 
 
@@ -120,6 +131,67 @@ def review(body: Review):
 def reviews():
     with store.connect() as db:
         return [dict(r) | {"payload": json.loads(r["payload"])} for r in db.execute("SELECT * FROM reviews ORDER BY created_at")]
+
+
+class BlenderJob(BaseModel):
+    artifact_id: str
+    normalize: bool = False
+    target_height_m: float | None = Field(default=None, gt=0, le=1000)
+    yaw_degrees: float = Field(default=0, ge=-360, le=360)
+    merge_distance_m: float = Field(default=0, ge=0, le=0.01)
+    recalculate_normals: bool = False
+    render: bool = True
+    resolutions: list[Literal['mobile', 'pc1440']] = Field(default=['mobile', 'pc1440'], min_length=1, max_length=2)
+    views: list[Literal['front', 'three_quarter', 'side', 'back', 'top', 'gameplay']] = Field(default=['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'], min_length=1, max_length=6)
+
+
+@app.post('/api/jobs/blender', status_code=201)
+def queue_blender(body: BlenderJob):
+    try: record = store.get_artifact(body.artifact_id)
+    except KeyError: raise HTTPException(404, 'Unknown source')
+    if record['role'] not in {'golden', 'candidate'}: raise HTTPException(400, 'Source must be a real GLB')
+    if body.target_height_m and not body.normalize: raise HTTPException(400, 'Height requires explicit normalization')
+    return jobs.enqueue(body.model_dump() | {'kind': 'blender'})
+
+
+@app.get('/api/jobs')
+def list_jobs(): return jobs.listing()
+
+
+@app.post('/api/jobs/{identifier}/cancel')
+def cancel_job(identifier: str):
+    try: jobs.transition(identifier, 'CANCELLED')
+    except KeyError: raise HTTPException(404, 'Unknown job')
+    except ValueError as exc: raise HTTPException(409, str(exc))
+    return jobs.get(identifier)
+
+
+@app.post('/api/jobs/{identifier}/retry', status_code=201)
+def retry_job(identifier: str):
+    try: return jobs.retry(identifier)
+    except KeyError: raise HTTPException(404, 'Unknown job')
+    except ValueError as exc: raise HTTPException(409, str(exc))
+
+
+@app.get('/api/jobs/{identifier}/files')
+def job_files(identifier: str):
+    try: jobs.get(identifier)
+    except KeyError: raise HTTPException(404, 'Unknown job')
+    folder = store.DATA / 'jobs' / identifier
+    return [{'name': p.relative_to(folder).as_posix(), 'bytes': p.stat().st_size,
+             'url': f'/api/jobs/{identifier}/files/{p.relative_to(folder).as_posix()}'}
+            for p in folder.rglob('*') if p.is_file()]
+
+
+@app.get('/api/jobs/{identifier}/files/{name:path}')
+def job_file(identifier: str, name: str):
+    try:
+        jobs.get(identifier)
+        folder = store.safe_path('jobs/' + identifier)
+        path = (folder / name).resolve()
+        if not path.is_relative_to(folder) or not path.is_file(): raise ValueError()
+    except (KeyError, ValueError): raise HTTPException(404, 'Unknown job artifact')
+    return FileResponse(path)
 
 
 WEB = store.ROOT / "apps/web/dist"
