@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Independent game Art Bible",
+  "type": "object",
+  "required": ["game_id", "version", "units", "palette", "materials", "golden_references", "camera", "license_policy"],
+  "properties": {
+    "game_id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
+    "version": {"type": "integer", "minimum": 1},
+    "units": {"const": "meter"},
+    "palette": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}},
+    "materials": {"type": "array", "items": {"type": "string"}},
+    "golden_references": {"type": "array", "items": {"type": "string"}},
+    "camera": {"type": "object"},
+    "license_policy": {"enum": ["commercial_required", "evaluation_only"]},
+    "constraints": {"type": "object"}
+  },
+  "additionalProperties": false
+}

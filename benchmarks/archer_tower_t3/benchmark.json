@@ -1,0 +1,26 @@
+{
+  "id": "archer_tower_t3_v1",
+  "status": "NEEDS_REVIEW",
+  "axis": "Blender Z-up; GLB Y-up converted on import",
+  "source_scale": "preserve metric dimensions; never independently auto-normalize golden/candidate",
+  "target_height_m": null,
+  "background": [0.12, 0.14, 0.18],
+  "exposure": 0,
+  "view_transform": "Standard",
+  "lens": "orthographic",
+  "ortho_scale_m": 14,
+  "target_xyz_m": [0, 0, 5],
+  "camera_distance_m": 25,
+  "views": {
+    "front": [0, -1, 0.15],
+    "three_quarter": [1, -1, 0.5],
+    "side": [1, 0, 0.15],
+    "back": [0, 1, 0.15],
+    "top": [0, 0.001, 1],
+    "gameplay": [1, -1, 1]
+  },
+  "resolutions": {"mobile": [1280, 720], "pc1440": [2560, 1440]},
+  "lights": {"key_xyz_m": [6, -8, 14], "fill_xyz_m": [-7, -2, 9], "key_w": 1800, "fill_w": 1000},
+  "scale_reference": {"height_m": 1.8, "type": "neutral scale marker, not a character model", "wall_m": [2, 0.4, 2]},
+  "human_review": "required; values provisional until source model scale confirmed"
+}

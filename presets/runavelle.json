@@ -1,0 +1,7 @@
+{
+  "game_id": "runavelle", "version": 1, "units": "meter",
+  "palette": {"limestone": "#e4d7b5", "oak": "#69442e", "slate": "#263b59", "bronze": "#99704a", "banner": "#1b315f", "mana": "#55e5ef"},
+  "materials": ["ivory limestone", "chestnut oak", "midnight blue slate", "aged bronze", "navy gold cloth", "cyan mana"],
+  "golden_references": [], "camera": {"approval": "NEEDS_REVIEW", "projection": "orthographic"},
+  "license_policy": "commercial_required", "constraints": {"dimensions_m": null, "door_orientation": "NEEDS_REVIEW", "balconies": 2, "symmetry": "NEEDS_REVIEW"}
+}
