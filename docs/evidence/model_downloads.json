@@ -3,5 +3,12 @@
     "status": "BLOCKED",
     "exception_type": "GatedRepoError",
     "reason": "Access/network failure; gated models require user license/access acceptance"
+  },
+  "triposg": {
+    "status": "DOWNLOADED",
+    "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+    "path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\triposg",
+    "transformer_sha256": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+    "transport": "official HF HTTPS range fallback"
   }
 }
