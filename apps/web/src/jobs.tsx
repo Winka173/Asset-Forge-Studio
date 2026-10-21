@@ -1,0 +1,39 @@
+import { useEffect, useState } from 'react';
+
+type Job = {id: string; status: string; error?: string; created_at: string; payload: {artifact_id: string}};
+type Artifact = {id: string; name: string; role: string};
+type JobFile = {name: string; bytes: number; url: string};
+
+export function BlenderJobs({artifacts, onChange}: {artifacts: Artifact[]; onChange: () => Promise<void>}) {
+  const [jobs, setJobs] = useState<Job[]>([]), [source, setSource] = useState('');
+  const [height, setHeight] = useState(''), [yaw, setYaw] = useState('0'), [full, setFull] = useState(true);
+  const [error, setError] = useState(''), [files, setFiles] = useState<JobFile[]>([]), [selected, setSelected] = useState('');
+  const [pending, setPending] = useState(false);
+  async function refreshJobs() {
+    const res = await fetch('/api/jobs'); if (!res.ok) throw new Error(await res.text());
+    const result: Job[] = await res.json(); setJobs(result);
+    if (result.some(j => j.status === 'REVIEW_REQUIRED')) await onChange();
+    if (selected) await inspect(selected);
+  }
+  useEffect(() => { refreshJobs().catch(e => setError(String(e))); const timer = setInterval(() => refreshJobs().catch(e => setError(String(e))), 2500); return () => clearInterval(timer); }, [selected]);
+  async function action(url: string, body?: unknown) {
+    setError(''); setPending(true);
+    try {
+      const res = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, ...(body ? {body: JSON.stringify(body)} : {})});
+      if (!res.ok) throw new Error(JSON.stringify((await res.json()).detail));
+      await refreshJobs();
+    } catch (e) { setError(String(e)); } finally { setPending(false); }
+  }
+  async function inspect(id: string) {
+    const res = await fetch(`/api/jobs/${id}/files`); if (!res.ok) throw new Error(await res.text());
+    setFiles(await res.json()); setSelected(id);
+  }
+  return <section id="blender-jobs"><div className="section-head"><div><div className="eyebrow">BLENDER / REPEATABLE PIPELINE</div><h2>Master → LOD → benchmark render</h2><p>Worker tuần tự · raw giữ nguyên · geometry và PBR còn cần review</p></div></div>
+    <div className="job-form"><label className="field">GLB nguồn<select aria-label="GLB nguồn Blender" value={source} onChange={e => setSource(e.target.value)}><option value="">Chọn model đã nhập</option>{artifacts.filter(a => ['golden', 'candidate'].includes(a.role)).map(a => <option key={a.id} value={a.id}>{a.role} / {a.name}</option>)}</select></label><label className="field">Chiều cao mục tiêu (m), tùy chọn<input type="number" min="0.01" max="1000" value={height} onChange={e => setHeight(e.target.value)} placeholder="Để trống: giữ scale và pivot"/></label><label className="field">Yaw Blender Z (độ)<input type="number" min="-360" max="360" value={yaw} onChange={e => setYaw(e.target.value)}/></label></div>
+    <div className="tools"><label><input type="checkbox" checked={full} onChange={e => setFull(e.target.checked)}/> 6 góc × mobile + 1440p</label><button disabled={!source || pending} onClick={() => action('/api/jobs/blender', {artifact_id: source, normalize: !!height, target_height_m: height ? Number(height) : null, yaw_degrees: Number(yaw), render: true, resolutions: full ? ['mobile', 'pc1440'] : ['mobile'], views: full ? ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'] : ['three_quarter']})}>Xếp job Blender</button></div>
+    <p className="muted">Nhập chiều cao sẽ scale đồng nhất và đưa pivot xuống tâm đáy. Camera chuẩn hiện là cấu hình dự thảo; xem framing trong report trước khi so sánh. LOD decimation chưa bake hoặc được duyệt silhouette.</p>
+    {error && <div role="alert" className="message error">{error}</div>}
+    {jobs.length ? <div className="job-list">{jobs.map(j => <div className="job-row" key={j.id}><button onClick={() => inspect(j.id).catch(e => setError(String(e)))}>{j.id.slice(0, 10)} / {j.status}</button><span>{new Date(j.created_at).toLocaleString('vi-VN')}</span>{['QUEUED', 'RUNNING', 'POSTPROCESSING', 'VALIDATING'].includes(j.status) ? <button disabled={pending} onClick={() => action(`/api/jobs/${j.id}/cancel`)}>Dừng</button> : <button disabled={pending} onClick={() => action(`/api/jobs/${j.id}/retry`)}>Retry attempt mới</button>}{j.error && <p className="error-text">{j.error}</p>}</div>)}</div> : <p className="muted">Chưa có job. Cần GLB thật để hậu kỳ; ảnh concept không phải đầu vào của Blender mesh pipeline.</p>}
+    {selected && <div><h3>Artifacts / {selected.slice(0, 10)}</h3><div className="artifact-links">{files.filter(f => !f.name.endsWith('.png') && !f.name.endsWith('.exr')).map(f => <a key={f.name} href={f.url} target="_blank" rel="noreferrer">{f.name} <small>{(f.bytes / 1024).toFixed(0)} KiB</small></a>)}</div><div className="render-grid">{files.filter(f => f.name.endsWith('.png') && !f.name.includes('_asset')).map(f => <figure key={f.name}><a href={f.url} target="_blank" rel="noreferrer"><img src={f.url} alt={`Render Blender thật ${f.name}`}/></a><figcaption>{f.name}</figcaption></figure>)}</div></div>}
+  </section>;
+}

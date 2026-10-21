@@ -25,6 +25,16 @@ test('real WebGL import, synchronized comparison and persisted human review', as
   const reviews = await (await request.get('/api/reviews')).json();
   expect(reviews.at(-1).payload.reviewer).toBe('QA fixture only');
   expect(reviews.at(-1).payload.decision).toBe('NEEDS_REVIEW');
+  const state = await (await request.get('/api/status')).json();
+  const source = state.artifacts.filter((a: {role: string}) => a.role === 'candidate').at(-1);
+  await page.getByRole('combobox', {name: 'GLB nguồn Blender'}).selectOption(source.id);
+  await page.getByRole('checkbox', {name: '6 góc × mobile + 1440p'}).uncheck();
+  await page.getByRole('button', {name: 'Xếp job Blender'}).click();
+  await expect(page.locator('.job-row').first()).toContainText('REVIEW_REQUIRED', {timeout: 45000});
+  await page.locator('.job-row').first().locator('button').first().click();
+  await expect(page.getByRole('link', {name: /output\/LOD0.glb/})).toBeVisible();
+  await expect(page.locator('.render-grid img').first()).toBeVisible();
   expect(errors).toEqual([]);
+  await page.evaluate(() => { const banner = document.createElement('div'); banner.textContent = 'QA BOX ONLY — NOT AI GENERATION — NOT MESHY — NOT AN ARCHER TOWER QUALITY RESULT'; banner.style.cssText = 'background:#7b3422;color:white;padding:16px;font-size:16px;text-align:center'; document.body.prepend(banner); });
   await page.screenshot({path: '../../docs/evidence/workbench_qa_box.png', fullPage: true});
 });

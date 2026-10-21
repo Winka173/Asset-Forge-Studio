@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CompareViewer } from './viewer';
+import { BlenderJobs } from './jobs';
 import './style.css';
 
 type Artifact = {id: string; role: string; name: string; sha256: string; url: string; metadata: {triangles?: number; mesh_instances?: number; dimensions_xyz_m?: number[]; materials?: unknown[]; checks?: Record<string, string>; width?: number; height?: number; license?: string}};
@@ -56,6 +57,7 @@ function App() {
     <CompareViewer left={golden?.url} right={candidate?.url} view={view} wireframe={wireframe} onError={setError}/>
     <div className="model-cards"><article>{facts(golden)}{picker('golden', '+ Nhập golden GLB', '.glb')}</article><article>{facts(candidate)}{picker('candidate', '+ Nhập local GLB', '.glb')}</article></div>
     <p className="muted">Viewer WebGL phục vụ kiểm tra tương tác. Benchmark chính thức dùng Blender với cấu hình camera/đèn được lưu và duyệt riêng. Chưa có kết luận tương đương Meshy.</p></section>
+    <BlenderJobs artifacts={status.artifacts} onChange={refresh}/>
     <div className="lower"><section id="references"><div className="section-head"><div><div className="eyebrow">SOURCE OF TRUTH</div><h2>Concept đã cung cấp</h2></div>{picker('concept', 'Nhập ảnh mới', 'image/png,image/jpeg,image/webp')}</div>{concept ? <><img className="concept" src={concept.url} alt="Archer Tower concept do người dùng cung cấp"/><p className="muted">{concept.metadata.width} × {concept.metadata.height} · approval: NEEDS_REVIEW</p></> : <p>Chưa có ảnh concept.</p>}<p className="muted">Ảnh một góc chưa chứng minh hình dạng mặt sau. Multi-view và segmentation chưa kiểm thử.</p></section>
     <section id="review"><div className="eyebrow">HUMAN REVIEW REQUIRED</div><h2>How far from Meshy?</h2><p>1 = kém / sai đáng kể · 5 = đạt tiêu chí người review. Mỗi chiều độc lập, không suy ra % tương đương.</p><label className="field">Người review<input value={reviewer} onChange={e => setReviewer(e.target.value)} placeholder="Tên người đánh giá"/></label><div className="score-grid">{Object.entries(rubric).map(([k, title]) => <label key={k}>{title}<select aria-label={title} value={scores[k] ?? ''} onChange={e => setScores({...scores, [k]: e.target.value ? Number(e.target.value) : null})}><option value="">Not tested</option>{[1,2,3,4,5].map(n => <option key={n}>{n}</option>)}</select></label>)}</div><label className="field">Defects / việc cần sửa<textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ví dụ: mái dính khối, thiếu crystal, mặt sau trống…"/></label><div className="tools"><button disabled={!golden || !candidate || !reviewer.trim()} onClick={() => saveReview('NEEDS_REVIEW')}>Lưu review</button><button disabled={!golden || !candidate || !reviewer.trim() || Object.values(scores).some(v => v == null)} onClick={() => saveReview('APPROVED')}>Duyệt visual</button></div></section></div>
     {environment && <section><h2>Môi trường thực tế</h2><pre>{JSON.stringify(environment, null, 2)}</pre></section>}
