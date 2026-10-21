@@ -1,0 +1,53 @@
+﻿{
+    "version":  "0.4.1",
+    "timestamp_utc":  "20261021T132935Z",
+    "git_commit":  "ba1deef7e6e6efa24eff8649ea618b5c0e1a9cd9",
+    "git_branch":  "feature/universal-expansion-v2-reviewed",
+    "git_dirty":  true,
+    "changed_files":  [
+                          " M apps/api/batch.py",
+                          " M apps/api/jobs.py",
+                          " M apps/api/main.py",
+                          " M apps/api/manifest.py",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/batch.css",
+                          " M desktop/smoke.mjs",
+                          " M docs/evidence/desktop_smoke.json",
+                          " M package-lock.json",
+                          " M package.json",
+                          " M src-tauri/Cargo.lock",
+                          " M src-tauri/Cargo.toml",
+                          " M src-tauri/tauri.conf.json",
+                          "?? apps/api/batch_semantics.py",
+                          "?? desktop/verify-batch-import.mjs",
+                          "?? docs/BATCH_HYBRID_IMPORT.md",
+                          "?? engines/local_semantics.py",
+                          "?? tests/test_runavelle_import.py"
+                      ],
+    "changed_features":  [
+                             "Tauri Windows shell and bundled API",
+                             "Hybrid shared scheduler and Batch Studio",
+                             "Immutable quality configuration and local SDXL concept approval"
+                         ],
+    "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
+    "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T132935Z",
+    "tests":  [
+                  "Frontend TypeScript and production build PASS",
+                  "Actual backend pytest suite PASS",
+                  "New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS"
+              ],
+    "known_issues":  [
+                         "Unsigned local build; clean-machine installation not yet verified",
+                         "Editor/browser tests do not establish mobile performance or Meshy visual parity"
+                     ],
+    "artifact_sha256":  {
+                            "Asset Forge Studio Expansion.exe":  "6af232246b94a3d21c133309a5d6ea0491220233c4391145b0e9034410ffa174",
+                            "afs-backend.exe":  "6ee7d0f52f381da16b4844d7e8be4cfdbff4b24190bfb2fcb82bccf915899f49",
+                            "Asset Forge Studio Expansion_0.4.1_x64-setup.exe":  "336e6e2f0f883ce5fbc0ed76ec55c63205596ef070fca97bbbf6b680b9902c3e"
+                        },
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T13-30-35-853Z\\smoke-report.json",
+    "executable":  "Asset Forge Studio Expansion.exe",
+    "channel":  "expansion",
+    "installer":  "Asset Forge Studio Expansion_0.4.1_x64-setup.exe"
+}

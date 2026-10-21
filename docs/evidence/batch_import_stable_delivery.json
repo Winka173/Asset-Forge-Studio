@@ -1,0 +1,21 @@
+﻿{
+    "latest_updated":  true,
+    "version":  "0.3.5",
+    "files":  [
+                  {
+                      "sha256":  "c14f2cdeaff9261b655d23c5f3027e4c085c4bbc40423b18b40f9e7e964b8fdc",
+                      "name":  "Asset Forge Studio_0.3.5_x64-setup.exe"
+                  },
+                  {
+                      "sha256":  "d418874d639c02bc0597a9262c2be35b4b3d00130a93d94efaa289fbafc0618e",
+                      "name":  "Asset Forge Studio.exe"
+                  },
+                  {
+                      "sha256":  "fb125350f67dd3c3d6f7b3b39da0c847b69ca592abd5f0a3746ae74e07ae67b6",
+                      "name":  "afs-backend.exe"
+                  }
+              ],
+    "location":  "dist/windows/stable/0.3.5",
+    "source_branch":  "release/pc-stable",
+    "status":  "PASS_BUILD_NATIVE_IMPORT_AND_DELIVERY_HASHES"
+}

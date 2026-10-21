@@ -1,6 +1,36 @@
 .batch-studio {
   padding-top: 8px;
+  min-width: 0;
 }
+.batch-manifest { scroll-margin-top: 24px; }
+.batch-manifest-summary { display:flex; flex-wrap:wrap; gap:12px 24px; margin:20px 0; padding:16px 0; border-block:1px solid #3d3d3d; color:#aaa; font-size:12px; }
+.batch-manifest-summary strong { color:#eee; }
+.batch-manifest-search { display:flex; flex-direction:column; gap:8px; min-width:200px; flex:1; color:#aaa; font-size:12px; }
+.batch-manifest-search input { width:100%; min-height:40px; }
+.batch-table-toolbar { flex-wrap:wrap; }
+.studio .batch-table-scroll { max-height:min(640px,70vh); overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; border-color:#444; }
+.studio .batch-table th { position:sticky; top:0; z-index:2; background:#252525; color:#bbb; border-color:#454545; }
+.studio .batch-table td { color:#ccc; border-color:#3d3d3d; }
+.batch-pagination { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:14px; padding:18px 0 4px; color:#aaa; font-size:12px; }
+.batch-pagination > span:first-child { margin-right:auto; }
+.batch-source-status { display:block; margin-top:8px; color:#aaa; font-size:11px; }
+.batch-storage-warning,.batch-analyzing { padding:16px 18px; margin:16px 0 24px; border:1px solid #454545; border-radius:9px; background:#252525; color:#ccc; line-height:1.8; font-size:12px; }
+.batch-source-file,.batch-source-provenance,.batch-import-diagnostics { display:flex; flex-direction:column; gap:12px; padding:18px; border:1px solid #454545; background:#1c1c1c; border-radius:9px; color:#bbb; font-size:12px; line-height:1.7; }
+.batch-source-file > strong,.batch-source-provenance > strong { color:#e5e5e5; overflow-wrap:anywhere; }
+.batch-source-file pre { max-height:260px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; }
+.batch-source-file summary,.batch-import-diagnostics summary { cursor:pointer; color:#ddd; }
+.batch-import-diagnostics { display:block; margin:18px 0 24px; }
+.batch-import-diagnostics > div { display:flex; flex-wrap:wrap; gap:12px 24px; margin:15px 0; }
+.batch-import-diagnostics code,.batch-source-provenance code { display:block; color:#aaa; overflow-wrap:anywhere; font-size:11px; }
+.batch-import-diagnostics a { display:inline-block; margin-top:14px; }
+.batch-source-provenance { margin:20px 0; }
+.batch-local-analysis > button { margin-top:18px; }
+.batch-local-analysis .studio-field { margin-top:18px; max-width:440px; }
+.batch-import-diagnostics pre { max-height:360px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; }
+.batch-analyzing { display:flex; align-items:center; gap:14px; }
+.batch-loading-dot { width:9px; height:9px; flex-shrink:0; background:#b7e49b; border-radius:50%; animation:batch-analyzing-pulse 1s ease-in-out infinite alternate; }
+@keyframes batch-analyzing-pulse { from{opacity:.35} to{opacity:1} }
+@media(prefers-reduced-motion:reduce){.batch-loading-dot {animation:none;}}
 .batch-heading {
   display: flex;
   align-items: center;

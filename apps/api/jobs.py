@@ -115,6 +115,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
+    if payload['kind']=='batch_semantics':return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -249,6 +250,10 @@ class Worker:
         folder = store.DATA / 'jobs' / identifier; folder.mkdir(parents=True, exist_ok=True)
         try:
             transition(identifier, 'RUNNING')
+            if payload['kind']=='batch_semantics':
+                from .batch_semantics import execute
+                execute(job,folder)
+                return
             if payload.get('effective_config'):
                 from engines.quality import fingerprint,checkpoints
                 effective=payload['effective_config']

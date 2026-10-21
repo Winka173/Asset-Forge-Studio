@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-build\\candidates\\20261021T133138Z\\Asset Forge Studio.exe",
+  "source_file": "C:\\Users\\Winka\\Downloads\\Runavelle_V4_ALL_349_Model_Prompts.md",
+  "source_bytes": 2640840,
+  "source_sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\batch-import-native\\2026-10-21T13-34-21-690Z",
+  "checks": [
+    {
+      "name": "actual349_lossless_source_spans_hashes_312primary_37future_no_jobs_no_huge_textarea",
+      "passed": true,
+      "diagnostics": {
+        "detected_format": "markdown",
+        "requested_format": "markdown",
+        "parser_method": "asset_id_heading_blocks",
+        "local_ai_used": false,
+        "parsed_count": 349,
+        "expected_count": 349,
+        "primary_count": 312,
+        "future_count": 37,
+        "status": "Needs Review",
+        "warnings": [
+          "Long-form Markdown: original asset IDs and complete prompt blocks preserved. FUTURE assets are deselected; proposed dimensions require review. Analyze creates no GPU jobs.",
+          "External service names and budgets are retained as source requirements only. AFS uses local engines; no paid service is called and import does not verify those quality claims."
+        ],
+        "errors": [],
+        "source_file": {
+          "name": "Runavelle_V4_ALL_349_Model_Prompts.md",
+          "sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
+          "bytes": 2640840,
+          "text_sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
+          "encoding": "utf-8-sig",
+          "relative_path": "batches/1ad5236bf79843829b11fc5094b6cd01/source/original",
+          "original_source_url": "/api/batches/1ad5236bf79843829b11fc5094b6cd01/source",
+          "decoded_source_url": "/api/batches/1ad5236bf79843829b11fc5094b6cd01/source?decoded=true"
+        }
+      }
+    },
+    {
+      "name": "all349_rendered_across_pages_future_unselected_editable_three_selected_generate_visible_enabled",
+      "passed": true
+    },
+    {
+      "name": "explicit_generate_creates_three_real_independent_queued_jobs_full_original_prompts",
+      "passed": true,
+      "jobs": [
+        {
+          "id": "cad4e8e7d4694f55b7de35a65590360a",
+          "asset_id": "7078f36a40835accb77b140508b1c1ff",
+          "status": "QUEUED",
+          "source_prompt_sha256": "a9f5cb4ab7dc0a00e663cbbe74287a045a426c8c89c542ee1a66f376e5086356"
+        },
+        {
+          "id": "78163c5030614bba96ca6446b9521016",
+          "asset_id": "78b7f6c8fc005250a10616c25b5e4d85",
+          "status": "QUEUED",
+          "source_prompt_sha256": "70f139d813471d28bffeb120aa782efd5445a51c96c16f7063162bc0acacaeab"
+        },
+        {
+          "id": "2ed835ce199e4386948c670ee56a02f0",
+          "asset_id": "86a3ac8551695d3a9e3f8352fa94682a",
+          "status": "QUEUED",
+          "source_prompt_sha256": "459cd642a866b4a8ea3a6d5bb5d64177aa5211f75f541d18a4a8e9ebc510abd5"
+        }
+      ]
+    },
+    {
+      "name": "local_semantic_adapter_real_probe",
+      "passed": true,
+      "probe": {
+        "adapter": "ollama",
+        "available": false,
+        "models": [],
+        "execution": "CPU only; chunked; metadata only",
+        "reason": "Local Ollama is unavailable. No model is downloaded; deterministic import remains available."
+      },
+      "real_llm_inference": "UNAVAILABLE_NOT_SIMULATED"
+    },
+    {
+      "name": "native_relaunch_restores349_item_manifest_source_and_selection",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "inference_outputs": "NOT_GENERATED; queue acceptance only, QA jobs cancelled before GPU admission",
+  "version": "0.3.5",
+  "batch_id": "1ad5236bf79843829b11fc5094b6cd01"
+}

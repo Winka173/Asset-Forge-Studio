@@ -8,6 +8,8 @@ Stable UI/default/export updates have also shipped separately as PC **0.3.4**, b
 
 ## Audit and prioritized gaps
 
+Batch import repair ships in Expansion **0.4.1** and Stable **0.3.5**: the actual 2.64 MB Runavelle V4 file now renders 349 lossless asset blocks (312 primary / 37 FUTURE), source spans/hashes, selection and editable rows. Native tests in both editions verify explicit three-job admission and relaunch; QA jobs were cancelled before inference. Optional CPU Ollama semantic suggestions have an adapter but no installed/reachable model, so real semantic inference is unverified and visibly unavailable. See [Hybrid Import audit and evidence](BATCH_HYBRID_IMPORT.md). Main remains unchanged.
+
 | Area | Verified starting point | Gap / decision |
 |---|---|---|
 | Desktop | Windows 0.2.1 EXE + packaged API, native textured viewer, Library restart, 22 baseline tests | Preserve shell, storage, token auth and continuous native build/smoke |

@@ -12,6 +12,14 @@ type Version = {
 };
 type ManifestItem = {
   asset_id: string;
+  source_asset_id?: string;
+  source_status?: string;
+  source_line_start?: number;
+  source_line_end?: number;
+  source_char_start?: number;
+  source_char_end?: number;
+  source_sha256?: string;
+  semantic_metadata?: Record<string, unknown>;
   name: string;
   category: string;
   prompt: string;
@@ -43,6 +51,7 @@ type ManifestItem = {
   warnings?: string[];
   config_warning?: string;
 };
+type LocalModels = {available:boolean;models:{name:string;digest?:string;bytes?:number}[];reason?:string;execution?:string};
 type Mode = "Fast Batch" | "Quality Batch" | "Maximum Quality Batch";
 type Batch = {
   id: string;
@@ -53,6 +62,7 @@ type Batch = {
   quality_lock?: boolean;
   master_prompt: string;
   items: ManifestItem[];
+  import_diagnostics?: {detected_format?:string;parser_method?:string;local_ai_used?:boolean;parsed_count?:number;expected_count?:number;primary_count?:number;future_count?:number;warnings?:string[];errors?:string[];status?:string;source_file?:{name?:string;sha256?:string;bytes?:number;original_source_url?:string};original_source_url?:string};
   progress: {
     total: number;
     completed: number;
@@ -107,8 +117,8 @@ async function call<T>(url: string, body?: unknown): Promise<T> {
       ? undefined
       : {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+          ...(body instanceof FormData ? {} : {headers: { "Content-Type": "application/json" }}),
+          body: body instanceof FormData ? body : JSON.stringify(body),
         },
   );
   if (!response.ok) {
@@ -116,7 +126,12 @@ async function call<T>(url: string, body?: unknown): Promise<T> {
     throw new Error(
       typeof error.detail === "string"
         ? error.detail
-        : JSON.stringify(error.detail || `HTTP ${response.status}`),
+        : Array.isArray(error.detail)
+          ? error.detail.slice(0, 5).map((issue: {loc?: unknown[]; msg?: unknown}) => {
+              const field = (issue.loc || []).filter(part => part !== 'body').map(String).join(' / ');
+              return `${field ? `${field}: ` : ''}${typeof issue.msg === 'string' ? issue.msg : 'Giá trị chưa hợp lệ.'}`;
+            }).join('\n')
+          : `Không thể hoàn tất yêu cầu (${response.status}). Kiểm tra file và thử lại.`,
     );
   }
   return response.json();
@@ -167,7 +182,21 @@ export function BatchStudio({
     [format, setFormat] = useState("auto"),
     [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
     [references, setReferences] = useState<string[]>([]);
+  const [sourceFile, setSourceFile] = useState<{name:string;bytes:number}|null>(null);
+  const uploadedFile = useRef<File|null>(null);
+  const [localModels,setLocalModels] = useState<LocalModels|null>(null), [localModel,setLocalModel] = useState(''), [checkingModels,setCheckingModels] = useState(false), [modelsError,setModelsError] = useState('');
+  async function checkLocalModels() {
+    setCheckingModels(true);setModelsError('');
+    try { const value=await call<LocalModels>('/api/batch-analysis/local-models');setLocalModels(value);setLocalModel(current=>value.models.some(model=>model.name===current)?current:value.models[0]?.name||''); }
+    catch(error){setLocalModels(null);setLocalModel('');setModelsError(error instanceof Error?error.message:String(error));}
+    finally {setCheckingModels(false);}
+  }
+  useEffect(()=>{checkLocalModels();},[]);
   const [busy, setBusy] = useState(false),
+    [analyzing, setAnalyzing] = useState(false),
+    [draftWarning, setDraftWarning] = useState(""),
+    [assetSearch, setAssetSearch] = useState(""),
+    [manifestPage, setManifestPage] = useState(1),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [filter, setFilter] = useState("all"),
@@ -186,6 +215,7 @@ export function BatchStudio({
     locked = useRef(false),
     selectedRef = useRef(""),
     draftReady = useRef(false);
+  const manifestRef = useRef<HTMLElement>(null);
   mountedProject.current = projectId;
   selectedRef.current = selectedBatch;
   const selectedItems =
@@ -198,7 +228,7 @@ export function BatchStudio({
   const visibleItems =
     batch?.items.filter(
       (item) =>
-        filter === "all" ||
+        (!assetSearch.trim() || `${item.name} ${item.source_asset_id || ''} ${item.asset_family} ${item.category} ${item.source_status || ''}`.toLocaleLowerCase().includes(assetSearch.trim().toLocaleLowerCase())) && (filter === "all" ||
         (filter === "issues"
           ? failed(item) || needsSpecs(item)
           : filter === "approval"
@@ -207,8 +237,13 @@ export function BatchStudio({
                 "Awaiting Approval",
                 "Ready for Review",
               ].includes(item.status)
-            : item.selected),
+            : item.selected)),
     ) || [];
+  const pageCount = Math.max(1, Math.ceil(visibleItems.length / 50));
+  const currentPage = Math.min(manifestPage, pageCount);
+  const pageItems = visibleItems.slice((currentPage - 1) * 50, currentPage * 50);
+  const selectableItems = visibleItems.filter(item => item.source_status?.toLowerCase() !== 'future');
+  useEffect(() => { setManifestPage(1); }, [assetSearch, filter, selectedBatch]);
   const imageReferences = artifacts.filter((a) =>
     ["concept", "reference", "golden"].includes(a.role),
   );
@@ -224,7 +259,7 @@ export function BatchStudio({
   async function refresh(id = selectedRef.current) {
     const owner = projectId;
     const list = await call<Batch[]>(
-      `/api/batches?project_id=${encodeURIComponent(owner)}`,
+      `/api/batches?project_id=${encodeURIComponent(owner)}&summary=true`,
     );
     if (mountedProject.current !== owner) return;
     setBatches(list);
@@ -235,17 +270,21 @@ export function BatchStudio({
     }
   }
   function adopt(value: Batch) {
+    uploadedFile.current=null;
     setBatch(value);
     setSelectedBatch(value.id);
     selectedRef.current = value.id;
-    localStorage.setItem(`afs.batch.selected.${projectId}`, value.id);
+    try { localStorage.setItem(`afs.batch.selected.${projectId}`, value.id); }
+    catch { setDraftWarning('Browser storage đầy. Batch đã lưu trên máy và có thể mở lại từ Batch history.'); }
     setName(value.name);
     setPrompt(value.master_prompt);
+    setSourceFile(value.import_diagnostics?.source_file?.name ? {name:value.import_diagnostics.source_file.name,bytes:value.import_diagnostics.source_file.bytes||0} : null);
     setMode(value.mode);
   }
   useEffect(() => {
     let alive = true;
     draftReady.current = false;
+    uploadedFile.current=null;
     setBatch(null);
     setBatches([]);
     setSelectedBatch("");
@@ -263,17 +302,19 @@ export function BatchStudio({
       setMode(draft?.mode || "Maximum Quality Batch");
       setFormat(draft?.format || "auto");
       setReferences(draft?.references || []);
+      setSourceFile(draft?.sourceFile || null);
     } catch {
       setName("");
       setPrompt("");
       setReferences([]);
     }
     draftReady.current = true;
-    call<Batch[]>(`/api/batches?project_id=${encodeURIComponent(projectId)}`)
+    call<Batch[]>(`/api/batches?project_id=${encodeURIComponent(projectId)}&summary=true`)
       .then(async (list) => {
         if (!alive) return;
         setBatches(list);
-        const saved = localStorage.getItem(`afs.batch.selected.${projectId}`);
+        let saved: string | null = null;
+        try { saved = localStorage.getItem(`afs.batch.selected.${projectId}`); } catch { /* History remains available without browser storage. */ }
         const id = list.find((b) => b.id === saved)?.id;
         if (id) {
           const detail = await call<Batch>(`/api/batches/${id}`);
@@ -296,12 +337,16 @@ export function BatchStudio({
     };
   }, [projectId]);
   useEffect(() => {
-    if (draftReady.current)
-      localStorage.setItem(
+    if (!draftReady.current) return;
+    const timer = window.setTimeout(() => {
+      try { localStorage.setItem(
         `afs.batch.draft.${projectId}`,
-        JSON.stringify({ name, prompt, format, mode, references }),
-      );
-  }, [projectId, name, prompt, format, mode, references]);
+        JSON.stringify({ name, prompt, format, mode, references, sourceFile }),
+      ); setDraftWarning(''); }
+      catch { setDraftWarning('Prompt vẫn được giữ đầy đủ trong phiên này. Browser storage không đủ để autosave bản nháp lớn; Analyze để lưu batch vào Library trước khi đóng ứng dụng.'); }
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [projectId, name, prompt, format, mode, references, sourceFile]);
   useEffect(() => {
     if (!editing && !approval) return;
     const handler = (event: KeyboardEvent) => {
@@ -335,25 +380,33 @@ export function BatchStudio({
     await onRefresh?.();
   }
   async function analyze() {
-    await execute(async () => {
+    if (locked.current) return;
+    setAnalyzing(true);
+    try { await execute(async () => {
       if (!prompt.trim())
         throw new Error(
           "Nhập Master Prompt hoặc import manifest trước khi phân tích.",
         );
-      const created = await call<Batch>("/api/batches/analyze", {
+      let created: Batch;
+      if (uploadedFile.current) {
+        const body=new FormData();body.append('file',uploadedFile.current);body.append('project_id',projectId);body.append('name',name.trim()||'Untitled batch');body.append('format',format);body.append('mode',mode);body.append('reference_ids',JSON.stringify(references));
+        created=await call<Batch>('/api/batches/import',body);
+      } else created = await call<Batch>("/api/batches/analyze", {
         project_id: projectId,
         name: name.trim() || "Untitled batch",
         master_prompt: prompt,
         format,
         mode,
         reference_ids: references,
+        source_filename: sourceFile?.name,
       });
       adopt(created);
       await refresh(created.id);
       setNotice(
-        "Manifest đã lưu. Kiểm tra từng asset, bổ sung kích thước và xác nhận trước khi tạo.",
+        `Đã phân tích và lưu ${created.items.length} asset. ${created.items.filter(item => item.selected).length} được chọn; Future để ngoài danh sách chạy mặc định. Chưa khởi chạy AI.`,
       );
-    });
+      requestAnimationFrame(() => manifestRef.current?.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}));
+    }); } finally { setAnalyzing(false); }
   }
   async function readManifest(file?: File) {
     if (!file) return;
@@ -361,16 +414,10 @@ export function BatchStudio({
       const text = await file.text();
       if (!text.trim()) throw new Error("Manifest rỗng.");
       setPrompt(text);
-      const extension = file.name.split(".").at(-1)?.toLowerCase();
-      setFormat(
-        extension === "json"
-          ? "json"
-          : extension === "csv"
-            ? "csv"
-            : ["md", "markdown"].includes(extension || "")
-              ? "markdown"
-              : "auto",
-      );
+      uploadedFile.current=file;
+      setSourceFile({name:file.name,bytes:file.size});
+      // Content detection is authoritative; extensions can be misleading.
+      setFormat("auto");
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ""));
       setNotice(
         "Đã đọc file local. Nhấn Analyze Prompt để kiểm chứng schema và xem manifest.",
@@ -509,7 +556,7 @@ export function BatchStudio({
                   setBatch(null);
                   setSelectedBatch("");
                   selectedRef.current = "";
-                  localStorage.removeItem(`afs.batch.selected.${projectId}`);
+                  try { localStorage.removeItem(`afs.batch.selected.${projectId}`); } catch { /* In-memory selection still clears. */ }
                   return;
                 }
                 adopt(await call<Batch>(`/api/batches/${e.target.value}`));
@@ -541,6 +588,8 @@ export function BatchStudio({
           </button>
         </div>
       )}
+      {draftWarning && <p className="batch-storage-warning" role="status">{draftWarning}</p>}
+      {analyzing && <div className="batch-analyzing" role="status" aria-live="polite"><span className="batch-loading-dot"/>Đang đọc toàn bộ prompt và xây manifest. Bạn có thể duyệt và chọn asset sau khi hoàn tất; chưa chạy GPU.</div>}
       <div className="batch-intake">
         <section className="batch-brief">
           <div className="batch-panel-title">
@@ -558,13 +607,14 @@ export function BatchStudio({
           </label>
           <label className="studio-field">
             Master Prompt or structured manifest
-            <textarea
+            {sourceFile ? <div className="batch-source-file"><strong>{sourceFile.name}</strong><span>{(sourceFile.bytes/1048576).toFixed(2)} MB · {prompt.length.toLocaleString('vi-VN')} ký tự · nguyên bản giữ đầy đủ</span><details><summary>Preview source · first 12,000 characters</summary><pre>{prompt.slice(0,12000)}</pre></details><button type="button" className="text-button" onClick={()=>{uploadedFile.current=null;setSourceFile(null);}}>Edit source as text</button></div> : <textarea
               aria-label="Batch Master Prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe exactly the assets you need. Tier ranges such as Castle T1–T3 become separate assets. Include width, depth, height and expected materials when known."
-            />
+            />}
             <small>
+              {prompt.length.toLocaleString('vi-VN')} ký tự ·{' '}
               Prompt dài được giữ nguyên. Không áp giới hạn 1.000 ký tự; chưa
               xác nhận thì chưa generate.
             </small>
@@ -576,6 +626,7 @@ export function BatchStudio({
               <input
                 aria-label="Import asset manifest"
                 type="file"
+                disabled={busy}
                 accept=".json,.csv,.md,.markdown,.txt"
                 onChange={(e) => {
                   readManifest(e.target.files?.[0]);
@@ -599,7 +650,7 @@ export function BatchStudio({
               onClick={analyze}
             >
               <Glyph kind="list" />
-              Analyze Prompt
+              {analyzing ? 'Analyzing…' : 'Analyze Prompt'}
             </button>
           </div>
         </section>
@@ -689,7 +740,7 @@ export function BatchStudio({
       </div>
       {batch && (
         <>
-          <section className="batch-manifest">
+          <section className="batch-manifest" ref={manifestRef} tabIndex={-1} aria-label="Batch asset manifest">
             <div className="batch-manifest-header">
               <div>
                 <div className="overline">MANIFEST REVIEW</div>
@@ -711,7 +762,6 @@ export function BatchStudio({
                   className="primary"
                   disabled={
                     busy ||
-                    batch.paused ||
                     !selectedItems.length ||
                     blockedItems.length > 0
                   }
@@ -722,6 +772,9 @@ export function BatchStudio({
                 </button>
               </div>
             </div>
+            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · not selected by default</span><span>No GPU starts until Generate</span></div>
+            {batch.import_diagnostics && <details className="batch-import-diagnostics" open><summary>Import report · {batch.import_diagnostics.status || 'Parsed'}</summary><div><span>Detected: {batch.import_diagnostics.detected_format || 'Unknown'}</span><span>Parser: {batch.import_diagnostics.parser_method || 'Deterministic'}</span><span>Local AI: {batch.import_diagnostics.local_ai_used ? 'Used' : 'Not used'}</span><span>Parsed: {batch.import_diagnostics.parsed_count ?? batch.items.length}{batch.import_diagnostics.expected_count ? ` / ${batch.import_diagnostics.expected_count} expected` : ''}</span><span>Primary: {batch.import_diagnostics.primary_count ?? '—'} · Future: {batch.import_diagnostics.future_count ?? '—'}</span></div>{batch.import_diagnostics.source_file?.sha256 && <code>SHA256: {batch.import_diagnostics.source_file.sha256}</code>}{(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url) && <a href={apiUrl(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url)} download>Download original source</a>}{batch.import_diagnostics.warnings?.map((warning,index)=><p key={`w${index}`}>{warning}</p>)}{batch.import_diagnostics.errors?.map((message,index)=><p className="error-text" key={`e${index}`}>{message}</p>)}</details>}
+            <details className="batch-import-diagnostics batch-local-analysis"><summary>Optional local AI · metadata suggestions</summary><p>Phân tích theo đoạn bằng CPU. Không tạo model, không sửa prompt, dimensions hay cấu hình generation. Mọi gợi ý cần review riêng.</p><div><span>{checkingModels?'Checking local Ollama…':localModels?.available?'Local Ollama available':'Local Ollama unavailable'}</span><button type="button" className="text-button" disabled={checkingModels} onClick={checkLocalModels}>Refresh local models</button></div>{localModels?.reason && <p>{localModels.reason}</p>}{modelsError && <p role="alert">{modelsError}</p>}<small>{localModels?.execution || 'CPU only · metadata only'} · Không tự tải model.</small>{!!localModels?.models.length && <label className="studio-field">Installed local model<Select aria-label="Local metadata model" value={localModel} onChange={event=>setLocalModel(event.target.value)}>{localModels.models.map(model=><option key={model.name} value={model.name}>{model.name}</option>)}</Select></label>}<button className="secondary" disabled={busy||checkingModels||!localModels?.available||!localModel||!selectedItems.length} onClick={()=>execute(async()=>{const job=await call<{id:string}>(`/api/batch-analysis/${batch.id}`,{model:localModel,selected_ids:selectedItems.map(item=>item.asset_id)});setNotice(`Đã xếp CPU metadata analysis ${job.id.slice(0,12)}. Kết quả nằm trong Edit asset để review; chưa áp dụng vào generation.`);})}>Analyze selected metadata ({selectedItems.length})</button></details>
             <div className="batch-checkpoints">
               <span className={batch.paused ? "paused" : ""}>
                 {batch.paused
@@ -749,8 +802,9 @@ export function BatchStudio({
                 </span>
               </div>
             )}
-            <details className="advanced batch-config-preview"><summary>EffectiveGenerationConfig · preview before enqueue <span>{selectedItems.length} selected</span></summary><p>Scheduling chỉ thay đổi thời điểm chạy. Engine, checkpoint, seeds và các stage yêu cầu được giữ trong manifest; retry không tự hạ quality.</p>{selectedItems.map(item => <div className="batch-effective-item" key={item.asset_id}><div><strong>{item.name}</strong><span>{item.quality_lock === false ? 'Explicit override' : 'Quality Lock'}</span></div>{item.config_warning && <p className="batch-preflight-warning">{item.config_warning}</p>}{item.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}{item.effective_config ? <pre>{JSON.stringify(item.effective_config,null,2)}</pre> : <p>Chưa có config đã resolve cho stage này. Backend phải resolve và lưu config trước khi enqueue; chưa phải kiểm chứng chất lượng.</p>}</div>)}</details>
+            <details className="advanced batch-config-preview"><summary>EffectiveGenerationConfig · preview before enqueue <span>{selectedItems.length} selected</span></summary><p>Scheduling chỉ thay đổi thời điểm chạy. Engine, checkpoint, seeds và các stage yêu cầu được giữ trong manifest; retry không tự hạ quality.</p>{pageItems.filter(item=>item.selected).map(item => <div className="batch-effective-item" key={item.asset_id}><div><strong>{item.name}</strong><span>{item.quality_lock === false ? 'Explicit override' : 'Quality Lock'}</span></div>{item.config_warning && <p className="batch-preflight-warning">{item.config_warning}</p>}{item.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}{item.effective_config ? <pre>{JSON.stringify(item.effective_config,null,2)}</pre> : <p>Chưa có config đã resolve cho stage này. Backend phải resolve và lưu config trước khi enqueue; chưa phải kiểm chứng chất lượng.</p>}</div>)}</details>
             <div className="batch-table-toolbar">
+              <label className="batch-manifest-search">Search manifest<input type="search" aria-label="Search batch assets" value={assetSearch} onChange={event=>setAssetSearch(event.target.value)} placeholder="Name, source ID, category or status"/></label>
               <div className="segmented">
                 {[
                   ["all", "All assets"],
@@ -800,25 +854,19 @@ export function BatchStudio({
                     <th>
                       <input
                         aria-label="Select all batch assets"
+                        title="Select matching assets across all pages; Future remains opt-in"
                         type="checkbox"
                         checked={
-                          batch.items.length > 0 &&
-                          batch.items.every((item) => item.selected)
+                          selectableItems.length > 0 &&
+                          selectableItems.every((item) => item.selected)
                         }
                         disabled={busy}
                         onChange={(e) =>
                           execute(async () => {
                             const selected = e.target.checked;
-                            await Promise.all(
-                              batch.items
-                                .filter((item) => item.selected !== selected)
-                                .map((item) =>
-                                  call(
-                                    `/api/batches/${batch.id}/items/${item.asset_id}`,
-                                    { selected },
-                                  ),
-                                ),
-                            );
+                            const changed = new Set(selectableItems.map(item=>item.asset_id));
+                            const selected_ids = batch.items.filter(item=>changed.has(item.asset_id)?selected:item.selected).map(item=>item.asset_id);
+                            await call(`/api/batches/${batch.id}/selection`,{selected_ids});
                             await refresh(batch.id);
                           })
                         }
@@ -831,7 +879,7 @@ export function BatchStudio({
                   </tr>
                 </thead>
                 <tbody>
-                  {visibleItems.map((item) => (
+                  {pageItems.map((item) => (
                     <tr
                       key={item.asset_id}
                       className={item.skipped ? "batch-row-skipped" : ""}
@@ -869,8 +917,10 @@ export function BatchStudio({
                             : ""}
                         </span>
                         <span className="batch-stable-id">
+                          {item.source_asset_id && <strong>{item.source_asset_id} · </strong>}
                           {item.asset_id.slice(0, 12)}
                         </span>
+                        {item.source_status && <span className="batch-source-status">Source: {item.source_status}{item.source_status.toLowerCase()==='future'?' · select individually to include':''}</span>}
                       </td>
                       <td>
                         <span
@@ -963,6 +1013,7 @@ export function BatchStudio({
                 </div>
               )}
             </div>
+            <div className="batch-pagination" aria-label="Manifest pages"><span>{visibleItems.length ? (currentPage-1)*50+1 : 0}–{Math.min(currentPage*50,visibleItems.length)} of {visibleItems.length} matching · {batch.items.length} total</span><button className="secondary" disabled={currentPage<=1} onClick={()=>setManifestPage(currentPage-1)}>Previous</button><span>Page {currentPage} / {pageCount}</span><button className="secondary" disabled={currentPage>=pageCount} onClick={()=>setManifestPage(currentPage+1)}>Next</button></div>
             <p className="batch-manifest-note">
               Xác nhận manifest không phải duyệt chất lượng model. Không tự chạy
               lại output thành công khi Resume; Regenerate là một thao tác
@@ -1160,6 +1211,9 @@ export function BatchStudio({
                 }
               />
             </label>
+            {editing.source_asset_id && <div className="batch-source-provenance"><strong>Original source · {editing.source_asset_id}</strong><span>{editing.source_status || 'Unspecified'} · lines {editing.source_line_start ?? '—'}–{editing.source_line_end ?? '—'}</span>{editing.source_sha256 && <code>SHA256: {editing.source_sha256}</code>}<small>Source provenance is read-only. Editing the generation prompt preserves the original imported file.</small></div>}
+            {editing.source_char_start !== undefined && <p className="batch-source-status">Source character span: {editing.source_char_start}–{editing.source_char_end ?? '—'}</p>}
+            {!!editing.semantic_metadata && Object.keys(editing.semantic_metadata).length>0 && <details className="batch-import-diagnostics"><summary>Local AI suggestions · Needs Review</summary><p>Read-only suggestions. Chưa áp dụng vào generation; prompt và source gốc được giữ nguyên.</p><pre>{JSON.stringify(editing.semantic_metadata,null,2)}</pre></details>}
             <fieldset className="batch-dimensions-editor">
               <legend>Target dimensions · meters</legend>
               {[

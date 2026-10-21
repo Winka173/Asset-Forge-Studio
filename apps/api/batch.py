@@ -8,11 +8,11 @@ import uuid
 import zipfile
 from pathlib import Path
 import psutil
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field, ValidationError
 from . import store, jobs, studio
-from .manifest import ManifestItem, parse
+from .manifest import ManifestItem, parse, diagnostics, MAX_MANIFEST_CHARACTERS, MAX_MANIFEST_ASSETS
 
 router=APIRouter(prefix='/api/batches')
 LOCK=threading.RLock()
@@ -32,7 +32,7 @@ def save(value):
 
 
 def missing(item):
-    return [k for k in ['target_width_m','target_depth_m','target_height_m'] if item.get(k) is None]+([] if item.get('confirmed') else ['specification_confirmation'])
+    return [k for k in ['target_width_m','target_depth_m','target_height_m'] if item.get(k) is None]+([] if item.get('confirmed') else ['specification_confirmation'])+([] if item.get('prompt','').strip() else ['prompt'])
 
 
 def detail(value):
@@ -91,30 +91,58 @@ def stored(value):
 class Analyze(BaseModel):
     project_id:str
     name:str=Field(default='Asset batch',min_length=1,max_length=200)
-    master_prompt:str=Field(min_length=1,max_length=1000000)
+    master_prompt:str=Field(min_length=1,max_length=MAX_MANIFEST_CHARACTERS)
     format:str='auto'
     mode:str='Quality Batch'
     reference_ids:list[str]=Field(default_factory=list,max_length=50)
+    source_filename:str=Field(default='manifest.txt',max_length=255)
 
 
 @router.post('/analyze',status_code=201)
 def analyze(body:Analyze):
+    return analyze_source(body)
+
+
+@router.post('/import',status_code=201)
+async def import_file(file:UploadFile=File(...),project_id:str=Form(...),name:str=Form('Asset batch'),format:str=Form('auto'),mode:str=Form('Quality Batch'),reference_ids:str=Form('[]')):
+    # UploadFile spools to disk; cap reads explicitly instead of accepting an unbounded body.
+    content=await file.read(16_000_001)
+    if len(content)>16_000_000:raise HTTPException(413,'File exceeds 16 MB. Split the manifest; no data was truncated.')
+    try:
+        text=content.decode('utf-8-sig')
+        body=Analyze(project_id=project_id,name=name,master_prompt=text,format=format,mode=mode,reference_ids=json.loads(reference_ids),source_filename=file.filename or 'manifest.txt')
+    except (UnicodeError,ValueError,ValidationError):raise HTTPException(400,'Expected a UTF-8 manifest within the supported limits (10 million characters). Check the file encoding and fields.')
+    return analyze_source(body,content)
+
+
+def analyze_source(body:Analyze,source_bytes:bytes|None=None):
     project=studio.project(body.project_id)
     if body.mode not in MODES:raise HTTPException(400,'Batch quality mode không hợp lệ')
     for ref in body.reference_ids:studio.scoped_artifact(ref,body.project_id)
     try:rows,warnings=parse(body.master_prompt,body.format)
-    except (ValueError,ValidationError) as exc:raise HTTPException(400,str(exc))
+    except ValidationError as exc:
+        raise HTTPException(400,'Invalid manifest item: '+'; '.join('.'.join(map(str,e['loc']))+': '+e['msg'] for e in exc.errors(include_input=False,include_context=False)))
+    except ValueError as exc:raise HTTPException(400,str(exc))
     identifier=uuid.uuid4().hex;items=[]
+    report=diagnostics(body.master_prompt,body.format,rows,warnings)
+    original=source_bytes if source_bytes is not None else body.master_prompt.encode('utf-8')
+    folder=store.DATA/'batches'/identifier/'source';folder.mkdir(parents=True,exist_ok=True)
+    original_path=folder/'original';original_path.write_bytes(original)
+    text_path=folder/'decoded.txt';text_path.write_bytes(body.master_prompt.encode('utf-8'))
+    source_file=dict(name=Path(body.source_filename.replace('\\','/')).name,sha256=store.digest(original_path),bytes=len(original),
+                     text_sha256=store.digest(text_path),encoding='utf-8-sig',relative_path=original_path.relative_to(store.DATA).as_posix(),
+                     original_source_url=f'/api/batches/{identifier}/source',decoded_source_url=f'/api/batches/{identifier}/source?decoded=true')
+    report['source_file']=source_file
     for row in rows:
-        item=ManifestItem.model_validate(row).model_dump();item['asset_id']=uuid.uuid5(uuid.UUID(identifier),item['name']).hex
+        item=ManifestItem.model_validate(row).model_dump();item['asset_id']=uuid.uuid5(uuid.UUID(identifier),item['source_asset_id'] or item['name']).hex
         item['quality']={'Fast Batch':'Fast','Quality Batch':'Balanced','Maximum Quality Batch':'Maximum'}[body.mode]
         item.update(reference_ids=list(dict.fromkeys(body.reference_ids+item['reference_ids'])),attempt=0,started=False,version=1,quality_lock=body.mode=='Maximum Quality Batch')
         for ref in item['reference_ids']:studio.scoped_artifact(ref,body.project_id)
         model=dict(id=item['asset_id'],project_id=body.project_id,name=item['name'],prompt=item['prompt'],category=item['category'],favorite=False,status='Candidate',
-            master_artifact_id=None,reference_ids=item['reference_ids'],settings=dict(batch_id=identifier,style_base=project,style_overrides=item['style_constraints']),approvals=[],created_at=store.now(),updated_at=store.now())
+            master_artifact_id=None,reference_ids=item['reference_ids'],settings=dict(batch_id=identifier,source_asset_id=item['source_asset_id'],source_status=item['source_status'],style_base=project,style_overrides=item['style_constraints']),approvals=[],created_at=store.now(),updated_at=store.now())
         items.append((item,model))
     value=dict(id=identifier,project_id=body.project_id,name=body.name,master_prompt=body.master_prompt,mode=body.mode,paused=True,
-        quality_lock=body.mode=='Maximum Quality Batch',style_snapshot=project,warnings=warnings,items=[i for i,_ in items],created_at=store.now(),updated_at=store.now())
+        quality_lock=body.mode=='Maximum Quality Batch',style_snapshot=project,warnings=warnings,import_diagnostics=report,source_file=source_file,items=[i for i,_ in items],created_at=store.now(),updated_at=store.now())
     with store.connect() as db:
         for item,model in items:db.execute('INSERT INTO assets VALUES (?,?,?)',(model['id'],body.project_id,json.dumps(model)))
         db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,body.project_id,json.dumps(value)))
@@ -122,9 +150,10 @@ def analyze(body:Analyze):
 
 
 @router.get('')
-def listing(project_id:str):
+def listing(project_id:str,summary:bool=False):
     studio.project(project_id)
     with store.connect() as db:values=[json.loads(r['payload']) for r in db.execute('SELECT payload FROM batches WHERE project_id=?',(project_id,))]
+    if summary:return [dict(id=v['id'],name=v['name'],project_id=v['project_id'],mode=v['mode'],paused=v['paused'],item_count=len(v['items'])) for v in values]
     return [detail(v) for v in values]
 
 
@@ -132,12 +161,37 @@ def listing(project_id:str):
 def get(identifier:str):return detail(batch(identifier))
 
 
+@router.get('/{identifier}/source')
+def source_file(identifier:str,decoded:bool=False):
+    value=batch(identifier);source=value.get('source_file')
+    if not source:raise HTTPException(404,'Original source was not retained by this older import')
+    file=store.safe_path(source['relative_path'])
+    if decoded:file=file.parent/'decoded.txt'
+    if not file.is_file() or store.digest(file)!=source['text_sha256' if decoded else 'sha256']:raise HTTPException(409,'Original import checksum changed')
+    return FileResponse(file,filename='decoded.txt' if decoded else source['name'])
+
+
+class Selection(BaseModel):
+    selected_ids:list[str]=Field(max_length=MAX_MANIFEST_ASSETS)
+
+
+@router.post('/{identifier}/selection')
+def selection(identifier:str,body:Selection):
+    """One atomic review-only update, never starts or resumes generation."""
+    with LOCK:
+        value=batch(identifier);selected=set(body.selected_ids)
+        if selected-{i['asset_id'] for i in value['items']}:raise HTTPException(400,'Selection contains assets outside this batch')
+        for item in value['items']:item['selected']=item['asset_id'] in selected
+        save(value)
+    return detail(value)
+
+
 @router.post('/{identifier}/items/{asset_id}')
 def edit(identifier:str,asset_id:str,body:dict):
     with LOCK:
         value=batch(identifier);item=next((i for i in value['items'] if i['asset_id']==asset_id),None)
         if not item:raise HTTPException(404,'Asset không thuộc batch')
-        allowed=set(ManifestItem.model_fields)-{'asset_id','source_asset_id'}
+        allowed=set(ManifestItem.model_fields)-{k for k in ManifestItem.model_fields if k.startswith('source_')}-{'asset_id','semantic_metadata'}
         if set(body)-allowed-{'quality_override_confirmed','quality_override_reason'}:raise HTTPException(400,'Trường manifest không hợp lệ')
         if item.get('started') and any(j['status'] not in jobs.TERMINAL and j['payload'].get('asset_id')==asset_id for j in jobs.listing()):raise HTTPException(409,'Đợi checkpoint trước khi sửa cấu hình')
         lower=('quality' in body and body['quality']!=item['quality']) or ('candidates' in body and body['candidates']<item['candidates'])
@@ -223,8 +277,12 @@ def control(identifier:str,body:Control):
     with LOCK:
         value=batch(identifier)
         if body.action=='duplicate':
-            rows=[{k:v for k,v in i.items() if k in ManifestItem.model_fields and k not in ['asset_id','source_asset_id']} for i in value['items']]
-            return analyze(Analyze(project_id=value['project_id'],name=value['name']+' copy',master_prompt=json.dumps(rows),format='json',mode=value['mode']))
+            rows=[{k:v for k,v in i.items() if k in ManifestItem.model_fields and k!='asset_id'} for i in value['items']]
+            copy=analyze(Analyze(project_id=value['project_id'],name=value['name']+' copy',master_prompt=json.dumps(rows),format='json',mode=value['mode']))
+            if value.get('source_file'):
+                copy.update(source_file=value['source_file'],import_diagnostics=value['import_diagnostics'],master_prompt=value['master_prompt'])
+                save(stored(copy))
+            return copy
         if body.action not in ['pause','resume','cancel']:raise HTTPException(400,'Action không hợp lệ')
         value['paused']=body.action!='resume';save(value)
         if body.action=='cancel':

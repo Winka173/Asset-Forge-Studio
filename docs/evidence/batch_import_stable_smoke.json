@@ -1,0 +1,84 @@
+{
+  "version": "0.3.5",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-build\\candidates\\20261021T133138Z\\Asset Forge Studio.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-smoke\\2026-10-21T13-34-00-543Z",
+  "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
+  "checks": [
+    {
+      "name": "fresh_library_has_no_sample_projects",
+      "passed": true
+    },
+    {
+      "name": "native_window_and_packaged_backend",
+      "passed": true,
+      "page_url": "http://tauri.localhost/",
+      "native_pid": 90332,
+      "backend_pid": 91756,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-smoke\\2026-10-21T13-34-00-543Z\\Library",
+      "unauthorized_status": 401
+    },
+    {
+      "name": "single_instance_backend",
+      "passed": true,
+      "duplicate_exit_code": 0
+    },
+    {
+      "name": "real_glb_webview_and_library",
+      "passed": true,
+      "asset_id": "b7b00471a1534a52b0ddeb75f9576502",
+      "artifact_id": "995131e0a9fd4d1594c2d5db08c94f6f",
+      "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
+      "triangles": 344475,
+      "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
+    },
+    {
+      "name": "native_custom_select_long_form_viewport_and_keyboard_scroll",
+      "passed": true,
+      "popup_bounds": {
+        "x": 278.76190185546875,
+        "y": 727.1468505859375,
+        "width": 270.55950927734375,
+        "height": 130.5238037109375
+      },
+      "viewport_height": 934
+    },
+    {
+      "name": "native_ui_export_actual_zip_project_folders_and_source_hash",
+      "passed": true,
+      "export_id": "f5b09e2acaa04d6fbc301af8857974bc",
+      "project_id": "077dafc3e1bb4826a5b83895543c2503",
+      "archive_root": "Desktop-smoke-2026-10-21T13-34-00-543Z-077dafc3e1bb4826a5b83895543c2503/Archer-Tower-real-local-GLB-smoke-b7b00471a1534a52b0ddeb75f9576502/Master-f5b09e2acaa04d6fbc301af8857974bc",
+      "bytes": 45467829
+    },
+    {
+      "name": "native_output_routing_and_immutable_manifest_v2",
+      "passed": true,
+      "manifest_id": "da3a98865018459d8cb86e385cde600a",
+      "unexpected_generation_jobs": 0
+    },
+    {
+      "name": "native_runtime_settings_panel",
+      "passed": true,
+      "native_dialog_interaction": "MANUAL_NOT_AUTOMATED"
+    },
+    {
+      "name": "native_batch_manifest_and_missing_specs_guard",
+      "passed": true,
+      "batch_id": "a1a092f1d75d49e49f83a1bdab0c99e7",
+      "manifest_count": 14
+    },
+    {
+      "name": "graceful_close_owned_backend_exited",
+      "passed": true
+    },
+    {
+      "name": "native_relaunch_persistence_and_token_rotation",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "status": "PASS",
+  "expected_shutdown_network_errors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}
