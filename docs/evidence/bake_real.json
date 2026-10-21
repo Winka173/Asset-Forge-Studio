@@ -1,0 +1,194 @@
+{
+  "status": "NEEDS_REVIEW",
+  "master_sha256": "ddf4c3af5c00e01e8c0cfb98100f7858b8c67a0338c4239b3e2b4aae9145782a",
+  "lod_sha256": "2c34ade00260125d04f982f7b1361067f7ff3aa9d7b081058724961d5efacba5",
+  "script_sha256": "5909ea7cef3e442810312acb4aed85eff6a06f02fec5807063f435fe49a41d3a",
+  "texture_size": 2048,
+  "normal_space": "tangent",
+  "ao": "actual Cycles geometry bake, separate texture",
+  "source": [
+    {
+      "name": "MASTER_geometry_0",
+      "triangles": 988057,
+      "vertices": 710967,
+      "non_manifold_edges": 392509,
+      "boundary_edges": 392509,
+      "loose_vertices": 0,
+      "uv_layers": 1,
+      "materials": [
+        "Material_0"
+      ],
+      "position_weld_analysis": {
+        "epsilon_local_m": 1e-06,
+        "boundary_edges": 7,
+        "non_manifold_edges": 2654,
+        "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+      }
+    }
+  ],
+  "target": [
+    {
+      "name": "geometry_0_LOD1",
+      "triangles": 642236,
+      "vertices": 504729,
+      "non_manifold_edges": 335174,
+      "boundary_edges": 335174,
+      "loose_vertices": 0,
+      "uv_layers": 1,
+      "materials": [
+        "Material_0.002"
+      ],
+      "position_weld_analysis": {
+        "epsilon_local_m": 1e-06,
+        "boundary_edges": 79415,
+        "non_manifold_edges": 81741,
+        "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+      }
+    }
+  ],
+  "before": [
+    "mobile_three_quarter_passes.exr",
+    "mobile_three_quarter_asset.png",
+    "mobile_three_quarter.png"
+  ],
+  "after": [
+    "mobile_three_quarter_passes.exr",
+    "mobile_three_quarter_asset.png",
+    "mobile_three_quarter.png"
+  ],
+  "framing": [
+    {
+      "resolution": "mobile",
+      "view": "three_quarter",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "three_quarter",
+      "status": "PASS"
+    }
+  ],
+  "checks": {
+    "uv_overlap": "NOT_TESTED",
+    "bake_ray_misses": "NOT_TESTED",
+    "visual_improvement": "NEEDS_REVIEW",
+    "unity": "NOT_TESTED",
+    "human_approval": "NOT_TESTED"
+  },
+  "artifacts": [
+    {
+      "path": "baked.blend",
+      "bytes": 183200983,
+      "sha256": "6f788142850c971c2688e86a99934b1fe60979abd126e0775f20cc864d311d8d"
+    },
+    {
+      "path": "lod_ao.png",
+      "bytes": 3492143,
+      "sha256": "a04e56f4122724788bd6445b5a7708aab9fac85608935b6914749a277440c36f"
+    },
+    {
+      "path": "LOD_baked.glb",
+      "bytes": 38302472,
+      "sha256": "86a0a1e0f2d1e8a2c047eccaf38745aa507075df92602338dacb2537928da9ac"
+    },
+    {
+      "path": "lod_normal.png",
+      "bytes": 4818187,
+      "sha256": "9f3ae8c465aca3f23d0589bfbea04f1a0da82c002f0317160ded06c94f41a41d"
+    },
+    {
+      "path": "request.json",
+      "bytes": 552,
+      "sha256": "f51d645cdd4bb9442d3ea688f868f63a645c31fd1c229b05a9123e6b09c48a44"
+    },
+    {
+      "path": "after/mobile_three_quarter.png",
+      "bytes": 1101542,
+      "sha256": "140e0c8878e200ca2988c22b5739670c9129b8cb96f627fd7e636712dcce9a47"
+    },
+    {
+      "path": "after/mobile_three_quarter_asset.png",
+      "bytes": 624298,
+      "sha256": "93aa51e017c7ecb1ba39ac1e89700844149911be445b17d8040eea58ea4dee44"
+    },
+    {
+      "path": "after/mobile_three_quarter_passes.exr",
+      "bytes": 2514379,
+      "sha256": "e993ee051e89ac28a688c07615a2299b1ba2764bf9d7582187d19f4d6f89b413"
+    },
+    {
+      "path": "before/mobile_three_quarter.png",
+      "bytes": 1099406,
+      "sha256": "5ff6083c94015760ac8d2bc2bb5933ef1f665ece2084922055e9115b1ce279ba"
+    },
+    {
+      "path": "before/mobile_three_quarter_asset.png",
+      "bytes": 624275,
+      "sha256": "9ba64953f7830de1f413a42a1e636abc4cb5ad4c605615964c47813fc73d1310"
+    },
+    {
+      "path": "before/mobile_three_quarter_passes.exr",
+      "bytes": 3941845,
+      "sha256": "796f9dc743dd4add4ea598bc5dc0066bc3db7bb6d66ac5e7c2c2cec0980829c6"
+    }
+  ],
+  "glb_inspection": {
+    "status": "NEEDS_REVIEW",
+    "triangles": 642236,
+    "mesh_instances": 1,
+    "dimensions_xyz_m": [
+      4.535049676895142,
+      10.000000476837158,
+      3.993718147277832
+    ],
+    "bounds_xyz_m": [
+      [
+        -2.267522342503071,
+        0.0,
+        -1.996806582203135
+      ],
+      [
+        2.2675273343920708,
+        10.000000476837158,
+        1.9969115650746971
+      ]
+    ],
+    "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+    "meshes": [
+      {
+        "node": "geometry_0_LOD1",
+        "triangles": 642236,
+        "vertices": 505576,
+        "watertight": false,
+        "winding_consistent": true,
+        "watertight_after_position_weld_1e8": false,
+        "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+        "has_uv": true
+      }
+    ],
+    "materials": [
+      {
+        "name": "Material_0.002",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": true,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1,
+        "roughness_factor": 1
+      }
+    ],
+    "images": 3,
+    "checks": {
+      "container": "PASS",
+      "finite_nonempty_geometry": "PASS",
+      "external_resources": "PASS",
+      "uv_overlap": "NOT_TESTED",
+      "self_intersections": "NOT_TESTED",
+      "pbr_plausibility": "NOT_TESTED",
+      "dimensions_approved": "NOT_TESTED",
+      "unity_import": "NOT_TESTED",
+      "human_quality": "NOT_TESTED"
+    }
+  }
+}
