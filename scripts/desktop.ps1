@@ -35,13 +35,15 @@ try{
   & $afsCli build --bundles nsis;Assert-Exit 'Tauri Windows build'
   Copy-Item -LiteralPath src-tauri/target/release/asset-forge-studio.exe -Destination (Join-Path $afsCandidate 'Asset Forge Studio.exe')
   Copy-Item -LiteralPath src-tauri/binaries/afs-backend-x86_64-pc-windows-msvc.exe -Destination (Join-Path $afsCandidate 'afs-backend.exe')
-  Get-ChildItem -LiteralPath src-tauri/target/release/bundle/nsis -Filter '*.exe' | ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination $afsCandidate}
+  $afsInstaller=Join-Path $afsRoot "src-tauri/target/release/bundle/nsis/Asset Forge Studio_${afsVersion}_x64-setup.exe"
+  if(-not(Test-Path -LiteralPath $afsInstaller)){throw 'Current-version installer missing'}
+  Copy-Item -LiteralPath $afsInstaller -Destination $afsCandidate
   $afsReport.status='BUILT_PENDING_SMOKE';$afsReport | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $afsReportFile -Encoding UTF8
   $env:AFS_SMOKE_EXE=Join-Path $afsCandidate 'Asset Forge Studio.exe'
   & node desktop/smoke.mjs;Assert-Exit 'Newly built native desktop smoke'
   $afsReport.tests+=@('New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS')
   $afsReport.status='PASS_BUILD_AND_NATIVE_SMOKE';$afsReport.smoke_report=(Get-Content -LiteralPath .local/desktop-build/latest-smoke-path.txt -Raw).Trim()
-  $afsReport.executable='Asset Forge Studio.exe';$afsReport.installer=(Get-ChildItem -LiteralPath $afsCandidate -Filter '*setup.exe' | Select-Object -First 1 -ExpandProperty Name)
+  $afsReport.executable='Asset Forge Studio.exe';$afsReport.installer=(Get-ChildItem -LiteralPath $afsCandidate -Filter "*_${afsVersion}_x64-setup.exe" | Select-Object -First 1 -ExpandProperty Name)
   $afsReport | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $afsReportFile -Encoding UTF8
   $afsLatest=Assert-WorkspacePath (Join-Path $afsRoot 'dist/windows/latest')
   $afsReleases=Assert-WorkspacePath (Join-Path $afsRoot 'dist/windows/releases')

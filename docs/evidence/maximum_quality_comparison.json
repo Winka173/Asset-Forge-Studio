@@ -1,0 +1,69 @@
+{
+  "status": "PASS_REAL_SINGLE_BATCH_MAXIMUM_CONFIGURATION_PARITY",
+  "engine": "trellis2_community",
+  "runs": [
+    {
+      "job_id": "1c52cd810c364dfaa83b248f5103b0c6",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "effective_config_hash": "998b986f722eeef83c3b168a24edc56fc17f7ee06a1dfa64726244f2c41d5bd1",
+      "steps": 32,
+      "pipeline": "1024_cascade",
+      "texture_size": 4096,
+      "duration_seconds": 188.70300000000861,
+      "torch_peak_allocated_bytes": 3340711936,
+      "device_memory_sampled_peak_mib": 7146.0,
+      "raw_triangles": 6182632,
+      "glb_sha256": "45c354248cecd06d99c7031f9d8856777319546fa9767374c356c6994b2d4b2f"
+    },
+    {
+      "job_id": "4e694499b28a4f0b9c9668e66cb1099f",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "effective_config_hash": "998b986f722eeef83c3b168a24edc56fc17f7ee06a1dfa64726244f2c41d5bd1",
+      "steps": 32,
+      "pipeline": "1024_cascade",
+      "texture_size": 4096,
+      "duration_seconds": 229.17199999999139,
+      "torch_peak_allocated_bytes": 3338518016,
+      "device_memory_sampled_peak_mib": 7128.0,
+      "raw_triangles": 6182632,
+      "glb_sha256": "9ff299dd6734615600496920dce022f2606ca05cd994824b170f466fed622174"
+    }
+  ],
+  "raw_arrays": {
+    "vertices": {
+      "shape": [
+        3039001,
+        3
+      ],
+      "same_shape": true,
+      "exact_equal": true
+    },
+    "faces": {
+      "shape": [
+        6182632,
+        3
+      ],
+      "same_shape": true,
+      "exact_equal": true
+    },
+    "attrs": {
+      "shape": [
+        3039001,
+        6
+      ],
+      "same_shape": true,
+      "exact_equal": true
+    },
+    "coords": {
+      "shape": [
+        3039001,
+        3
+      ],
+      "same_shape": true,
+      "exact_equal": true
+    }
+  },
+  "interpretation": "This one paired trial produced identical native geometry/attributes/coordinates. Exported GLB bytes differ; exact future output or visual quality equality is not guaranteed. This does not establish Meshy parity.",
+  "meshy_parity": "NOT_TESTED",
+  "human_quality_approval": "NOT_GIVEN"
+}

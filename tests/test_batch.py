@@ -86,6 +86,19 @@ def test_single_batch_quality_parity_retry_and_hash_guard(client):
     assert 'Execution settings differ' in jobs.get(invalid_execution['id'])['error']
 
 
+def test_batch_config_edit_preserves_previous_job_and_needs_explicit_run(client):
+    row=dict(name='Revision QA',prompt='Original prompt',target_width_m=2,target_depth_m=2,target_height_m=5,confirmed=True)
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt=json.dumps([row]),format='json')).json()
+    item=value['items'][0];prefix=f'/api/batches/{value["id"]}'
+    original=jobs.enqueue(dict(kind='concept',batch_id=value['id'],asset_id=item['asset_id'],batch_attempt=0,prompt='Original prompt'))
+    jobs.transition(original['id'],'BLOCKED','Fixture: no inference executed')
+    result=client.post(prefix+'/items/'+item['asset_id'],json=dict(prompt='Revised prompt')).json()['items'][0]
+    assert result['attempt']==1 and not result['started']
+    assert result['config_revision_history'][0]['changed_fields']==['prompt']
+    assert jobs.get(original['id'])['payload']['prompt']=='Original prompt'
+    assert len(jobs.listing())==1
+
+
 def test_batch_scheduling_failure_does_not_block_other_assets(client,monkeypatch):
     from apps.api import studio
     from fastapi import HTTPException
@@ -111,3 +124,13 @@ def test_desktop_api_requires_session_token(client,monkeypatch):
     assert client.get('/api/desktop/health',headers={'X-AFS-Token':'isolated-test-token'}).status_code==200
     assert client.get('/api/desktop/health?afs_token=isolated-test-token').status_code==200
     assert client.post('/api/assets',headers={'Origin':'https://untrusted.example','X-AFS-Token':'isolated-test-token'},json={}).status_code==403
+
+
+def test_simultaneous_first_library_connections(client):
+    from concurrent.futures import ThreadPoolExecutor
+    def open_library(_):
+        with store.connect() as db:
+            return db.execute('PRAGMA user_version').fetchone()[0],db.execute('SELECT count(*) FROM projects').fetchone()[0]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results=list(pool.map(open_library,range(32)))
+    assert results==[(3,1)]*32

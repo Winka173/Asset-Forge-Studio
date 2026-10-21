@@ -59,11 +59,14 @@ def detail(value):
         item['status']=state
         if item.get('last_error') and state not in ['Generating','Processing']:item['status']='Failed/Blocked'
         item['effective_config']=None
+        item.pop('config_warning',None)
         if source:
             from engines.quality import resolve
             chosen_engine=item['preferred_engine'] if item['preferred_engine']!='auto' else 'trellis2_community'
             try:item['effective_config']=resolve(dict(engine=chosen_engine,quality=item['quality'],quality_lock=item['quality_lock'],prompt=item['prompt'],seeds=[42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m']),source,value['style_snapshot'])
             except (ValueError,OSError) as exc:item['config_warning']=str(exc)
+            if value['mode']=='Maximum Quality Batch' and item['preferred_engine']=='auto' and not source['metadata'].get('has_transparency'):
+                item['config_warning']='Auto can use textured TRELLIS.2 with this image; TripoSG requires reviewed alpha. Multi-engine coverage is incomplete until an alpha reference is selected.'
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER
     count=sum(i['candidates']*(2 if value['mode']=='Maximum Quality Batch' and i['preferred_engine']=='auto' else 1) for i in value['items'] if i['selected'])
@@ -138,11 +141,19 @@ def edit(identifier:str,asset_id:str,body:dict):
         if set(body)-allowed-{'quality_override_confirmed','quality_override_reason'}:raise HTTPException(400,'Trường manifest không hợp lệ')
         if item.get('started') and any(j['status'] not in jobs.TERMINAL and j['payload'].get('asset_id')==asset_id for j in jobs.listing()):raise HTTPException(409,'Đợi checkpoint trước khi sửa cấu hình')
         lower=('quality' in body and body['quality']!=item['quality']) or ('candidates' in body and body['candidates']<item['candidates'])
-        if item['quality_lock'] and lower and not body.get('quality_override_confirmed'):raise HTTPException(409,'Quality Lock: cần xác nhận chủ động khi giảm chất lượng')
+        if item['quality_lock'] and lower and (not body.get('quality_override_confirmed') or not str(body.get('quality_override_reason','')).strip()):raise HTTPException(409,'Quality Lock: cần xác nhận chủ động và lý do khi thay đổi chất lượng')
         clean={k:v for k,v in item.items() if k in ManifestItem.model_fields};clean.update({k:v for k,v in body.items() if k in allowed})
         try:validated=ManifestItem.model_validate(clean).model_dump()
         except ValidationError as exc:raise HTTPException(400,str(exc))
         for ref in validated['reference_ids']:studio.scoped_artifact(ref,value['project_id'])
+        config_fields=allowed-{'selected','priority','skipped','name','category'}
+        changed=any(k in body and validated.get(k)!=item.get(k) for k in config_fields)
+        history=[j for j in jobs.listing() if j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id]
+        if changed and history:
+            # Editing completed work creates a new, explicitly unstarted revision.
+            # Resume cannot silently rerun old request IDs with a different config.
+            item.setdefault('config_revision_history',[]).append(dict(attempt=item['attempt'],version=item['version'],changed_fields=sorted(k for k in config_fields if k in body and validated.get(k)!=item.get(k)),created_at=store.now()))
+            item.update(attempt=item['attempt']+1,started=False)
         item.update(validated);item['version']+=1
         item.pop('last_error',None)
         if item['quality_lock'] and lower:item.setdefault('quality_override_history',[]).append(dict(approved=True,changes=body,created_at=store.now()))

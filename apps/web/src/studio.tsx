@@ -3,6 +3,7 @@ import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
 import { BatchStudio } from "./batch-studio";
+import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
 type Artifact = {
@@ -614,6 +615,15 @@ export function Studio() {
   async function upload(file?: File) {
     if (!file) return;
     await run(async () => {
+      if (file.name.toLowerCase().endsWith('.glb')) {
+        const asset=await ensureAsset();
+        const form=new FormData();form.append('file',file);
+        const response=await apiFetch(`/api/import/candidate?project_id=${projectId}&asset_id=${asset.id}`,{method:'POST',body:form});
+        if(!response.ok)throw new Error(JSON.stringify((await response.json()).detail));
+        const model:Artifact=await response.json();await reload();setAssetId(asset.id);setVersionId(model.id);setPreviewTab('Model');
+        setNotice('Đã nhập GLB thật thành version mới trong Library. Model chưa được duyệt chất lượng.');
+        return;
+      }
       if (!file.type.startsWith("image/"))
         throw new Error("Chọn ảnh PNG, JPG hoặc WebP.");
       const form = new FormData();
@@ -1154,13 +1164,13 @@ export function Studio() {
                           <>
                             <Icon name="Upload" size={28} />
                             <strong>Drop your concept here</strong>
-                            <span>or click to browse · PNG, JPG, WebP</span>
+                            <span>or browse · PNG, JPG, WebP / import GLB</span>
                           </>
                         )}
                         <input
                           aria-label="Upload concept image"
                           type="file"
-                          accept="image/png,image/jpeg,image/webp"
+                          accept="image/png,image/jpeg,image/webp,.glb"
                           disabled={busy}
                           onChange={(e) => {
                             upload(e.target.files?.[0]);
@@ -1858,6 +1868,7 @@ export function Studio() {
                 </div>
               </div>
               <div className="settings-grid">
+                {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">
                   <div className="panel-heading">
                     <Icon name="Library" />
@@ -2688,4 +2699,29 @@ function JobHistory({
       )}
     </>
   );
+}
+
+function DesktopSettings({activeJobs}:{activeJobs:number}) {
+  const [info,setInfo]=useState<Awaited<ReturnType<typeof desktopInfo>>>();
+  const [error,setError]=useState('');const [working,setWorking]=useState(false);
+  useEffect(()=>{desktopInfo().then(setInfo).catch(e=>setError(String(e)));},[]);
+  async function choose(kind:'library'|'workspace'|'blender') {
+    setWorking(true);setError('');
+    try {const selected=kind==='blender'?await configureDesktopBlender():await configureDesktopDirectory(kind);if(selected)location.reload();}
+    catch(e){setError(e instanceof Error?e.message:String(e));}finally{setWorking(false);}
+  }
+  return <section className="settings-panel">
+    <div className="panel-heading"><Icon name="Settings"/><h2>Windows application</h2><span>{info?.version}</span></div>
+    <p>Local folders and tools. Changing a folder preserves the previous library; it does not move or delete files.</p>
+    <dl><div><dt>Asset library</dt><dd style={{overflowWrap:'anywhere'}}>{info?.library || 'Loading local configuration...'}</dd></div><div><dt>AI workspace</dt><dd style={{overflowWrap:'anywhere'}}>{info?.workspace}</dd></div></dl>
+    {activeJobs>0&&<p>Finish or cancel active jobs before changing local runtime paths.</p>}
+    <div className="batch-intake-actions">
+      <button disabled={working||activeJobs>0} onClick={()=>choose('library')}>Choose library folder</button>
+      <button disabled={working||activeJobs>0} onClick={()=>choose('workspace')}>Choose AI workspace</button>
+      <button disabled={working||activeJobs>0} onClick={()=>choose('blender')}>Choose Blender</button>
+      <button onClick={()=>openDesktopFolder('library').catch(e=>setError(String(e)))}>Open library folder</button>
+      <button onClick={()=>openDesktopFolder('logs').catch(e=>setError(String(e)))}>Open desktop logs</button>
+    </div>
+    {error&&<p role="alert">{error}</p>}
+  </section>;
 }

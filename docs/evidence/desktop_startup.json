@@ -1,0 +1,12 @@
+{
+  "status": "PASS_NATIVE_MISSING_WORKSPACE_STARTUP",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-startup\\2026-10-21T10-52-04-797Z",
+  "scope": "Actual packaged backend and setup without existing AI workspace; not a clean-machine or inference test",
+  "version": "0.2.1",
+  "backend_pid": 86348,
+  "checks": [
+    "Bundled backend ready without external AI workspace",
+    "First-run setup rendered",
+    "Studio opened without dev Python or model loading"
+  ]
+}

@@ -27,7 +27,8 @@ fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(Pa
 fn save_config(root: &Path, config: &Config) -> Result<(),String> {fs::create_dir_all(root).map_err(|e|e.to_string())?; fs::write(root.join("desktop-config.json"),serde_json::to_vec_pretty(config).unwrap()).map_err(|e|e.to_string())}
 fn load_config(root: &Path) -> Config {
     if let Ok(bytes)=fs::read(root.join("desktop-config.json")) {if let Ok(config)=serde_json::from_slice(&bytes) {return config;}}
-    let workspace=PathBuf::from(env!("AFS_DEFAULT_WORKSPACE"));
+    let original=PathBuf::from(env!("AFS_DEFAULT_WORKSPACE"));
+    let workspace=if original.is_dir(){original}else{root.join("Workspace")};
     let existing=workspace.join("data");
     Config{workspace:workspace.to_string_lossy().into(),library:if existing.join("studio.sqlite").is_file(){existing}else{root.join("Library")}.to_string_lossy().into(),blender:None,setup_complete:false}
 }
@@ -45,7 +46,7 @@ fn start_backend(app:tauri::AppHandle,state:Shared){thread::spawn(move||{
         let development=PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("binaries/afs-backend-x86_64-pc-windows-msvc.exe");
         let mut command=if adjacent.is_file(){Command::new(adjacent)}else if development.is_file(){Command::new(development)}else if cfg!(debug_assertions){let mut cmd=Command::new(Path::new(&config.workspace).join(".venv/Scripts/python.exe"));cmd.arg(Path::new(&config.workspace).join("desktop/backend_entry.py"));cmd}else{return Err("Packaged backend executable is missing. Reinstall the desktop package.".into());};
         let log=fs::OpenOptions::new().create(true).append(true).open(root.join("logs/backend.log")).map_err(|e|e.to_string())?;
-        command.current_dir(&config.workspace).env("AFS_DESKTOP","1").env("AFS_API_TOKEN",&token).env("AFS_PORT",port.to_string()).env("AFS_WORKSPACE",&config.workspace).env("AFS_DATA",&config.library).stdout(Stdio::from(log.try_clone().unwrap())).stderr(Stdio::from(log)).creation_flags(HIDDEN);
+        command.current_dir(if Path::new(&config.workspace).is_dir(){Path::new(&config.workspace)}else{root.as_path()}).env("AFS_DESKTOP","1").env("AFS_API_TOKEN",&token).env("AFS_PORT",port.to_string()).env("AFS_WORKSPACE",&config.workspace).env("AFS_DATA",&config.library).stdout(Stdio::from(log.try_clone().unwrap())).stderr(Stdio::from(log)).creation_flags(HIDDEN);
         if let Some(path)=&config.blender{command.env("AFS_BLENDER",path);}
         let child=command.spawn().map_err(|e|format!("Managed backend could not start: {}",e))?;let job=assign_job(&child);
         {let mut value=state.lock().unwrap();value.port=port;value.token=token;value.child=Some(child);value.job=job;}

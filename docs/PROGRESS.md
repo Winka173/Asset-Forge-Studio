@@ -1,3 +1,17 @@
+# Current verified state ? 2026-10-21
+
+The entries below this section are historical checkpoints, superseded where noted here.
+
+- Windows desktop is now primary (user's migration request supersedes Web-first). Version 0.2.1 Tauri EXE, bundled Python backend and NSIS installer build successfully. Actual WebView2 smoke passed: native UI, API authentication, single instance, real Archer GLB viewer, clean shutdown, Library persistence and token rotation. Artifacts: `dist/windows/latest/`; reports: `evidence/desktop_build.json`, `evidence/desktop_smoke.json`.
+- Batch Studio has a 14-item explicit manifest acceptance and two genuinely generated local models with Blender GLB/FBX reopen checks. The shared scheduler ran one GPU inference at a time and overlapped Castle CPU Blender with Archer GPU inference. `evidence/batch_real_flow.json` records outputs, resource measurements, overlap and actual ZIP contents. No production artwork approval is implied.
+- SDXL local text-to-concept works with the existing isolated environment and cached weights. Concepts require explicit approval; bad turnaround/house results were retained and rejected during QA. Prompt fidelity remains a quality limitation. `evidence/sdxl_local_concept.json` records real inference.
+- Backend currently passes 22 tests including Single/Batch immutable config equality, execution/hash guards, explicit quality override, per-item failure isolation, manifest revision safety and desktop authentication. Actual native Maximum Single-versus-Batch inference passed with identical locked config and identical raw geometry/attributes in this paired trial. GLB byte hashes differ; future exact equality is not guaranteed. See `evidence/maximum_quality_comparison.json`, `desktop_inference.json` and `desktop_output.json`. Version 0.2.1 fixes a native CSP texture-loading failure; both real models now reopen with textures and export successfully. Missing external workspace startup was also tested (`desktop_startup.json`).
+- Unity CPU import of actual FBX/LODs passed (see `evidence/unity_import.json`); GPU screenshots/gameplay performance remain unverified. Research TRELLIS v1 and Hi3DGen both ran real geometry and Blender export, but are not promoted to production engines merely for running.
+- Git SSH push is working; tested Windows/Batch milestone committed and pushed as `ae11062`. Future changes require test/build/native-smoke before commit/push.
+- Meshy reference is an image only. No Meshy geometry/PBR equivalence or user artistic approval has been established. SF3D remains gated; missing-engine workflows never fake success. Character/Animation/Map/VFX remain outside scope.
+
+---
+
 # Tiến độ thực tế
 
 - Đã hợp nhất v1/v2; Local Web App trước, Tauri sau.

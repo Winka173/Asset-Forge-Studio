@@ -1,16 +1,16 @@
 {
-  "version": "0.2.0",
-  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T103127Z\\Asset Forge Studio.exe",
-  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T10-32-45-726Z",
+  "version": "0.2.1",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T105222Z\\Asset Forge Studio.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T10-53-04-212Z",
   "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
   "checks": [
     {
       "name": "native_window_and_packaged_backend",
       "passed": true,
       "page_url": "http://tauri.localhost/",
-      "native_pid": 83256,
-      "backend_pid": 86060,
-      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T10-32-45-726Z\\Library",
+      "native_pid": 88852,
+      "backend_pid": 84916,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T10-53-04-212Z\\Library",
       "unauthorized_status": 401
     },
     {
@@ -21,11 +21,22 @@
     {
       "name": "real_glb_webview_and_library",
       "passed": true,
-      "asset_id": "295270c2ed1442168ac69ebde9e8b772",
-      "artifact_id": "6bae26fc0a48462db38431e7935ddd7d",
-      "source_sha256": "f921ca713360a45e9d056ba538b8ad583601a5342b0ece329fd81f0291995523",
-      "triangles": 984215,
+      "asset_id": "b760f4879988491e84a6cbcc63cb1200",
+      "artifact_id": "8de5dc16172d4308b1aa776b1250d16a",
+      "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
+      "triangles": 344475,
       "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
+    },
+    {
+      "name": "native_runtime_settings_panel",
+      "passed": true,
+      "native_dialog_interaction": "MANUAL_NOT_AUTOMATED"
+    },
+    {
+      "name": "native_batch_manifest_and_missing_specs_guard",
+      "passed": true,
+      "batch_id": "dda8703f410b43e6a3415c2cede2dfd9",
+      "manifest_count": 14
     },
     {
       "name": "graceful_close_owned_backend_exited",

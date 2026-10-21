@@ -3,6 +3,7 @@ import json
 import os
 import sqlite3
 import uuid
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -10,6 +11,7 @@ ROOT = Path(os.environ.get('AFS_RESOURCE_ROOT',Path(__file__).resolve().parents[
 WORKSPACE = Path(os.environ.get('AFS_WORKSPACE',ROOT)).resolve()
 CONFIG_ROOT = Path(os.environ.get('LOCALAPPDATA',Path.home() / '.local/share')) / 'AssetForgeStudio'
 DATA = Path(os.environ.get("AFS_DATA", CONFIG_ROOT / 'Library' if os.environ.get('AFS_DESKTOP')=='1' else WORKSPACE / "data")).resolve()
+SCHEMA_LOCK=threading.RLock()
 
 
 def now():
@@ -22,10 +24,18 @@ def digest(path):
 
 
 def connect():
+    # API requests and the scheduler can open a new library simultaneously.
+    # Serialize initialization; normal connections do not repeat WAL/DDL changes.
+    with SCHEMA_LOCK:
+        return _connect()
+
+
+def _connect():
     DATA.mkdir(parents=True, exist_ok=True)
     existed=(DATA/'studio.sqlite').exists()
     db = sqlite3.connect(DATA / "studio.sqlite", timeout=30)
     db.row_factory = sqlite3.Row
+    if db.execute('PRAGMA user_version').fetchone()[0]>=3:return db
     db.execute("PRAGMA journal_mode=WAL")
     if existed and db.execute('PRAGMA user_version').fetchone()[0] < 3:
         backup_dir=DATA/'backups';backup_dir.mkdir(parents=True,exist_ok=True)

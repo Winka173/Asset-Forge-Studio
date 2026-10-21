@@ -7,6 +7,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
   const host = useRef<HTMLDivElement>(null);
   const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[]} | null>(null);
   const [loaded, setLoaded] = useState(0);
+  const [textures, setTextures] = useState(0);
   useEffect(() => {
     const div = host.current!;
     let renderer: T.WebGLRenderer;
@@ -25,6 +26,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     let disposed = false;
     const models: T.Object3D[] = [];
     setLoaded(0);
+    setTextures(0);
     scenes.forEach(scene => {
       scene.background = new T.Color('#202733');
       const grid = new T.GridHelper(30, 30, '#46566c', '#2c3849');
@@ -50,7 +52,13 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
       new GLTFLoader().load(url, result => {
         if (disposed) { disposeObject(result.scene); return; }
         result.scene.userData.afsModel = true;
-        result.scene.traverse(child => { if (child instanceof T.Mesh) child.userData.afsOriginalMaterial = child.material; });
+        let textureCount=0;
+        result.scene.traverse(child => { if (child instanceof T.Mesh) {
+          child.userData.afsOriginalMaterial = child.material;
+          const materials=Array.isArray(child.material)?child.material:[child.material];
+          materials.forEach(material=>{if(material instanceof T.MeshStandardMaterial && material.map?.image?.width>0)textureCount++;});
+        }});
+        setTextures(value=>value+textureCount);
         scenes[i].add(result.scene); models.push(result.scene); setLoaded(v => v + 1);
         const box = new T.Box3(); models.forEach(m => box.union(new T.Box3().setFromObject(m)));
         const center = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3());
@@ -102,5 +110,5 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
       });
     });
   }, [background, lighting, loaded, single]);
-  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
+  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
 }

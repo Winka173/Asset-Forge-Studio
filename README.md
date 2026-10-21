@@ -28,7 +28,7 @@ Luồng đã kiểm thử bằng Archer Tower thật: Auto/Fast → TRELLIS.2 �
 
 Master giữ GLB gốc hoặc xuất FBX qua Blender. Unity Mobile / Unity PC hiện dùng mục tiêu thử lần lượt 25.000 / 100.000 tam giác, đã tạo file và kiểm tra mở lại thật; chất lượng decimation/bake và import trong Unity vẫn cần duyệt. [Export evidence](docs/evidence/studio_exports.json).
 
-Text → concept local chưa được tích hợp. Prompt được lưu với asset; engine image-to-3D hiện không dùng prompt để sửa style. Cần chọn/nhập ảnh concept thật để Generate. Không có thành công giả cho text-only.
+Text → concept đã chạy thật bằng SDXL local với weights có sẵn, có bước duyệt ảnh trước khi dựng 3D. Prompt và Art Bible điều khiển bước concept; engine image-to-3D hiện không dùng text để sửa style. Concept sai hoặc dạng collage phải được loại bỏ, không tự coi là input hợp lệ. [SDXL evidence](docs/evidence/sdxl_local_concept.json).
 
 - Concept trong doc → local TRELLIS.2 Windows community, CPU offload → GLB có UV/base color/metallic–roughness.
 - TripoSG shape-only đã chạy thật hai seeds; web hỗ trợ adapter selection, 1–4 seeds, inference tuần tự, cancellation/retry và tự xếp Blender. SF3D vẫn gated; không hiện nút giả để generate.
@@ -38,11 +38,11 @@ Text → concept local chưa được tích hợp. Prompt được lưu với as
 - Bake normal tangent và AO hình học thật; trước/sau cùng camera, normal gắn vào GLB, AO xuất riêng. Không suy ra metallic/roughness/emission từ một ảnh màu.
 - Queue Blender bền vững, worker tuần tự, cancel/retry, job log và download từng artifact. Human rubric riêng từng chiều, concept review không được coi là Meshy parity.
 
-**Chưa đạt nghiệm thu chất lượng.** Chỉ có ảnh, không có Meshy golden GLB. Không thể chấm so sánh 3D Meshy hoặc xác nhận mặt sau. Unity chưa chạy; modular reconstruction, multi-view conditioning, texture reprojection, rig/VFX/batch chưa triển khai. Không coi số tam giác hoặc texture 4K là bằng chứng đạt chất lượng.
+**Chưa đạt nghiệm thu chất lượng Meshy.** Chỉ có ảnh, không có Meshy golden GLB; chưa thể đối chiếu geometry/PBR hay xác nhận mặt sau. Batch đã có hai model thật và kiểm chứng Single/Batch Maximum; Unity đã import FBX/LOD trên CPU, còn ảnh GPU và hiệu năng gameplay chưa kiểm chứng. Modular reconstruction, multi-view conditioning và texture reprojection còn hạn chế; rig/VFX ngoài scope. Không coi số tam giác hoặc texture 4K là bằng chứng đạt chất lượng.
 
 ## Local inference
 
-Các lệnh dưới đây chạy thật, chiếm GPU và lưu version mới. Không tự download khi inference; weights phải có sẵn. Worker kết thúc sau mỗi lượt để trả VRAM. Các CLI và queue dùng chung lock trong `.local/worker.lock`.
+Các lệnh dưới đây chạy thật, chiếm GPU và lưu version mới. Không tự download khi inference; weights phải có sẵn. Worker kết thúc sau mỗi lượt để trả VRAM. Single, Batch và CLI dùng chung GPU lock tại `%LOCALAPPDATA%/AssetForgeStudio/locks/gpu.lock`; mặc định chỉ một heavy GPU job.
 
 TRELLIS.2 sử dụng bản sẵn có ở `C:\Users\Winka\Tools\trellis2\code`; user đã cho phép kiểm thử. Bản này khác upstream Linux ≥24 GB và chưa được duyệt để xuất asset thương mại. RMBG/DINO/dependency license cần audit riêng.
 

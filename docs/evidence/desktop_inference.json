@@ -1,0 +1,2500 @@
+{
+  "status": "PASS_REAL_NATIVE_GPU_PIPELINE",
+  "purpose": "Actual Single Maximum versus Batch Maximum local inference, technical QA only",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z",
+  "checks": [
+    {
+      "name": "native_single_ui_and_batch_identical_locked_configuration",
+      "passed": true,
+      "single_job": "1c52cd810c364dfaa83b248f5103b0c6",
+      "batch_job": "4e694499b28a4f0b9c9668e66cb1099f",
+      "batch_id": "850d2621dd2f4cb794427b65397c737d",
+      "effective_config_hash": "998b986f722eeef83c3b168a24edc56fc17f7ee06a1dfa64726244f2c41d5bd1",
+      "effective_config": {
+        "schema_version": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "engine_id": "trellis2_community",
+        "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+        "checkpoint": {
+          "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+          "files": {
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+          }
+        },
+        "input_prompt": "Archer Tower T3 Runavelle. Supplied concept reference. Single and Batch Maximum reproducibility benchmark; technical QA only.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "project_style_hash": "67c7b53d110d6defdc6422a111bc8a4de4025b92e8d1fb01b286cdfa5e732c06",
+        "resolution": 1024,
+        "inference_steps": 32,
+        "guidance": {
+          "sparse_structure_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.7,
+            "guidance_interval": [
+              0.6,
+              1
+            ],
+            "rescale_t": 5
+          },
+          "shape_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.5,
+            "guidance_interval": [
+              0.6,
+              1
+            ],
+            "rescale_t": 3
+          },
+          "tex_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 1,
+            "guidance_rescale": 0,
+            "guidance_interval": [
+              0.6,
+              0.9
+            ],
+            "rescale_t": 3
+          }
+        },
+        "seeds": [
+          42
+        ],
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "geometry": {
+          "pipeline_type": "1024_cascade",
+          "octree_depth": null,
+          "decode_chunk_size": null,
+          "export_triangle_target": 1000000
+        },
+        "texture": {
+          "size": 4096,
+          "pbr": "native basecolor/metallic-roughness"
+        },
+        "blender": {
+          "enabled": true,
+          "profile": "existing_quality_pipeline_v1",
+          "height_m": 10,
+          "render_views": [
+            "front",
+            "three_quarter",
+            "side",
+            "back",
+            "top",
+            "gameplay"
+          ],
+          "render_resolutions": [
+            "mobile",
+            "pc1440"
+          ],
+          "bake": "not_requested"
+        },
+        "lod": {
+          "ratios": [
+            0.65,
+            0.35,
+            0.15
+          ]
+        },
+        "export": {
+          "formats": [
+            "glb",
+            "fbx"
+          ],
+          "preserve_master": true
+        },
+        "candidate_count": 1,
+        "qa": {
+          "mesh_validity": true,
+          "geometry_defects": true,
+          "dimensions": true,
+          "uv_texture_inventory": true,
+          "export_reopen": true,
+          "per_asset": true,
+          "human_concept_approval": true,
+          "human_master_approval": true,
+          "visual_parity": "NOT_TESTED"
+        },
+        "seed": 42
+      }
+    },
+    {
+      "name": "real_gpu_and_blender_outputs_inside_native_app",
+      "passed": true
+    },
+    {
+      "name": "native_relaunch_preserves_actual_single_batch_models_and_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "meshy_parity": "NOT_TESTED",
+  "production_art_approval": "NOT_GIVEN",
+  "jobs": [
+    {
+      "id": "5b02b190357f4944b83fd22b9c48a678",
+      "kind": "blender",
+      "status": "REVIEW_REQUIRED",
+      "resources": {
+        "resource": "cpu",
+        "started_at": "2026-10-21T10:42:11.455592+00:00",
+        "finished_at": "2026-10-21T10:45:39.179813+00:00",
+        "duration_seconds": 207.71900000001187,
+        "ram_peak_used_bytes": 33438404608,
+        "worker_tree_peak_rss_bytes": 4739207168
+      },
+      "qa": {
+        "status": "NEEDS_REVIEW",
+        "input_sha256": "9ff299dd6734615600496920dce022f2606ca05cd994824b170f466fed622174",
+        "script_sha256": "483a7f4465f9cb7874e3957b668af477e8d18b86861235225591b092d7a73d9d",
+        "blender_version": "4.5.14 LTS",
+        "dimensions_xyz_m_blender": [
+          4.581309080123901,
+          4.375492572784424,
+          10
+        ],
+        "normalization": {
+          "applied": true,
+          "target_height_m": 10,
+          "scale": 9.972215223275898,
+          "yaw_degrees": 0
+        },
+        "before": [
+          {
+            "name": "geometry_0",
+            "triangles": 987958,
+            "vertices": 701925,
+            "non_manifold_edges": 388268,
+            "boundary_edges": 388268,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.0027861595153809e-07,
+              "boundary_edges": 0,
+              "non_manifold_edges": 3662,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "after": [
+          {
+            "name": "geometry_0",
+            "triangles": 987958,
+            "vertices": 701925,
+            "non_manifold_edges": 388268,
+            "boundary_edges": 388268,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 3662,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "channels": {
+              "base_color": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_000.png",
+                    "source_name": "Image_0",
+                    "color_space": "sRGB",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1
+                ]
+              },
+              "metallic": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0
+              },
+              "roughness": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.5
+              },
+              "normal": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "emissive": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            "ao": "NOT_TESTED",
+            "plausibility": "NOT_TESTED",
+            "status": "NEEDS_REVIEW"
+          }
+        ],
+        "lods": [
+          {
+            "level": 1,
+            "ratio": 0.65,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642171,
+                "vertices": 516219,
+                "non_manifold_edges": 362527,
+                "boundary_edges": 362411,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 92088,
+                  "non_manifold_edges": 95477,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          },
+          {
+            "level": 2,
+            "ratio": 0.35,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345785,
+                "vertices": 341870,
+                "non_manifold_edges": 309952,
+                "boundary_edges": 309573,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001622200012207e-06,
+                  "boundary_edges": 227244,
+                  "non_manifold_edges": 228602,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          },
+          {
+            "level": 3,
+            "ratio": 0.15,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148193,
+                "vertices": 178274,
+                "non_manifold_edges": 174497,
+                "boundary_edges": 168263,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0002656936645506e-06,
+                  "boundary_edges": 162789,
+                  "non_manifold_edges": 169012,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          }
+        ],
+        "framing": [
+          {
+            "resolution": "mobile",
+            "view": "front",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "three_quarter",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "side",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "back",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "top",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "gameplay",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "front",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "three_quarter",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "side",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "back",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "top",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "gameplay",
+            "status": "PASS"
+          }
+        ],
+        "rendered": [
+          "mobile_front_passes.exr",
+          "mobile_front_asset.png",
+          "mobile_front.png",
+          "mobile_three_quarter_passes.exr",
+          "mobile_three_quarter_asset.png",
+          "mobile_three_quarter.png",
+          "mobile_side_passes.exr",
+          "mobile_side_asset.png",
+          "mobile_side.png",
+          "mobile_back_passes.exr",
+          "mobile_back_asset.png",
+          "mobile_back.png",
+          "mobile_top_passes.exr",
+          "mobile_top_asset.png",
+          "mobile_top.png",
+          "mobile_gameplay_passes.exr",
+          "mobile_gameplay_asset.png",
+          "mobile_gameplay.png",
+          "pc1440_front_passes.exr",
+          "pc1440_front_asset.png",
+          "pc1440_front.png",
+          "pc1440_three_quarter_passes.exr",
+          "pc1440_three_quarter_asset.png",
+          "pc1440_three_quarter.png",
+          "pc1440_side_passes.exr",
+          "pc1440_side_asset.png",
+          "pc1440_side.png",
+          "pc1440_back_passes.exr",
+          "pc1440_back_asset.png",
+          "pc1440_back.png",
+          "pc1440_top_passes.exr",
+          "pc1440_top_asset.png",
+          "pc1440_top.png",
+          "pc1440_gameplay_passes.exr",
+          "pc1440_gameplay_asset.png",
+          "pc1440_gameplay.png"
+        ],
+        "checks": {
+          "export_reopen": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "lod_silhouette_error": "NOT_TESTED",
+          "normal_bake": "NOT_TESTED",
+          "unity": "NOT_TESTED",
+          "human_review": "NOT_TESTED",
+          "pbr_reconstruction": "NOT_TESTED",
+          "modular_connectors": "NOT_TESTED",
+          "fbx_reopen": "PASS",
+          "fbx_pbr_unity_mapping": "NOT_TESTED"
+        },
+        "reopened": [
+          {
+            "file": "collider.glb",
+            "meshes": [
+              {
+                "name": "COLLIDER_AABB",
+                "triangles": 12,
+                "vertices": 24,
+                "non_manifold_edges": 24,
+                "boundary_edges": 24,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 0,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD0.glb",
+            "meshes": [
+              {
+                "name": "geometry_0",
+                "triangles": 987958,
+                "vertices": 732514,
+                "non_manifold_edges": 431684,
+                "boundary_edges": 431684,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 3662,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD1.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642171,
+                "vertices": 523738,
+                "non_manifold_edges": 368943,
+                "boundary_edges": 368943,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 92306,
+                  "non_manifold_edges": 95579,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD2.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345785,
+                "vertices": 348927,
+                "non_manifold_edges": 315481,
+                "boundary_edges": 315481,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001622200012207e-06,
+                  "boundary_edges": 227436,
+                  "non_manifold_edges": 228416,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD3.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148193,
+                "vertices": 174748,
+                "non_manifold_edges": 173195,
+                "boundary_edges": 173195,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0002656936645506e-06,
+                  "boundary_edges": 162853,
+                  "non_manifold_edges": 162853,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          }
+        ],
+        "reopened_fbx": [
+          {
+            "file": "LOD0.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0",
+                "triangles": 987958,
+                "vertices": 701925,
+                "non_manifold_edges": 388268,
+                "boundary_edges": 388268,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 3662,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2906546592712402,
+                -2.1877472400665283,
+                -3.566289024092839e-07
+              ],
+              [
+                2.290654420852661,
+                2.187747001647949,
+                10.000000953674316
+              ]
+            ]
+          },
+          {
+            "file": "LOD1.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642171,
+                "vertices": 516219,
+                "non_manifold_edges": 362411,
+                "boundary_edges": 362411,
+                "loose_vertices": 231,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 92088,
+                  "non_manifold_edges": 95361,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.290642261505127,
+                -2.1877472400665283,
+                -3.566289024092839e-07
+              ],
+              [
+                2.2905688285827637,
+                2.187747001647949,
+                10.000000953674316
+              ]
+            ]
+          },
+          {
+            "file": "LOD2.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345785,
+                "vertices": 341870,
+                "non_manifold_edges": 309573,
+                "boundary_edges": 309573,
+                "loose_vertices": 751,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001622200012207e-06,
+                  "boundary_edges": 227244,
+                  "non_manifold_edges": 228224,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2905049324035645,
+                -2.189199209213257,
+                0.00041258434066548944
+              ],
+              [
+                2.290950059890747,
+                2.187747001647949,
+                10.002035140991211
+              ]
+            ]
+          },
+          {
+            "file": "LOD3.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148193,
+                "vertices": 178274,
+                "non_manifold_edges": 168263,
+                "boundary_edges": 168263,
+                "loose_vertices": 11490,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0002656936645506e-06,
+                  "boundary_edges": 162789,
+                  "non_manifold_edges": 162789,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2984750270843506,
+                -2.1858158111572266,
+                -0.010941862128674984
+              ],
+              [
+                2.3143393993377686,
+                2.187747001647949,
+                9.991715431213379
+              ]
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "benchmark.json",
+            "bytes": 1406,
+            "sha256": "9ac45f107fa0dedd482c26992d309720466c1c7589e30ebaa299a152b1b5f1da"
+          },
+          {
+            "path": "collider.glb",
+            "bytes": 1828,
+            "sha256": "639dae69941535ae279d7326997dd88876fcf10e048a22bbd15d309156f63035"
+          },
+          {
+            "path": "LOD0.fbx",
+            "bytes": 61346940,
+            "sha256": "e80fa1de803bedee68239a0ccc10533f4a99f78979768fde687308af593ba0af"
+          },
+          {
+            "path": "LOD0.glb",
+            "bytes": 66323092,
+            "sha256": "55e21af55ea11d4b02b5f27e887c2d71948b138126fa35946bb4ed35c4101ae7"
+          },
+          {
+            "path": "LOD1.fbx",
+            "bytes": 50724780,
+            "sha256": "cb03213ebe03bdba33c167958bf9c8fd930ca2cfa44210114e781ab99489ec0e"
+          },
+          {
+            "path": "LOD1.glb",
+            "bytes": 55492824,
+            "sha256": "bb4e679a994d4524315acf445fed1528268c645a4ff768dcf2473d1420849c48"
+          },
+          {
+            "path": "LOD2.fbx",
+            "bytes": 41215788,
+            "sha256": "59b7ee7aa3414e8e4aa0aa1cca5796b90e52167219dcc433c1d95ace295b5203"
+          },
+          {
+            "path": "LOD2.glb",
+            "bytes": 46342240,
+            "sha256": "60ca4effce8223a4350e758017c52db6693ed7b9f2191916a5ccb220e5ee25ff"
+          },
+          {
+            "path": "LOD3.fbx",
+            "bytes": 32920348,
+            "sha256": "2896182f43d08fb636a03fd5bc189ae54a6693fd8827c824e8f76a1e14cbc8a9"
+          },
+          {
+            "path": "LOD3.glb",
+            "bytes": 38397404,
+            "sha256": "7f918291410f8bd17f4090fa79b8568f1cb501a935108f89d7b38071e3227a11"
+          },
+          {
+            "path": "master.blend",
+            "bytes": 120856004,
+            "sha256": "6c65de2b88f746bee8f6b6674675d1ed9d703ae0edd89286244348870f195c18"
+          },
+          {
+            "path": "mobile_back.png",
+            "bytes": 1039204,
+            "sha256": "c30cfb6431e43877896bc1400329b18af36fa560f903809fbcec2e3c90341af4"
+          },
+          {
+            "path": "mobile_back_asset.png",
+            "bytes": 569631,
+            "sha256": "b4b197fbfd5c5280d0f6491cea0db5f4db4fbcf3a49484422bbf55916d34a10d"
+          },
+          {
+            "path": "mobile_back_passes.exr",
+            "bytes": 2369585,
+            "sha256": "7eb31533d01e8040aa8213b76b8a29610271ba349c745c54b77c7be927258440"
+          },
+          {
+            "path": "mobile_front.png",
+            "bytes": 1073754,
+            "sha256": "ebbff5b28dd4954653f21aef68e233f6d9b406c7a54dab426ecedaf684bd338b"
+          },
+          {
+            "path": "mobile_front_asset.png",
+            "bytes": 588166,
+            "sha256": "dfcd57a8f92e665a1fa4a8a0ee1f517cd1ee7d44e7c3e78eae7a6144e82be40e"
+          },
+          {
+            "path": "mobile_front_passes.exr",
+            "bytes": 3665254,
+            "sha256": "45762e08e363995eb04e804ba6e582032bc0b555ffea4d566f8037c679d3225a"
+          },
+          {
+            "path": "mobile_gameplay.png",
+            "bytes": 1081045,
+            "sha256": "4660adf304d9fecaff64f3068f1d14cbc72c2dadd2fb7d6270d483ce20580ba0"
+          },
+          {
+            "path": "mobile_gameplay_asset.png",
+            "bytes": 617683,
+            "sha256": "2d00de6a843e63fd5661f2593507c097cf86aa0fd04798121420127a15767c50"
+          },
+          {
+            "path": "mobile_gameplay_passes.exr",
+            "bytes": 2430423,
+            "sha256": "d0b1f29d81cc86074e34157310ae3c3127af12c9fc7e08a0be0e19a398667794"
+          },
+          {
+            "path": "mobile_side.png",
+            "bytes": 854822,
+            "sha256": "637aa97e7cf057013ea3d70b4305082da0abc3677c1c735ed8a314c5119069b2"
+          },
+          {
+            "path": "mobile_side_asset.png",
+            "bytes": 538762,
+            "sha256": "54d9f3714c07ecbf4739fd5920189708c73d002cee8d6c13df0c2fb7e82a2351"
+          },
+          {
+            "path": "mobile_side_passes.exr",
+            "bytes": 2144766,
+            "sha256": "068c9e82974c731b8ec3a545b9fd27f42dfe8be6c4c17f60310aae786be87f68"
+          },
+          {
+            "path": "mobile_three_quarter.png",
+            "bytes": 1121582,
+            "sha256": "559b0f9047c0ea1a5984d8c3bf35cff5a6aae8f438564424a003f5faaaba9968"
+          },
+          {
+            "path": "mobile_three_quarter_asset.png",
+            "bytes": 638624,
+            "sha256": "6f376ffa5ad9c2751132c6e06ecb27437fe30eb7d9fdb1d4d7b39b579c0f2007"
+          },
+          {
+            "path": "mobile_three_quarter_passes.exr",
+            "bytes": 2540830,
+            "sha256": "27a149cc500695d7dc7a42665e7e1565d4547a0206af4cc0f33ed68afe41fe25"
+          },
+          {
+            "path": "mobile_top.png",
+            "bytes": 642020,
+            "sha256": "9012d4ce2cc7a8e873d5224274408fb21fc136525318a88759f59ca499eb1ffb"
+          },
+          {
+            "path": "mobile_top_asset.png",
+            "bytes": 343920,
+            "sha256": "32441131922b66b940e3cbf799fafa5e0ac1d2294b18343068a8b6d95c29a72c"
+          },
+          {
+            "path": "mobile_top_passes.exr",
+            "bytes": 1304270,
+            "sha256": "1ae4756cc3545957f255d3c7c1849ae07fea84387dd74a996cb3980825a2ca45"
+          },
+          {
+            "path": "pc1440_back.png",
+            "bytes": 3073945,
+            "sha256": "3da073bd49c908bfbd3ac67ae4a732494858a18d363672203e63892933dc5a1a"
+          },
+          {
+            "path": "pc1440_back_asset.png",
+            "bytes": 2088731,
+            "sha256": "672a690d0e21978966b6d591be470319a553f0a12e768717522e85e5c7f8a4d0"
+          },
+          {
+            "path": "pc1440_back_passes.exr",
+            "bytes": 9095155,
+            "sha256": "dffa7517854efb21d319099169e7ddddca4bbe41010cfe635ba51240471a0479"
+          },
+          {
+            "path": "pc1440_front.png",
+            "bytes": 3210305,
+            "sha256": "bfec438f38a35cd4d256cbc9c3eaf347a6413c6200f69118d57459ac6e1359da"
+          },
+          {
+            "path": "pc1440_front_asset.png",
+            "bytes": 2175457,
+            "sha256": "cc9cfcd96968fe22ff49c266e8a040a4d1bcfc023dae7b0dba5403a853033f4e"
+          },
+          {
+            "path": "pc1440_front_passes.exr",
+            "bytes": 9035502,
+            "sha256": "bc53eb6b63f39f070c848040422e62b275781c295f3a9414810b4e4467ece8e8"
+          },
+          {
+            "path": "pc1440_gameplay.png",
+            "bytes": 3301819,
+            "sha256": "58a9a699a0f95e024748f1a7b7dee15a84337a57d9d2b26bc236cb3a16094680"
+          },
+          {
+            "path": "pc1440_gameplay_asset.png",
+            "bytes": 2285166,
+            "sha256": "cd44ece1f186e96d17795abbdf36ba2df350e46b596b7fce550c723c6fb46d73"
+          },
+          {
+            "path": "pc1440_gameplay_passes.exr",
+            "bytes": 9257119,
+            "sha256": "0589628388160da9d7384200d884ca5b3cf28107752a0fb4c876c0e8943db3b0"
+          },
+          {
+            "path": "pc1440_side.png",
+            "bytes": 2590616,
+            "sha256": "69862e2ca7e1bb083296436e7d3fc756a1be155551bb77c05591089c7e215a57"
+          },
+          {
+            "path": "pc1440_side_asset.png",
+            "bytes": 1972432,
+            "sha256": "cd0d740d5a9628afad7aaf45a6a5a74ce0cad2f1f45511c829b7ff613ffdadda"
+          },
+          {
+            "path": "pc1440_side_passes.exr",
+            "bytes": 8174126,
+            "sha256": "500c1c6b055b4a818cfc2dec5a5fdf7d5210706941f94347df5051b82cbbc870"
+          },
+          {
+            "path": "pc1440_three_quarter.png",
+            "bytes": 3421715,
+            "sha256": "de93c6989618e2051b673e7adefe99867ec38a01195e9e6caad8cb60eb48ad2d"
+          },
+          {
+            "path": "pc1440_three_quarter_asset.png",
+            "bytes": 2351663,
+            "sha256": "367c505ae9a1b5d36037f07e164206b929aa0df17e7413962524d2c9436fd24f"
+          },
+          {
+            "path": "pc1440_three_quarter_passes.exr",
+            "bytes": 9683030,
+            "sha256": "83af1a93e49cb194f264f51c9ee511a5110924e3fa010d3edaaf6c566a7b028b"
+          },
+          {
+            "path": "pc1440_top.png",
+            "bytes": 1783661,
+            "sha256": "5d266d7dbcd8ada3edcfb352535df19d03eaec3d74fd627cc5b439e72a518aa8"
+          },
+          {
+            "path": "pc1440_top_asset.png",
+            "bytes": 1280882,
+            "sha256": "b385f3959fdad55afbe64f9163721773c21aaac570c0c513704c4aa8592699fa"
+          },
+          {
+            "path": "pc1440_top_passes.exr",
+            "bytes": 4952422,
+            "sha256": "447e4c5fb180ffbb50c6d167fe607dd59e714870d9c8636dae9ae7ffbc5790e5"
+          },
+          {
+            "path": "raw.blend",
+            "bytes": 124807980,
+            "sha256": "11ab48c59f53011306642066dd0f45e6635def3243ed5aca470cf8f28666be3e"
+          },
+          {
+            "path": "request.json",
+            "bytes": 14741,
+            "sha256": "a78739eb1229697b88ea8ef33e3f239fc965877f7780e22a014e2419b9733821"
+          },
+          {
+            "path": "textures/texture_000.png",
+            "bytes": 28231957,
+            "sha256": "08aaef6ce99a9f9f454cff7a593070adb04f0b37d3e26f8ce12dbca5f4dcba21"
+          },
+          {
+            "path": "textures/texture_001.png",
+            "bytes": 8987200,
+            "sha256": "4e95ba008e14fb68b130f8f0065922c3b59210afef6cc44dda8c13ede1d433b1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "985d165502dd461a9cb58304cadc91e7",
+      "kind": "blender",
+      "status": "REVIEW_REQUIRED",
+      "resources": {
+        "resource": "cpu",
+        "started_at": "2026-10-21T10:38:17.570975+00:00",
+        "finished_at": "2026-10-21T10:42:12.297549+00:00",
+        "duration_seconds": 234.7340000000113,
+        "ram_peak_used_bytes": 59413151744,
+        "worker_tree_peak_rss_bytes": 4740567040
+      },
+      "qa": {
+        "status": "NEEDS_REVIEW",
+        "input_sha256": "45c354248cecd06d99c7031f9d8856777319546fa9767374c356c6994b2d4b2f",
+        "script_sha256": "483a7f4465f9cb7874e3957b668af477e8d18b86861235225591b092d7a73d9d",
+        "blender_version": "4.5.14 LTS",
+        "dimensions_xyz_m_blender": [
+          4.581320762634277,
+          4.375492572784424,
+          10
+        ],
+        "normalization": {
+          "applied": true,
+          "target_height_m": 10,
+          "scale": 9.972215223275898,
+          "yaw_degrees": 0
+        },
+        "before": [
+          {
+            "name": "geometry_0",
+            "triangles": 988080,
+            "vertices": 702908,
+            "non_manifold_edges": 389998,
+            "boundary_edges": 389998,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.0027861595153809e-07,
+              "boundary_edges": 0,
+              "non_manifold_edges": 3657,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "after": [
+          {
+            "name": "geometry_0",
+            "triangles": 988080,
+            "vertices": 702908,
+            "non_manifold_edges": 389998,
+            "boundary_edges": 389998,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 3657,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "channels": {
+              "base_color": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_000.png",
+                    "source_name": "Image_0",
+                    "color_space": "sRGB",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1
+                ]
+              },
+              "metallic": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0
+              },
+              "roughness": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.5
+              },
+              "normal": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "emissive": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            },
+            "ao": "NOT_TESTED",
+            "plausibility": "NOT_TESTED",
+            "status": "NEEDS_REVIEW"
+          }
+        ],
+        "lods": [
+          {
+            "level": 1,
+            "ratio": 0.65,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642252,
+                "vertices": 517405,
+                "non_manifold_edges": 364685,
+                "boundary_edges": 364550,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 91598,
+                  "non_manifold_edges": 95022,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          },
+          {
+            "level": 2,
+            "ratio": 0.35,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345828,
+                "vertices": 343025,
+                "non_manifold_edges": 312065,
+                "boundary_edges": 311646,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001449584960936e-06,
+                  "boundary_edges": 230492,
+                  "non_manifold_edges": 231925,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          },
+          {
+            "level": 3,
+            "ratio": 0.15,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148212,
+                "vertices": 178717,
+                "non_manifold_edges": 174928,
+                "boundary_edges": 168372,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0009260177612305e-06,
+                  "boundary_edges": 163446,
+                  "non_manifold_edges": 169991,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "quality": "NEEDS_REVIEW",
+            "baking": "NOT_TESTED"
+          }
+        ],
+        "framing": [
+          {
+            "resolution": "mobile",
+            "view": "front",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "three_quarter",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "side",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "back",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "top",
+            "status": "PASS"
+          },
+          {
+            "resolution": "mobile",
+            "view": "gameplay",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "front",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "three_quarter",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "side",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "back",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "top",
+            "status": "PASS"
+          },
+          {
+            "resolution": "pc1440",
+            "view": "gameplay",
+            "status": "PASS"
+          }
+        ],
+        "rendered": [
+          "mobile_front_passes.exr",
+          "mobile_front_asset.png",
+          "mobile_front.png",
+          "mobile_three_quarter_passes.exr",
+          "mobile_three_quarter_asset.png",
+          "mobile_three_quarter.png",
+          "mobile_side_passes.exr",
+          "mobile_side_asset.png",
+          "mobile_side.png",
+          "mobile_back_passes.exr",
+          "mobile_back_asset.png",
+          "mobile_back.png",
+          "mobile_top_passes.exr",
+          "mobile_top_asset.png",
+          "mobile_top.png",
+          "mobile_gameplay_passes.exr",
+          "mobile_gameplay_asset.png",
+          "mobile_gameplay.png",
+          "pc1440_front_passes.exr",
+          "pc1440_front_asset.png",
+          "pc1440_front.png",
+          "pc1440_three_quarter_passes.exr",
+          "pc1440_three_quarter_asset.png",
+          "pc1440_three_quarter.png",
+          "pc1440_side_passes.exr",
+          "pc1440_side_asset.png",
+          "pc1440_side.png",
+          "pc1440_back_passes.exr",
+          "pc1440_back_asset.png",
+          "pc1440_back.png",
+          "pc1440_top_passes.exr",
+          "pc1440_top_asset.png",
+          "pc1440_top.png",
+          "pc1440_gameplay_passes.exr",
+          "pc1440_gameplay_asset.png",
+          "pc1440_gameplay.png"
+        ],
+        "checks": {
+          "export_reopen": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "lod_silhouette_error": "NOT_TESTED",
+          "normal_bake": "NOT_TESTED",
+          "unity": "NOT_TESTED",
+          "human_review": "NOT_TESTED",
+          "pbr_reconstruction": "NOT_TESTED",
+          "modular_connectors": "NOT_TESTED",
+          "fbx_reopen": "PASS",
+          "fbx_pbr_unity_mapping": "NOT_TESTED"
+        },
+        "reopened": [
+          {
+            "file": "collider.glb",
+            "meshes": [
+              {
+                "name": "COLLIDER_AABB",
+                "triangles": 12,
+                "vertices": 24,
+                "non_manifold_edges": 24,
+                "boundary_edges": 24,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 0,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD0.glb",
+            "meshes": [
+              {
+                "name": "geometry_0",
+                "triangles": 988080,
+                "vertices": 734108,
+                "non_manifold_edges": 434582,
+                "boundary_edges": 434582,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 3657,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD1.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642252,
+                "vertices": 524415,
+                "non_manifold_edges": 370504,
+                "boundary_edges": 370504,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 91756,
+                  "non_manifold_edges": 95045,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD2.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345828,
+                "vertices": 349584,
+                "non_manifold_edges": 316902,
+                "boundary_edges": 316902,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001449584960936e-06,
+                  "boundary_edges": 230652,
+                  "non_manifold_edges": 231666,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          },
+          {
+            "file": "LOD3.glb",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148212,
+                "vertices": 174303,
+                "non_manifold_edges": 172782,
+                "boundary_edges": 172782,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0009260177612305e-06,
+                  "boundary_edges": 163472,
+                  "non_manifold_edges": 163472,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ]
+          }
+        ],
+        "reopened_fbx": [
+          {
+            "file": "LOD0.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0",
+                "triangles": 988080,
+                "vertices": 702908,
+                "non_manifold_edges": 389998,
+                "boundary_edges": 389998,
+                "loose_vertices": 0,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 0,
+                  "non_manifold_edges": 3657,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2906603813171387,
+                -2.1877472400665283,
+                -3.566289024092839e-07
+              ],
+              [
+                2.2906603813171387,
+                2.187747001647949,
+                10.000000953674316
+              ]
+            ]
+          },
+          {
+            "file": "LOD1.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642252,
+                "vertices": 517405,
+                "non_manifold_edges": 364550,
+                "boundary_edges": 364550,
+                "loose_vertices": 267,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1e-06,
+                  "boundary_edges": 91598,
+                  "non_manifold_edges": 94887,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2906339168548584,
+                -2.1877472400665283,
+                -3.566289024092839e-07
+              ],
+              [
+                2.2905149459838867,
+                2.187747001647949,
+                10.000000953674316
+              ]
+            ]
+          },
+          {
+            "file": "LOD2.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345828,
+                "vertices": 343025,
+                "non_manifold_edges": 311646,
+                "boundary_edges": 311646,
+                "loose_vertices": 822,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0001449584960936e-06,
+                  "boundary_edges": 230492,
+                  "non_manifold_edges": 231506,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.289585590362549,
+                -2.1877472400665283,
+                -0.0014489878667518497
+              ],
+              [
+                2.2911784648895264,
+                2.187747001647949,
+                10.000000953674316
+              ]
+            ]
+          },
+          {
+            "file": "LOD3.fbx",
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148212,
+                "vertices": 178717,
+                "non_manifold_edges": 168372,
+                "boundary_edges": 168372,
+                "loose_vertices": 12134,
+                "uv_layers": 1,
+                "materials": [
+                  "Material_0"
+                ],
+                "position_weld_analysis": {
+                  "epsilon_local_m": 1.0009260177612305e-06,
+                  "boundary_edges": 163446,
+                  "non_manifold_edges": 163446,
+                  "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+                }
+              }
+            ],
+            "bounds_blender_m": [
+              [
+                -2.2902519702911377,
+                -2.19588303565979,
+                -0.008387922309339046
+              ],
+              [
+                2.2909626960754395,
+                2.187747001647949,
+                10.000872611999512
+              ]
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "benchmark.json",
+            "bytes": 1406,
+            "sha256": "9ac45f107fa0dedd482c26992d309720466c1c7589e30ebaa299a152b1b5f1da"
+          },
+          {
+            "path": "collider.glb",
+            "bytes": 1828,
+            "sha256": "e21f1b362b2c12e5eb77083a14b74aef7be61d1f5f1f24a2ca0c1f165267cd57"
+          },
+          {
+            "path": "LOD0.fbx",
+            "bytes": 61406364,
+            "sha256": "15a1765ec3a45b13045e0023809bbc55ce21835f91d82070ea321c7026092c51"
+          },
+          {
+            "path": "LOD0.glb",
+            "bytes": 66408436,
+            "sha256": "7e4dccf159accf0e21eaac27fa97991bdb9626522e4210ed6270bc28275b294f"
+          },
+          {
+            "path": "LOD1.fbx",
+            "bytes": 50781228,
+            "sha256": "5bdec7198eb94b7ed1f4bd2a2841a8957d503fcdc8de197aef9e45f4bf8a7a77"
+          },
+          {
+            "path": "LOD1.glb",
+            "bytes": 55548336,
+            "sha256": "bff97ac938bfe93d39f40c46df44e9f58499b4981d8bed99752c1c57c7837770"
+          },
+          {
+            "path": "LOD2.fbx",
+            "bytes": 41280220,
+            "sha256": "eee78e0a85bbf2aff43fdaa4793c9394b52f3a1e88041cea966df55114790fad"
+          },
+          {
+            "path": "LOD2.glb",
+            "bytes": 46396652,
+            "sha256": "a8ac6cd68c4856e58bf45a2f2ed5e9b0d7fa5ae06418e0197e5ec8c4c125ed68"
+          },
+          {
+            "path": "LOD3.fbx",
+            "bytes": 32947324,
+            "sha256": "8a2c49ad1b55ea7a02289ae9d5116a587b78acb6594fb57503b0d785eb9b4d81"
+          },
+          {
+            "path": "LOD3.glb",
+            "bytes": 38416268,
+            "sha256": "c7bc04a49b3588b2f90d62840eafba3979e6e04efcbe0b4965a8479f9d923032"
+          },
+          {
+            "path": "master.blend",
+            "bytes": 120919139,
+            "sha256": "e0da8874c355d12d8b2173a460c001ea783894a8b1d0f5c97369a337fce3e843"
+          },
+          {
+            "path": "mobile_back.png",
+            "bytes": 1043552,
+            "sha256": "3d9511e0584c8d564ed2e1a6d15a27f4b45abf1f7a6d9959f30ecde477de3159"
+          },
+          {
+            "path": "mobile_back_asset.png",
+            "bytes": 569442,
+            "sha256": "65e6c30277c1418f74c78e74a04657a69c0fc0661022b606afaf7d60c74ac588"
+          },
+          {
+            "path": "mobile_back_passes.exr",
+            "bytes": 2370317,
+            "sha256": "64710510b834b6a4cbb8bb221d6a9dabedb686398f0e83e7f593efbefa8e0b87"
+          },
+          {
+            "path": "mobile_front.png",
+            "bytes": 1071106,
+            "sha256": "adf8455df96f4e11c52f13dc0423102f933594e4fd39ad3b0bb5370a4dc2db4d"
+          },
+          {
+            "path": "mobile_front_asset.png",
+            "bytes": 588046,
+            "sha256": "e6fcbb1e802b1285d9be6813d2d6e63b442eef18092b68ba84ad89202f4c4c44"
+          },
+          {
+            "path": "mobile_front_passes.exr",
+            "bytes": 3665121,
+            "sha256": "b2981ffc00b879648364c68c7d18ca6d55ec4f3f93c2b0d57c11d0fb8116357a"
+          },
+          {
+            "path": "mobile_gameplay.png",
+            "bytes": 1079679,
+            "sha256": "bf2fd8f1d7d3049c40d0475fe9c76f37c7df8acad5194a5dad2d0971768baa79"
+          },
+          {
+            "path": "mobile_gameplay_asset.png",
+            "bytes": 617592,
+            "sha256": "6e413c9238a1a507989a4e266b4d1bfedbaf3ec1b50a507e53e6753b76d154a3"
+          },
+          {
+            "path": "mobile_gameplay_passes.exr",
+            "bytes": 2429186,
+            "sha256": "d89734caea0b834909f2baa3ccd68757696163b3fe8af8c3767759d705da1643"
+          },
+          {
+            "path": "mobile_side.png",
+            "bytes": 855667,
+            "sha256": "a7bbb2f6c9c718f39d2afd4237fa6054893ac652b4dc2d8ac9759dfc014ff5ec"
+          },
+          {
+            "path": "mobile_side_asset.png",
+            "bytes": 538725,
+            "sha256": "ec132c72c4769459fcfbb35898433a9d2e73f897585aec92d4b119b81299d96c"
+          },
+          {
+            "path": "mobile_side_passes.exr",
+            "bytes": 2148646,
+            "sha256": "75712f62129c6eb21ad4b43512ae0b8486ccec8a04c33d9c421f7aab0f47fffd"
+          },
+          {
+            "path": "mobile_three_quarter.png",
+            "bytes": 1118723,
+            "sha256": "410c2231ad2e0336f01fddd1ab40f7ca6a31fcb68ba82d5d453f9e70e73c28da"
+          },
+          {
+            "path": "mobile_three_quarter_asset.png",
+            "bytes": 638474,
+            "sha256": "e082219499fe47ee9fc952634b717def6d741c654271b3b4ee1b609a6658178a"
+          },
+          {
+            "path": "mobile_three_quarter_passes.exr",
+            "bytes": 2541444,
+            "sha256": "6b9ec60b2058cd6ec749a5bb6f0883d596a884b66bec80cb150495293c6465b3"
+          },
+          {
+            "path": "mobile_top.png",
+            "bytes": 643110,
+            "sha256": "d0916987fde79ae68f3adaa13e07109b1b3efaddd407954e25ebd2be7e487192"
+          },
+          {
+            "path": "mobile_top_asset.png",
+            "bytes": 343769,
+            "sha256": "c5a0aa53d662b4106d2cbafabdc4f22dc025937daf8266554ad1e4738d68644a"
+          },
+          {
+            "path": "mobile_top_passes.exr",
+            "bytes": 1303983,
+            "sha256": "364d85a816f728e77d0a763c01e01c7b1cbede735b7dd69acfaee05f33f23e04"
+          },
+          {
+            "path": "pc1440_back.png",
+            "bytes": 3071575,
+            "sha256": "b9d0cd9a48e17c71ddd6b2d424c75c607ad207bb608be96bad2a28d2e9d426be"
+          },
+          {
+            "path": "pc1440_back_asset.png",
+            "bytes": 2089181,
+            "sha256": "618ec4c34e3d10e305a39ece97e45e6e0e74779c9d51096964fd338113b7d534"
+          },
+          {
+            "path": "pc1440_back_passes.exr",
+            "bytes": 9092837,
+            "sha256": "9e44ae92c631efea1f0fdb7317e8dd59c0ddfd3dd69e7814ab2a9cfb76bfe570"
+          },
+          {
+            "path": "pc1440_front.png",
+            "bytes": 3209325,
+            "sha256": "246de22b2a854efb03861159383ec14551529fa45eec4f25e73e679bca83cba6"
+          },
+          {
+            "path": "pc1440_front_asset.png",
+            "bytes": 2176025,
+            "sha256": "2d09defcaae408807c1b545b64912e7978ea545cd099a650a4e8cd913944c398"
+          },
+          {
+            "path": "pc1440_front_passes.exr",
+            "bytes": 9035133,
+            "sha256": "190123fc989219fc857f9dce27b564b9d7824dc54b70ffe3fedde1db82d84954"
+          },
+          {
+            "path": "pc1440_gameplay.png",
+            "bytes": 3302066,
+            "sha256": "2a6dd4b6e7693fbb3c48dc61e101cb72a529c8934e178e60029335bb8bd99882"
+          },
+          {
+            "path": "pc1440_gameplay_asset.png",
+            "bytes": 2284877,
+            "sha256": "2ec5cb2222d726191b9bd7f63e3fee4329f6539d86d63887c76fc8b1ee4929d6"
+          },
+          {
+            "path": "pc1440_gameplay_passes.exr",
+            "bytes": 9255511,
+            "sha256": "cb05057b1027b58990fc693bbcc56d1ccb24441aef6f58db779dcb749cab07d6"
+          },
+          {
+            "path": "pc1440_side.png",
+            "bytes": 2592760,
+            "sha256": "8e82cd88314a2c650eb52a1d0cbfa197e50c6610dee0f66b5c68da9d9d795e55"
+          },
+          {
+            "path": "pc1440_side_asset.png",
+            "bytes": 1972296,
+            "sha256": "2426f412ffb5f7f431ee6012c8fe3d03daceb37d292bec676ddb839c162c6b0f"
+          },
+          {
+            "path": "pc1440_side_passes.exr",
+            "bytes": 8175229,
+            "sha256": "28efeb70921b808b0e87c5b0ba2c8ace6e1fe1f29840a8468e10241c9fd4e6f8"
+          },
+          {
+            "path": "pc1440_three_quarter.png",
+            "bytes": 3421391,
+            "sha256": "cc0a9d0b95388ea13ab2554cb5c16f3e8b2717f1b91f4e53625785c79e9d5720"
+          },
+          {
+            "path": "pc1440_three_quarter_asset.png",
+            "bytes": 2352412,
+            "sha256": "ab0ff58c0c75a2bd94ab4bff340a32c29cb7848f2abdbc9b3ab12f4d9e903fa3"
+          },
+          {
+            "path": "pc1440_three_quarter_passes.exr",
+            "bytes": 9682371,
+            "sha256": "45387bcd0bedf9f9fb4f24692c48b907e4f774e4e9519e65068728a6ce99748e"
+          },
+          {
+            "path": "pc1440_top.png",
+            "bytes": 1784582,
+            "sha256": "19d7b1b8135ec6559870530c5ff36b30555a3fd7fe16b5e08935aafa248bdad9"
+          },
+          {
+            "path": "pc1440_top_asset.png",
+            "bytes": 1281027,
+            "sha256": "ab6f98237d37a5249a64935d0055ce0eaaf5b25237f7869b93c8fcd02b73e46d"
+          },
+          {
+            "path": "pc1440_top_passes.exr",
+            "bytes": 4950055,
+            "sha256": "cf1a95db2badeb3829e23de5595506c90555e32303b9a12ecda9ee8f2a059f06"
+          },
+          {
+            "path": "raw.blend",
+            "bytes": 124871603,
+            "sha256": "ad9e5c3dc16f2ac54a7bc33fee1f854dd06d39ee4ecc801dcb919949b0727234"
+          },
+          {
+            "path": "request.json",
+            "bytes": 14711,
+            "sha256": "de8d1f079fff2785b896d1c932058a7c7d612f86c4656b9508aec97ce1b2617b"
+          },
+          {
+            "path": "textures/texture_000.png",
+            "bytes": 28252980,
+            "sha256": "24ea66b2dc6c135ffa6a652e299f24bf92e234dc361d657c18a7e37d5c517794"
+          },
+          {
+            "path": "textures/texture_001.png",
+            "bytes": 9020807,
+            "sha256": "54861abe1cfec9d6eb0c4b4506805fa40f08cd6e33036d268fb71b9aa82fc226"
+          }
+        ]
+      }
+    },
+    {
+      "id": "4e694499b28a4f0b9c9668e66cb1099f",
+      "kind": "inference",
+      "status": "REVIEW_REQUIRED",
+      "resources": {
+        "resource": "gpu",
+        "started_at": "2026-10-21T10:38:17.569016+00:00",
+        "finished_at": "2026-10-21T10:42:11.161213+00:00",
+        "duration_seconds": 233.59300000000803,
+        "ram_peak_used_bytes": 59413336064,
+        "worker_tree_peak_rss_bytes": 23366483968
+      },
+      "generation": {
+        "status": "GENERATED_NEEDS_REVIEW",
+        "purpose": "evaluation_only",
+        "request": {
+          "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\projects\\runavelle\\assets\\references\\versions\\2da306d8d3fe45578a2490a67115e023\\source.png",
+          "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\jobs\\4e694499b28a4f0b9c9668e66cb1099f\\output",
+          "seed": 42,
+          "effective_config": {
+            "schema_version": 1,
+            "quality": "Maximum",
+            "quality_lock": true,
+            "engine_id": "trellis2_community",
+            "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+            "checkpoint": {
+              "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+              "files": {
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+              }
+            },
+            "input_prompt": "Archer Tower T3 Runavelle. Supplied concept reference. Single and Batch Maximum reproducibility benchmark; technical QA only.",
+            "reference_hashes": [
+              "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+            ],
+            "project_style_hash": "67c7b53d110d6defdc6422a111bc8a4de4025b92e8d1fb01b286cdfa5e732c06",
+            "resolution": 1024,
+            "inference_steps": 32,
+            "guidance": {
+              "sparse_structure_sampler": {
+                "steps": 32,
+                "guidance_strength": 7.5,
+                "guidance_rescale": 0.7,
+                "guidance_interval": [
+                  0.6,
+                  1
+                ],
+                "rescale_t": 5
+              },
+              "shape_slat_sampler": {
+                "steps": 32,
+                "guidance_strength": 7.5,
+                "guidance_rescale": 0.5,
+                "guidance_interval": [
+                  0.6,
+                  1
+                ],
+                "rescale_t": 3
+              },
+              "tex_slat_sampler": {
+                "steps": 32,
+                "guidance_strength": 1,
+                "guidance_rescale": 0,
+                "guidance_interval": [
+                  0.6,
+                  0.9
+                ],
+                "rescale_t": 3
+              }
+            },
+            "seeds": [
+              42
+            ],
+            "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+            "geometry": {
+              "pipeline_type": "1024_cascade",
+              "octree_depth": null,
+              "decode_chunk_size": null,
+              "export_triangle_target": 1000000
+            },
+            "texture": {
+              "size": 4096,
+              "pbr": "native basecolor/metallic-roughness"
+            },
+            "blender": {
+              "enabled": true,
+              "profile": "existing_quality_pipeline_v1",
+              "height_m": 10,
+              "render_views": [
+                "front",
+                "three_quarter",
+                "side",
+                "back",
+                "top",
+                "gameplay"
+              ],
+              "render_resolutions": [
+                "mobile",
+                "pc1440"
+              ],
+              "bake": "not_requested"
+            },
+            "lod": {
+              "ratios": [
+                0.65,
+                0.35,
+                0.15
+              ]
+            },
+            "export": {
+              "formats": [
+                "glb",
+                "fbx"
+              ],
+              "preserve_master": true
+            },
+            "candidate_count": 1,
+            "qa": {
+              "mesh_validity": true,
+              "geometry_defects": true,
+              "dimensions": true,
+              "uv_texture_inventory": true,
+              "export_reopen": true,
+              "per_asset": true,
+              "human_concept_approval": true,
+              "human_master_approval": true,
+              "visual_parity": "NOT_TESTED"
+            },
+            "seed": 42
+          },
+          "effective_config_hash": "998b986f722eeef83c3b168a24edc56fc17f7ee06a1dfa64726244f2c41d5bd1",
+          "steps": 32,
+          "pipeline_type": "1024_cascade",
+          "texture_size": 4096,
+          "export_triangle_target": 1000000,
+          "supplied_alpha_input": true,
+          "input_review": "NEEDS_REVIEW",
+          "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\jobs\\4e694499b28a4f0b9c9668e66cb1099f\\request.json",
+          "engine_path": "C:\\Users\\Winka\\Tools\\trellis2\\code",
+          "purpose": "evaluation_only",
+          "allow_existing_rmbg_evaluation": false,
+          "min_free_vram_gb": 10
+        },
+        "network": "HF and Transformers offline",
+        "script_sha256": "ff6fef587b6be549dcac6d9ef38d3c9bc7f407627b80253cfdfea573cb8b03ae",
+        "source_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+        "parity_with_meshy": "NOT_TESTED",
+        "environment": {
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "free_vram_start_bytes": 15767437312,
+          "total_vram_bytes": 17094475776
+        },
+        "engine_source_files": {
+          "trellis2/__init__.py": "af421f21dc3013dd9f7b7d66d05aa917eca03745e5563ef7fc9c68d5565c0a27",
+          "trellis2/datasets/__init__.py": "68966337b9986e6cb610c5482528701217c46eefb7363f96d0ead4bc7d5a9731",
+          "trellis2/datasets/components.py": "04f4733854a1e3952d5921af6f3b357d7e499276d8f43f2b463e7e607d53c430",
+          "trellis2/datasets/flexi_dual_grid.py": "bdd1c01147f5174532663ec99d3e29526fd186170794a066bf0441c31b898ad7",
+          "trellis2/datasets/sparse_structure_latent.py": "45f051ce4ec39b81d47280574b92f5ab74f424c9c48caf4debd299e02edb7c0e",
+          "trellis2/datasets/sparse_voxel_pbr.py": "ba6eea1f33198bfdbd849ef18595c1f263928b35f081b60150e5e6348205b369",
+          "trellis2/datasets/structured_latent.py": "1f4f385bae270f13a804879d7db97c02e08e085c9eb8985783caec97aa1d9d91",
+          "trellis2/datasets/structured_latent_shape.py": "98abcdccaf4c058d7f2600ca31307468fd46626534d65bac8db139a99a58f595",
+          "trellis2/datasets/structured_latent_svpbr.py": "8cc9463e98a83e44daf0e2f8d3581be0bc42c61e6d38445e93279c873ee9a0c1",
+          "trellis2/models/__init__.py": "030b271e5c1f2e4cc46965815d0dbd5b78a2c994726d49644d068a2562cdbbb8",
+          "trellis2/models/sc_vaes/fdg_vae.py": "a853a82db565bd13440ce0ff764915be4da667c5b63bb7c1439b210ed999d753",
+          "trellis2/models/sc_vaes/sparse_unet_vae.py": "73c2b8d18a60a5e29f00e578f92c891813d31b47ebb1e912858eddd5aa2f7625",
+          "trellis2/models/sparse_elastic_mixin.py": "42dba44d861570463581ddd60dec8d12488ffc27340019154331b594cd715d75",
+          "trellis2/models/sparse_structure_flow.py": "6c0e919301273cf7c91ed1cf4f83734d86a17843778f88f22f720e8be13432d6",
+          "trellis2/models/sparse_structure_vae.py": "69d462fca6d20e5869bca1bcfb7853efdd1ee87ec5bf624e07aa124008d88787",
+          "trellis2/models/structured_latent_flow.py": "759e684872ed7ade39c19425dd01563c52810249b6fe8ada7920fe3b07edc00c",
+          "trellis2/modules/attention/__init__.py": "6451c105150b89899912702d5093745dfde7b41baf5579ac081fbd0f8bfee910",
+          "trellis2/modules/attention/config.py": "af5865f3fd686b9f1b5cedb617e0078aa879ff2ec0b81c5fde7a619eadaa4635",
+          "trellis2/modules/attention/full_attn.py": "334e2098567a5bc1b54e72f0b48ef9db99e1dba4c2859ebecbfbae3bd842a247",
+          "trellis2/modules/attention/modules.py": "59ad76fa845d29b50e56de8028e7164a1d03ab1f13c51a6bbe80e46790b128ed",
+          "trellis2/modules/attention/rope.py": "ca599e09b8860292e2568e0830ab1ed83fb9a56b814ba331cb89501f7139f160",
+          "trellis2/modules/image_feature_extractor.py": "b8b7d61e38cd02367498787147759e40f5a9a876cc0df9d243a15873b5b506dd",
+          "trellis2/modules/norm.py": "9d84400d1312420d0cd156d36fd8b3c2bcf2291d1d9fc89ead7f3c852c3d846e",
+          "trellis2/modules/sparse/__init__.py": "ca881f665c77607597d6a658fa547b435c5d06d3cfe9648016807f8540d45061",
+          "trellis2/modules/sparse/attention/__init__.py": "88408de0836b49350642bc92512eaf4a13667ba6322111fca1246f2cdfff94e0",
+          "trellis2/modules/sparse/attention/full_attn.py": "bcb4a9a0bab52f5233b21273cbdfae77eed3104bceb4f4009e0b8c4be612d003",
+          "trellis2/modules/sparse/attention/modules.py": "ee5381c81b6881a0f8c1232321ebbeef17c82c22baf3370f37edfeb903a3e6df",
+          "trellis2/modules/sparse/attention/rope.py": "3236815d41c82fc15b81b093b42303955eb70f47db4cc8be8a6cff1089fa0059",
+          "trellis2/modules/sparse/attention/windowed_attn.py": "d3d8b5708d6d26ec500c36141742fe2235053d2144bde48326828d7012ef3524",
+          "trellis2/modules/sparse/basic.py": "2c64324e30be2ba0216d25947ff817d8eaa41575187d4a9f656fe98bb0e01345",
+          "trellis2/modules/sparse/config.py": "f4d6c2d5febdf33424efa13689c8d5066859752ac0b552f6f69afcc1287538af",
+          "trellis2/modules/sparse/conv/__init__.py": "bc564fb4b6d67b70a1ea1adc4c779690ef89dcc89fd845b44ce9e81ebb0710eb",
+          "trellis2/modules/sparse/conv/config.py": "9f2f010405ca1fb40345431b32ffdf0d07d9946d98490330098d5262188d79c6",
+          "trellis2/modules/sparse/conv/conv.py": "fabc33b4e3e7cbafac40aedc3ce1538b769594d54416846e2b0cec0069fc3f2b",
+          "trellis2/modules/sparse/conv/conv_flex_gemm.py": "c3db47954c28a5374e6ec7bf6ea909b1fd0d80feacc26a6ade562299ad28614c",
+          "trellis2/modules/sparse/conv/conv_spconv.py": "9c85a0e7c930baeec0e57ef7fab0df4f776fefd84dab00608a694780c100fa5d",
+          "trellis2/modules/sparse/conv/conv_torchsparse.py": "ae56394eadecf6091280984b8d94304bac58164e21a69edafc98b3a891c68caf",
+          "trellis2/modules/sparse/linear.py": "bd19482757ff9c6b946510c22f9191171f6d2e25c4c432a102108537f4c01b94",
+          "trellis2/modules/sparse/nonlinearity.py": "7d23ac584db96b21285eb1021a7c805eac25157341a6ccdbadf0c4d968b91866",
+          "trellis2/modules/sparse/norm.py": "bf233e839da52b0f5352f0341f5b224f40ff32eae6c628e93f74b59b22d69a96",
+          "trellis2/modules/sparse/spatial/__init__.py": "4b030b25b7ad9192d9bae75474ec62a3e22eb2328d58f2185521a3efa8becd35",
+          "trellis2/modules/sparse/spatial/basic.py": "14557462e737a67bd7c606a89525723225e0258f54dac1a00c6ab28c99d3f1d9",
+          "trellis2/modules/sparse/spatial/spatial2channel.py": "1bb3663beacf1abcc14fa7fe5cad01bc7ed829d0bae69549bd6f87e22cbb75e5",
+          "trellis2/modules/sparse/transformer/__init__.py": "05f9bb8cbeec741bb1fdeb305a4a004a43ce9d9d8dbb84fbd1b689a4a7cd9425",
+          "trellis2/modules/sparse/transformer/blocks.py": "2ff188fe49fbcd85a7bf1115cd3bdc8b91cdc04289aaf0e1ba1ddff3caa76a44",
+          "trellis2/modules/sparse/transformer/modulated.py": "54748fcc4bc8b60bec531f9d6d2736f3c44e4df38372f79b20ec9e12669f7248",
+          "trellis2/modules/spatial.py": "69b90b07aeacbd2cbb35b70c7bdcfc93ea1af0916080aaa01d96b6477a5bc33d",
+          "trellis2/modules/transformer/__init__.py": "7c92a4178f57953fe0fcdb6e148ddbdb4e16fee2cc757641462e4703a1375ad8",
+          "trellis2/modules/transformer/blocks.py": "4cf670a7dfc4d293751413a4ca0ed0bd56f486c2d96d336ad2da54aab67501f1",
+          "trellis2/modules/transformer/modulated.py": "54c45c50eaf6d96c5bd7e73a5139052d0c301d5f3a83d2085b51ada5efc90727",
+          "trellis2/modules/utils.py": "4e2ebc1d53929a6bff8d1abab17634549abbe80c43030d96a95b0ead169d93d1",
+          "trellis2/pipelines/__init__.py": "6518faf2f879949ae333dcaae69a4cced3290286c0ad490b73e0172502f72fb1",
+          "trellis2/pipelines/base.py": "6c1a3c19565a173d833eb29f79e7fedb0670433d26980539c742005a27277125",
+          "trellis2/pipelines/rembg/__init__.py": "f1e403dc34d2961370a63be59b45dd913a6c06d0c6fe200add91e2153a2cfa87",
+          "trellis2/pipelines/rembg/BiRefNet.py": "974a160df1b8323024a5d6b15ee44f2f19c54caeebe7f5ad5c117c144edecc48",
+          "trellis2/pipelines/samplers/__init__.py": "dcb113d2b2a02d957d7a5a8e7526a345e6887613f4ef01991b047a2d89ea15ed",
+          "trellis2/pipelines/samplers/base.py": "45f7ac978bd91fae753400c16c3a4a4718d8a10c9acb18a79ed224fde24639c3",
+          "trellis2/pipelines/samplers/classifier_free_guidance_mixin.py": "b1721f1977a97500f736834b3d5a7659fc4529db795c567fc44d64974a0cd8c5",
+          "trellis2/pipelines/samplers/flow_euler.py": "18162cbb40c28b7efc3a9db62ca9c54af93c5f02d5787bb21a89e134f91a5f88",
+          "trellis2/pipelines/samplers/guidance_interval_mixin.py": "c8cb3c6575410c90c44e8d2c1ae558d2db670e097940dbc52af95f5ac600bc97",
+          "trellis2/pipelines/trellis2_image_to_3d.py": "b0d29b5a4562aaabe2824761f909669602ae43a8ff262e5e16343f209f46ab75",
+          "trellis2/renderers/__init__.py": "a81bc573050203daba25dd9f76df08315e78c4ac013cb6e2f1db1c75c875d2a2",
+          "trellis2/renderers/mesh_renderer.py": "77809cc72ee6b01b401410047670cf0b8c7f1b0db9ae0b867928896031c22b35",
+          "trellis2/renderers/pbr_mesh_renderer.py": "bffd49ffdcc8454a8ef99b53570a4fcf54a054f3a7801795df48f1a624f7ed83",
+          "trellis2/renderers/voxel_renderer.py": "f78327d3ada501f1e8c9a563b8e58f95a3dab5d04de04cf4c6b12ce230cf9896",
+          "trellis2/representations/__init__.py": "cd8be7609257982fb7adaebc4cf0c867e23c9a29839462556a261a5acf153400",
+          "trellis2/representations/mesh/__init__.py": "0303a51a2646a149e910ef880ea4a87bfbec93fd5be83aa47c16c6058bec16c3",
+          "trellis2/representations/mesh/base.py": "ea538f333b6caa30ca8935f068ee8390cebb988d9522b1422dfd077ce4cf9359",
+          "trellis2/representations/voxel/__init__.py": "6c2d7c44dfb148c80b1a72d80b5517c581ce36ee4e3268792d5082443827f9ea",
+          "trellis2/representations/voxel/voxel_model.py": "a18c11ecaf86643122cabe2d732c7421cf32a173b05fbf03df8034f2ecb7eec1",
+          "trellis2/trainers/__init__.py": "475400729a995305ecd44ffd96a47d25f30602d56a526d116f6c48f64f2c6db2",
+          "trellis2/trainers/basic.py": "b729f35db2dcc8b5e0e9759984088282d293c3478bed0931d24ad7dab34129e9",
+          "trellis2/trainers/flow_matching/flow_matching.py": "1062766156698405ad5b14a8e6a125374d434e936555b0c58ac0884a45279c22",
+          "trellis2/trainers/flow_matching/mixins/classifier_free_guidance.py": "4cc9a9e3a70e1e1cf054684facb16887dcf644418de8cdf79bf7722848bb3797",
+          "trellis2/trainers/flow_matching/mixins/image_conditioned.py": "371cea6ba9f01faee9de0bdb24545a10998e7ce0c87642991d581cf0db8a8419",
+          "trellis2/trainers/flow_matching/mixins/text_conditioned.py": "e64b33b1b2ecbf65d30c9712c0ee66041e7e10bbabbb2b8ac4fd42fe5764c78d",
+          "trellis2/trainers/flow_matching/sparse_flow_matching.py": "a7b3ed440136d8dc67dbcd2aedd7b6f833cb0a7a066b9846956a48becab96244",
+          "trellis2/trainers/utils.py": "1ff281fb31b317acc590a3fb216ce1024a1c4ae33523bf1fdbb78c2fed138729",
+          "trellis2/trainers/vae/pbr_vae.py": "b6c04419022f6597ae1f25498f16c8cf4953aebeeedfa312618d5293748340dd",
+          "trellis2/trainers/vae/shape_vae.py": "27c84ae33de001db28919a996095271da8a82b024e288adf1a2a502c6acef275",
+          "trellis2/trainers/vae/sparse_structure_vae.py": "3d667af46efbe21074ac9e3324a8e4aa9bd16fdceb904ec44249733c26c4fe11",
+          "trellis2/utils/__init__.py": "7dae68c6d35ba1e5409bac4b150470adb609c9da1125cf348e53a130eb0771de",
+          "trellis2/utils/data_utils.py": "780eba433be4e62e999b0d56360acabd12207bfad3800c6b8375131bb57c167a",
+          "trellis2/utils/dist_utils.py": "51c8d8cb74f4c83187818a467fea53bc43f25bb5b33849f0f8e07e18931d09ae",
+          "trellis2/utils/elastic_utils.py": "2449a5d6dccb35bb1ef4a366877823f345b7d24ada9786d4dc0717f43e8a7f4d",
+          "trellis2/utils/general_utils.py": "a820623a4bf06916a5280fd1f7d50f6d3fd5535fad0839327baa08d81c52694f",
+          "trellis2/utils/grad_clip_utils.py": "85acdc978cbe83842ebbaf3bdc47dd03e18b72c336feaea6e3dfc20c66158a85",
+          "trellis2/utils/loss_utils.py": "83af492cbf0d4d62aece97a9033079f14f117aa3b8b4799f9d8f5047064a627e",
+          "trellis2/utils/mesh_utils.py": "37f6e8013a24c83315ed890d4afdfabbef2f9ef4b45d049edee6a490623252ff",
+          "trellis2/utils/random_utils.py": "b1dfb6c615c6fc29f39fb8b0642a2a54a828ad762a44f8ded7e3a1ff12899db5",
+          "trellis2/utils/render_utils.py": "4668e9f5b53b773fce1a44dd86f24542a842a7969c167c14ee85428cd75ada06",
+          "trellis2/utils/vis_utils.py": "9dd3102ff53513761926f0a0c9805beb6fb7adbe9a2cffcf243b685676e0a4a4"
+        },
+        "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+        "pipeline_json_sha256": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+        "raw_triangles": 6182632,
+        "peak_allocated_bytes": 3338518016,
+        "peak_reserved_bytes": 3707764736,
+        "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+        "output_sha256": "9ff299dd6734615600496920dce022f2606ca05cd994824b170f466fed622174",
+        "duration_seconds": 229.17199999999139
+      }
+    },
+    {
+      "id": "1c52cd810c364dfaa83b248f5103b0c6",
+      "kind": "inference",
+      "status": "REVIEW_REQUIRED",
+      "resources": {
+        "resource": "gpu",
+        "started_at": "2026-10-21T10:35:04.980154+00:00",
+        "finished_at": "2026-10-21T10:38:17.293880+00:00",
+        "duration_seconds": 192.31200000000536,
+        "ram_peak_used_bytes": 55916322816,
+        "worker_tree_peak_rss_bytes": 23367970816
+      },
+      "generation": {
+        "status": "GENERATED_NEEDS_REVIEW",
+        "purpose": "evaluation_only",
+        "request": {
+          "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\projects\\runavelle\\assets\\references\\versions\\2da306d8d3fe45578a2490a67115e023\\source.png",
+          "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\jobs\\1c52cd810c364dfaa83b248f5103b0c6\\output",
+          "seed": 42,
+          "effective_config": {
+            "schema_version": 1,
+            "quality": "Maximum",
+            "quality_lock": true,
+            "engine_id": "trellis2_community",
+            "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+            "checkpoint": {
+              "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+              "files": {
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+                "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+              }
+            },
+            "input_prompt": "Archer Tower T3 Runavelle. Supplied concept reference. Single and Batch Maximum reproducibility benchmark; technical QA only.",
+            "reference_hashes": [
+              "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+            ],
+            "project_style_hash": "67c7b53d110d6defdc6422a111bc8a4de4025b92e8d1fb01b286cdfa5e732c06",
+            "resolution": 1024,
+            "inference_steps": 32,
+            "guidance": {
+              "sparse_structure_sampler": {
+                "steps": 32,
+                "guidance_strength": 7.5,
+                "guidance_rescale": 0.7,
+                "guidance_interval": [
+                  0.6,
+                  1
+                ],
+                "rescale_t": 5
+              },
+              "shape_slat_sampler": {
+                "steps": 32,
+                "guidance_strength": 7.5,
+                "guidance_rescale": 0.5,
+                "guidance_interval": [
+                  0.6,
+                  1
+                ],
+                "rescale_t": 3
+              },
+              "tex_slat_sampler": {
+                "steps": 32,
+                "guidance_strength": 1,
+                "guidance_rescale": 0,
+                "guidance_interval": [
+                  0.6,
+                  0.9
+                ],
+                "rescale_t": 3
+              }
+            },
+            "seeds": [
+              42
+            ],
+            "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+            "geometry": {
+              "pipeline_type": "1024_cascade",
+              "octree_depth": null,
+              "decode_chunk_size": null,
+              "export_triangle_target": 1000000
+            },
+            "texture": {
+              "size": 4096,
+              "pbr": "native basecolor/metallic-roughness"
+            },
+            "blender": {
+              "enabled": true,
+              "profile": "existing_quality_pipeline_v1",
+              "height_m": 10,
+              "render_views": [
+                "front",
+                "three_quarter",
+                "side",
+                "back",
+                "top",
+                "gameplay"
+              ],
+              "render_resolutions": [
+                "mobile",
+                "pc1440"
+              ],
+              "bake": "not_requested"
+            },
+            "lod": {
+              "ratios": [
+                0.65,
+                0.35,
+                0.15
+              ]
+            },
+            "export": {
+              "formats": [
+                "glb",
+                "fbx"
+              ],
+              "preserve_master": true
+            },
+            "candidate_count": 1,
+            "qa": {
+              "mesh_validity": true,
+              "geometry_defects": true,
+              "dimensions": true,
+              "uv_texture_inventory": true,
+              "export_reopen": true,
+              "per_asset": true,
+              "human_concept_approval": true,
+              "human_master_approval": true,
+              "visual_parity": "NOT_TESTED"
+            },
+            "seed": 42
+          },
+          "effective_config_hash": "998b986f722eeef83c3b168a24edc56fc17f7ee06a1dfa64726244f2c41d5bd1",
+          "steps": 32,
+          "pipeline_type": "1024_cascade",
+          "texture_size": 4096,
+          "export_triangle_target": 1000000,
+          "supplied_alpha_input": true,
+          "input_review": "NEEDS_REVIEW",
+          "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\jobs\\1c52cd810c364dfaa83b248f5103b0c6\\request.json",
+          "engine_path": "C:\\Users\\Winka\\Tools\\trellis2\\code",
+          "purpose": "evaluation_only",
+          "allow_existing_rmbg_evaluation": false,
+          "min_free_vram_gb": 10
+        },
+        "network": "HF and Transformers offline",
+        "script_sha256": "ff6fef587b6be549dcac6d9ef38d3c9bc7f407627b80253cfdfea573cb8b03ae",
+        "source_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+        "parity_with_meshy": "NOT_TESTED",
+        "environment": {
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "free_vram_start_bytes": 15767437312,
+          "total_vram_bytes": 17094475776
+        },
+        "engine_source_files": {
+          "trellis2/__init__.py": "af421f21dc3013dd9f7b7d66d05aa917eca03745e5563ef7fc9c68d5565c0a27",
+          "trellis2/datasets/__init__.py": "68966337b9986e6cb610c5482528701217c46eefb7363f96d0ead4bc7d5a9731",
+          "trellis2/datasets/components.py": "04f4733854a1e3952d5921af6f3b357d7e499276d8f43f2b463e7e607d53c430",
+          "trellis2/datasets/flexi_dual_grid.py": "bdd1c01147f5174532663ec99d3e29526fd186170794a066bf0441c31b898ad7",
+          "trellis2/datasets/sparse_structure_latent.py": "45f051ce4ec39b81d47280574b92f5ab74f424c9c48caf4debd299e02edb7c0e",
+          "trellis2/datasets/sparse_voxel_pbr.py": "ba6eea1f33198bfdbd849ef18595c1f263928b35f081b60150e5e6348205b369",
+          "trellis2/datasets/structured_latent.py": "1f4f385bae270f13a804879d7db97c02e08e085c9eb8985783caec97aa1d9d91",
+          "trellis2/datasets/structured_latent_shape.py": "98abcdccaf4c058d7f2600ca31307468fd46626534d65bac8db139a99a58f595",
+          "trellis2/datasets/structured_latent_svpbr.py": "8cc9463e98a83e44daf0e2f8d3581be0bc42c61e6d38445e93279c873ee9a0c1",
+          "trellis2/models/__init__.py": "030b271e5c1f2e4cc46965815d0dbd5b78a2c994726d49644d068a2562cdbbb8",
+          "trellis2/models/sc_vaes/fdg_vae.py": "a853a82db565bd13440ce0ff764915be4da667c5b63bb7c1439b210ed999d753",
+          "trellis2/models/sc_vaes/sparse_unet_vae.py": "73c2b8d18a60a5e29f00e578f92c891813d31b47ebb1e912858eddd5aa2f7625",
+          "trellis2/models/sparse_elastic_mixin.py": "42dba44d861570463581ddd60dec8d12488ffc27340019154331b594cd715d75",
+          "trellis2/models/sparse_structure_flow.py": "6c0e919301273cf7c91ed1cf4f83734d86a17843778f88f22f720e8be13432d6",
+          "trellis2/models/sparse_structure_vae.py": "69d462fca6d20e5869bca1bcfb7853efdd1ee87ec5bf624e07aa124008d88787",
+          "trellis2/models/structured_latent_flow.py": "759e684872ed7ade39c19425dd01563c52810249b6fe8ada7920fe3b07edc00c",
+          "trellis2/modules/attention/__init__.py": "6451c105150b89899912702d5093745dfde7b41baf5579ac081fbd0f8bfee910",
+          "trellis2/modules/attention/config.py": "af5865f3fd686b9f1b5cedb617e0078aa879ff2ec0b81c5fde7a619eadaa4635",
+          "trellis2/modules/attention/full_attn.py": "334e2098567a5bc1b54e72f0b48ef9db99e1dba4c2859ebecbfbae3bd842a247",
+          "trellis2/modules/attention/modules.py": "59ad76fa845d29b50e56de8028e7164a1d03ab1f13c51a6bbe80e46790b128ed",
+          "trellis2/modules/attention/rope.py": "ca599e09b8860292e2568e0830ab1ed83fb9a56b814ba331cb89501f7139f160",
+          "trellis2/modules/image_feature_extractor.py": "b8b7d61e38cd02367498787147759e40f5a9a876cc0df9d243a15873b5b506dd",
+          "trellis2/modules/norm.py": "9d84400d1312420d0cd156d36fd8b3c2bcf2291d1d9fc89ead7f3c852c3d846e",
+          "trellis2/modules/sparse/__init__.py": "ca881f665c77607597d6a658fa547b435c5d06d3cfe9648016807f8540d45061",
+          "trellis2/modules/sparse/attention/__init__.py": "88408de0836b49350642bc92512eaf4a13667ba6322111fca1246f2cdfff94e0",
+          "trellis2/modules/sparse/attention/full_attn.py": "bcb4a9a0bab52f5233b21273cbdfae77eed3104bceb4f4009e0b8c4be612d003",
+          "trellis2/modules/sparse/attention/modules.py": "ee5381c81b6881a0f8c1232321ebbeef17c82c22baf3370f37edfeb903a3e6df",
+          "trellis2/modules/sparse/attention/rope.py": "3236815d41c82fc15b81b093b42303955eb70f47db4cc8be8a6cff1089fa0059",
+          "trellis2/modules/sparse/attention/windowed_attn.py": "d3d8b5708d6d26ec500c36141742fe2235053d2144bde48326828d7012ef3524",
+          "trellis2/modules/sparse/basic.py": "2c64324e30be2ba0216d25947ff817d8eaa41575187d4a9f656fe98bb0e01345",
+          "trellis2/modules/sparse/config.py": "f4d6c2d5febdf33424efa13689c8d5066859752ac0b552f6f69afcc1287538af",
+          "trellis2/modules/sparse/conv/__init__.py": "bc564fb4b6d67b70a1ea1adc4c779690ef89dcc89fd845b44ce9e81ebb0710eb",
+          "trellis2/modules/sparse/conv/config.py": "9f2f010405ca1fb40345431b32ffdf0d07d9946d98490330098d5262188d79c6",
+          "trellis2/modules/sparse/conv/conv.py": "fabc33b4e3e7cbafac40aedc3ce1538b769594d54416846e2b0cec0069fc3f2b",
+          "trellis2/modules/sparse/conv/conv_flex_gemm.py": "c3db47954c28a5374e6ec7bf6ea909b1fd0d80feacc26a6ade562299ad28614c",
+          "trellis2/modules/sparse/conv/conv_spconv.py": "9c85a0e7c930baeec0e57ef7fab0df4f776fefd84dab00608a694780c100fa5d",
+          "trellis2/modules/sparse/conv/conv_torchsparse.py": "ae56394eadecf6091280984b8d94304bac58164e21a69edafc98b3a891c68caf",
+          "trellis2/modules/sparse/linear.py": "bd19482757ff9c6b946510c22f9191171f6d2e25c4c432a102108537f4c01b94",
+          "trellis2/modules/sparse/nonlinearity.py": "7d23ac584db96b21285eb1021a7c805eac25157341a6ccdbadf0c4d968b91866",
+          "trellis2/modules/sparse/norm.py": "bf233e839da52b0f5352f0341f5b224f40ff32eae6c628e93f74b59b22d69a96",
+          "trellis2/modules/sparse/spatial/__init__.py": "4b030b25b7ad9192d9bae75474ec62a3e22eb2328d58f2185521a3efa8becd35",
+          "trellis2/modules/sparse/spatial/basic.py": "14557462e737a67bd7c606a89525723225e0258f54dac1a00c6ab28c99d3f1d9",
+          "trellis2/modules/sparse/spatial/spatial2channel.py": "1bb3663beacf1abcc14fa7fe5cad01bc7ed829d0bae69549bd6f87e22cbb75e5",
+          "trellis2/modules/sparse/transformer/__init__.py": "05f9bb8cbeec741bb1fdeb305a4a004a43ce9d9d8dbb84fbd1b689a4a7cd9425",
+          "trellis2/modules/sparse/transformer/blocks.py": "2ff188fe49fbcd85a7bf1115cd3bdc8b91cdc04289aaf0e1ba1ddff3caa76a44",
+          "trellis2/modules/sparse/transformer/modulated.py": "54748fcc4bc8b60bec531f9d6d2736f3c44e4df38372f79b20ec9e12669f7248",
+          "trellis2/modules/spatial.py": "69b90b07aeacbd2cbb35b70c7bdcfc93ea1af0916080aaa01d96b6477a5bc33d",
+          "trellis2/modules/transformer/__init__.py": "7c92a4178f57953fe0fcdb6e148ddbdb4e16fee2cc757641462e4703a1375ad8",
+          "trellis2/modules/transformer/blocks.py": "4cf670a7dfc4d293751413a4ca0ed0bd56f486c2d96d336ad2da54aab67501f1",
+          "trellis2/modules/transformer/modulated.py": "54c45c50eaf6d96c5bd7e73a5139052d0c301d5f3a83d2085b51ada5efc90727",
+          "trellis2/modules/utils.py": "4e2ebc1d53929a6bff8d1abab17634549abbe80c43030d96a95b0ead169d93d1",
+          "trellis2/pipelines/__init__.py": "6518faf2f879949ae333dcaae69a4cced3290286c0ad490b73e0172502f72fb1",
+          "trellis2/pipelines/base.py": "6c1a3c19565a173d833eb29f79e7fedb0670433d26980539c742005a27277125",
+          "trellis2/pipelines/rembg/__init__.py": "f1e403dc34d2961370a63be59b45dd913a6c06d0c6fe200add91e2153a2cfa87",
+          "trellis2/pipelines/rembg/BiRefNet.py": "974a160df1b8323024a5d6b15ee44f2f19c54caeebe7f5ad5c117c144edecc48",
+          "trellis2/pipelines/samplers/__init__.py": "dcb113d2b2a02d957d7a5a8e7526a345e6887613f4ef01991b047a2d89ea15ed",
+          "trellis2/pipelines/samplers/base.py": "45f7ac978bd91fae753400c16c3a4a4718d8a10c9acb18a79ed224fde24639c3",
+          "trellis2/pipelines/samplers/classifier_free_guidance_mixin.py": "b1721f1977a97500f736834b3d5a7659fc4529db795c567fc44d64974a0cd8c5",
+          "trellis2/pipelines/samplers/flow_euler.py": "18162cbb40c28b7efc3a9db62ca9c54af93c5f02d5787bb21a89e134f91a5f88",
+          "trellis2/pipelines/samplers/guidance_interval_mixin.py": "c8cb3c6575410c90c44e8d2c1ae558d2db670e097940dbc52af95f5ac600bc97",
+          "trellis2/pipelines/trellis2_image_to_3d.py": "b0d29b5a4562aaabe2824761f909669602ae43a8ff262e5e16343f209f46ab75",
+          "trellis2/renderers/__init__.py": "a81bc573050203daba25dd9f76df08315e78c4ac013cb6e2f1db1c75c875d2a2",
+          "trellis2/renderers/mesh_renderer.py": "77809cc72ee6b01b401410047670cf0b8c7f1b0db9ae0b867928896031c22b35",
+          "trellis2/renderers/pbr_mesh_renderer.py": "bffd49ffdcc8454a8ef99b53570a4fcf54a054f3a7801795df48f1a624f7ed83",
+          "trellis2/renderers/voxel_renderer.py": "f78327d3ada501f1e8c9a563b8e58f95a3dab5d04de04cf4c6b12ce230cf9896",
+          "trellis2/representations/__init__.py": "cd8be7609257982fb7adaebc4cf0c867e23c9a29839462556a261a5acf153400",
+          "trellis2/representations/mesh/__init__.py": "0303a51a2646a149e910ef880ea4a87bfbec93fd5be83aa47c16c6058bec16c3",
+          "trellis2/representations/mesh/base.py": "ea538f333b6caa30ca8935f068ee8390cebb988d9522b1422dfd077ce4cf9359",
+          "trellis2/representations/voxel/__init__.py": "6c2d7c44dfb148c80b1a72d80b5517c581ce36ee4e3268792d5082443827f9ea",
+          "trellis2/representations/voxel/voxel_model.py": "a18c11ecaf86643122cabe2d732c7421cf32a173b05fbf03df8034f2ecb7eec1",
+          "trellis2/trainers/__init__.py": "475400729a995305ecd44ffd96a47d25f30602d56a526d116f6c48f64f2c6db2",
+          "trellis2/trainers/basic.py": "b729f35db2dcc8b5e0e9759984088282d293c3478bed0931d24ad7dab34129e9",
+          "trellis2/trainers/flow_matching/flow_matching.py": "1062766156698405ad5b14a8e6a125374d434e936555b0c58ac0884a45279c22",
+          "trellis2/trainers/flow_matching/mixins/classifier_free_guidance.py": "4cc9a9e3a70e1e1cf054684facb16887dcf644418de8cdf79bf7722848bb3797",
+          "trellis2/trainers/flow_matching/mixins/image_conditioned.py": "371cea6ba9f01faee9de0bdb24545a10998e7ce0c87642991d581cf0db8a8419",
+          "trellis2/trainers/flow_matching/mixins/text_conditioned.py": "e64b33b1b2ecbf65d30c9712c0ee66041e7e10bbabbb2b8ac4fd42fe5764c78d",
+          "trellis2/trainers/flow_matching/sparse_flow_matching.py": "a7b3ed440136d8dc67dbcd2aedd7b6f833cb0a7a066b9846956a48becab96244",
+          "trellis2/trainers/utils.py": "1ff281fb31b317acc590a3fb216ce1024a1c4ae33523bf1fdbb78c2fed138729",
+          "trellis2/trainers/vae/pbr_vae.py": "b6c04419022f6597ae1f25498f16c8cf4953aebeeedfa312618d5293748340dd",
+          "trellis2/trainers/vae/shape_vae.py": "27c84ae33de001db28919a996095271da8a82b024e288adf1a2a502c6acef275",
+          "trellis2/trainers/vae/sparse_structure_vae.py": "3d667af46efbe21074ac9e3324a8e4aa9bd16fdceb904ec44249733c26c4fe11",
+          "trellis2/utils/__init__.py": "7dae68c6d35ba1e5409bac4b150470adb609c9da1125cf348e53a130eb0771de",
+          "trellis2/utils/data_utils.py": "780eba433be4e62e999b0d56360acabd12207bfad3800c6b8375131bb57c167a",
+          "trellis2/utils/dist_utils.py": "51c8d8cb74f4c83187818a467fea53bc43f25bb5b33849f0f8e07e18931d09ae",
+          "trellis2/utils/elastic_utils.py": "2449a5d6dccb35bb1ef4a366877823f345b7d24ada9786d4dc0717f43e8a7f4d",
+          "trellis2/utils/general_utils.py": "a820623a4bf06916a5280fd1f7d50f6d3fd5535fad0839327baa08d81c52694f",
+          "trellis2/utils/grad_clip_utils.py": "85acdc978cbe83842ebbaf3bdc47dd03e18b72c336feaea6e3dfc20c66158a85",
+          "trellis2/utils/loss_utils.py": "83af492cbf0d4d62aece97a9033079f14f117aa3b8b4799f9d8f5047064a627e",
+          "trellis2/utils/mesh_utils.py": "37f6e8013a24c83315ed890d4afdfabbef2f9ef4b45d049edee6a490623252ff",
+          "trellis2/utils/random_utils.py": "b1dfb6c615c6fc29f39fb8b0642a2a54a828ad762a44f8ded7e3a1ff12899db5",
+          "trellis2/utils/render_utils.py": "4668e9f5b53b773fce1a44dd86f24542a842a7969c167c14ee85428cd75ada06",
+          "trellis2/utils/vis_utils.py": "9dd3102ff53513761926f0a0c9805beb6fb7adbe9a2cffcf243b685676e0a4a4"
+        },
+        "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+        "pipeline_json_sha256": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+        "raw_triangles": 6182632,
+        "peak_allocated_bytes": 3340711936,
+        "peak_reserved_bytes": 3707764736,
+        "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+        "output_sha256": "45c354248cecd06d99c7031f9d8856777319546fa9767374c356c6994b2d4b2f",
+        "duration_seconds": 188.70300000000861
+      }
+    }
+  ],
+  "original_viewer_limitation": "0.2.0 loaded real meshes but CSP blocked embedded textures. This report establishes inference/persistence, not textured viewer correctness. See desktop_output.json from 0.2.1 for the fix verification."
+}
