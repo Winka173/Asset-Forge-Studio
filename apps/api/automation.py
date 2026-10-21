@@ -35,18 +35,41 @@ class Workflow(BaseModel):
 def project_workflow(project_id:str):return Workflow.model_validate(studio.project(project_id).get('workflow_settings',{})).model_dump()
 
 
+def write_project_workflow(db,project_id,body):
+    row=db.execute('SELECT payload FROM projects WHERE id=?',(project_id,)).fetchone()
+    if not row:raise HTTPException(404,'Game project does not exist')
+    value=json.loads(row['payload']);value['workflow_settings']=body.model_dump()
+    db.execute('UPDATE projects SET payload=? WHERE id=?',(json.dumps(value),project_id))
+    for row in db.execute('SELECT id,payload FROM batches WHERE project_id=?',(project_id,)).fetchall():
+        saved=json.loads(row['payload'])
+        if saved.get('automation'):
+            saved['automation']['settings']['auto_resume']=body.auto_resume
+            db.execute('UPDATE batches SET payload=? WHERE id=?',(json.dumps(saved),row['id']))
+    return body.model_dump()
+
+
 @router.post('/projects/{project_id}')
 def save_project_workflow(project_id:str,body:Workflow):
     with store.connect() as db:
-        db.execute('BEGIN IMMEDIATE');value=studio.project(project_id);value['workflow_settings']=body.model_dump()
-        db.execute('UPDATE projects SET payload=? WHERE id=?',(json.dumps(value),project_id))
-        for row in db.execute('SELECT id,payload FROM batches WHERE project_id=?',(project_id,)).fetchall():
-            saved=json.loads(row['payload'])
-            if saved.get('automation'):
-                # Recovery preference applies to existing jobs; generation-quality snapshots remain fixed.
-                saved['automation']['settings']['auto_resume']=body.auto_resume
-                db.execute('UPDATE batches SET payload=? WHERE id=?',(json.dumps(saved),row['id']))
-    return body.model_dump()
+        db.execute('BEGIN IMMEDIATE')
+        return write_project_workflow(db,project_id,body)
+
+
+@router.post('/projects/{project_id}/patch')
+def patch_project_workflow(project_id:str,body:dict):
+    if set(body)-set(Workflow.model_fields):raise HTTPException(422,'Unsupported workflow setting')
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row=db.execute('SELECT payload FROM projects WHERE id=?',(project_id,)).fetchone()
+        if not row:raise HTTPException(404,'Game project does not exist')
+        current=Workflow.model_validate(json.loads(row['payload']).get('workflow_settings',{})).model_dump()
+        patch=body.copy()
+        if 'checkpoints' in patch:
+            if not isinstance(patch['checkpoints'],dict) or set(patch['checkpoints'])-set(Checkpoints.model_fields):raise HTTPException(422,'Unsupported checkpoint setting')
+            patch['checkpoints']=current['checkpoints']|patch['checkpoints']
+        try:validated=Workflow.model_validate(current|patch)
+        except ValueError:raise HTTPException(422,'Invalid workflow value; no settings were saved')
+        return write_project_workflow(db,project_id,validated)
 
 
 def resolve_specs(item,project,snapshot):

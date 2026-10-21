@@ -92,3 +92,5 @@ html[data-afs-motion=reduced] .workspace-tools-overlay *,html[data-afs-motion=re
 .workspace-recovery{min-height:100vh;box-sizing:border-box;display:grid;place-items:center;padding:32px;background:#14161b;color:#e7ebf3;font:14px/1.7 system-ui,sans-serif}.workspace-recovery>div{max-width:650px;padding:32px;background:#23262e;border-radius:18px}.workspace-recovery h1{font-size:26px}.workspace-recovery button{padding:14px 22px;background:#edbc70;color:#211c14;border:0;border-radius:10px;font-weight:700;cursor:pointer}.workspace-recovery details{margin-top:24px}.workspace-recovery pre{overflow:auto;max-height:250px;white-space:pre-wrap;overflow-wrap:anywhere}
 
 .asset-recovery-notice{grid-column:1/-1;margin:0;padding:16px;border-radius:10px;background:#252a34;color:#c6cfdf;font-size:12px;line-height:1.7}
+
+.studio[data-interface=focused] .workspace-stats{display:none}.studio .home-hero .hero-empty{color:#b8c0ce}.studio .home-hero .hero-empty svg{color:#edbc70}

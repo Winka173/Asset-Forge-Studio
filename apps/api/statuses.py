@@ -135,8 +135,7 @@ class ReviewPolicy(BaseModel):
 def project_policy(project_id:str,body:ReviewPolicy):
     from . import automation
     if body.review_policy=='inherit':raise HTTPException(400,'Choose an explicit project policy')
-    workflow=automation.project_workflow(project_id);workflow['review_policy']=body.review_policy
-    return automation.save_project_workflow(project_id,automation.Workflow.model_validate(workflow))
+    return automation.patch_project_workflow(project_id,{'review_policy':body.review_policy})
 
 
 @router.post('/assets/{asset_id}/review-policy')

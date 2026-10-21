@@ -43,3 +43,21 @@ def test_restart_releases_only_exit_hold_then_applies_project_gpu_recovery_polic
     client.post('/api/production/control',json=dict(scope='all',action='pause'))
     production.prepare_exit_checkpoint();automation.startup_recovery()
     assert production.global_paused() and not production.eligible(jobs.get(first['id'])['payload'])
+
+def test_partial_workflow_updates_keep_other_panels_constraints_and_validate_before_save(client):
+    from concurrent.futures import ThreadPoolExecutor
+    endpoint='/api/automation/projects/runavelle/patch'
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        responses=list(pool.map(lambda change:client.post(endpoint,json=change),[dict(auto_resume=True),dict(retry_limit=3)]))
+    assert all(r.status_code==200 for r in responses)
+    client.post(endpoint,json=dict(checkpoints=dict(concept=True)))
+    client.post(endpoint,json=dict(checkpoints=dict(export=True),mode='assisted'))
+    current=client.get('/api/automation/projects/runavelle').json()
+    assert current['auto_resume'] is True and current['retry_limit']==3
+    assert current['checkpoints']==dict(concept=True,candidate=False,export=True) and current['mode']=='assisted'
+    for body in [dict(retry_limit=99),dict(auto_resume=None),dict(unknown=True),dict(checkpoints=dict(unknown=True))]:
+        assert client.post(endpoint,json=body).status_code==422
+        assert client.get('/api/automation/projects/runavelle').json()==current
+    client.post('/api/production/projects/runavelle/review-policy',json=dict(review_policy='review_flagged'))
+    after=client.get('/api/automation/projects/runavelle').json()
+    assert after==current|dict(review_policy='review_flagged') and not jobs.listing()

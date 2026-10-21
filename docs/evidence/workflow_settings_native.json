@@ -1,0 +1,34 @@
+{
+  "status": "PASS_NATIVE_TEXT_FIRST_HOME_AND_ATOMIC_WORKFLOW_SETTINGS",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workflow-native\\2026-10-21T20-28-35-883Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "empty_project_text_first_home_one_primary_action_above_fold_two_sizes",
+      "passed": true
+    },
+    {
+      "name": "Settings_recovery_opt_in_survives_Single_checkpoints_and_Batch_mode_updates_then_Single_sees_saved_Batch_mode",
+      "passed": true,
+      "settings": {
+        "mode": "expert",
+        "checkpoints": {
+          "concept": true,
+          "candidate": false,
+          "export": true
+        },
+        "retry_limit": 1,
+        "disk_reserve_gb": 10,
+        "max_active_assets": 2,
+        "auto_resume": true,
+        "review_policy": "auto"
+      }
+    },
+    {
+      "name": "native_restart_preserves_all_workflow_settings_without_inference",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows text-first empty Home and shared project settings; no AI output or artistic claim"
+}

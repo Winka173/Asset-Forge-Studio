@@ -1,3 +1,13 @@
+# Shared settings and text-first Home - 2026-10-22 (Asia/Saigon)
+
+Windows 0.8.7 passed 75 backend tests and bundled native GLB/export/restart smoke. Project workflow changes now patch only edited fields under one SQLite write lock; nested checkpoints merge independently. Single, Batch and Settings synchronize validated values rather than overwriting another panel's newer recovery policy. The legacy full-settings endpoint and stored format remain compatible. Concurrent partial-update tests verify unrelated settings survive and invalid values leave the record unchanged.
+
+Actual packaged UI acceptance enabled Auto-resume in Settings, changed Single checkpoints, changed Batch mode, reopened Single and Settings, then closed/reopened Windows: all settings persisted, with zero generation jobs. Empty Home now starts with a prompt, optional references and one primary Create action instead of competing image-first CTAs and repeated empty sections. Native screenshots confirm that primary action is visible at 1280x800 and 1536x1000. Evidence: evidence/workflow_settings_native.json. The 0.8.6 responsive workspace rerun additionally passed the actual 349-source manifest, real Archer preview, clean user profile and five affected workspace layouts; evidence/workspace_native.json.
+
+Unrestricted semantic map generation, playable map walkthrough, automatic humanoid rigging/retarget quality, cited reference-game research, automatic standalone transient native repair and Meshy artistic acceptance remain open. These are not proved by UI, procedural FX or the imported motion fixture.
+
+---
+
 # Safe Windows exit - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.6 passed 74 backend tests, bundled native GLB/export/restart smoke and real Unity close/reopen acceptance. Closing with active work now temporarily holds scheduling, keeps the window open until the current stage saves, then exits without cancelling queued assets. A visible status banner offers Keep studio open; this restores the previous admission state. Independent close generations prevent an earlier cancelled close from racing a later close request.

@@ -1,3 +1,4 @@
+import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
@@ -253,8 +254,9 @@ export function Studio() {
   useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
   const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
+  useWorkflowUpdates(projectId,setWorkflow);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
-  async function changeWorkflow(fields:Partial<typeof workflow>){const next={...workflow,...fields};setWorkflow(next);try{await request(`/api/automation/projects/${projectId}`,next);}catch(e){setError(String(e));}}
+  async function changeWorkflow(fields:Partial<Omit<typeof workflow,'checkpoints'>>&{checkpoints?:Partial<typeof workflow.checkpoints>}){try{const saved=await request<typeof workflow>(`/api/automation/projects/${projectId}/patch`,fields);setWorkflow(saved);publishWorkflow(projectId,saved);}catch(e){setError(String(e));}}
   const [assetId, setAssetId] = useState(""),
     [versionId, setVersionId] = useState(""),
     [search, setSearch] = useState(""),
@@ -1027,43 +1029,19 @@ export function Studio() {
               <div className="page-heading">
                 <div>
                   <div className="overline">YOUR LOCAL 3D WORKSPACE</div>
-                  <h1>Make something worth building.</h1>
-                  <p>
-                    Từ ý tưởng đến asset có thể kiểm chứng. Chất lượng bắt đầu
-                    từ một reference tốt.
-                  </p>
+                  <h1>{data.assets.length?'Your creative workspace.':'Start with a prompt.'}</h1>
+                  <p>Describe what you need, add a reference if useful, then choose and refine the result.</p>
                 </div>
-                <button className="primary" onClick={() => newAsset()}>
+                {data.assets.length>0&&<button className="primary" onClick={() => newAsset()}>
                   <Icon name="Create" size={17} /> Create asset
-                </button>
+                </button>}
               </div>
               <div className="home-hero">
                 <div className="hero-copy">
-                  <span className="pill">IMAGE TO 3D · LOCAL INFERENCE</span>
-                  <h2>
-                    Your next world
-                    <br />
-                    starts with one asset.
-                  </h2>
-                  <p>
-                    Chọn ảnh concept, để engine local tạo các candidate, rồi
-                    kiểm tra geometry và vật liệu trong studio.
-                  </p>
-                  <div className="hero-actions">
-                    <button className="primary" onClick={() => newAsset()}>
-                      <Icon name="Image" size={17} /> Start with an image
-                      <Icon name="Arrow" size={16} />
-                    </button>
-                    <button
-                      className="secondary"
-                      onClick={() => navigate("Compare")}
-                    >
-                      Open quality lab
-                    </button>
-                  </div>
-                  <span className="hero-footnote">
-                    Multi-seed · Blender post-process · GLB / FBX
-                  </span>
+                  <span className="pill">TEXT + OPTIONAL REFERENCE / LOCAL</span><h2>Turn your idea<br/>into an asset.</h2>
+                  <p>Start with a short description. Images are optional. Generation, review and revisions stay in your local workspace.</p>
+                  <div className="hero-actions"><button className="primary" onClick={()=>newAsset()}><Icon name="Create" size={17}/>Create an asset<Icon name="Arrow" size={16}/></button></div>
+                  <span className="hero-footnote">One result by default. Choose up to five when you need alternatives.</span>
                 </div>
                 <div className="hero-reference">
                   {data.artifacts.find(
@@ -1079,19 +1057,19 @@ export function Studio() {
                             data.artifacts.find((a) => a.role === "concept"))!
                             .url,
                         )}
-                        alt="Ảnh concept thật của project"
+                        alt="Actual project reference image"
                       />
                       <span>PROJECT REFERENCE · IMAGE ONLY</span>
                     </>
                   ) : (
                     <div className="hero-empty">
                       <Icon name="Cube" size={100} />
-                      <span>Không gian cho ý tưởng của bạn</span>
+                      <span>Your preview starts with your idea</span>
                     </div>
                   )}
                 </div>
               </div>
-              <div className="workspace-stats">
+              {data.assets.length>0&&<><div className="workspace-stats">
                 <div>
                   <span>Project assets</span>
                   <strong>{data.assets.length}</strong>
@@ -1144,7 +1122,7 @@ export function Studio() {
                     Create first asset
                   </button>
                 </div>
-              )}
+              )}</>}
             </>
           )}
           {projectId && page === "Create" && createStep>0 && creationMode==='single' && (
@@ -1387,7 +1365,7 @@ export function Studio() {
                       Advanced settings <span>Seeds, steps & processing</span>
                     </summary>
                   <label className="studio-field">Workflow<Select aria-label="Single workflow mode" value={workflow.mode} disabled={!workflowReady||busy} onChange={event=>void changeWorkflow({mode:event.target.value as typeof workflow.mode})}><option value="auto">Auto · prompt to exported model</option><option value="assisted">Assisted · review checkpoints</option><option value="expert">Expert · manual stages</option></Select></label>
-                  {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
+                  {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
 
                     <label className="studio-field">
                       Seeds · up to 5
