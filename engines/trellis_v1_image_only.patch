@@ -1,0 +1,12 @@
+﻿diff --git a/trellis/pipelines/__init__.py b/trellis/pipelines/__init__.py
+index 0e33c6e..e852249 100644
+--- a/trellis/pipelines/__init__.py
++++ b/trellis/pipelines/__init__.py
+@@ -1,6 +1,6 @@
+ from . import samplers
+ from .trellis_image_to_3d import TrellisImageTo3DPipeline
+-from .trellis_text_to_3d import TrellisTextTo3DPipeline
++# AFS image-only trial: unused text pipeline is not eagerly imported (Open3D).
+ 
+ 
+ def from_pretrained(path: str):

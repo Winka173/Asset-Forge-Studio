@@ -1,6 +1,46 @@
 {
   "runs": [
     {
+      "run": "generation/hi3dgen/20261021T153507_42_993213",
+      "engine": "hi3dgen",
+      "seed": 42,
+      "status": "FAILED",
+      "error": "Error no file named diffusion_pytorch_model.bin found in directory C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\hi3dgen_normal\\vae.",
+      "duration_seconds": 25.281000000002678,
+      "native_triangles": null,
+      "torch_memory_bytes": null,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 5590.0,
+      "gpu_energy_kwh_proxy": 0.0003137274013889315,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": null,
+      "model_revision": null,
+      "provenance_file": "data\\generation\\hi3dgen\\20261021T153507_42_993213\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/hi3dgen/20261021T153614_42_583ebd",
+      "engine": "hi3dgen",
+      "seed": 42,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 34.34299999999348,
+      "native_triangles": 438488,
+      "torch_memory_bytes": 5609933312,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 9467.0,
+      "gpu_energy_kwh_proxy": 0.0010201491847224712,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "f4ae2d48aa18a0d7ec46d33f5f2cc3a4b2e54c0b2f7e38be229a7f802e1cbff4",
+      "model_revision": null,
+      "provenance_file": "data\\generation\\hi3dgen\\20261021T153614_42_583ebd\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
       "run": "generation/trellis2/20261021T135941_42_0e5892",
       "engine": "trellis2_community",
       "seed": 42,
@@ -77,6 +117,46 @@
       "output_sha256": "83aa7abe34e254561914ca5b2b8fdcf0adf5e28eea67301ccef688d287d59760",
       "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
       "provenance_file": "data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/trellis_v1/20261021T153324_42_e16185",
+      "engine": "trellis_v1",
+      "seed": 42,
+      "status": "FAILED",
+      "error": "No module named 'kaolin'",
+      "duration_seconds": 7.015999999988708,
+      "native_triangles": null,
+      "torch_memory_bytes": null,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 3249.0,
+      "gpu_energy_kwh_proxy": 8.435625833329457e-05,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": null,
+      "model_revision": null,
+      "provenance_file": "data\\generation\\trellis_v1\\20261021T153324_42_e16185\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/trellis_v1/20261021T153400_42_07b8da",
+      "engine": "trellis_v1",
+      "seed": 42,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 38.21800000000803,
+      "native_triangles": 473598,
+      "torch_memory_bytes": 6736971776,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 12172.0,
+      "gpu_energy_kwh_proxy": 0.0010511978833332167,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "278f5af68f40f00e2f56b52cc33188a30fa27029728170e5de50ed32d5a9dda8",
+      "model_revision": null,
+      "provenance_file": "data\\generation\\trellis_v1\\20261021T153400_42_07b8da\\output\\generation.json",
       "mesh_quality_parity": "NOT_TESTED",
       "human_score": null
     },
@@ -442,6 +522,62 @@
         "tournament_id": "6d6420a5284b48d69154d83646fc1e22",
         "purpose": "evaluation_only",
         "seed": 44
+      },
+      "error": null
+    },
+    {
+      "id": "206dcd27040d42f8bec0e095528d8a47",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T08:52:42.743897+00:00",
+      "updated_at": "2026-10-21T08:55:38.392037+00:00",
+      "payload": {
+        "artifact_id": "da9fd90225724ccdb41708c906af4be2",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "172040f03a0d4759994863808d438f92",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T08:52:42.752633+00:00",
+      "updated_at": "2026-10-21T08:56:22.564971+00:00",
+      "payload": {
+        "artifact_id": "f5dc4542ac6c443f99e9e7b4df1043ce",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
       },
       "error": null
     }

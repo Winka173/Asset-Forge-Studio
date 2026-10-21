@@ -1,0 +1,18 @@
+﻿diff --git a/flexicubes.py b/flexicubes.py
+index 93e47b6..2d1a9ea 100644
+--- a/flexicubes.py
++++ b/flexicubes.py
+@@ -14,7 +14,12 @@
+ # limitations under the License.
+ import torch
+ from .tables import *
+-from kaolin.utils.testing import check_tensor
++# AFS: standalone tensor-shape validation; no Kaolin geometry code is used.
++def check_tensor(value, shape, throw=True):
++    valid = isinstance(value, torch.Tensor) and value.ndim == len(shape) and all(expected is None or actual == expected for actual, expected in zip(value.shape, shape))
++    if not valid and throw:
++        raise ValueError(f"Invalid tensor shape, expected {shape}")
++    return valid
+ 
+ __all__ = [
+     'FlexiCubes'
