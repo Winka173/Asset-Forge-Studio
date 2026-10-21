@@ -11,7 +11,7 @@ const run=baseline.run;const library=path.join(run,'Library');const errors=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let child,browser,page,session,closing=false;
 const report={status:'RUNNING',branch:'feature/universal-expansion-v2-reviewed',scope:'Real packaged native UI and isolated Unity 6000.4.8f1 Built-in import/reopen/GPU/package; no production game changes',checks:[],errors,meshy_parity:'NOT_TESTED',human_quality_approval:'NOT_GIVEN'};
 async function launch(){
- child=spawn(path.join(root,'dist/windows/latest/Asset Forge Studio.exe'),[],{env:{...process.env,AFS_DESKTOP_CONFIG_DIR:path.join(run,'config'),WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:'--remote-debugging-port=19390'},stdio:'ignore',windowsHide:false});
+ child=spawn(process.env.AFS_SMOKE_EXE || path.join(root,'dist/windows/expansion/latest/Asset Forge Studio Expansion.exe'),[],{env:{...process.env,AFS_DESKTOP_CONFIG_DIR:path.join(run,'config'),WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:'--remote-debugging-port=19390'},stdio:'ignore',windowsHide:false});
  closing=false;for(let n=0;n<180;n++){try{browser=await chromium.connectOverCDP('http://127.0.0.1:19390');break;}catch{await sleep(1000);}}
  assert(browser);page=browser.contexts()[0].pages()[0];page.on('console',m=>{if(m.type()==='error'&&!closing)errors.push(m.text().replace(/([?&]afs_token=)[^&\s]+/g,'$1[redacted]'));});page.on('pageerror',e=>errors.push(e.message));
  await page.locator('.studio-sidebar').waitFor({timeout:180000});session=await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_bootstrap'));

@@ -23,14 +23,13 @@ type Shared = Arc<Mutex<Backend>>;
 static CLOSING: AtomicBool = AtomicBool::new(false);
 static ALLOW_EXIT: AtomicBool = AtomicBool::new(false);
 
-fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap()).join("AssetForgeStudio"))}
+fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap()).join("AssetForgeStudioExpansion"))}
 fn save_config(root: &Path, config: &Config) -> Result<(),String> {fs::create_dir_all(root).map_err(|e|e.to_string())?; fs::write(root.join("desktop-config.json"),serde_json::to_vec_pretty(config).unwrap()).map_err(|e|e.to_string())}
 fn load_config(root: &Path) -> Config {
     if let Ok(bytes)=fs::read(root.join("desktop-config.json")) {if let Ok(config)=serde_json::from_slice(&bytes) {return config;}}
     let original=PathBuf::from(env!("AFS_DEFAULT_WORKSPACE"));
     let workspace=if original.is_dir(){original}else{root.join("Workspace")};
-    let existing=workspace.join("data");
-    Config{workspace:workspace.to_string_lossy().into(),library:if existing.join("studio.sqlite").is_file(){existing}else{root.join("Library")}.to_string_lossy().into(),blender:None,setup_complete:false}
+    Config{workspace:workspace.to_string_lossy().into(),library:root.join("Library").to_string_lossy().into(),blender:None,setup_complete:false}
 }
 fn snapshot(state:&Shared) -> Bootstrap {let value=state.lock().unwrap(); let ready=value.phase=="READY"; Bootstrap{phase:value.phase.clone(),message:value.message.clone(),api_base:if ready{Some(format!("http://127.0.0.1:{}",value.port))}else{None},api_token:if ready{Some(value.token.clone())}else{None},backend_pid:value.child.as_ref().map(Child::id),workspace:value.config.workspace.clone(),library:value.config.library.clone(),logs:value.root.join("logs").to_string_lossy().into(),setup_complete:value.config.setup_complete,version:env!("CARGO_PKG_VERSION").into()}}
 fn credentials(state:&Shared)->(String,String){let value=state.lock().unwrap();(format!("http://127.0.0.1:{}",value.port),value.token.clone())}

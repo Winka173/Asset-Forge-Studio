@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\distribution-smoke\\2026-10-21T12-01-50-057Z",
+  "checks": [
+    {
+      "name": "existing_pc_kept_running_without_touching_user_session",
+      "passed": true,
+      "processes": [
+        {
+          "Id": 90240,
+          "MainWindowTitle": "Asset Forge Studio"
+        }
+      ]
+    },
+    {
+      "name": "native_expansion_default_root_and_pc_coexistence",
+      "passed": true,
+      "pc_session_inspected": false,
+      "expansion_version": "0.3.2",
+      "pc_library": "Existing user session; not inspected or modified",
+      "expansion_library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\distribution-smoke\\2026-10-21T12-01-50-057Z\\LocalAppData\\AssetForgeStudioExpansion\\Library"
+    },
+    {
+      "name": "pinned_pc_and_compatibility_exes_unchanged",
+      "passed": true,
+      "sha256": {
+        "afs-backend.exe": "e7450e95a0708d9c4e4a3dac01f0bdf288bcb0f867633eb547cc8adf48066025",
+        "Asset Forge Studio.exe": "73d70af556508fd33755ca7243def66e1bb7f2470c1a56274a3ecea8253b0eb3",
+        "Asset Forge Studio_0.3.1_x64-setup.exe": "62596008866b67b91d5049e96b1126bc3c1f19ecd638ad82ec74ddf4c7fd5abd"
+      }
+    }
+  ],
+  "inference": "NOT_RUN",
+  "quality": "NOT_ASSESSED"
+}

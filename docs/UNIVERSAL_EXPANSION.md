@@ -2,6 +2,8 @@
 
 Work branch: `feature/universal-expansion-v2-reviewed`, based on `d1b1e49`. User explicitly forbids merging into main for now. The complete source specification is [V2 Reviewed](../doc/Asset_Forge_Studio_Universal_Expansion_Master_Prompt_V2_Reviewed.md); it supersedes the prior Universal prompt and earlier prohibitions on future modules. No production game repository is modified.
 
+The PC 0.3.1 distribution is pinned at `dist/windows/stable/` and source branch `release/pc-0.3.1` (`9b80ef9`). Universal work ships separately as **Asset Forge Studio Expansion** at `dist/windows/expansion/latest/`, using its own Windows identifier and default settings/library. Expansion 0.3.2 passed 28 backend tests, frontend build, packaged native smoke/relaunch and an actual coexistence check while the user's PC edition stayed open; original PC checksums match. See `evidence/desktop_distributions.json` and `evidence/desktop_stable_release.json`. No new AI inference or artistic approval is implied by this release separation.
+
 ## Audit and prioritized gaps
 
 | Area | Verified starting point | Gap / decision |

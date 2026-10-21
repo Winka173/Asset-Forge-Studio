@@ -1,34 +1,31 @@
 ﻿{
-    "version":  "0.3.1",
-    "timestamp_utc":  "20261021T112920Z",
-    "git_commit":  "71b5500ff3f44abe8b6981b101bcdc5e6dcd59c3",
+    "version":  "0.3.2",
+    "timestamp_utc":  "20261021T120000Z",
+    "git_commit":  "9b80ef9d8c1bc8746101bcd65efa6827013020c8",
     "git_branch":  "feature/universal-expansion-v2-reviewed",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/capabilities.py",
+                          " M CLAUDE.md",
                           " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/api/universal.py",
-                          " M apps/web/src/studio.tsx",
-                          " M apps/web/src/style.css",
-                          " M apps/web/src/viewer.tsx",
                           " M desktop/build_backend.py",
+                          " M desktop/smoke.mjs",
+                          " M desktop/verify-unity.mjs",
+                          " M docs/WINDOWS_DESKTOP.md",
                           " M docs/evidence/desktop_build.json",
                           " M docs/evidence/desktop_smoke.json",
+                          " M engines/unity_editor.py",
+                          " M integrations/unity/Packages/com.assetforge.editor/Editor/AssetForgeImport.cs",
                           " M package-lock.json",
                           " M package.json",
+                          " M scripts/desktop.ps1",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
+                          " M src-tauri/src/main.rs",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_universal.py",
-                          "?? apps/web/src/unity-panel.tsx",
-                          "?? desktop/verify-unity.mjs",
-                          "?? docs/evidence/universal_unity_back.png",
-                          "?? docs/evidence/universal_unity_desktop.png",
-                          "?? docs/evidence/universal_unity_native.json",
-                          "?? docs/evidence/universal_unity_three_quarter.png",
-                          "?? engines/unity_editor.py",
-                          "?? integrations/"
+                          "?? desktop/verify-distributions.mjs",
+                          "?? docs/evidence/desktop_distributions.json",
+                          "?? docs/evidence/desktop_stable_release.json"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -37,7 +34,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T112920Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T120000Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -48,11 +45,12 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "73d70af556508fd33755ca7243def66e1bb7f2470c1a56274a3ecea8253b0eb3",
-                            "afs-backend.exe":  "e7450e95a0708d9c4e4a3dac01f0bdf288bcb0f867633eb547cc8adf48066025",
-                            "Asset Forge Studio_0.3.1_x64-setup.exe":  "62596008866b67b91d5049e96b1126bc3c1f19ecd638ad82ec74ddf4c7fd5abd"
+                            "Asset Forge Studio Expansion.exe":  "ee1d35a62e851203d778817483f1887522dea07b67a769bf30b09776cf3a62a2",
+                            "afs-backend.exe":  "9bc8b7d55e0201e248860aa6f23524dd3e4bfa3873959136d2e124a37b6246f5",
+                            "Asset Forge Studio Expansion_0.3.2_x64-setup.exe":  "8d234f73569667a6388598b0b7c23aeb150e3c185744bab04be49d5dbaf64510"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z\\smoke-report.json",
-    "executable":  "Asset Forge Studio.exe",
-    "installer":  "Asset Forge Studio_0.3.1_x64-setup.exe"
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T12-01-09-641Z\\smoke-report.json",
+    "executable":  "Asset Forge Studio Expansion.exe",
+    "channel":  "expansion",
+    "installer":  "Asset Forge Studio Expansion_0.3.2_x64-setup.exe"
 }

@@ -1,0 +1,14 @@
+﻿{
+    "version":  "0.3.1",
+    "channel":  "stable",
+    "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
+    "source_branch":  "feature/universal-expansion-v2-reviewed",
+    "artifact_sha256":  {
+                            "Asset Forge Studio.exe":  "73d70af556508fd33755ca7243def66e1bb7f2470c1a56274a3ecea8253b0eb3",
+                            "afs-backend.exe":  "e7450e95a0708d9c4e4a3dac01f0bdf288bcb0f867633eb547cc8adf48066025",
+                            "Asset Forge Studio_0.3.1_x64-setup.exe":  "62596008866b67b91d5049e96b1126bc3c1f19ecd638ad82ec74ddf4c7fd5abd"
+                        },
+    "location":  "dist/windows/stable",
+    "compatibility_location":  "dist/windows/latest",
+    "policy":  "Pinned PC release; future Expansion builds must not replace these files"
+}
