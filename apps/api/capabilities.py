@@ -62,8 +62,13 @@ def registry():
         installed=unity['installed'],status='experimental' if unity['installed'] else 'unavailable',dependency_health=unity,
         license=Provenance(source_code='AFS Editor importer',model_weights='not used',commercial='review_required',restrictions=['Unity Editor licensing and input rights are separate']),
         resource='gpu',target_engine_support=['unity:6000.4.8f1:Built-in'],constraints=unity['constraints']))
-    return dict(schema_version='1.0',providers=[v.model_dump(mode='json') for v in values],asset_types=[dict(id=t.value,label=LABELS[t],status='experimental' if t==AssetType.static_3d else 'planned',
-        reason='Existing real Single/Batch pipeline; output/license gates still apply' if t==AssetType.static_3d else 'No complete validated generator/export/native-import slice yet') for t in AssetType],
+    values.append(Capability(id='unity_world',label='Procedural World Plan / Unity',asset_types=[AssetType.map_environment],inputs=['approved_structured_world_plan','optional_validated_library_prefabs'],
+        outputs=['heightmap_16bit','terrain_layers','masks','unity_scene','navigation_data','unitypackage','gpu_previews'],installed=unity['installed'],status='experimental' if unity['installed'] else 'unavailable',dependency_health=unity,
+        license=Provenance(source_code='AFS deterministic procedural generator',model_weights='not used',commercial='review_required',restrictions=['Unity licensing and Library prefab provenance remain separate']),
+        resource='gpu',target_engine_support=['unity:6000.4.8f1:Built-in'],constraints=['Explicit two-lane template or edited structured plan, not text-to-map AI','No missing-prop generation or rivers/bridges','Native editor QA is not artistic approval or player performance'],
+        evidence=['Actual local terrain/native navigation/cold reopen outputs; see World jobs']))
+    return dict(schema_version='1.0',providers=[v.model_dump(mode='json') for v in values],asset_types=[dict(id=t.value,label=LABELS[t],status='experimental' if t in [AssetType.static_3d,AssetType.map_environment] else 'planned',
+        reason='Use dedicated World Plan approval/build route; no text interpretation or missing-prop AI' if t==AssetType.map_environment else 'Existing real Single/Batch pipeline; output/license gates still apply' if t==AssetType.static_3d else 'No complete validated generator/export/native-import slice yet') for t in AssetType],
         scheduler=dict(heavy_gpu_jobs=1,shared_by=['Single','Batch','GPU Blender','native GPU validation']),
         planner=dict(provider='deterministic_structured_schema',local_llm='not configured; no downloads or paid fallback'),
         commercial_policy='Default deny for unknown/research-only provenance; tool installation is not commercial clearance')

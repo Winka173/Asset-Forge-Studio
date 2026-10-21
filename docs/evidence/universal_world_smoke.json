@@ -1,0 +1,81 @@
+{
+  "version": "0.4.0",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T130634Z\\Asset Forge Studio Expansion.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T13-07-44-836Z",
+  "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
+  "checks": [
+    {
+      "name": "fresh_library_has_no_sample_projects",
+      "passed": true
+    },
+    {
+      "name": "native_window_and_packaged_backend",
+      "passed": true,
+      "page_url": "http://tauri.localhost/",
+      "native_pid": 93804,
+      "backend_pid": 92720,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T13-07-44-836Z\\Library",
+      "unauthorized_status": 401
+    },
+    {
+      "name": "single_instance_backend",
+      "passed": true,
+      "duplicate_exit_code": 0
+    },
+    {
+      "name": "real_glb_webview_and_library",
+      "passed": true,
+      "asset_id": "1fd255c124ba43269563a1625fc4d1f7",
+      "artifact_id": "31beed445be44cd38fd1bced3e84ad59",
+      "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
+      "triangles": 344475,
+      "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
+    },
+    {
+      "name": "native_custom_select_long_form_viewport_and_keyboard_scroll",
+      "passed": true,
+      "popup_bounds": {
+        "x": 278.76190185546875,
+        "y": 726.95703125,
+        "width": 270.55950927734375,
+        "height": 130.5238037109375
+      },
+      "viewport_height": 934
+    },
+    {
+      "name": "native_ui_export_actual_zip_project_folders_and_source_hash",
+      "passed": true,
+      "export_id": "4967b60881ab45a19010fd3c15e6ad0e",
+      "project_id": "395795740f2f42d7aeed3fc0000da32c",
+      "archive_root": "Desktop-smoke-2026-10-21T13-07-44-836Z-395795740f2f42d7aeed3fc0000da32c/Archer-Tower-real-local-GLB-smoke-1fd255c124ba43269563a1625fc4d1f7/Master-4967b60881ab45a19010fd3c15e6ad0e",
+      "bytes": 45467829
+    },
+    {
+      "name": "native_output_routing_and_immutable_manifest_v2",
+      "passed": true,
+      "manifest_id": "3cbf7401ec3940a4a9eb32f0c3fe172f",
+      "unexpected_generation_jobs": 0
+    },
+    {
+      "name": "native_runtime_settings_panel",
+      "passed": true,
+      "native_dialog_interaction": "MANUAL_NOT_AUTOMATED"
+    },
+    {
+      "name": "native_batch_manifest_and_missing_specs_guard",
+      "passed": true,
+      "batch_id": "216f673b5634403b985d60e74afc4b53",
+      "manifest_count": 14
+    },
+    {
+      "name": "graceful_close_owned_backend_exited",
+      "passed": true
+    },
+    {
+      "name": "native_relaunch_persistence_and_token_rotation",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "status": "PASS"
+}

@@ -1,0 +1,28 @@
+﻿{
+    "version":  "0.3.4",
+    "channel":  "stable",
+    "status":  "PASS_BUILD_NATIVE_SMOKE_AND_DELIVERY_HASHES",
+    "location":  "dist/windows/stable/0.3.4",
+    "source_branch":  "release/pc-stable",
+    "source_commit":  "d34bc8d",
+    "previous_latest":  "dist/windows/stable/latest",
+    "previous_latest_status":  "Open user application; left running and unchanged",
+    "files":  [
+                  {
+                      "name":  "afs-backend.exe",
+                      "sha256":  "0f3ff1d9eb3384d3b868274edd18fe8c71249ba33d800214dfabf6cef42cf8ed"
+                  },
+                  {
+                      "name":  "Asset Forge Studio.exe",
+                      "sha256":  "c5f234b417a06575be8daae741cb45836ddb8eeadc46a0beaff935116bc190f7"
+                  },
+                  {
+                      "name":  "Asset Forge Studio_0.3.4_x64-setup.exe",
+                      "sha256":  "1a1f92033387f326b9f0c3dacbd8205b7093c9e4cc34d65a1c81b4224c9bf151"
+                  },
+                  {
+                      "name":  "build-report.json",
+                      "sha256":  "2ed77dcead06257fad02f586e5df45544fd8cc643461e2aacea69bf2517f76b2"
+                  }
+              ]
+}

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def build():
     build_root = ROOT / '.local/desktop-build'
-    source_roots = ['apps/api', 'engines', 'scripts', 'pipelines', 'presets', 'schemas', 'integrations/unity/Packages', 'apps/web/dist']
+    source_roots = ['apps/api', 'engines', 'scripts', 'pipelines', 'presets', 'schemas', 'integrations/unity', 'apps/web/dist']
     def source_signature():
         included = []
         for folder in source_roots:

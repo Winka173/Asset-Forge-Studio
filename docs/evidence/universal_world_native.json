@@ -1,0 +1,340 @@
+{
+  "status": "PASS",
+  "scope": "Native World Plan UI, actual Unity Terrain/NavMesh/prefabs/render/export/relaunch; no production game modified",
+  "checks": [
+    {
+      "name": "actual_world_master_selection_and_typed_manifest",
+      "passed": true,
+      "master_id": "5b73a4c695344b169699162bd43d8232",
+      "production_artistic_approval": "NOT_GIVEN"
+    },
+    {
+      "name": "native_plan_approval_idempotent_refresh_real_scene_terrain_navmesh_prefabs_gpu_zip",
+      "passed": true,
+      "manifest": {
+        "status": "PASS_EDITOR_VALIDATION",
+        "engine": "unity",
+        "version": "6000.4.8f1",
+        "asset_type": "map_environment",
+        "render_pipeline": "Built-in",
+        "reports": [
+          {
+            "source_road_alpha": 1,
+            "native_road_alpha": 1,
+            "navigation": {
+              "spawn_west": {
+                "reachable": true,
+                "corners": 6
+              },
+              "spawn_east": {
+                "reachable": true,
+                "corners": 4
+              }
+            },
+            "terrain_resolution": 129,
+            "terrain_size_m": [
+              256,
+              20,
+              256
+            ],
+            "prop_instances": 2,
+            "build_zones": 4,
+            "physics_sources": 3,
+            "render_status": "ACTUAL_UNITY_CAMERA_RENDER",
+            "preview_lod_policy": "LOD0 forced only for captures; saved scene restores automatic LODs; not player FPS",
+            "scene_path": "Assets/AFS/World/RunavelleWorld.unity",
+            "terrain_path": "Assets/AFS/World/TerrainData.asset",
+            "navmesh_path": "Assets/AFS/World/Navigation.asset",
+            "performance": "NOT_TESTED_IN_PLAYER",
+            "artistic_quality": "NEEDS_HUMAN_REVIEW",
+            "checks_passed": true,
+            "failures": [],
+            "unity_version": "6000.4.8f1",
+            "config_hash": "16b1ecdfef7bc3baed1be103fb881b5999a3252321aeb18febe3ae6086514f01",
+            "game_ready": false
+          },
+          {
+            "navigation": {
+              "spawn_west": {
+                "reachable": true,
+                "corners": 6
+              },
+              "spawn_east": {
+                "reachable": true,
+                "corners": 4
+              }
+            },
+            "prop_instances": 2,
+            "scope": "Separate Editor process reopened native scene, TerrainData, layers, collider, props and runtime-loaded NavMeshData",
+            "checks_passed": true,
+            "failures": [],
+            "unity_version": "6000.4.8f1",
+            "config_hash": "16b1ecdfef7bc3baed1be103fb881b5999a3252321aeb18febe3ae6086514f01",
+            "game_ready": false
+          }
+        ],
+        "native_files": [
+          {
+            "path": "jobs/78446663344f4d0fb34934fd7a113423/editor_project/Assets/AFS/World/Navigation.asset",
+            "sha256": "fc9b072b5d63110c5ae17e3dafa1feffee9551b36acd71c087d7a17fd413fd03",
+            "bytes": 53284
+          },
+          {
+            "path": "jobs/78446663344f4d0fb34934fd7a113423/editor_project/Assets/AFS/World/TerrainData.asset",
+            "sha256": "f1187146239a31f41690105b38f0861cb5a4bd49c6cb5beaf72f8da6de15cb37",
+            "bytes": 131556
+          },
+          {
+            "path": "jobs/78446663344f4d0fb34934fd7a113423/editor_project/Assets/AFS/World/RunavelleWorld.unity",
+            "sha256": "acf84375b9400bb091f637478f4fc7679a4add0f6b9632618eba1799129b87ae"
+          }
+        ],
+        "effective_config_hash": "16b1ecdfef7bc3baed1be103fb881b5999a3252321aeb18febe3ae6086514f01",
+        "source_height_bit_depth": 16,
+        "missing_prop_ai_jobs": 0,
+        "artistic_quality": "NEEDS_HUMAN_REVIEW",
+        "game_ready": false
+      },
+      "usage": {
+        "elapsed_seconds": 25.10899999999674,
+        "peak_process_tree_ram_bytes": 2825322496,
+        "gpu_scope": "Whole-device nvidia-smi samples, not engine-exclusive allocation",
+        "samples": [
+          {
+            "seconds": 0.8120000000053551,
+            "process_tree_ram_bytes": 15884288,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4500, 54.72, 11"
+          },
+          {
+            "seconds": 1.375,
+            "process_tree_ram_bytes": 252342272,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4511, 50.62, 9"
+          },
+          {
+            "seconds": 1.937000000005355,
+            "process_tree_ram_bytes": 346337280,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4521, 49.49, 9"
+          },
+          {
+            "seconds": 2.4839999999967404,
+            "process_tree_ram_bytes": 587390976,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4500, 48.44, 8"
+          },
+          {
+            "seconds": 3.0310000000026776,
+            "process_tree_ram_bytes": 624062464,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4500, 51.79, 4"
+          },
+          {
+            "seconds": 3.625,
+            "process_tree_ram_bytes": 697884672,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4519, 51.86, 6"
+          },
+          {
+            "seconds": 4.1710000000020955,
+            "process_tree_ram_bytes": 1155969024,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4507, 51.72, 4"
+          },
+          {
+            "seconds": 4.764999999999418,
+            "process_tree_ram_bytes": 1053028352,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4513, 51.16, 5"
+          },
+          {
+            "seconds": 5.342999999993481,
+            "process_tree_ram_bytes": 1045012480,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4506, 46.11, 2"
+          },
+          {
+            "seconds": 5.9210000000020955,
+            "process_tree_ram_bytes": 820035584,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4476, 42.10, 4"
+          },
+          {
+            "seconds": 6.467999999993481,
+            "process_tree_ram_bytes": 903409664,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4429, 42.38, 4"
+          },
+          {
+            "seconds": 7.014999999999418,
+            "process_tree_ram_bytes": 704233472,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4434, 43.03, 5"
+          },
+          {
+            "seconds": 7.577999999994063,
+            "process_tree_ram_bytes": 733077504,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4444, 44.58, 8"
+          },
+          {
+            "seconds": 8.125,
+            "process_tree_ram_bytes": 882671616,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4495, 49.92, 12"
+          },
+          {
+            "seconds": 8.687000000005355,
+            "process_tree_ram_bytes": 883359744,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4496, 52.28, 6"
+          },
+          {
+            "seconds": 9.25,
+            "process_tree_ram_bytes": 1049137152,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4415, 49.62, 7"
+          },
+          {
+            "seconds": 9.796000000002095,
+            "process_tree_ram_bytes": 1422532608,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4381, 47.99, 5"
+          },
+          {
+            "seconds": 10.35899999999674,
+            "process_tree_ram_bytes": 1232515072,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4359, 46.48, 6"
+          },
+          {
+            "seconds": 10.921000000002095,
+            "process_tree_ram_bytes": 1227329536,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4510, 45.45, 12"
+          },
+          {
+            "seconds": 11.46799999999348,
+            "process_tree_ram_bytes": 1280348160,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4582, 45.47, 6"
+          },
+          {
+            "seconds": 12.014999999999418,
+            "process_tree_ram_bytes": 1206067200,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4426, 45.44, 7"
+          },
+          {
+            "seconds": 12.577999999994063,
+            "process_tree_ram_bytes": 1213612032,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4549, 46.61, 6"
+          },
+          {
+            "seconds": 13.125,
+            "process_tree_ram_bytes": 1523937280,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4628, 46.91, 6"
+          },
+          {
+            "seconds": 13.671000000002095,
+            "process_tree_ram_bytes": 1576857600,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4862, 45.47, 6"
+          },
+          {
+            "seconds": 14.23399999999674,
+            "process_tree_ram_bytes": 1893109760,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4889, 46.27, 5"
+          },
+          {
+            "seconds": 14.781000000002678,
+            "process_tree_ram_bytes": 2495320064,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5327, 48.76, 9"
+          },
+          {
+            "seconds": 15.34299999999348,
+            "process_tree_ram_bytes": 2546425856,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5265, 51.01, 5"
+          },
+          {
+            "seconds": 15.906000000002678,
+            "process_tree_ram_bytes": 2680983552,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5429, 53.95, 9"
+          },
+          {
+            "seconds": 16.452999999994063,
+            "process_tree_ram_bytes": 2825322496,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5595, 55.54, 12"
+          },
+          {
+            "seconds": 17.014999999999418,
+            "process_tree_ram_bytes": 2656677888,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5413, 56.28, 10"
+          },
+          {
+            "seconds": 17.562000000005355,
+            "process_tree_ram_bytes": 2656673792,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5413, 44.31, 4"
+          },
+          {
+            "seconds": 18.10899999999674,
+            "process_tree_ram_bytes": 2656673792,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5406, 43.22, 5"
+          },
+          {
+            "seconds": 18.656000000002678,
+            "process_tree_ram_bytes": 2656706560,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5409, 43.35, 4"
+          },
+          {
+            "seconds": 19.202999999994063,
+            "process_tree_ram_bytes": 2656706560,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5349, 43.08, 4"
+          },
+          {
+            "seconds": 19.75,
+            "process_tree_ram_bytes": 2654810112,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5431, 42.81, 5"
+          },
+          {
+            "seconds": 20.296000000002095,
+            "process_tree_ram_bytes": 2654810112,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5429, 43.34, 5"
+          },
+          {
+            "seconds": 20.84299999999348,
+            "process_tree_ram_bytes": 2382626816,
+            "all_gpu_memory_mib_power_w_utilization_percent": "5013, 44.00, 5"
+          },
+          {
+            "seconds": 21.5,
+            "process_tree_ram_bytes": 18284544,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4374, 43.56, 6"
+          },
+          {
+            "seconds": 22.062000000005355,
+            "process_tree_ram_bytes": 295006208,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4352, 46.30, 5"
+          },
+          {
+            "seconds": 22.60899999999674,
+            "process_tree_ram_bytes": 506863616,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4357, 46.46, 8"
+          },
+          {
+            "seconds": 23.156000000002678,
+            "process_tree_ram_bytes": 622714880,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4356, 46.34, 7"
+          },
+          {
+            "seconds": 23.71799999999348,
+            "process_tree_ram_bytes": 617914368,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4370, 48.74, 10"
+          },
+          {
+            "seconds": 24.281000000002678,
+            "process_tree_ram_bytes": 663728128,
+            "all_gpu_memory_mib_power_w_utilization_percent": "4368, 50.48, 10"
+          }
+        ]
+      },
+      "export_id": "cb7b5bc138e14b50b888ab1bad773729",
+      "package_sha256": "14306490cee42cab78fceb6653edffa6b10f91329aa03a3c0d3ef86054e8ca4b",
+      "child_ai_jobs": 0
+    },
+    {
+      "name": "world_project_switch_resets_inputs_and_outputs_without_creating_assets",
+      "passed": true,
+      "empty_project_id": "3a58598fb6e04c0cac6e5b0fa4c0833a"
+    },
+    {
+      "name": "native_relaunch_reopens_world_plan_model_versions_and_export_history",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "artistic_quality": "NEEDS_HUMAN_REVIEW",
+  "game_ready": false,
+  "asset_id": "316beaa3121151dbbfe8f770dfd860c9",
+  "plan_id": "694abbaf4310554190878ec8e4fa3394",
+  "job_id": "78446663344f4d0fb34934fd7a113423"
+}

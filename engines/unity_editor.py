@@ -66,7 +66,7 @@ def prepare(payload,record,folder):
     for name in ['Assets/AFS/Input/textures','Assets/AFS/Output','Packages','ProjectSettings']:(project/name).mkdir(parents=True,exist_ok=True)
     output.mkdir()
     shutil.copytree(store.ROOT/PACKAGE,project/'Packages/com.assetforge.editor')
-    modules=['imageconversion','jsonserialize','physics']
+    modules=['imageconversion','jsonserialize','physics','ai','terrain','terrainphysics']
     (project/'Packages/manifest.json').write_text(json.dumps(dict(dependencies={f'com.unity.modules.{m}':'1.0.0' for m in modules}),indent=2))
     (project/'ProjectSettings/ProjectVersion.txt').write_text(f'm_EditorVersion: {VERSION}\n')
     for name in names:

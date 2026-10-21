@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Long Map form bottom popup selectable by normal pointer click",
+    "Opening and active-option keyboard scrolling do not scroll the page",
+    "Escape and outside click close normally",
+    "Top project popup stays in viewport",
+    "Short viewport popup flips and clamps"
+  ],
+  "geometry": [
+    {
+      "top": 711.59375,
+      "bottom": 881.59375,
+      "height": 170,
+      "width": 270,
+      "viewport": 934,
+      "scrollY": 26
+    },
+    {
+      "top": 711.59375,
+      "bottom": 881.59375,
+      "height": 170,
+      "width": 270,
+      "viewport": 934,
+      "scrollY": 26
+    },
+    {
+      "top": 171,
+      "bottom": 224,
+      "height": 53,
+      "width": 230,
+      "viewport": 934,
+      "scrollY": 0
+    },
+    {
+      "top": 286.84375,
+      "bottom": 456.84375,
+      "height": 170,
+      "width": 591,
+      "viewport": 500,
+      "scrollY": 641
+    }
+  ],
+  "no_jobs_enqueued": true
+}

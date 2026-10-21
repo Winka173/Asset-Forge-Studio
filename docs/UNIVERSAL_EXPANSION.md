@@ -4,6 +4,8 @@ Work branch: `feature/universal-expansion-v2-reviewed`, based on `d1b1e49`. User
 
 The PC 0.3.1 distribution is pinned at `dist/windows/stable/` and source branch `release/pc-0.3.1` (`9b80ef9`). Universal work ships separately as **Asset Forge Studio Expansion** at `dist/windows/expansion/latest/`, using its own Windows identifier and default settings/library. Expansion 0.3.2 passed 28 backend tests, frontend build, packaged native smoke/relaunch and an actual coexistence check while the user's PC edition stayed open; original PC checksums match. See `evidence/desktop_distributions.json` and `evidence/desktop_stable_release.json`. No new AI inference or artistic approval is implied by this release separation.
 
+Stable UI/default/export updates have also shipped separately as PC **0.3.4**, branch `release/pc-stable`, commit `d34bc8d`. The verified portable app is `dist/windows/stable/0.3.4/Asset Forge Studio.exe`: the user's older app remains running from `stable/latest`, so that directory was left unchanged. Both editions have neutral graphite surfaces, custom keyboard-accessible selects, empty fresh libraries and project-scoped delivery ZIPs. See `evidence/pc_stable_delivery.json`, `pc_stable_build.json` and `pc_stable_smoke.json`.
+
 ## Audit and prioritized gaps
 
 | Area | Verified starting point | Gap / decision |
@@ -43,8 +45,9 @@ Official MCP source checks are recorded with HEAD, license and last-push timesta
 - [ ] Executable stage-by-stage Manual policies, hash-bound approved-family Auto Batch, configurable fan-out/retry/storage limits. These modes are not represented as working end-user features yet.
 - [ ] Local LLM planning adapter after a real installed model is available; structured fallback is already working.
 - [x] Integrated Unity Editor import job, native package, saved/reopened prefab and scene, GPU proof and UI report. Real packaged native UI submission, shared GPU lock, idempotent request/refresh, cold Editor reopen and desktop relaunch passed; see `evidence/universal_unity_native.json`. Tested profile: Unity 6000.4.8f1 / Built-in, four FBX LODs, one material and up to 4K basecolor/MR. Unsupported/missing material inputs and commercial presets are explicitly blocked.
-- [ ] Unreal native import test — blocked on missing configured Editor, not replaced with fake .uasset/.umap files.
-- [ ] World Plan and native Unity map vertical slice; then Unreal when available.
+- [ ] Unreal native import test — deferred at the user's request; no fake .uasset/.umap outputs.
+- [x] Experimental World Plan and native Unity map vertical slice: immutable reviewed plan, 16-bit terrain, roads/build zones, actual same-project prefab instances, native NavMesh paths, cold Editor reopen, real camera renders, project export ZIP and master selection. Packaged desktop refresh/idempotency, cross-project reset and relaunch evidence: `evidence/universal_world_native.json`. See [scope and limitations](WORLD_PLAN_SLICE.md). This is a procedural technical slice, not text-to-map AI or artistic approval.
+- [ ] Map expansion: rivers/bridges, biome/scatter generation, production terrain materials, player performance budgets; Unreal when resumed.
 - [ ] Rig/deformation/retarget slice and native clips.
 - [ ] Editable realtime VFX/material slice.
 - [ ] Separate validated sprite/UI/audio/cinematic slices.

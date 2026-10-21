@@ -126,7 +126,7 @@ def draft(identifier: str, body: Draft):
 
 class AssetInput(BaseModel):
     project_id: str
-    asset_type: Literal['static_3d'] = 'static_3d'
+    asset_type: Literal['static_3d','map_environment'] = 'static_3d'
     name: str = Field(min_length=1, max_length=200)
     prompt: str = Field(default='', max_length=100000)
     reference_ids: list[str] = Field(default_factory=list, max_length=50)
@@ -189,7 +189,8 @@ def attach_version(identifier: str, body: Attach):
 def approve(identifier: str, body: Approval):
     value = asset(identifier)
     record = scoped_artifact(body.artifact_id, value['project_id'], identifier)
-    if record['role'] != 'candidate': raise HTTPException(400, 'Chỉ duyệt model candidate thật')
+    if record['role'] != 'candidate' and not (value.get('asset_type')=='map_environment' and record['role']=='engine_package' and record['metadata'].get('asset_type')=='map_environment'):
+        raise HTTPException(400, 'Select a real model candidate or validated native World package')
     if not body.reviewer.strip(): raise HTTPException(400, 'Cần tên người duyệt')
     entry = body.model_dump() | dict(sha256=record['sha256'], created_at=store.now(), scope='human_master_selection_only',
                                     mesh_quality_parity='NOT_TESTED', unity='NOT_TESTED')
@@ -206,6 +207,16 @@ def job_project(job):
 
 def output_files(export):
     from .export_files import deliver
+    if export.get('native_world_job_id'):
+        job=jobs.get(export['native_world_job_id'])
+        if job['status']!='REVIEW_REQUIRED':return export|dict(validation=job['status'],files=[])
+        value=asset(export['asset_id'])
+        if job['payload'].get('asset_id')!=value['id'] or job['payload'].get('project_id')!=value['project_id']:raise HTTPException(409,'World export project mismatch')
+        folder=store.DATA/'jobs'/job['id']/'output'
+        report=json.loads((folder/'world_unity_reopen.json').read_text(encoding='utf-8-sig'))
+        if report.get('checks_passed') is not True:raise HTTPException(409,'Native World reopen did not pass')
+        names=['AFS_World.unitypackage','world_sources.zip','height.png','height.raw','roads.png','build_zones.png','world_plan.json','world_unity_report.json','world_unity_reopen.json']
+        return deliver(export|dict(validation='PASS_EDITOR_VALIDATION'),[dict(name=n,_source=str(folder/n)) for n in names])
     if not export.get('job_id'):
         if export.get('validation')=='PASS_FILE_CHECKSUM':
             value=asset(export['asset_id']);record=scoped_artifact(export['artifact_id'],value['project_id'],value['id'])
@@ -255,11 +266,14 @@ def studio(project_id: str = ''):
         exports = [dict(id=r['id'], **json.loads(r['payload'])) for r in db.execute('SELECT * FROM asset_exports')]
         row = db.execute('SELECT payload FROM drafts WHERE project_id=?', (project_id,)).fetchone()
     for value in values:
-        value['versions'] = [a for a in artifacts if a['asset_id'] == value['id'] and a['role'] == 'candidate']
+        value['versions'] = [a for a in artifacts if a['asset_id'] == value['id'] and (a['role'] == 'candidate' or (value.get('asset_type')=='map_environment' and a['role'] in ['world_plan','engine_package']))]
         value['exports'] = [output_files(e) for e in exports if e.get('asset_id') == value['id']]
         thumbnail = next((a for a in artifacts if a['id'] in value['reference_ids']), None)
         value['thumbnail_url'] = thumbnail['url'] if thumbnail else None
         value['thumbnail_kind'] = 'reference' if thumbnail else None
+        if value.get('asset_type')=='map_environment':
+            preview=next((a for a in reversed(artifacts) if a['asset_id']==value['id'] and a['name']=='world_overview.png' and a['role']=='preview'),None)
+            if preview:value.update(thumbnail_url=preview['url'],thumbnail_kind='unity_map_preview')
         for version in reversed(value['versions']):
             job_id = version['metadata'].get('job_id')
             if job_id and (store.DATA / 'jobs' / job_id / 'output/mobile_three_quarter.png').is_file():
@@ -285,6 +299,7 @@ class ConceptInput(BaseModel):
 def concept(body: ConceptInput):
     from engines.concept_adapter import CONCEPT_ADAPTER
     value=asset(body.asset_id);config=project(value['project_id'])
+    if value.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'This asset type uses its own output route; no universal concept-to-3D substitution')
     if body.batch_id:
         from .batch import batch
         if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')
@@ -363,6 +378,7 @@ def cached(db, key, fingerprint):
 def generate(body: Generate):
     from engines.adapters import ADAPTERS
     value = asset(body.asset_id); config = project(value['project_id'])
+    if value.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'Use the asset-specific World Plan route; a GLB is not a finished level')
     if body.batch_id:
         from .batch import batch
         if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')

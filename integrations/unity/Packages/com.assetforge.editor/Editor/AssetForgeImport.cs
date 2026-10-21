@@ -197,7 +197,7 @@ public static class AssetForgeImport
             ["camera_position_m"] = Vec(camera.transform.position), ["target_m"] = Vec(bounds.center), ["orthographic_vertical_half_size_m"] = camera.orthographicSize });
         UnityEngine.Object.DestroyImmediate(image); UnityEngine.Object.DestroyImmediate(target);
     }
-    private static string Json(object value)
+    internal static string Json(object value)
     {
         if (value == null) return "null"; if (value is string text) return "\"" + text.Replace("\\","\\\\").Replace("\"","\\\"").Replace("\n","\\n").Replace("\r","\\r").Replace("\t","\\t") + "\"";
         if (value is bool boolean) return boolean ? "true" : "false";

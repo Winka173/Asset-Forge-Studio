@@ -1,0 +1,17 @@
+.world-studio .create-workspace{align-items:start;grid-template-columns:minmax(320px, .9fr) minmax(0,2fr)}
+.world-studio .create-controls{display:flex;flex-direction:column;gap:16px}
+.world-studio .studio-field{margin-bottom:0}
+.world-studio .create-controls>button{min-height:42px}
+.world-studio .advanced{margin:0;padding-top:16px}
+.world-dimensions{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.world-plan-json{width:100%;min-height:240px;resize:vertical;padding:14px;background:#171717;border:1px solid #444;color:#ddd;border-radius:8px;font:12px/1.6 Consolas,monospace;margin:16px 0}
+.world-result{padding:24px;display:flex;flex-direction:column;gap:20px;background:#202020;border-radius:14px;border:1px solid #383838;min-width:0}
+.world-preview{width:100%;max-height:650px;object-fit:contain;display:block;background:#171717;border-radius:8px}
+.world-preview-empty{min-height:420px;display:grid;place-items:center;text-align:center;background:#171717;color:#aaa;padding:40px;border-radius:8px}
+.world-job{display:flex;flex-direction:column;gap:8px;padding-bottom:16px;border-bottom:1px solid #383838}
+.world-job span,.world-scope{color:#aaa;font-size:12px;line-height:1.8}
+.world-studio .export-files{display:flex;flex-wrap:wrap;gap:12px}
+.world-studio .export-files a{background:#2a2a2a;border-color:#444;color:#ddd;padding:10px 12px}
+.world-studio .segmented{background:#252525;border-color:#3d3d3d}
+.world-studio .segmented button{background:#252525;color:#ccc}
+@media(max-width:1050px){.world-studio .create-workspace{grid-template-columns:1fr}.world-preview-empty{min-height:280px}}

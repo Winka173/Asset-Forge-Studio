@@ -5,6 +5,7 @@ import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
 import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
+import { WorldStudio } from "./world-studio";
 import { UnityImportPanel } from "./unity-panel";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
@@ -39,6 +40,7 @@ type Project = {
   engine_profiles?: Record<string,unknown>;
 };
 type Asset = {
+  asset_type?: string;
   id: string;
   project_id: string;
   name: string;
@@ -52,7 +54,7 @@ type Asset = {
   versions: Artifact[];
   exports: { files?: JobFile[]; [key: string]: unknown }[];
   thumbnail_url?: string;
-  thumbnail_kind?: "model_render" | "reference" | null;
+  thumbnail_kind?: "model_render" | "reference" | "unity_world_render" | null;
   updated_at: string;
   concept_approvals?: {artifact_id:string;sha256:string;reviewer:string}[];
 };
@@ -217,7 +219,7 @@ function route(): Page {
 }
 
 export function Studio() {
-  const [creationMode,setCreationMode]=useState<'single'|'batch'>('single');
+  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'>('single');
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
       localStorage.getItem("afs.project") || "",
@@ -382,6 +384,7 @@ export function Studio() {
       setDraft(restored);
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
+      if(routeAsset?.asset_type==='map_environment')setCreationMode('world');
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -648,6 +651,7 @@ export function Studio() {
     });
   }
   function newAsset(mode: Draft["mode"] = "Image") {
+    setCreationMode('single');
     if (!projectId) {
       editProject(false);
       return;
@@ -663,7 +667,7 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
-    setCreationMode('single');
+    setCreationMode(asset.asset_type==='map_environment'?'world':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
     setDraft({
@@ -808,7 +812,7 @@ export function Studio() {
           )}
           {asset.thumbnail_url && (
             <span className="reference-label">
-              {asset.thumbnail_kind === "model_render"
+              {asset.thumbnail_kind === "unity_world_render" ? "UNITY WORLD" : asset.thumbnail_kind === "model_render"
                 ? "MODEL RENDER"
                 : "REFERENCE IMAGE"}
             </span>
@@ -954,9 +958,11 @@ export function Studio() {
             <small>AI chạy local. Các file export được sắp theo project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <div className="segmented creation-mode" role="tablist" aria-label="Creation workflow">
-            <button role="tab" aria-selected={creationMode==='single'} onClick={()=>setCreationMode('single')}>Single Asset</button>
-            <button role="tab" aria-selected={creationMode==='batch'} onClick={()=>setCreationMode('batch')}>Batch Assets</button>
+            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='single'} onClick={()=>setCreationMode('single')}>Single Asset</button>
+            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='batch'} onClick={()=>setCreationMode('batch')}>Batch Assets</button>
+            <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='world'} onClick={()=>{setCreationMode('world');setAssetId('');change({assetId:''});location.hash='create';}}>Map / World</button>
           </div>}
+          {projectId && page==='Create' && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
           {projectId && page==='Create' && creationMode==='batch' && <BatchStudio projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">

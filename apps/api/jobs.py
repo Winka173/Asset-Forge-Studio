@@ -115,7 +115,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    return 'cpu' if payload['kind'] in ['blender','unity_import'] and not payload.get('use_gpu',False) else 'gpu'
+    return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
 def dependency_readiness(job):
@@ -272,7 +272,7 @@ class Worker:
             if payload['kind'] == 'inference':
                 self.inference(job, artifact, source, folder)
                 return
-            if payload['kind'] == 'unity_import':
+            if payload['kind'] in ['unity_import','world_unity']:
                 self.unity_import(job,artifact,folder)
                 return
             from scripts.audit import audit
@@ -327,6 +327,8 @@ class Worker:
 
     def unity_import(self,job,artifact,folder):
         from engines import unity_editor
+        if job['payload']['kind']=='world_unity':
+            from engines import world_editor as unity_editor
         from engines.plugin_sdk import Plugin,Operation
         plugin=Plugin('unity_editor',{Operation.prepare:unity_editor.prepare,Operation.validate:unity_editor.validate})
         payload=job['payload'];identifier=job['id'];process=None;samples=[];started=time.monotonic()
@@ -339,27 +341,41 @@ class Worker:
                     process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
                     (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='unity_import',stage=stage)))
                     while process.poll() is None:
+                        if time.monotonic()-started>int(payload.get('timeout_seconds',900)):
+                            kill_tree(process)
+                            raise TimeoutError('Native Editor validation timeout; exact settings and partial files retained')
                         if get(identifier)['status']=='CANCELLED' or self.stop.is_set():
                             kill_tree(process)
                             if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Desktop stopped; native import checkpoint retained, retry uses a new immutable project')
                             return
+                        try:
+                            tree=[psutil.Process(process.pid),*psutil.Process(process.pid).children(recursive=True)]
+                            ram=sum(p.memory_info().rss for p in tree if p.is_running())
+                        except (psutil.NoSuchProcess,psutil.AccessDenied):ram=None
+                        sample=dict(seconds=time.monotonic()-started,process_tree_ram_bytes=ram)
                         if payload.get('use_gpu'):
                             gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
-                            samples.append(dict(seconds=time.monotonic()-started,all_gpu_memory_mib_power_w_utilization_percent=gpu.stdout.strip()))
+                            sample['all_gpu_memory_mib_power_w_utilization_percent']=gpu.stdout.strip()
+                        samples.append(sample)
                         self.stop.wait(.5)
                     if process.returncode:raise RuntimeError(f'Unity stage {stage} exited {process.returncode}; inspect unity.log/unity_reopen.log')
             transition(identifier,'VALIDATING')
             report=plugin.invoke(Operation.validate,payload,folder)
             (folder/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
             metadata=dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,engine='unity',version=unity_editor.VERSION,
-                stage='engine_imported',license=artifact['metadata'].get('license','UNKNOWN'),commercial='NOT_CLEARED',human_quality_approval='NOT_GIVEN')
-            for name,role in [('AFS_Asset.unitypackage','engine_package'),('AFS_Editor_Importer.zip','editor_package'),('unity_report.json','qa_report'),('unity_reopen_report.json','qa_report')]:
+                stage='engine_imported',asset_type='map_environment' if payload['kind']=='world_unity' else 'static_3d',license=artifact['metadata'].get('license','UNKNOWN'),commercial='NOT_CLEARED',human_quality_approval='NOT_GIVEN')
+            outputs=getattr(unity_editor,'OUTPUT_ARTIFACTS',[('AFS_Asset.unitypackage','engine_package'),('AFS_Editor_Importer.zip','editor_package'),('unity_report.json','qa_report'),('unity_reopen_report.json','qa_report')])
+            for name,role in outputs:
                 store.add_artifact(folder/'output'/name,role,name,metadata)
-            for path in (folder/'output').glob('*.png'):store.add_artifact(path,'preview',path.name,metadata)
+            registered={name for name,_ in outputs}
+            for path in (folder/'output').glob('*.png'):
+                if path.name not in registered:store.add_artifact(path,'preview',path.name,metadata|dict(preview_kind='layout_mask' if path.name=='layout_overview.png' else 'unity_render'))
             transition(identifier,'REVIEW_REQUIRED')
         finally:
             if process and process.poll() is None:kill_tree(process)
             (folder/'gpu_samples.json').write_text(json.dumps(samples,indent=2),encoding='utf-8')
+            (folder/'resource_usage.json').write_text(json.dumps(dict(elapsed_seconds=time.monotonic()-started,peak_process_tree_ram_bytes=max((s.get('process_tree_ram_bytes') or 0 for s in samples),default=0),
+                gpu_scope='Whole-device nvidia-smi samples, not engine-exclusive allocation',samples=samples),indent=2),encoding='utf-8')
 
     def concept(self, job, folder):
         from engines.concept_adapter import CONCEPT_ADAPTER

@@ -86,13 +86,13 @@ def manifest(identifier,verify=False):
         if payload.get('parent_job') in job_ids:deps.append(payload['parent_job'])
         ref=payload.get('artifact_id');input_hashes={ref:store.get_artifact(ref)['sha256']} if ref else {}
         stages.append(Stage(id=job['id'],plugin=payload.get('engine') or ('blender_headless' if kind=='blender' else 'unity_editor' if kind=='unity_import' else kind),
-            operation=Operation.import_test if kind=='unity_import' else Operation.postprocess if kind=='blender' else Operation.generate,
+            operation=Operation.import_test if kind in ['unity_import','world_unity'] else Operation.postprocess if kind=='blender' else Operation.generate,
             resource=resource_class(payload),depends_on=list(dict.fromkeys(deps)),input_artifacts=[ref] if ref else [],input_hashes=input_hashes,
-            expected_outputs=['png'] if kind=='concept' else ['unity_prefab','unity_scene','import_report'] if kind=='unity_import' else ['glb','fbx','lod','blend','previews'] if kind=='blender' else ['glb'],
+            expected_outputs=['heightmap_16bit','unity_scene','terrain_data','navigation_data','unitypackage'] if kind=='world_unity' else ['png'] if kind=='concept' else ['unity_prefab','unity_scene','import_report'] if kind=='unity_import' else ['glb','fbx','lod','blend','previews'] if kind=='blender' else ['glb'],
             checkpoint=f'jobs/{job["id"]}',effective_config_hash=payload.get('effective_config_hash'),status=states[job['status']],
             acceptance=['Input checksums match','Requested output contract passes technical validation'],evidence_paths=[f'jobs/{job["id"]}/manifest.json']))
-        report=store.DATA/'jobs'/job['id']/'output/unity_report.json'
-        if kind=='unity_import' and job['status']=='REVIEW_REQUIRED' and report.is_file():
+        report=store.DATA/'jobs'/job['id']/('output/world_unity_report.json' if kind=='world_unity' else 'output/unity_report.json')
+        if kind in ['unity_import','world_unity'] and job['status']=='REVIEW_REQUIRED' and report.is_file():
             data=json.loads(report.read_text(encoding='utf-8-sig'))
             imports.append(dict(job_id=job['id'],status='PASS_EDITOR_VALIDATION' if data.get('checks_passed') else 'FAILED_EDITOR_VALIDATION',report_path=report.relative_to(store.DATA).as_posix(),tool='unity',version=data.get('unity_version')))
     candidates=[files[r['id']] for r in records if r['role']=='candidate']
@@ -100,13 +100,14 @@ def manifest(identifier,verify=False):
     derives=[files[r['id']] for r in records if r['role']=='candidate' and r['metadata'].get('parent_id')]
     provenance=[]
     for r in records:
-        if r['role']=='candidate':provenance.append(Provenance(source_code=r['metadata'].get('license','UNKNOWN'),commercial='blocked' if 'EVALUATION' in r['metadata'].get('license','') else 'review_required',restrictions=['Recorded tool license is not proof of model/input/commercial asset clearance']))
+        if r['role'] in ['candidate','engine_package','world_plan']:provenance.append(Provenance(source_code=r['metadata'].get('license','UNKNOWN'),commercial='blocked' if 'EVALUATION' in r['metadata'].get('license','') else 'review_required',restrictions=['Recorded tool license is not proof of model/input/commercial asset clearance']))
     return AssetManifest(project_id=value['project_id'],asset_id=identifier,asset_type=value.get('asset_type','static_3d'),family_id=value.get('settings',{}).get('family_id'),version=uuid.uuid4().hex,
         status='engine_validated' if any(i['status']=='PASS_EDITOR_VALIDATION' for i in imports) else 'exported' if derives else 'source_generated' if any(r['metadata'].get('generation',{}).get('status')=='GENERATED_NEEDS_REVIEW' for r in records) else 'draft',
-        target_engines=project.get('target_engines',[]),units=project.get('units','m'),prompt=value.get('prompt',''),
+        target_engines=project.get('target_engines',[]),units='m' if value.get('asset_type')=='map_environment' else project.get('units','m'),prompt=value.get('prompt',''),
+        coordinate_system='Unity Y-up; x/east, z/north; 16-bit little-endian RAW rows are z indices' if value.get('asset_type')=='map_environment' else 'per_file; GLB/FBX Y-up, Blender source Z-up; native conversion must be verified',
         references=[files[r['id']] for r in records if r['id'] in value.get('reference_ids',[])],art_bible=project.get('art_bible',{}),
         golden_reference_ids=[r['id'] for r in records if r['role']=='golden'],effective_configs=configs,effective_config_hashes=hashes,graph=StageGraph(stages=stages),
-        source_master=master,candidates=candidates,derivatives=derives,expected_outputs=['glb']+(['fbx','lod','blend','previews'] if any(j['payload']['kind']=='blender' for j in current) else []),
+        source_master=master,candidates=candidates,derivatives=derives,expected_outputs=['world_plan','heightmap_16bit','masks','unity_scene','terrain_data','navigation_data','unitypackage'] if value.get('asset_type')=='map_environment' else ['glb']+(['fbx','lod','blend','previews'] if any(j['payload']['kind']=='blender' for j in current) else []),
         actual_outputs=[files[r['id']] for r in records if r.get('asset_id')==identifier and r['role'] not in ['reference','concept']],licenses=provenance,
         toolchain_versions=dict(python=platform.python_version(),desktop=app.version,manifest_sdk='2.0'),import_tests=imports,
         previews=[files[r['id']] for r in records if r['role']=='preview'],approvals=value.get('approvals',[]),
