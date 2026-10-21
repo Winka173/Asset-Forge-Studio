@@ -20,6 +20,10 @@ def global_paused():
 
 def eligible(payload):
     if global_paused() or payload.get('production_paused'):return False
+    if payload.get('asset_id') and not payload.get('batch_id'):
+        try:
+            if studio.asset(payload['asset_id']).get('production_paused'):return False
+        except HTTPException:return False
     if payload.get('batch_id'):
         value=batch.batch(payload['batch_id']);item=next((i for i in value['items'] if i['asset_id']==payload.get('asset_id')),None)
         return bool(not value['paused'] and item and not item.get('production_paused') and not item.get('skipped'))
@@ -54,13 +58,15 @@ def item_summary(i,group,all_jobs,all_paused=False):
 def overview():
     from .statuses import refresh_all,FIELDS
     models=refresh_all()
-    all_jobs=jobs.listing();groups=[];all_paused=global_paused()
+    all_jobs=jobs.listing();groups=[];all_paused=global_paused();seen=set()
     with store.connect() as db:projects={r['id']:json.loads(r['payload'])['name'] for r in db.execute('SELECT id,payload FROM projects')}
     for value in batches():
         if value.get('revision_of'):continue
         # Imported drafts are shown only after explicit generation admission.
         if not any(i.get('started') for i in value['items']) and not any(j['payload'].get('batch_id')==value['id'] for j in all_jobs):continue
-        items=[item_summary(i,value,all_jobs,all_paused) for i in value['items']]
+        items=[item_summary(i,value,all_jobs,all_paused) for i in value['items'] if i['asset_id'] not in seen]
+        if not items:continue
+        seen.update(i['id'] for i in items)
         for i in items:
             model=models.get(i['id'],{})
             i.update({k:model.get(k) for k in FIELDS})
@@ -76,7 +82,14 @@ def overview():
         counts['needs_attention']=sum(bool(i.get('attention_required')) for i in items)
         counts['needs_review']=sum(i.get('needs_review',False) for i in items)
         groups.append(dict(id=value['id'],name=value['name'],project_id=value['project_id'],project_name=projects.get(value['project_id'],value['project_id']),kind='single' if len(items)==1 else 'batch',paused=value['paused'],created_at=value['created_at'],started_at=value.get('automation',{}).get('started_at'),counts=counts,items=items))
-    loose=[job_summary(j) for j in all_jobs if not j['payload'].get('batch_id')]
+    standalone={}
+    for j in all_jobs:
+        asset_id=j['payload'].get('asset_id')
+        if not j['payload'].get('batch_id') and asset_id and asset_id not in seen:standalone.setdefault(asset_id,[]).append(j)
+    loose=[]
+    for asset_id,history in standalone.items():
+        current=next((j for j in history if j['status'] not in jobs.TERMINAL),history[0]);root=history[-1]
+        loose.append(job_summary(current)|dict(id=root['id'],display_name=models.get(asset_id,{}).get('name',asset_id),jobs=[job_summary(j) for j in history],production_status=models.get(asset_id,{}).get('production_status')))
     return dict(groups=groups,standalone=loose,paused=all_paused,gpu_concurrency=1,updated_at=store.now())
 
 
@@ -129,6 +142,9 @@ def control(body:Control):
                     batch.save(group)
                     if any(i.get('started') for i in group['items']):batch.control(group['id'],batch.Control(action='resume'))
                 with store.connect() as db:
+                    for row in db.execute('SELECT id,payload FROM assets').fetchall():
+                        model=json.loads(row['payload'])
+                        if model.pop('production_paused',None):db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),row['id']))
                     for row in db.execute("SELECT id,payload FROM jobs WHERE status='QUEUED'").fetchall():
                         p=json.loads(row['payload']);p.pop('production_paused',None);db.execute('UPDATE jobs SET payload=? WHERE id=?',(json.dumps(p),row['id']))
         elif body.scope in ('batch','asset'):
@@ -158,17 +174,29 @@ def control(body:Control):
         else:
             if not body.job_id:raise HTTPException(400,'Select a job')
             j=jobs.get(body.job_id)
-            if body.action=='cancel' and j['status'] not in jobs.TERMINAL:jobs.transition(j['id'],'CANCELLED','Cancelled by user')
+            asset_id=j['payload'].get('asset_id')
+            related=[v for v in jobs.listing() if asset_id and v['payload'].get('asset_id')==asset_id and not v['payload'].get('batch_id')] if not j['payload'].get('batch_id') else [j]
+            if not related:related=[j]
+            if body.action=='cancel':
+                for stage in related:
+                    if stage['status'] not in jobs.TERMINAL:jobs.transition(stage['id'],'CANCELLED','Cancelled by user')
             elif body.action=='retry_failed':
+                j=next((v for v in related if v['status'] in ('FAILED','BLOCKED','CANCELLED')),j)
                 if j['status'] not in ('FAILED','BLOCKED','CANCELLED'):raise HTTPException(409,'Only failed or interrupted stages can be retried. Use Regenerate for a new version.')
                 jobs.retry(j['id'])
             elif body.action in ('pause','resume','prioritize'):
                 with store.connect() as db:
                     db.execute('BEGIN IMMEDIATE')
-                    p=json.loads(db.execute('SELECT payload FROM jobs WHERE id=?',(j['id'],)).fetchone()['payload'])
-                    if body.action=='prioritize':p['priority']={'next':100,'normal':0,'batch_order':-10}[body.priority]
-                    else:p['production_paused']=body.action=='pause'
-                    db.execute('UPDATE jobs SET payload=?,updated_at=? WHERE id=?',(json.dumps(p),store.now(),j['id']))
+                    if asset_id and not j['payload'].get('batch_id') and body.action in ('pause','resume'):
+                        row=db.execute('SELECT payload FROM assets WHERE id=?',(asset_id,)).fetchone()
+                        if row:
+                            model=json.loads(row['payload']);model['production_paused']=body.action=='pause'
+                            db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),asset_id))
+                    for stage in related:
+                        p=json.loads(db.execute('SELECT payload FROM jobs WHERE id=?',(stage['id'],)).fetchone()['payload'])
+                        if body.action=='prioritize':p['priority']={'next':100,'normal':0,'batch_order':-10}[body.priority]
+                        else:p['production_paused']=body.action=='pause'
+                        db.execute('UPDATE jobs SET payload=?,updated_at=? WHERE id=?',(json.dumps(p),store.now(),stage['id']))
             else:raise HTTPException(400,'Unsupported job action')
     return dict(ok=True,paused=global_paused())
 

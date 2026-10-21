@@ -127,16 +127,31 @@ async def import_file(file:UploadFile=File(...),project_id:str=Form(...),name:st
 
 
 def analyze_source(body:Analyze,source_bytes:bytes|None=None):
+    with LOCK:return _analyze_source(body,source_bytes)
+
+
+def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
     project=studio.project(body.project_id)
     if body.mode not in MODES:raise HTTPException(400,'Batch quality mode không hợp lệ')
     for ref in body.reference_ids:studio.scoped_artifact(ref,body.project_id)
+    original=source_bytes if source_bytes is not None else body.master_prompt.encode('utf-8')
+    import hashlib
+    original_hash=hashlib.sha256(original).hexdigest()
+    with store.connect() as db:
+        previous=[json.loads(r['payload']) for r in db.execute("SELECT payload FROM batches WHERE project_id=? AND json_extract(payload,'$.source_file.sha256')=? ORDER BY rowid",(body.project_id,original_hash))]
+        existing={}
+        for row in db.execute('SELECT payload FROM assets WHERE project_id=? ORDER BY rowid',(body.project_id,)):
+            model=json.loads(row['payload']);source_id=model.get('settings',{}).get('source_asset_id')
+            if source_id:existing.setdefault(source_id,model)
+    for value in previous:
+        if value['mode']==body.mode and sorted(value.get('import_reference_ids',[]))==sorted(set(body.reference_ids)):
+            result=detail(value);result['reused_import']=True;return result
     try:rows,warnings=parse(body.master_prompt,body.format)
     except ValidationError as exc:
         raise HTTPException(400,'Invalid manifest item: '+'; '.join('.'.join(map(str,e['loc']))+': '+e['msg'] for e in exc.errors(include_input=False,include_context=False)))
     except ValueError as exc:raise HTTPException(400,str(exc))
     identifier=uuid.uuid4().hex;items=[]
     report=diagnostics(body.master_prompt,body.format,rows,warnings)
-    original=source_bytes if source_bytes is not None else body.master_prompt.encode('utf-8')
     folder=store.DATA/'batches'/identifier/'source';folder.mkdir(parents=True,exist_ok=True)
     original_path=folder/'original';original_path.write_bytes(original)
     text_path=folder/'decoded.txt';text_path.write_bytes(body.master_prompt.encode('utf-8'))
@@ -145,17 +160,30 @@ def analyze_source(body:Analyze,source_bytes:bytes|None=None):
                      original_source_url=f'/api/batches/{identifier}/source',decoded_source_url=f'/api/batches/{identifier}/source?decoded=true')
     report['source_file']=source_file
     for row in rows:
-        item=ManifestItem.model_validate(row).model_dump();item['asset_id']=uuid.uuid5(uuid.UUID(identifier),item['source_asset_id'] or item['name']).hex
+        item=ManifestItem.model_validate(row).model_dump()
+        prior=existing.get(item['source_asset_id']) if item['source_asset_id'] else None
+        item['asset_id']=prior['id'] if prior else uuid.uuid5(uuid.NAMESPACE_URL,'afs-project-source:'+body.project_id+':'+item['source_asset_id']).hex if item['source_asset_id'] else uuid.uuid5(uuid.UUID(identifier),item['name']).hex
         item['quality']={'Fast Batch':'Fast','Quality Batch':'Balanced','Maximum Quality Batch':'Maximum'}[body.mode]
         item.update(reference_ids=list(dict.fromkeys(body.reference_ids+item['reference_ids'])),attempt=0,started=False,version=1,quality_lock=body.mode=='Maximum Quality Batch')
         for ref in item['reference_ids']:studio.scoped_artifact(ref,body.project_id)
-        model=dict(id=item['asset_id'],project_id=body.project_id,name=item['name'],prompt=item['prompt'],category=item['category'],favorite=False,status='Candidate',
+        model=prior or dict(id=item['asset_id'],project_id=body.project_id,name=item['name'],prompt=item['prompt'],category=item['category'],favorite=False,status='Candidate',
             master_artifact_id=None,reference_ids=item['reference_ids'],settings=dict(batch_id=identifier,source_asset_id=item['source_asset_id'],source_status=item['source_status'],style_base=project,style_overrides=item['style_constraints']),approvals=[],created_at=store.now(),updated_at=store.now())
+        model.setdefault('source_import_history',[]).append(dict(batch_id=identifier,source_file_sha256=source_file['sha256'],prompt_sha256=hashlib.sha256(item['prompt'].encode()).hexdigest(),at=store.now()))
         items.append((item,model))
     value=dict(id=identifier,project_id=body.project_id,name=body.name,master_prompt=body.master_prompt,mode=body.mode,paused=True,
-        quality_lock=body.mode=='Maximum Quality Batch',style_snapshot=project,warnings=warnings,import_diagnostics=report,source_file=source_file,items=[i for i,_ in items],created_at=store.now(),updated_at=store.now())
+        quality_lock=body.mode=='Maximum Quality Batch',style_snapshot=project,warnings=warnings,import_reference_ids=list(dict.fromkeys(body.reference_ids)),import_diagnostics=report,source_file=source_file,items=[i for i,_ in items],created_at=store.now(),updated_at=store.now())
     with store.connect() as db:
-        for item,model in items:db.execute('INSERT INTO assets VALUES (?,?,?)',(model['id'],body.project_id,json.dumps(model)))
+        db.execute('BEGIN IMMEDIATE')
+        for item,model in items:
+            current=db.execute('SELECT payload FROM assets WHERE id=?',(model['id'],)).fetchone()
+            if current:
+                # A worker may have completed while parsing. Import only appends provenance;
+                # it must never replace the latest master, review or immutable prompt.
+                latest=json.loads(current['payload'])
+                history=latest.setdefault('source_import_history',[])
+                history.extend(h for h in model['source_import_history'] if h['batch_id']==identifier and not any(old['batch_id']==identifier for old in history))
+                db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(latest),model['id']))
+            else:db.execute('INSERT INTO assets VALUES (?,?,?)',(model['id'],body.project_id,json.dumps(model)))
         db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,body.project_id,json.dumps(value)))
     return detail(value)
 

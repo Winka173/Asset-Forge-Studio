@@ -61,3 +61,58 @@ def test_production_event_stream_ends_on_desktop_shutdown():
         response=await events(Request())
         return [chunk async for chunk in response.body_iterator]
     assert asyncio.run(run())==[]
+
+
+def test_actual349_reimport_is_lossless_and_keeps_one_asset_identity(client):
+    source=Path.home()/'Downloads/Runavelle_V4_ALL_349_Model_Prompts.md'
+    if not source.exists():pytest.skip('Actual Runavelle source unavailable')
+    def upload(mode='Quality Batch',project='runavelle'):
+        r=client.post('/api/batches/import',files={'file':(source.name,source.read_bytes())},data={'project_id':project,'mode':mode})
+        assert r.status_code==201,r.text
+        return r.json()
+    first=upload();assert len(first['items'])==349
+    assert sum(i['source_status']=='FUTURE' for i in first['items'])==37
+    assert sum(i['source_status']!='FUTURE' for i in first['items'])==312
+    for repeat in range(2):
+        again=upload();assert again['id']==first['id'] and again['reused_import']
+        assert [(i['asset_id'],i['prompt']) for i in again['items']]==[(i['asset_id'],i['prompt']) for i in first['items']]
+    item=first['items'][0]
+    with store.connect() as db:
+        model=json.loads(db.execute('SELECT payload FROM assets WHERE id=?',(item['asset_id'],)).fetchone()[0])
+        model['master_artifact_id']='preserve-actual-master-pointer';model['original_prompt']=model['prompt']
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),model['id']))
+    maximum=upload('Maximum Quality Batch')
+    assert [i['asset_id'] for i in maximum['items']]==[i['asset_id'] for i in first['items']]
+    with store.connect() as db:
+        assert db.execute('SELECT COUNT(*) FROM assets').fetchone()[0]==349
+        saved=json.loads(db.execute('SELECT payload FROM assets WHERE id=?',(model['id'],)).fetchone()[0])
+    assert saved['master_artifact_id']==model['master_artifact_id'] and saved['original_prompt']==item['prompt']
+    assert len(saved['source_import_history'])==2
+    other=client.post('/api/projects',json={'name':'Different game'}).json()
+    separate=upload(project=other['id'])
+    assert not set(i['asset_id'] for i in separate['items']) & set(i['asset_id'] for i in first['items'])
+    assert jobs.listing()==[]
+
+
+def test_standalone_stages_are_nested_and_asset_pause_survives_handoff(client):
+    model=client.post('/api/assets',json=dict(project_id='runavelle',name='One asset three stages')).json()
+    payload=dict(kind='concept',project_id='runavelle',asset_id=model['id'])
+    first=jobs.enqueue(payload);jobs.transition(first['id'],'RUNNING');jobs.transition(first['id'],'FAILED','Explicit failed-stage fixture')
+    second=jobs.enqueue(payload|dict(kind='blender'))
+    overview=client.get('/api/production').json()
+    assert len(overview['standalone'])==1 and len(overview['standalone'][0]['jobs'])==2
+    root=overview['standalone'][0]['id'];assert root==first['id']
+    assert overview['standalone'][0]['display_name']==model['name']
+    body=dict(scope='job',job_id=root)
+    assert client.post('/api/production/control',json=body|dict(action='pause')).status_code==200
+    third=jobs.enqueue(payload|dict(kind='concept'))
+    assert not production.eligible(third['payload'])
+    assert not production.eligible(jobs.get(second['id'])['payload'])
+    assert client.post('/api/production/control',json=body|dict(action='resume')).status_code==200
+    assert production.eligible(jobs.get(third['id'])['payload'])
+    assert len(client.get('/api/production').json()['standalone'])==1
+    client.post('/api/production/control',json=body|dict(action='pause'))
+    client.post('/api/production/control',json=dict(scope='all',action='resume'))
+    assert production.eligible(jobs.get(third['id'])['payload'])
+    client.post('/api/production/control',json=body|dict(action='cancel'))
+    assert all(jobs.get(j['id'])['status']=='CANCELLED' for j in (second,third))
