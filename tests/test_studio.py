@@ -1,0 +1,85 @@
+import io
+import sqlite3
+import json
+
+import pytest
+import trimesh
+from fastapi.testclient import TestClient
+from PIL import Image
+from apps.api import store, jobs
+from apps.api.main import app
+
+
+@pytest.fixture
+def client(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, 'DATA', tmp_path)
+    return TestClient(app)
+
+
+def test_projects_are_empty_isolated_and_drafts_persist(client):
+    first = client.post('/api/projects', json={'name': 'Aetherward', 'default_style': 'painted fantasy'}).json()
+    second = client.post('/api/projects', json={'name': 'Forgebound', 'default_style': 'hard surface'}).json()
+    for p in [first, second]:
+        snapshot = client.get('/api/studio', params={'project_id': p['id']}).json()
+        assert snapshot['assets'] == [] and snapshot['artifacts'] == [] and snapshot['jobs'] == []
+    a = client.post('/api/assets', json={'project_id': first['id'], 'name': 'Real input asset', 'prompt': 'long prompt ' * 500}).json()
+    image = io.BytesIO(); Image.new('RGBA', (16, 16), (0, 0, 0, 0)).save(image, format='PNG')
+    uploaded = client.post('/api/import/reference', params={'project_id': first['id'], 'asset_id': a['id']}, files={'file': ('qa.png', image.getvalue())}).json()
+    assert client.post('/api/assets', json={'project_id': second['id'], 'name': 'Bad reference', 'reference_ids': [uploaded['id']]}).status_code == 400
+    assert client.get('/api/studio', params={'project_id': second['id']}).json()['artifacts'] == []
+    client.post(f'/api/projects/{first["id"]}/draft', json={'draft': {'prompt': 'draft text', 'source': uploaded['id']}})
+    assert client.get('/api/studio', params={'project_id': first['id']}).json()['draft']['prompt'] == 'draft text'
+    assert client.post(f'/api/projects/{first["id"]}/delete', json={'confirm_name': 'wrong'}).status_code == 400
+    assert client.post(f'/api/projects/{first["id"]}/delete', json={'confirm_name': first['name']}).json()['files_preserved']
+    assert client.get('/api/studio', params={'project_id': first['id']}).status_code == 404
+    assert store.get_artifact(uploaded['id'])['sha256'] == uploaded['sha256']
+
+
+def test_human_master_selection_and_actual_export_keep_versions(client):
+    a = client.post('/api/assets', json={'project_id': 'runavelle', 'name': 'QA geometry only'}).json()
+    raw = trimesh.creation.box().export(file_type='glb')
+    versions = [client.post('/api/import/candidate', params={'asset_id': a['id']}, files={'file': ('qa.glb', raw)}).json() for _ in range(2)]
+    for version in versions:
+        approval = client.post(f'/api/assets/{a["id"]}/approve', json={'artifact_id': version['id'], 'reviewer': 'QA, not artist acceptance'})
+        assert approval.status_code == 200
+    assert len(approval.json()['approvals']) == 2
+    assert approval.json()['approvals'][0]['mesh_quality_parity'] == 'NOT_TESTED'
+    request = dict(artifact_id=versions[1]['id'], request_id='qa-export-unique', preset='Master', format='glb')
+    first = client.post(f'/api/assets/{a["id"]}/export', json=request).json()
+    repeated = client.post(f'/api/assets/{a["id"]}/export', json=request).json()
+    assert first['id'] == repeated['id'] and first['validation'] == 'PASS_FILE_CHECKSUM'
+    assert client.get(first['files'][0]['url']).content == raw
+    request['format'] = 'fbx'
+    assert client.post(f'/api/assets/{a["id"]}/export', json=request).status_code == 409
+    restored = client.get('/api/studio').json()['assets'][0]
+    assert len(restored['versions']) == 2 and restored['master_artifact_id'] == versions[1]['id']
+
+
+def test_generation_request_is_atomic_and_idempotent(client):
+    from engines.adapters import ADAPTERS
+    if not ADAPTERS['triposg'].installed: pytest.skip('Needs real local engine installation to enqueue')
+    a = client.post('/api/assets', json={'project_id': 'runavelle', 'name': 'QA enqueue only'}).json()
+    image = io.BytesIO(); Image.new('RGBA', (16, 16), (0, 0, 0, 0)).save(image, format='PNG')
+    ref = client.post('/api/import/reference', params={'asset_id': a['id']}, files={'file': ('qa.png', image.getvalue())}).json()
+    request = dict(asset_id=a['id'], artifact_id=ref['id'], request_id='qa-generation-once', engine='triposg', seeds=[42])
+    first = client.post('/api/studio/generate', json=request)
+    assert first.status_code == 201, first.text
+    repeated = client.post('/api/studio/generate', json=request).json()
+    assert repeated['jobs'][0]['id'] == first.json()['jobs'][0]['id']
+    assert len(jobs.listing()) == 1  # Enqueue test only; no inference claimed.
+    request['seeds'] = [43]
+    assert client.post('/api/studio/generate', json=request).status_code == 409
+    identifier = first.json()['jobs'][0]['id']
+    jobs.transition(identifier, 'CANCELLED')
+    assert jobs.retry(identifier)['id'] == jobs.retry(identifier)['id']
+
+
+def test_old_database_migrates_without_changing_bytes(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, 'DATA', tmp_path)
+    db = sqlite3.connect(tmp_path / 'studio.sqlite')
+    db.execute('CREATE TABLE artifacts (id TEXT PRIMARY KEY,role TEXT,name TEXT,relative_path TEXT UNIQUE,sha256 TEXT,created_at TEXT,metadata TEXT)')
+    db.execute('INSERT INTO artifacts VALUES (?,?,?,?,?,?,?)', ('old', 'concept', 'Original', 'original.png', 'original-digest', 'before', json.dumps({'kept': True})))
+    db.commit(); db.close()
+    record = store.get_artifact('old')
+    assert record['sha256'] == 'original-digest' and record['metadata']['kept']
+    assert record['project_id'] == 'runavelle' and record['asset_id'] == 'archer_tower_t3'

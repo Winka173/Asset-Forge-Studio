@@ -35,7 +35,33 @@ def connect():
     CREATE TABLE IF NOT EXISTS jobs (
       id TEXT PRIMARY KEY, status TEXT NOT NULL, created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL, payload TEXT NOT NULL, error TEXT);
+    CREATE TABLE IF NOT EXISTS projects (id TEXT PRIMARY KEY, payload TEXT NOT NULL, archived INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, payload TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS drafts (project_id TEXT PRIMARY KEY, payload TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS studio_requests (id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, response TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS asset_exports (id TEXT PRIMARY KEY, asset_id TEXT NOT NULL, payload TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS migrations (id TEXT PRIMARY KEY);
     """)
+    columns = {r['name'] for r in db.execute('PRAGMA table_info(artifacts)')}
+    for column in ('project_id', 'asset_id'):
+        if column not in columns:
+            db.execute(f'ALTER TABLE artifacts ADD COLUMN {column} TEXT')
+    if not db.execute("SELECT 1 FROM migrations WHERE id='studio_v1'").fetchone():
+        config = json.loads((ROOT / 'presets/runavelle.json').read_text(encoding='utf-8'))
+        project = dict(id='runavelle', name='Runavelle', description='Archer Tower quality benchmark',
+                       art_bible=config, palette=[], material_language='', default_style='', units='m',
+                       target_height_m=10, export_settings={}, cover_artifact_id=None)
+        db.execute('INSERT OR IGNORE INTO projects VALUES (?,?,0)', ('runavelle', json.dumps(project)))
+        rows = db.execute('SELECT id,role,metadata FROM artifacts').fetchall()
+        if rows:
+            references = [r['id'] for r in rows if r['role'] == 'concept']
+            asset = dict(id='archer_tower_t3', project_id='runavelle', name='Archer Tower T3', prompt='',
+                         category='Architecture', favorite=False, status='Candidate', master_artifact_id=None,
+                         reference_ids=references, settings={}, approvals=[], created_at=now(), updated_at=now())
+            db.execute('INSERT OR IGNORE INTO assets VALUES (?,?,?)', (asset['id'], 'runavelle', json.dumps(asset)))
+            db.execute("UPDATE artifacts SET project_id='runavelle',asset_id='archer_tower_t3' WHERE project_id IS NULL")
+        db.execute("INSERT INTO migrations VALUES ('studio_v1')")
+    db.commit()
     return db
 
 
@@ -65,7 +91,13 @@ def add_artifact(path, role, name, metadata):
     path = Path(path).resolve()
     relative = path.relative_to(DATA).as_posix()
     identifier = uuid.uuid4().hex
+    parent = None
+    if metadata.get('parent_id'):
+        try: parent = get_artifact(metadata['parent_id'])
+        except KeyError: pass
+    project_id = metadata.get('project_id') or (parent or {}).get('project_id') or 'runavelle'
+    asset_id = metadata.get('asset_id') or (parent or {}).get('asset_id')
     with connect() as db:
-        db.execute("INSERT INTO artifacts VALUES (?,?,?,?,?,?,?)", (
-            identifier, role, name, relative, digest(path), now(), json.dumps(metadata)))
+        db.execute("INSERT INTO artifacts (id,role,name,relative_path,sha256,created_at,metadata,project_id,asset_id) VALUES (?,?,?,?,?,?,?,?,?)", (
+            identifier, role, name, relative, digest(path), now(), json.dumps(metadata), project_id, asset_id))
     return get_artifact(identifier)

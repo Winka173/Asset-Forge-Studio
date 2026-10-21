@@ -50,8 +50,11 @@ def transition(identifier, target, error=None):
         db.execute('UPDATE jobs SET status=?,updated_at=?,error=? WHERE id=?', (target, store.now(), error, identifier))
 
 
-def enqueue(payload):
+def enqueue(payload, db=None):
     identifier = uuid.uuid4().hex; created = store.now()
+    if db is not None:
+        db.execute('INSERT INTO jobs VALUES (?,?,?,?,?,?)', (identifier, 'QUEUED', created, created, json.dumps(payload), None))
+        return decode(db.execute('SELECT * FROM jobs WHERE id=?', (identifier,)).fetchone())
     with store.connect() as db:
         db.execute('INSERT INTO jobs VALUES (?,?,?,?,?,?)', (identifier, 'QUEUED', created, created, json.dumps(payload), None))
     return get(identifier)
@@ -60,7 +63,13 @@ def enqueue(payload):
 def retry(identifier):
     original = get(identifier)
     if original['status'] not in TERMINAL: raise ValueError('Cancel or finish current attempt before retry')
-    return enqueue(original['payload'] | {'retry_of': identifier})
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        for row in db.execute('SELECT * FROM jobs'):
+            item = decode(row)
+            if item['payload'].get('retry_of') == identifier and item['status'] not in TERMINAL:
+                return item
+        return enqueue(original['payload'] | {'retry_of': identifier}, db=db)
 
 
 @contextlib.contextmanager
@@ -171,6 +180,7 @@ class Worker:
             if get(identifier)['status'] == 'CANCELLED': return
             store.add_artifact(folder / 'output/LOD0.glb', 'candidate', artifact['name'] + ' / processed LOD0',
                                inspections['LOD0.glb'] | {'parent_id': artifact['id'], 'parent_sha256': artifact['sha256'],
+                                'project_id': payload.get('project_id') or artifact.get('project_id'), 'asset_id': payload.get('asset_id') or artifact.get('asset_id'),
                                 'job_id': identifier, 'stage': 'blender_processed', 'license': artifact['metadata'].get('license', 'NEEDS_REVIEW')})
             transition(identifier, 'REVIEW_REQUIRED')
         except Exception as exc:
@@ -212,11 +222,13 @@ class Worker:
             if generation['status'] != 'GENERATED_NEEDS_REVIEW': raise ValueError('Engine did not report successful real generation')
             inspection = adapter.verify_outputs(output)
             record = store.add_artifact(output / 'raw.glb', 'candidate', f'{adapter.id} seed {payload["seed"]} / {identifier[:6]}', inspection | {
+                'project_id': payload.get('project_id') or source_record.get('project_id'), 'asset_id': payload.get('asset_id') or source_record.get('asset_id'),
                 'engine': adapter.id, 'seed': payload['seed'], 'generation': generation, 'job_id': identifier,
                 'parent_id': source_record['id'], 'tournament_id': payload['tournament_id'], 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
             for name in ['source_alpha.png', 'conditioning.png']:
                 path = output / name
                 if path.exists(): store.add_artifact(path, 'reference', f'{adapter.id} {name}', inspect_image(path) | {
+                    'project_id': payload.get('project_id') or source_record.get('project_id'), 'asset_id': payload.get('asset_id') or source_record.get('asset_id'),
                     'origin': 'engine_preprocessing', 'parent_id': source_record['id'], 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
             manifest = {'source_artifact': source_record['id'], 'source_sha256': source_record['sha256'],
                         'candidate_artifact': record['id'], 'engine': adapter.id, 'duration_seconds': time.monotonic()-started,
@@ -226,6 +238,7 @@ class Worker:
             if payload.get('auto_blender'):
                 height = payload.get('benchmark_height_m')
                 enqueue({'kind': 'blender', 'artifact_id': record['id'], 'normalize': bool(height), 'target_height_m': height,
+                         'project_id': payload.get('project_id') or record.get('project_id'), 'asset_id': payload.get('asset_id') or record.get('asset_id'),
                          'render': True, 'resolutions': ['mobile', 'pc1440'], 'views': ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'],
                          'parent_job': identifier})
         finally:

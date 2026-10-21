@@ -45,9 +45,9 @@ async def local_origin(request: Request, call_next):
 
 
 @app.get("/api/status")
-def status():
+def status(project_id: str | None = None):
     with store.connect() as db:
-        rows = db.execute("SELECT * FROM artifacts ORDER BY created_at").fetchall()
+        rows = db.execute("SELECT * FROM artifacts WHERE project_id=? ORDER BY created_at", (project_id,)).fetchall() if project_id else db.execute("SELECT * FROM artifacts ORDER BY created_at").fetchall()
     artifacts = [store.artifact(r) for r in rows]
     roles = {a["role"] for a in artifacts}
     generated = [a for a in artifacts if a['metadata'].get('generation', {}).get('status') == 'GENERATED_NEEDS_REVIEW']
@@ -83,11 +83,14 @@ def engine_status():
 
 
 @app.post("/api/import/{role}", status_code=201)
-async def import_file(role: Literal["concept", "golden", "candidate", "reference"], file: UploadFile = File(...)):
+async def import_file(role: Literal["concept", "golden", "candidate", "reference"], file: UploadFile = File(...), project_id: str = 'runavelle', asset_id: str | None = None):
+    from .studio import project, asset
+    project(project_id)
+    if asset_id and asset(asset_id)['project_id'] != project_id: raise HTTPException(400, 'Asset thuộc game khác')
     extension = Path(file.filename or "").suffix.lower()
     if extension not in ({".png", ".jpg", ".jpeg", ".webp"} if role in {"concept", "reference"} else {".glb"}):
         raise HTTPException(400, "Expected image for concept/reference or self-contained GLB for model")
-    folder = store.DATA / "projects/runavelle/assets/ARCHER_TOWER_T3/versions" / uuid.uuid4().hex
+    folder = store.DATA / 'projects' / project_id / 'assets' / (asset_id or 'references') / 'versions' / uuid.uuid4().hex
     folder.mkdir(parents=True)
     target = folder / ("source" + extension)
     try:
@@ -101,7 +104,7 @@ async def import_file(role: Literal["concept", "golden", "candidate", "reference
         metadata = inspect_glb(target) if extension == ".glb" else inspect_image(target)
         metadata.update({"source_filename": Path(file.filename or "source").name,
                          "origin": "user_import", "license": "NEEDS_REVIEW",
-                         "project": "runavelle", "asset": "ARCHER_TOWER_T3"})
+                         "project_id": project_id, "asset_id": asset_id})
         return store.add_artifact(target, role, Path(file.filename or "source").name, metadata)
     except Exception as exc:
         shutil.rmtree(folder)
@@ -145,6 +148,7 @@ def review(body: Review):
     expected_role = 'golden' if body.golden else 'concept'
     if candidate["role"] != "candidate" or reference["role"] != expected_role:
         raise HTTPException(400, "Review requires correct candidate and reference roles")
+    if candidate.get('project_id') != reference.get('project_id'): raise HTTPException(400, 'Review files must belong to same game')
     if set(body.scores) != set(RUBRIC) or any(v is not None and not 1 <= v <= 5 for v in body.scores.values()):
         raise HTTPException(400, "All nine rubric keys required, scores null or 1–5")
     if body.decision == "APPROVED" and any(v is None for v in body.scores.values()):
@@ -251,6 +255,9 @@ def job_file(identifier: str, name: str):
     except (KeyError, ValueError): raise HTTPException(404, 'Unknown job artifact')
     return FileResponse(path)
 
+
+from .studio import router as studio_router
+app.include_router(studio_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():
