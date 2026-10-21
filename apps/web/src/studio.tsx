@@ -1248,6 +1248,7 @@ export function Studio() {
                       <label className="studio-field">
                         Texture atlas
                         <select
+                          aria-label="Texture atlas"
                           value={draft.textureSize}
                           onChange={(e) =>
                             change({ textureSize: Number(e.target.value) })
@@ -1261,6 +1262,7 @@ export function Studio() {
                     <label className="studio-field">
                       TRELLIS profile
                       <select
+                        aria-label="TRELLIS profile"
                         value={draft.profile}
                         onChange={(e) => change({ profile: e.target.value })}
                       >
@@ -1568,6 +1570,15 @@ export function Studio() {
                             Export
                           </button>
                         </div>
+                        {versions.length > 1 && (
+                          <CandidateGallery
+                            versions={versions}
+                            jobs={data.jobs}
+                            selectedId={candidate?.id}
+                            masterId={selectedAsset.master_artifact_id}
+                            onSelect={setVersionId}
+                          />
+                        )}
                         {candidate && (
                           <details className="asset-details advanced">
                             <summary>Asset details & export history</summary>
@@ -1594,6 +1605,7 @@ export function Studio() {
                             <label className="studio-field">
                               Review status
                               <select
+                                aria-label="Review status"
                                 value={selectedAsset.status}
                                 onChange={(e) =>
                                   updateAsset(selectedAsset, {
@@ -1861,6 +1873,7 @@ export function Studio() {
                   <label className="studio-field">
                     Project cover
                     <select
+                      aria-label="Project cover"
                       value={project?.cover_artifact_id || ""}
                       onChange={(e) =>
                         run(async () => {
@@ -2070,6 +2083,7 @@ export function Studio() {
                 <label className="studio-field">
                   Project units
                   <select
+                    aria-label="Project units"
                     value={projectForm.units}
                     onChange={(e) =>
                       setProjectForm({ ...projectForm, units: e.target.value })
@@ -2238,6 +2252,7 @@ export function Studio() {
                 <label className="studio-field">
                   Export preset
                   <select
+                    aria-label="Export preset"
                     value={exportPreset}
                     onChange={(e) => setExportPreset(e.target.value)}
                   >
@@ -2249,6 +2264,7 @@ export function Studio() {
                 <label className="studio-field">
                   Format
                   <select
+                    aria-label="Format"
                     value={exportFormat}
                     onChange={(e) => setExportFormat(e.target.value)}
                   >
@@ -2284,6 +2300,109 @@ export function Studio() {
           </section>
         </div>
       )}
+    </div>
+  );
+}
+
+function CandidateGallery({
+  versions,
+  jobs,
+  selectedId,
+  masterId,
+  onSelect,
+}: {
+  versions: Artifact[];
+  jobs: Job[];
+  selectedId?: string;
+  masterId?: string;
+  onSelect: (id: string) => void;
+}) {
+  const [previews, setPreviews] = useState<Record<string, string>>({});
+  const signature = versions
+    .map((v) => `${v.id}:${v.metadata.job_id}`)
+    .join("|");
+  useEffect(() => {
+    let alive = true;
+    const eligible = versions.filter(
+      (v) =>
+        v.metadata.stage === "blender_processed" &&
+        typeof v.metadata.job_id === "string" &&
+        jobs.some(
+          (j) =>
+            j.id === v.metadata.job_id &&
+            j.status === "REVIEW_REQUIRED" &&
+            j.payload.render !== false,
+        ),
+    );
+    Promise.all(
+      eligible.map(async (version) => {
+        try {
+          const files = await request<JobFile[]>(
+            `/api/jobs/${version.metadata.job_id}/files`,
+          );
+          const render = files.find(
+            (file) => file.name === "output/mobile_three_quarter.png",
+          );
+          return render ? [version.id, render.url] : null;
+        } catch {
+          return null;
+        }
+      }),
+    ).then((items) => {
+      if (alive)
+        setPreviews(
+          Object.fromEntries(
+            items.filter((item): item is string[] => item !== null),
+          ),
+        );
+    });
+    return () => {
+      alive = false;
+    };
+  }, [signature]);
+  return (
+    <div className="candidate-gallery">
+      <div className="candidate-gallery-heading">
+        <span>Candidate versions</span>
+        <span>{versions.length} saved</span>
+      </div>
+      <div className="candidate-filmstrip">
+        {versions.map((version, index) => (
+          <button
+            key={version.id}
+            className={`candidate-tile${selectedId === version.id ? " selected" : ""}`}
+            aria-label={`Select candidate version ${index + 1}`}
+            aria-pressed={selectedId === version.id}
+            title={version.name}
+            onClick={() => onSelect(version.id)}
+          >
+            <div className="candidate-thumb">
+              {previews[version.id] ? (
+                <img
+                  loading="lazy"
+                  src={apiUrl(previews[version.id])}
+                  alt={`Actual Blender render, version ${index + 1}`}
+                />
+              ) : (
+                <Icon name="Cube" size={26} />
+              )}
+              <span>V{index + 1}</span>
+              {masterId === version.id && <b>MASTER</b>}
+            </div>
+            <strong>
+              {String(
+                version.metadata.engine ||
+                  (version.metadata.stage === "blender_processed"
+                    ? "Blender LOD0"
+                    : "GLB candidate"),
+              )}
+            </strong>
+            <small>
+              {version.metadata.triangles?.toLocaleString() || "—"} tris
+            </small>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
