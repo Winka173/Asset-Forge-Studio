@@ -1,4 +1,4 @@
-"""Durable sequential subprocess jobs. No network, shell=True, or global environment mutations."""
+"""Durable hybrid CPU/GPU subprocess jobs. No network, shell=True, or global environment mutations."""
 import contextlib
 import json
 import os
@@ -7,13 +7,15 @@ import threading
 import time
 import uuid
 import re
+from pathlib import Path
 
 import psutil
 
 from . import store
 from .inspection import inspect_glb
 
-WORKER_LOCK = store.ROOT / '.local/worker.lock'
+LOCK_ROOT=Path(os.environ.get('AFS_LOCK_ROOT',store.CONFIG_ROOT/'locks'))
+WORKER_LOCK = LOCK_ROOT / 'gpu.lock'
 
 TERMINAL = {'REVIEW_REQUIRED', 'FAILED', 'CANCELLED', 'BLOCKED'}
 TRANSITIONS = {
@@ -89,9 +91,9 @@ def retry(identifier):
 
 
 @contextlib.contextmanager
-def exclusive_worker_lock():
+def file_lock(path):
     # Same checkout-wide lock across API processes and separate test databases.
-    path = WORKER_LOCK; path.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
     with path.open('a+b') as f:
         f.seek(0); f.write(b'0'); f.flush(); f.seek(0)
         if os.name == 'nt':
@@ -105,6 +107,31 @@ def exclusive_worker_lock():
             f.seek(0)
             if os.name == 'nt': msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
             else: fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
+
+def exclusive_worker_lock():
+    # One GPU resource across Single, Batch, desktop and CLI processes.
+    return file_lock(WORKER_LOCK)
+
+
+def resource_class(payload):
+    return 'cpu' if payload['kind']=='blender' and not payload.get('use_gpu',False) else 'gpu'
+
+
+@contextlib.contextmanager
+def resource_slot(kind):
+    if kind=='gpu':
+        with exclusive_worker_lock():yield
+        return
+    for index in range(max(1,min(4,int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))):
+        manager=file_lock(LOCK_ROOT/f'cpu-slot-{index}.lock')
+        try:
+            manager.__enter__()
+        except OSError:continue
+        try:yield
+        finally:manager.__exit__(None,None,None)
+        return
+    raise OSError('CPU resource slots busy')
 
 
 def kill_tree(process):
@@ -123,7 +150,7 @@ def kill_tree(process):
 
 class Worker:
     def __init__(self):
-        self.stop = threading.Event(); self.thread = None
+        self.stop = threading.Event(); self.thread = None;self.active={}
 
     def start(self):
         if self.thread and self.thread.is_alive(): return
@@ -136,23 +163,96 @@ class Worker:
     def loop(self):
         while not self.stop.is_set():
             try:
-                with exclusive_worker_lock():
-                    # Recover only while owning the lock: a crashed attempt is never silently resumed.
+                # One coordinator per data store, with shared GPU/CPU slots across stores.
+                with file_lock(store.DATA/'.scheduler.lock'):
                     with store.connect() as db:
                         db.execute("UPDATE jobs SET status='BLOCKED',error='Worker interrupted; retry creates a new attempt',updated_at=? WHERE status IN ('RUNNING','GENERATED','POSTPROCESSING','VALIDATING')", (store.now(),))
-                        row = db.execute("SELECT * FROM jobs WHERE status='QUEUED' ORDER BY created_at LIMIT 1").fetchone()
-                    if row: self.execute(decode(row))
+                    while not self.stop.is_set():
+                        self.active={k:v for k,v in self.active.items() if v[0].is_alive()}
+                        with store.connect() as db:
+                            rows=db.execute("SELECT * FROM jobs WHERE status='QUEUED' ORDER BY created_at").fetchall()
+                            candidates=[]
+                            for row in rows:
+                                job=decode(row)
+                                if job['id'] in self.active:continue
+                                priority=job['payload'].get('priority',0);batch_id=job['payload'].get('batch_id')
+                                if batch_id:
+                                    parent=db.execute('SELECT payload FROM batches WHERE id=?',(batch_id,)).fetchone()
+                                    if not parent:continue
+                                    value=json.loads(parent['payload']);item=next((i for i in value['items'] if i['asset_id']==job['payload'].get('asset_id')),None)
+                                    if value['paused'] or not item or item.get('skipped'):continue
+                                    priority=item['priority']
+                                candidates.append((priority,job))
+                        counts={kind:sum(v[1]==kind for v in self.active.values()) for kind in ['gpu','cpu']}
+                        for _,job in sorted(candidates,key=lambda x:-x[0]):
+                            kind=resource_class(job['payload']);limit=1 if kind=='gpu' else max(1,min(4,int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))
+                            if counts[kind]>=limit:continue
+                            if psutil.virtual_memory().available < (6 if kind=='gpu' else 3)*1024**3:continue
+                            thread=threading.Thread(target=self.managed,args=(job,kind),daemon=True)
+                            self.active[job['id']]=(thread,kind);counts[kind]+=1;thread.start()
+                        self.stop.wait(.3)
+                    for thread,_ in list(self.active.values()):thread.join(timeout=20)
             except OSError:
                 pass  # Another process owns the worker/GPU lock.
             except Exception as exc:
                 print(f'AFS_WORKER_ERROR {exc}', flush=True)
             self.stop.wait(0.3)
 
+    def managed(self,job,kind):
+        try:
+            with resource_slot(kind):
+                if self.stop.is_set() or get(job['id'])['status']!='QUEUED':return
+                started=time.monotonic();started_at=store.now();samples=[];finished=threading.Event()
+                def monitor():
+                    while not finished.wait(.5):
+                        rss=None
+                        try:
+                            record=json.loads((store.DATA/'jobs'/job['id']/'process.json').read_text());parent=psutil.Process(record['pid'])
+                            rss=sum(p.memory_info().rss for p in [parent]+parent.children(recursive=True) if p.is_running())
+                        except (OSError,ValueError,psutil.Error):pass
+                        samples.append(dict(seconds=time.monotonic()-started,worker_tree_rss_bytes=rss,ram_used_bytes=psutil.virtual_memory().used,
+                            ram_available_bytes=psutil.virtual_memory().available,cpu_percent=psutil.cpu_percent(),
+                            resource=kind))
+                        timeout=job['payload'].get('timeout_seconds',7200)
+                        if time.monotonic()-started>timeout:
+                            try:transition(job['id'],'CANCELLED','TIMEOUT; EffectiveGenerationConfig unchanged')
+                            except ValueError:pass
+                watcher=threading.Thread(target=monitor,daemon=True);watcher.start()
+                try:self.execute(job)
+                finally:
+                    finished.set();watcher.join(timeout=2)
+                    folder=store.DATA/'jobs'/job['id'];folder.mkdir(parents=True,exist_ok=True)
+                    (folder/'resources.json').write_text(json.dumps(dict(resource=kind,started_at=started_at,finished_at=store.now(),duration_seconds=time.monotonic()-started,
+                        ram_peak_used_bytes=max((s['ram_used_bytes'] for s in samples),default=psutil.virtual_memory().used),
+                        worker_tree_peak_rss_bytes=max((s['worker_tree_rss_bytes'] or 0 for s in samples),default=0),samples=samples),indent=2))
+                if job['payload'].get('batch_id') and not self.stop.is_set():
+                    from .batch import advance
+                    advance(job['payload']['batch_id'])
+        except OSError:pass  # Slot occupied by another process; remains QUEUED.
+        except Exception as exc:print('AFS_SCHEDULER_ERROR',type(exc).__name__,str(exc),flush=True)
+
     def execute(self, job):
         identifier = job['id']; payload = job['payload']; process = None
         folder = store.DATA / 'jobs' / identifier; folder.mkdir(parents=True, exist_ok=True)
         try:
             transition(identifier, 'RUNNING')
+            if payload.get('effective_config'):
+                from engines.quality import fingerprint,checkpoints
+                effective=payload['effective_config']
+                if fingerprint(effective)!=payload['effective_config_hash']:
+                    transition(identifier,'BLOCKED','EffectiveGenerationConfig hash mismatch; no automatic config changes');return
+                if payload['kind']=='inference':
+                    actual=dict(engine=payload['engine'],steps=payload['steps'],seed=payload['seed'],pipeline=payload['pipeline_type'],
+                                texture=payload['texture_size'] if payload['engine']!='triposg' else None,blender=payload['auto_blender'])
+                    locked=dict(engine=effective['engine_id'],steps=effective['inference_steps'],seed=effective['seed'],pipeline=effective['geometry']['pipeline_type'],
+                                texture=effective['texture']['size'],blender=effective['blender']['enabled'])
+                    if actual!=locked:
+                        transition(identifier,'BLOCKED','Execution settings differ from EffectiveGenerationConfig; no automatic config changes');return
+                if payload['kind']=='inference' and checkpoints(payload['engine'])!=effective['checkpoint']:
+                    transition(identifier,'BLOCKED','Engine checkpoint changed since approval; config must be resolved again');return
+            if payload['kind'] == 'concept':
+                self.concept(job, folder)
+                return
             artifact = store.get_artifact(payload['artifact_id'])
             source = store.safe_path(artifact['relative_path'])
             if store.digest(source) != artifact['sha256']: raise ValueError('Immutable source checksum changed')
@@ -170,7 +270,7 @@ class Worker:
             transition(identifier, 'POSTPROCESSING')
             started = time.monotonic()
             with (folder / 'worker.log').open('w', encoding='utf-8') as log:
-                process = subprocess.Popen([blender, '-b', '--factory-startup', '--python-exit-code', '1', '--python',
+                process = subprocess.Popen([blender, '-b','-t',str(max(1,min(16,int(os.environ.get('AFS_BLENDER_THREADS','8'))))), '--factory-startup', '--python-exit-code', '1', '--python',
                     str(store.ROOT / 'pipelines/blender/process_asset.py'), '--', '--request', str(request_path)], stdout=log, stderr=subprocess.STDOUT)
                 (folder / 'process.json').write_text(json.dumps({'pid': process.pid, 'created_at': store.now(), 'kind': 'blender'}), encoding='utf-8')
                 while process.poll() is None:
@@ -202,7 +302,44 @@ class Worker:
         except Exception as exc:
             if process and process.poll() is None: kill_tree(process)
             current = get(identifier)['status']
-            if current not in TERMINAL: transition(identifier, 'FAILED', str(exc))
+            message=str(exc)
+            log=folder/'worker.log'
+            if log.exists():
+                with log.open('rb') as stream:stream.seek(max(0,log.stat().st_size-12000));tail=stream.read().decode('utf-8',errors='replace').lower()
+                if 'out of memory' in tail or 'memory guard' in tail:message='OOM/BLOCKED: '+message+'; settings preserved, no automatic downgrade'
+            if current not in TERMINAL: transition(identifier, 'BLOCKED' if message.startswith('OOM/') else 'FAILED', message)
+
+    def concept(self, job, folder):
+        from engines.concept_adapter import CONCEPT_ADAPTER
+        payload=job['payload']; identifier=job['id']; request_path=folder/'request.json'
+        command,cwd,request=CONCEPT_ADAPTER.generate(payload | dict(output=str(folder/'output'),request_path=str(request_path)),print)
+        request_path.write_text(json.dumps(request,indent=2),encoding='utf-8')
+        samples=[]; started=time.monotonic(); process=None
+        try:
+            with (folder/'worker.log').open('w',encoding='utf-8') as log:
+                process=subprocess.Popen(command,cwd=cwd,stdout=log,stderr=subprocess.STDOUT)
+                (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='concept')))
+                while process.poll() is None:
+                    if get(identifier)['status']=='CANCELLED' or self.stop.is_set():
+                        CONCEPT_ADAPTER.cancel(dict(process=process))
+                        if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Server stopped; new attempt required')
+                        return
+                    gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+                    samples.append(dict(seconds=time.monotonic()-started,all_gpu_memory_mib_power_w_utilization_percent=gpu.stdout.strip()));self.stop.wait(.5)
+            if get(identifier)['status']=='CANCELLED':return
+            if process.returncode:raise RuntimeError(f'Local concept engine exit {process.returncode}; inspect worker.log')
+            transition(identifier,'GENERATED');transition(identifier,'VALIDATING')
+            inspection=CONCEPT_ADAPTER.verify_outputs(folder/'output')
+            generation=json.loads((folder/'output/generation.json').read_text())
+            if generation['status']!='GENERATED_NEEDS_REVIEW':raise ValueError('Concept inference did not succeed')
+            record=store.add_artifact(folder/'output/concept.png','concept',payload.get('name','Local concept'),inspection | dict(
+                project_id=payload['project_id'],asset_id=payload['asset_id'],job_id=identifier,origin='sdxl_local',
+                requires_concept_approval=True,generation=generation,license=CONCEPT_ADAPTER.license))
+            (folder/'manifest.json').write_text(json.dumps(dict(concept_artifact=record['id'],source_prompt=payload['prompt'],human_approval='REQUIRED'),indent=2),encoding='utf-8')
+            transition(identifier,'REVIEW_REQUIRED')
+        finally:
+            if process and process.poll() is None:kill_tree(process)
+            (folder/'gpu_samples.json').write_text(json.dumps(samples,indent=2),encoding='utf-8')
 
     def inference(self, job, source_record, source, folder):
         from engines.adapters import ADAPTERS
@@ -210,6 +347,7 @@ class Worker:
         payload = job['payload']; identifier = job['id']; adapter = ADAPTERS[payload['engine']]
         request_path = folder / 'request.json'
         request = {'image': str(source), 'output': str(folder / 'output'), 'seed': payload['seed'],
+                   'effective_config':payload.get('effective_config'),'effective_config_hash':payload.get('effective_config_hash'),
                    'steps': payload['steps'], 'pipeline_type': payload['pipeline_type'], 'texture_size': payload['texture_size'],
                    'export_triangle_target': 1_000_000, 'supplied_alpha_input': bool(source_record['metadata'].get('has_transparency')),
                    'input_review': 'NEEDS_REVIEW', 'request_path': str(request_path)}
@@ -227,8 +365,8 @@ class Worker:
                         adapter.cancel({'process': process})
                         if get(identifier)['status'] != 'CANCELLED': transition(identifier, 'BLOCKED', 'Server stopped; new attempt required')
                         return
-                    gpu = subprocess.run(['nvidia-smi', '--query-gpu=memory.used,power.draw', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=10)
-                    samples.append({'seconds': time.monotonic()-started, 'all_gpu_memory_mib_and_power_w': gpu.stdout.strip()})
+                    gpu = subprocess.run(['nvidia-smi', '--query-gpu=memory.used,power.draw,utilization.gpu', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=10)
+                    samples.append({'seconds': time.monotonic()-started, 'all_gpu_memory_mib_power_w_utilization_percent': gpu.stdout.strip()})
                     self.stop.wait(0.5)
             if get(identifier)['status'] == 'CANCELLED': return
             if process.returncode: raise RuntimeError(f'Local engine exit {process.returncode}; inspect worker.log')
@@ -254,6 +392,8 @@ class Worker:
             if payload.get('auto_blender'):
                 height = payload.get('benchmark_height_m')
                 enqueue({'kind': 'blender', 'artifact_id': record['id'], 'normalize': bool(height), 'target_height_m': height,
+                         'batch_id': payload.get('batch_id'), 'effective_config':payload.get('effective_config'), 'effective_config_hash':payload.get('effective_config_hash'),
+                         'batch_attempt':payload.get('batch_attempt',0),
                          'project_id': payload.get('project_id') or record.get('project_id'), 'asset_id': payload.get('asset_id') or record.get('asset_id'),
                          'render': True, 'resolutions': ['mobile', 'pc1440'], 'views': ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'],
                          'parent_job': identifier})

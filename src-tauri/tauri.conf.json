@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Asset Forge Studio",
+  "version": "0.2.0",
+  "identifier": "com.assetforgestudio.desktop",
+  "build": {
+    "frontendDist": "../apps/web/dist",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeDevCommand": "npm --prefix apps/web run dev"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [{"label": "main", "title": "Asset Forge Studio", "width": 1440, "height": 980, "minWidth": 1000, "minHeight": 700, "backgroundColor": "#0e1012", "dragDropEnabled": false}],
+    "security": {"csp": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob: http://127.0.0.1:*; connect-src ipc: http://ipc.localhost http://127.0.0.1:*; font-src 'self' data:; worker-src 'self' blob:"}
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "externalBin": ["binaries/afs-backend"],
+    "icon": ["icons/icon.ico"],
+    "shortDescription": "Local 3D asset generation and quality studio",
+    "longDescription": "Bundled desktop and Python backend. AI engine environments, Blender and model weights remain managed external local dependencies.",
+    "windows": {"webviewInstallMode": {"type": "downloadBootstrapper", "silent": true}, "nsis": {"installMode": "currentUser"}}
+  }
+}

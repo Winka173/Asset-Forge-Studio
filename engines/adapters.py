@@ -37,11 +37,11 @@ class LocalAdapter:
         if self.id == 'trellis2_community':
             source = Path.home() / 'Tools/trellis2/code'
             return source, source / 'venv/Scripts/python.exe'
-        return store.ROOT / '.local/engines/TripoSG', store.ROOT / '.local/envs/triposg/Scripts/python.exe'
+        return store.WORKSPACE / '.local/engines/TripoSG', store.WORKSPACE / '.local/envs/triposg/Scripts/python.exe'
 
     def probe(self):
         source, python = self.paths()
-        weights = (source / 'MODELS/hub/models--microsoft--TRELLIS.2-4B/refs/main') if self.id == 'trellis2_community' else (store.ROOT / 'models/triposg/transformer/diffusion_pytorch_model.safetensors')
+        weights = (source / 'MODELS/hub/models--microsoft--TRELLIS.2-4B/refs/main') if self.id == 'trellis2_community' else (store.WORKSPACE / 'models/triposg/transformer/diffusion_pytorch_model.safetensors')
         return {'id': self.id, 'version': self.version, 'installed': source.is_dir() and python.is_file() and weights.is_file(),
                 'source': str(source), 'python': str(python), 'inference': 'see immutable run evidence',
                 'capabilities': self.capabilities, 'input_modalities': self.input_modalities, 'output_formats': self.output_formats,
@@ -66,7 +66,7 @@ class LocalAdapter:
             command = [str(python), '-B', '-u', str(store.ROOT / 'engines/trellis2_worker.py'), '--request', job['request_path'], '--allow-community-evaluation']
             cwd = source
         else:
-            request.update({'weights': str(store.ROOT / 'models/triposg'), 'dense_depth': 7, 'octree_depth': 9, 'decode_chunk_size': 10000,
+            request.update({'weights': str(store.WORKSPACE / 'models/triposg'), 'dense_depth': 7, 'octree_depth': 9, 'decode_chunk_size': 10000,
                             'min_free_vram_gb': self.min_vram_gb})
             command = [str(python), '-B', '-u', str(store.ROOT / 'engines/triposg_worker.py'), '--request', job['request_path']]
             cwd = store.ROOT

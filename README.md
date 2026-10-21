@@ -2,6 +2,12 @@
 
 Quality-first local 3D workbench cho RTX 5070 Ti 16 GB / RAM 64 GB. Kế hoạch hợp nhất v1/v2: [IMPLEMENTATION_PLAN](docs/IMPLEMENTATION_PLAN.md). Tiến độ và giới hạn: [PROGRESS](docs/PROGRESS.md).
 
+## Windows desktop (primary)
+
+Build: `npm run desktop:build`. Open `dist/windows/latest/Asset Forge Studio.exe` with the adjacent `afs-backend.exe`, or use the generated NSIS installer. The native app automatically starts its packaged local backend. AI environments, weights and Blender remain external; no paid API or cloud inference is used. See [Windows setup, build and troubleshooting](docs/WINDOWS_DESKTOP.md) and [Batch / Quality Lock](docs/BATCH_PIPELINE.md).
+
+Every completed feature requires tests, a production Windows build, actual EXE launch/smoke, then commit/push main. Browser mode below remains available for debugging. The latest evidence reports distinguish native smoke, real inference and human quality approval.
+
 ## Chạy trên Windows
 
 Yêu cầu Python 3.11, uv, Node 20.19+, Blender 4.5. Bản cài Blender portable được audit tự động; có thể đặt `AFS_BLENDER` tới executable khác. Không sửa Blender scene đang mở hoặc game repository.

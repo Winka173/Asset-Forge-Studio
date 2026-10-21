@@ -227,6 +227,7 @@ def output_files(export):
 @router.get('/studio')
 def studio(project_id: str = 'runavelle'):
     from engines.adapters import ADAPTERS
+    from engines.concept_adapter import CONCEPT_ADAPTER
     selected = project(project_id)
     with store.connect() as db:
         artifacts = [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE project_id=? ORDER BY created_at', (project_id,))]
@@ -247,7 +248,65 @@ def studio(project_id: str = 'runavelle'):
                 break
     return dict(projects=projects(), project=selected, assets=values, artifacts=artifacts,
                 jobs=[j for j in jobs.listing() if job_project(j) == project_id], draft=json.loads(row['payload']) if row else {},
-                capabilities=dict(text_to_concept=False, text_conditioning=False, image_to_3d=any(a.installed for a in ADAPTERS.values())))
+                capabilities=dict(text_to_concept=CONCEPT_ADAPTER.installed, concept_engine=CONCEPT_ADAPTER.probe(), text_conditioning=False, image_to_3d=any(a.installed for a in ADAPTERS.values())))
+
+
+class ConceptInput(BaseModel):
+    asset_id: str
+    request_id: str = Field(min_length=8,max_length=100)
+    prompt: str = Field(min_length=1,max_length=100000)
+    quality: Literal['Fast','Balanced','Maximum'] = 'Maximum'
+    seed: int = Field(default=42,ge=0,le=4294967295)
+    batch_id: str | None = None
+    batch_attempt: int = Field(default=0,ge=0)
+
+
+@router.post('/studio/concept',status_code=201)
+def concept(body: ConceptInput):
+    from engines.concept_adapter import CONCEPT_ADAPTER
+    value=asset(body.asset_id);config=project(value['project_id'])
+    if body.batch_id:
+        from .batch import batch
+        if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')
+    if not CONCEPT_ADAPTER.installed:raise HTTPException(409,'SDXL local chưa đủ weights/environment; không tải tự động')
+    style='; '.join(filter(None,[config.get('default_style'),config.get('material_language'),', '.join(config.get('palette',[]))]))
+    bible=config.get('art_bible',{})
+    inherited=[]
+    if isinstance(bible.get('materials'),list):inherited.extend(bible['materials'])
+    if isinstance(bible.get('palette'),dict):inherited.extend(f'{name} {color}' for name,color in bible['palette'].items())
+    if isinstance(bible.get('camera'),dict) and bible['camera'].get('projection'):inherited.append(bible['camera']['projection']+' view')
+    overrides=value.get('settings',{}).get('style_overrides',{})
+    if overrides:inherited.append('Asset style overrides: '+json.dumps(overrides,ensure_ascii=False))
+    style='; '.join(filter(None,[style,*inherited]))
+    prompt=body.prompt+('\nGame art direction: '+style if style else '')+'\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.'
+    from engines.quality import resolve_concept,fingerprint
+    size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
+    effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
+        if previous:return previous
+        result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
+            prompt=prompt,user_prompt=body.prompt,project_style_snapshot=config,seed=body.seed,
+            steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective)),db=db)
+        db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_digest(body),json.dumps(result)))
+        value.update(prompt=body.prompt,updated_at=store.now())
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(value),value['id']))
+    return result
+
+
+class ConceptApproval(BaseModel):
+    reviewer: str = Field(min_length=1,max_length=100)
+    notes: str = Field(default='',max_length=10000)
+
+
+@router.post('/assets/{identifier}/concepts/{artifact_id}/approve')
+def approve_concept(identifier:str,artifact_id:str,body:ConceptApproval):
+    value=asset(identifier);record=scoped_artifact(artifact_id,value['project_id'])
+    if record['role'] not in ('concept','reference'):raise HTTPException(400,'Cần ảnh concept/reference')
+    if not body.reviewer.strip():raise HTTPException(400,'Cần tên người duyệt')
+    value.setdefault('concept_approvals',[]).append(dict(artifact_id=artifact_id,sha256=record['sha256'],reviewer=body.reviewer,notes=body.notes,created_at=store.now()))
+    value['reference_ids']=list(dict.fromkeys(value['reference_ids']+[artifact_id]))
+    return save_asset(value)
 
 
 class Generate(BaseModel):
@@ -263,6 +322,10 @@ class Generate(BaseModel):
     texture_size: Literal[2048, 4096] | None = None
     auto_blender: bool = True
     benchmark_height_m: float | None = Field(default=None, gt=0, le=1000)
+    batch_id: str | None = None
+    batch_attempt: int = Field(default=0,ge=0)
+    quality_lock: bool | None = None
+    required_stages: list[str] = Field(default_factory=list,max_length=20)
 
 
 def request_digest(body):
@@ -280,8 +343,13 @@ def cached(db, key, fingerprint):
 def generate(body: Generate):
     from engines.adapters import ADAPTERS
     value = asset(body.asset_id); config = project(value['project_id'])
+    if body.batch_id:
+        from .batch import batch
+        if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')
     source = scoped_artifact(body.artifact_id, value['project_id'])
     if source['role'] not in ('concept', 'reference'): raise HTTPException(400, 'Cần ảnh concept/reference đã chọn')
+    if source['metadata'].get('requires_concept_approval') and not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in value.get('concept_approvals',[])):
+        raise HTTPException(409,'Cần duyệt concept thật trước khi tạo 3D')
     if len(set(body.seeds)) != len(body.seeds) or any(not 0 <= s < 2**32 for s in body.seeds):
         raise HTTPException(400, 'Cần 1–4 seed nguyên không trùng trong 0..4294967295')
     engine = body.engine
@@ -291,7 +359,7 @@ def generate(body: Generate):
     if engine not in ADAPTERS or not ADAPTERS[engine].installed: raise HTTPException(409, 'Chưa có engine local phù hợp. Không tạo output giả.')
     if engine == 'triposg' and not source['metadata'].get('has_transparency'): raise HTTPException(400, 'TripoSG cần ảnh PNG có alpha thật')
     quality = body.quality
-    payload = dict(kind='inference', project_id=value['project_id'], asset_id=value['id'], artifact_id=source['id'], engine=engine,
+    payload = dict(kind='inference', batch_id=body.batch_id, batch_attempt=body.batch_attempt,project_id=value['project_id'], asset_id=value['id'], artifact_id=source['id'], engine=engine,
                    prompt=body.prompt if body.prompt is not None else value['prompt'], project_style_snapshot=config,
                    steps=body.steps or (50 if engine == 'triposg' else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
@@ -299,11 +367,19 @@ def generate(body: Generate):
                    auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'),
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')
+    from engines.quality import resolve, fingerprint
+    options=body.model_dump() | dict(engine=engine,prompt=payload['prompt'])
+    if options['quality_lock'] is None:options['quality_lock']=body.quality=='Maximum'
+    try:effective=resolve(options,source,config)
+    except ValueError as exc:raise HTTPException(409,str(exc))
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE')
         previous = cached(db, body.request_id, request_digest(body))
         if previous: return previous
-        queued = [jobs.enqueue(payload | dict(seed=s), db=db) for s in body.seeds]
+        queued=[]
+        for seed in body.seeds:
+            per_job=effective | dict(seed=seed)
+            queued.append(jobs.enqueue(payload | dict(seed=seed,effective_config=per_job,effective_config_hash=fingerprint(per_job)),db=db))
         result = dict(tournament_id=payload['tournament_id'], engine=engine, jobs=queued)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)', (body.request_id, request_digest(body), json.dumps(result)))
         value.update(prompt=payload['prompt'], settings=value.get('settings', {}) | body.model_dump(exclude={'request_id'}), reference_ids=list(dict.fromkeys(value['reference_ids'] + [source['id']])), updated_at=store.now())

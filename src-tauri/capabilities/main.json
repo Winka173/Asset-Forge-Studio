@@ -1,0 +1,1 @@
+{"identifier":"main-capability","description":"Native main studio window; no shell or unrestricted filesystem plugin.","windows":["main"],"permissions":["core:default","dialog:default","notification:default","window-state:default"]}

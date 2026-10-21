@@ -1,0 +1,57 @@
+﻿{
+    "version":  "0.2.0",
+    "timestamp_utc":  "20261021T103127Z",
+    "git_commit":  "acab7d7db6a32993924de1c03b0f712d6f6502bb",
+    "git_dirty":  true,
+    "changed_files":  [
+                          " M .gitignore",
+                          " M apps/api/jobs.py",
+                          " M apps/api/main.py",
+                          " M apps/api/store.py",
+                          " M apps/api/studio.py",
+                          " M apps/web/src/api.ts",
+                          " M apps/web/src/main.tsx",
+                          " M apps/web/src/studio.tsx",
+                          " M apps/web/src/viewer.tsx",
+                          " M docs/UX_REDESIGN.md",
+                          " M engines/adapters.py",
+                          "?? CLAUDE.md",
+                          "?? apps/api/batch.py",
+                          "?? apps/api/manifest.py",
+                          "?? apps/web/src/batch-studio.tsx",
+                          "?? apps/web/src/batch.css",
+                          "?? apps/web/src/desktop.css",
+                          "?? apps/web/src/desktop.ts",
+                          "?? desktop/",
+                          "?? docs/BATCH_PIPELINE.md",
+                          "?? docs/evidence/batch_real_flow.json",
+                          "?? docs/evidence/desktop_smoke.json",
+                          "?? engines/quality.py",
+                          "?? package-lock.json",
+                          "?? package.json",
+                          "?? scripts/desktop.ps1",
+                          "?? scripts/verify_batch_flow.py",
+                          "?? src-tauri/",
+                          "?? tests/test_batch.py"
+                      ],
+    "changed_features":  [
+                             "Tauri Windows shell and bundled API",
+                             "Hybrid shared scheduler and Batch Studio",
+                             "Immutable quality configuration and local SDXL concept approval"
+                         ],
+    "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
+    "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T103127Z",
+    "tests":  [
+                  "Frontend TypeScript and production build PASS",
+                  "Actual backend pytest suite PASS",
+                  "New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS"
+              ],
+    "known_issues":  [
+                         "Unsigned local build; clean-machine installation not yet verified",
+                         "Editor/browser tests do not establish mobile performance or Meshy visual parity"
+                     ],
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T10-32-45-726Z\\smoke-report.json",
+    "executable":  "Asset Forge Studio.exe",
+    "installer":  "Asset Forge Studio_0.2.0_x64-setup.exe"
+}

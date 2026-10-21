@@ -2,6 +2,8 @@ import json
 import os
 import shutil
 import uuid
+import secrets
+import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
@@ -26,7 +28,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.2.0", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
 local_port = os.environ.get('AFS_PORT', '8765')
@@ -34,7 +36,7 @@ if local_port.isdecimal() and 1024 <= int(local_port) <= 65535:
     ALLOWED_ORIGINS.update({f'http://127.0.0.1:{local_port}', f'http://localhost:{local_port}'})
 if os.environ.get('AFS_DESKTOP') == '1':
     ALLOWED_ORIGINS.update({'tauri://localhost', 'http://tauri.localhost'})
-app.add_middleware(CORSMiddleware, allow_origins=sorted(ALLOWED_ORIGINS), allow_methods=['GET', 'POST'], allow_headers=['Content-Type'])
+app.add_middleware(CORSMiddleware, allow_origins=sorted(ALLOWED_ORIGINS), allow_methods=['GET', 'POST'], allow_headers=['Content-Type','X-AFS-Token'])
 
 
 @app.middleware("http")
@@ -42,9 +44,38 @@ async def local_origin(request: Request, call_next):
     origin = request.headers.get("origin")
     if origin and origin not in ALLOWED_ORIGINS:
         return JSONResponse({"detail": "Local origin required"}, status_code=403)
+    expected=os.environ.get('AFS_API_TOKEN')
+    if expected and request.url.path.startswith('/api/') and request.method!='OPTIONS':
+        supplied=request.headers.get('X-AFS-Token') or request.query_params.get('afs_token','')
+        if not secrets.compare_digest(expected,supplied):return JSONResponse({'detail':'Desktop session authentication required'},status_code=401)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
+    if expected:response.headers['Cache-Control']='no-store'
     return response
+
+
+@app.get('/api/desktop/health')
+def desktop_health():
+    active=[j for j in jobs.listing() if j['status'] not in jobs.TERMINAL]
+    return dict(ready=True,service='Asset Forge Studio',version=app.version,active_jobs=len(active),data_path=str(store.DATA),
+                workspace=str(store.WORKSPACE),pid=os.getpid(),scheduler=dict(gpu_concurrency=1,cpu_concurrency=int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))
+
+
+class Shutdown(BaseModel):cancel_active:bool=False
+
+
+@app.post('/api/desktop/shutdown')
+def desktop_shutdown(body:Shutdown):
+    if not os.environ.get('AFS_API_TOKEN'):raise HTTPException(403,'Managed desktop session required')
+    callback=getattr(app.state,'request_shutdown',None)
+    if callback is None:raise HTTPException(503,'Backend is not managed by desktop lifecycle')
+    active=[j for j in jobs.listing() if j['status'] not in jobs.TERMINAL]
+    if active and not body.cancel_active:raise HTTPException(409,'Jobs are running; explicitly cancel-and-exit or return to app')
+    for job in active:
+        try:jobs.transition(job['id'],'CANCELLED','User requested cancel-and-exit from desktop')
+        except ValueError:pass
+    threading.Timer(.3,callback).start()
+    return dict(status='SHUTTING_DOWN',cancelled_jobs=len(active))
 
 
 @app.get("/api/status")
@@ -263,6 +294,8 @@ def job_file(identifier: str, name: str):
 
 from .studio import router as studio_router
 app.include_router(studio_router)
+from .batch import router as batch_router
+app.include_router(batch_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():

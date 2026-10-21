@@ -58,7 +58,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
         const aspect = (div.clientWidth / scenes.length) / div.clientHeight;
         const distance = Math.max(size.y, size.x / aspect, size.z / aspect) * 0.65 / Math.tan(T.MathUtils.degToRad(camera.fov / 2));
         controls.target.copy(center); camera.position.copy(center).addScaledVector(dir, Math.max(distance, 0.1)); controls.update();
-      }, undefined, err => { if (!disposed) onError(`GLB viewer: ${String(err)}`); });
+      }, undefined, err => { if (!disposed) onError(`GLB viewer: ${String(err).replace(/([?&]afs_token=)[^&\s"']+/g,'$1[redacted]')}`); });
     });
     runtime.current = {camera, controls, scenes};
     const observer = new ResizeObserver(() => { renderer.setSize(div.clientWidth, div.clientHeight, false); });

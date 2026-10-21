@@ -6,8 +6,10 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-DATA = Path(os.environ.get("AFS_DATA", ROOT / "data")).resolve()
+ROOT = Path(os.environ.get('AFS_RESOURCE_ROOT',Path(__file__).resolve().parents[2])).resolve()
+WORKSPACE = Path(os.environ.get('AFS_WORKSPACE',ROOT)).resolve()
+CONFIG_ROOT = Path(os.environ.get('LOCALAPPDATA',Path.home() / '.local/share')) / 'AssetForgeStudio'
+DATA = Path(os.environ.get("AFS_DATA", CONFIG_ROOT / 'Library' if os.environ.get('AFS_DESKTOP')=='1' else WORKSPACE / "data")).resolve()
 
 
 def now():
@@ -21,9 +23,17 @@ def digest(path):
 
 def connect():
     DATA.mkdir(parents=True, exist_ok=True)
+    existed=(DATA/'studio.sqlite').exists()
     db = sqlite3.connect(DATA / "studio.sqlite", timeout=30)
     db.row_factory = sqlite3.Row
     db.execute("PRAGMA journal_mode=WAL")
+    if existed and db.execute('PRAGMA user_version').fetchone()[0] < 3:
+        backup_dir=DATA/'backups';backup_dir.mkdir(parents=True,exist_ok=True)
+        backup_path=backup_dir/'studio-before-schema-v3.sqlite'
+        if not backup_path.exists():
+            target=sqlite3.connect(backup_path)
+            try:db.backup(target)
+            finally:target.close()
     db.executescript("""
     CREATE TABLE IF NOT EXISTS artifacts (
       id TEXT PRIMARY KEY, role TEXT NOT NULL, name TEXT NOT NULL,
@@ -41,6 +51,7 @@ def connect():
     CREATE TABLE IF NOT EXISTS studio_requests (id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, response TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS asset_exports (id TEXT PRIMARY KEY, asset_id TEXT NOT NULL, payload TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS migrations (id TEXT PRIMARY KEY);
+    CREATE TABLE IF NOT EXISTS batches (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, payload TEXT NOT NULL);
     """)
     columns = {r['name'] for r in db.execute('PRAGMA table_info(artifacts)')}
     for column in ('project_id', 'asset_id'):
@@ -62,6 +73,7 @@ def connect():
             db.execute("UPDATE artifacts SET project_id='runavelle',asset_id='archer_tower_t3' WHERE project_id IS NULL")
         db.execute("INSERT INTO migrations VALUES ('studio_v1')")
     db.commit()
+    db.execute('PRAGMA user_version=3')
     return db
 
 

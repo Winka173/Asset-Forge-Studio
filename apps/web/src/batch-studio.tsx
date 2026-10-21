@@ -1,0 +1,1425 @@
+import { useEffect, useRef, useState } from "react";
+import { apiFetch, apiUrl } from "./api";
+import "./batch.css";
+
+type Reference = { id: string; name: string; role: string; url: string };
+type Version = {
+  id: string;
+  name?: string;
+  role?: string;
+  metadata?: { triangles?: number; engine?: string };
+};
+type ManifestItem = {
+  asset_id: string;
+  name: string;
+  category: string;
+  prompt: string;
+  style_constraints: Record<string, unknown>;
+  target_width_m: number | null;
+  target_depth_m: number | null;
+  target_height_m: number | null;
+  expected_materials: string[];
+  reference_ids: string[];
+  dependencies: string[];
+  asset_family: string;
+  quality: "Fast" | "Balanced" | "Maximum";
+  preferred_engine: string;
+  candidates: number;
+  target_outputs: string[];
+  selected: boolean;
+  confirmed: boolean;
+  priority: number;
+  skipped: boolean;
+  status: string;
+  missing_fields: string[];
+  concept_artifact_id?: string;
+  jobs: unknown[];
+  versions: Version[];
+  exports: unknown[];
+  version?: number;
+  quality_lock?: boolean;
+  effective_config?: Record<string, unknown> | null;
+  warnings?: string[];
+  config_warning?: string;
+};
+type Mode = "Fast Batch" | "Quality Batch" | "Maximum Quality Batch";
+type Batch = {
+  id: string;
+  project_id: string;
+  name: string;
+  mode: Mode;
+  paused: boolean;
+  quality_lock?: boolean;
+  master_prompt: string;
+  items: ManifestItem[];
+  progress: {
+    total: number;
+    completed: number;
+    blocked: number;
+    active: number;
+  };
+  preflight?: {
+    engine_status?: unknown;
+    gpu?: { name?: string; available?: boolean };
+    ram_free_bytes?: number;
+    disk_free_bytes?: number;
+    estimated_jobs?: number;
+    warnings?: string[];
+    planner?: unknown;
+  };
+};
+type Props = {
+  projectId: string;
+  projectName?: string;
+  project?: {
+    art_bible?: Record<string, unknown>;
+    palette?: string[];
+    material_language?: string;
+    default_style?: string;
+  };
+  artifacts: Reference[];
+  onOpenAsset?: (id: string) => void;
+  onRefresh?: () => Promise<void>;
+};
+const modes: Mode[] = ["Fast Batch", "Quality Batch", "Maximum Quality Batch"];
+const dimensionsValid = (
+  item: Pick<
+    ManifestItem,
+    "target_width_m" | "target_depth_m" | "target_height_m"
+  >,
+) =>
+  [item.target_width_m, item.target_depth_m, item.target_height_m].every(
+    (n) => typeof n === "number" && Number.isFinite(n) && n > 0,
+  );
+const needsSpecs = (item: ManifestItem) =>
+  !dimensionsValid(item) ||
+  !item.confirmed ||
+  (item.missing_fields?.length || 0) > 0;
+const failed = (item: ManifestItem) =>
+  ["Failed", "Blocked", "Failed/Blocked", "QA Failed"].includes(item.status);
+const shortStatus = (status: string) =>
+  status.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-");
+async function call<T>(url: string, body?: unknown): Promise<T> {
+  const response = await apiFetch(
+    url,
+    body === undefined
+      ? undefined
+      : {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+  );
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(
+      typeof error.detail === "string"
+        ? error.detail
+        : JSON.stringify(error.detail || `HTTP ${response.status}`),
+    );
+  }
+  return response.json();
+}
+function Glyph({
+  kind = "cube",
+}: {
+  kind?: "cube" | "upload" | "list" | "play" | "close" | "check";
+}) {
+  const paths = {
+    cube: "m12 3 9 5v9l-9 5-9-5V8Zm0 10L3 8m9 5 9-5m-9 5v9",
+    upload: "M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5",
+    list: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
+    play: "m8 4 13 8-13 8Z",
+    close: "m5 5 14 14M5 19 19 5",
+    check: "m5 12 4 4L19 6",
+  };
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={paths[kind]} />
+    </svg>
+  );
+}
+
+export function BatchStudio({
+  projectId,
+  projectName,
+  project,
+  artifacts,
+  onOpenAsset,
+  onRefresh,
+}: Props) {
+  const [batches, setBatches] = useState<Batch[]>([]),
+    [batch, setBatch] = useState<Batch | null>(null),
+    [selectedBatch, setSelectedBatch] = useState("");
+  const [name, setName] = useState(""),
+    [prompt, setPrompt] = useState(""),
+    [format, setFormat] = useState("auto"),
+    [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
+    [references, setReferences] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
+    [filter, setFilter] = useState("all"),
+    [exportSelection, setExportSelection] = useState("selected");
+  const [editing, setEditing] = useState<ManifestItem | null>(null),
+    [styleJson, setStyleJson] = useState("{}"),
+    [approval, setApproval] = useState<ManifestItem | null>(null),
+    [reviewer, setReviewer] = useState(""),
+    [notes, setNotes] = useState(""),
+    [materialsText, setMaterialsText] = useState(""),
+    [dependenciesText, setDependenciesText] = useState(""),
+    [outputsText, setOutputsText] = useState(""),
+    [qualityOverride, setQualityOverride] = useState(false),
+    [qualityReason, setQualityReason] = useState("");
+  const mountedProject = useRef(projectId),
+    locked = useRef(false),
+    selectedRef = useRef(""),
+    draftReady = useRef(false);
+  mountedProject.current = projectId;
+  selectedRef.current = selectedBatch;
+  const selectedItems =
+    batch?.items.filter((item) => item.selected && !item.skipped) || [];
+  const blockedItems = selectedItems.filter(needsSpecs);
+  const originalItem = batch?.items.find(item => item.asset_id === editing?.asset_id);
+  const qualityRank = {Fast:0, Balanced:1, Maximum:2};
+  const lowersQuality = !!editing && !!originalItem && (qualityRank[editing.quality] < qualityRank[originalItem.quality] || editing.candidates < originalItem.candidates || editing.preferred_engine !== originalItem.preferred_engine || originalItem.target_outputs.some(output => !outputsText.split(',').map(s => s.trim()).includes(output)));
+  const qualityLocked = batch ? batch.quality_lock ?? batch.mode === "Maximum Quality Batch" : mode === "Maximum Quality Batch";
+  const visibleItems =
+    batch?.items.filter(
+      (item) =>
+        filter === "all" ||
+        (filter === "issues"
+          ? failed(item) || needsSpecs(item)
+          : filter === "approval"
+            ? [
+                "Concept Ready",
+                "Awaiting Approval",
+                "Ready for Review",
+              ].includes(item.status)
+            : item.selected),
+    ) || [];
+  const imageReferences = artifacts.filter((a) =>
+    ["concept", "reference", "golden"].includes(a.role),
+  );
+  const hasModels = (selection: string) =>
+    (batch?.items || []).some(
+      (item) =>
+        (selection === "all" ||
+          (selection === "approved" && item.status === "Approved") ||
+          (selection === "selected" && item.selected)) &&
+        item.versions?.length > 0,
+    );
+
+  async function refresh(id = selectedRef.current) {
+    const owner = projectId;
+    const list = await call<Batch[]>(
+      `/api/batches?project_id=${encodeURIComponent(owner)}`,
+    );
+    if (mountedProject.current !== owner) return;
+    setBatches(list);
+    if (id && list.some((b) => b.id === id)) {
+      const current = await call<Batch>(`/api/batches/${id}`);
+      if (mountedProject.current === owner && current.project_id === owner)
+        setBatch(current);
+    }
+  }
+  function adopt(value: Batch) {
+    setBatch(value);
+    setSelectedBatch(value.id);
+    selectedRef.current = value.id;
+    localStorage.setItem(`afs.batch.selected.${projectId}`, value.id);
+    setName(value.name);
+    setPrompt(value.master_prompt);
+    setMode(value.mode);
+  }
+  useEffect(() => {
+    let alive = true;
+    draftReady.current = false;
+    setBatch(null);
+    setBatches([]);
+    setSelectedBatch("");
+    selectedRef.current = "";
+    setError("");
+    setNotice("");
+    setEditing(null);
+    setApproval(null);
+    try {
+      const draft = JSON.parse(
+        localStorage.getItem(`afs.batch.draft.${projectId}`) || "null",
+      );
+      setName(draft?.name || "");
+      setPrompt(draft?.prompt || "");
+      setMode(draft?.mode || "Maximum Quality Batch");
+      setFormat(draft?.format || "auto");
+      setReferences(draft?.references || []);
+    } catch {
+      setName("");
+      setPrompt("");
+      setReferences([]);
+    }
+    draftReady.current = true;
+    call<Batch[]>(`/api/batches?project_id=${encodeURIComponent(projectId)}`)
+      .then(async (list) => {
+        if (!alive) return;
+        setBatches(list);
+        const saved = localStorage.getItem(`afs.batch.selected.${projectId}`);
+        const id = list.find((b) => b.id === saved)?.id;
+        if (id) {
+          const detail = await call<Batch>(`/api/batches/${id}`);
+          if (alive) adopt(detail);
+        }
+      })
+      .catch((e) => {
+        if (alive) setError(String(e));
+      });
+    const timer = setInterval(
+      () =>
+        refresh().catch((e) => {
+          if (alive) setError(String(e));
+        }),
+      4000,
+    );
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, [projectId]);
+  useEffect(() => {
+    if (draftReady.current)
+      localStorage.setItem(
+        `afs.batch.draft.${projectId}`,
+        JSON.stringify({ name, prompt, format, mode, references }),
+      );
+  }, [projectId, name, prompt, format, mode, references]);
+  useEffect(() => {
+    if (!editing && !approval) return;
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) {
+        setEditing(null);
+        setApproval(null);
+      }
+    };
+    addEventListener("keydown", handler);
+    return () => removeEventListener("keydown", handler);
+  }, [editing, approval, busy]);
+  async function execute(action: () => Promise<void>) {
+    if (locked.current) return;
+    locked.current = true;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await action();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      locked.current = false;
+      setBusy(false);
+    }
+  }
+  async function patchItem(id: string, values: Partial<ManifestItem>) {
+    if (!batch) return;
+    await call(`/api/batches/${batch.id}/items/${id}`, values);
+    await refresh(batch.id);
+    await onRefresh?.();
+  }
+  async function analyze() {
+    await execute(async () => {
+      if (!prompt.trim())
+        throw new Error(
+          "Nhập Master Prompt hoặc import manifest trước khi phân tích.",
+        );
+      const created = await call<Batch>("/api/batches/analyze", {
+        project_id: projectId,
+        name: name.trim() || "Untitled batch",
+        master_prompt: prompt,
+        format,
+        mode,
+        reference_ids: references,
+      });
+      adopt(created);
+      await refresh(created.id);
+      setNotice(
+        "Manifest đã lưu. Kiểm tra từng asset, bổ sung kích thước và xác nhận trước khi tạo.",
+      );
+    });
+  }
+  async function readManifest(file?: File) {
+    if (!file) return;
+    await execute(async () => {
+      const text = await file.text();
+      if (!text.trim()) throw new Error("Manifest rỗng.");
+      setPrompt(text);
+      const extension = file.name.split(".").at(-1)?.toLowerCase();
+      setFormat(
+        extension === "json"
+          ? "json"
+          : extension === "csv"
+            ? "csv"
+            : ["md", "markdown"].includes(extension || "")
+              ? "markdown"
+              : "auto",
+      );
+      if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ""));
+      setNotice(
+        "Đã đọc file local. Nhấn Analyze Prompt để kiểm chứng schema và xem manifest.",
+      );
+    });
+  }
+  async function runBatch(ids = selectedItems.map((item) => item.asset_id)) {
+    if (!batch) return;
+    await execute(async () => {
+      await call(`/api/batches/${batch.id}/run`, { selected_ids: ids });
+      await refresh(batch.id);
+      await onRefresh?.();
+      setNotice(
+        "Đã tiếp tục checkpoint hợp lệ. Một heavy GPU job chạy mỗi lần; CPU / I/O có thể overlap theo resource limits. Concept cần được người dùng duyệt.",
+      );
+    });
+  }
+  async function control(action: string) {
+    if (!batch) return;
+    await execute(async () => {
+      const value = await call<Batch>(`/api/batches/${batch.id}/control`, {
+        action,
+      });
+      if (action === "duplicate") adopt(value);
+      await refresh(action === "duplicate" ? value.id : batch.id);
+      setNotice(
+        action === "pause"
+          ? "Batch dừng ở checkpoint an toàn; stage đang chạy được giữ lại."
+          : action === "resume"
+            ? "Đã tiếp tục batch, không chạy lại stage thành công."
+            : action === "duplicate"
+              ? "Đã tạo bản cấu hình batch mới để bạn chỉnh sửa."
+              : "Đã yêu cầu dừng batch. Output đã thành công vẫn được giữ lại.",
+      );
+    });
+  }
+  async function itemAction(item: ManifestItem, action: string) {
+    if (!batch) return;
+    await execute(async () => {
+      await call(`/api/batches/${batch.id}/items/${item.asset_id}/action`, {
+        action,
+      });
+      await refresh(batch.id);
+      await onRefresh?.();
+      setNotice(`${item.name}: ${action}. Các Master đã duyệt được giữ riêng.`);
+    });
+  }
+  function edit(item: ManifestItem) {
+    setEditing({
+      ...item,
+      expected_materials: [...(item.expected_materials || [])],
+      dependencies: [...(item.dependencies || [])],
+    });
+    setStyleJson(JSON.stringify(item.style_constraints || {}, null, 2));
+    setMaterialsText((item.expected_materials || []).join(', '));
+    setDependenciesText((item.dependencies || []).join(', '));
+    setOutputsText((item.target_outputs || []).join(', '));
+    setQualityOverride(false);
+    setQualityReason("");
+    setError("");
+  }
+  async function saveItem() {
+    if (!editing || !batch) return;
+    await execute(async () => {
+      const fields = {
+        name: editing.name,
+        category: editing.category,
+        prompt: editing.prompt,
+        style_constraints: JSON.parse(styleJson),
+        target_width_m: editing.target_width_m,
+        target_depth_m: editing.target_depth_m,
+        target_height_m: editing.target_height_m,
+        expected_materials: materialsText.split(',').map(s => s.trim()).filter(Boolean),
+        reference_ids: editing.reference_ids,
+        dependencies: dependenciesText.split(',').map(s => s.trim()).filter(Boolean),
+        asset_family: editing.asset_family,
+        quality: editing.quality,
+        preferred_engine: editing.preferred_engine,
+        candidates: editing.candidates,
+        target_outputs: outputsText.split(',').map(s => s.trim()).filter(Boolean),
+        confirmed: editing.confirmed && dimensionsValid(editing),
+        selected: editing.selected,
+        quality_override_confirmed: lowersQuality && qualityOverride,
+        quality_override_reason: lowersQuality ? qualityReason.trim() : "",
+      };
+      await patchItem(editing.asset_id, fields);
+      setEditing(null);
+      setNotice("Đã lưu thông số asset. Kích thước không được tự suy diễn.");
+    });
+  }
+  async function approveConcept() {
+    if (!approval?.concept_artifact_id || !batch) return;
+    await execute(async () => {
+      await call(
+        `/api/assets/${approval.asset_id}/concepts/${approval.concept_artifact_id}/approve`,
+        { reviewer, notes },
+      );
+      await call(`/api/batches/${batch.id}/run`, {
+        selected_ids: [approval.asset_id],
+      });
+      setApproval(null);
+      await refresh(batch.id);
+      await onRefresh?.();
+      setNotice(
+        "Concept đã được bạn duyệt; asset tiếp tục ở checkpoint kế tiếp.",
+      );
+    });
+  }
+  const exportUrl = (kind: string) =>
+    apiUrl(
+      `/api/batches/${batch?.id}/export?selection=${exportSelection}&format=${kind}`,
+    );
+
+  return (
+    <div className="batch-studio">
+      <div className="batch-heading">
+        <div>
+          <div className="overline">
+            BATCH STUDIO / ONE PROMPT TO MANY ASSETS
+          </div>
+          <h1>One brief. Many considered assets.</h1>
+          <p>
+            Phân tích, duyệt manifest rồi sản xuất theo từng checkpoint —{" "}
+            <strong>1 heavy GPU job; bounded CPU / I/O overlap.</strong>
+          </p>
+          {qualityLocked && <span className="batch-quality-lock"><Glyph kind="check"/>QUALITY LOCK · NO AUTOMATIC DOWNGRADE</span>}
+        </div>
+        <div className="batch-history">
+          <label htmlFor="batch-history">Saved batches</label>
+          <select
+            id="batch-history"
+            value={selectedBatch}
+            onChange={(e) =>
+              execute(async () => {
+                if (!e.target.value) {
+                  setBatch(null);
+                  setSelectedBatch("");
+                  selectedRef.current = "";
+                  localStorage.removeItem(`afs.batch.selected.${projectId}`);
+                  return;
+                }
+                adopt(await call<Batch>(`/api/batches/${e.target.value}`));
+              })
+            }
+          >
+            <option value="">New batch…</option>
+            {batches.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {error && !editing && !approval && (
+        <div className="studio-message error" role="alert">
+          {error}
+          <button aria-label="Close batch error" onClick={() => setError("")}>
+            <Glyph kind="close" />
+          </button>
+        </div>
+      )}
+      {notice && (
+        <div className="studio-message" role="status">
+          {notice}
+          <button aria-label="Close batch notice" onClick={() => setNotice("")}>
+            <Glyph kind="close" />
+          </button>
+        </div>
+      )}
+      <div className="batch-intake">
+        <section className="batch-brief">
+          <div className="batch-panel-title">
+            <Glyph kind="list" />
+            <h2>Master brief</h2>
+            <span>{projectName || projectId}</span>
+          </div>
+          <label className="studio-field">
+            Batch name
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Runavelle / Buildings"
+            />
+          </label>
+          <label className="studio-field">
+            Master Prompt or structured manifest
+            <textarea
+              aria-label="Batch Master Prompt"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Describe exactly the assets you need. Tier ranges such as Castle T1–T3 become separate assets. Include width, depth, height and expected materials when known."
+            />
+            <small>
+              Prompt dài được giữ nguyên. Không áp giới hạn 1.000 ký tự; chưa
+              xác nhận thì chưa generate.
+            </small>
+          </label>
+          <div className="batch-intake-actions">
+            <label className="batch-import">
+              <Glyph kind="upload" />
+              Import JSON / CSV / Markdown
+              <input
+                aria-label="Import asset manifest"
+                type="file"
+                accept=".json,.csv,.md,.markdown,.txt"
+                onChange={(e) => {
+                  readManifest(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <select
+              aria-label="Manifest format"
+              value={format}
+              onChange={(e) => setFormat(e.target.value)}
+            >
+              <option value="auto">Auto detect</option>
+              <option value="json">JSON manifest</option>
+              <option value="csv">CSV manifest</option>
+              <option value="markdown">Markdown manifest</option>
+            </select>
+            <button
+              className="primary"
+              disabled={busy || !projectId || !prompt.trim()}
+              onClick={analyze}
+            >
+              <Glyph kind="list" />
+              Analyze Prompt
+            </button>
+          </div>
+        </section>
+        <section className="batch-context">
+          <div className="batch-panel-title">
+            <Glyph />
+            <h2>Production context</h2>
+          </div>
+          <label className="studio-field">
+            Batch quality
+            <select
+              aria-label="Batch quality"
+              value={mode}
+              onChange={(e) => setMode(e.target.value as Mode)}
+            >
+              {modes.map((m) => (
+                <option key={m}>{m}</option>
+              ))}
+            </select>
+          </label>
+          <div className="batch-mode-note">
+            {mode === "Maximum Quality Batch"
+              ? "Nhiều candidate / engine khi có sẵn, Blender và technical QA; Master vẫn do người dùng duyệt."
+              : mode === "Quality Batch"
+                ? "Ưu tiên chất lượng, concept được duyệt trước khi chuyển sang 3D."
+                : "Giảm cấu hình xử lý; không bỏ qua kiểm chứng output và human review."}
+          </div>
+          <div className="batch-inheritance">
+            <span className="live-dot" />
+            <div>
+              <strong>{projectName || projectId}</strong>
+              <p>
+                Art Bible, palette và ngôn ngữ vật liệu kế thừa từ game.
+                Override chỉ áp dụng cho asset được chỉnh.
+              </p>
+              {project?.default_style && <small>{project.default_style}</small>}
+            </div>
+          </div>
+          <details className="advanced batch-reference-picker">
+            <summary>
+              Reference images & Golden Assets{" "}
+              <span>{references.length} selected</span>
+            </summary>
+            {imageReferences.length ? (
+              <div className="batch-reference-list">
+                {imageReferences.map((reference) => (
+                  <label key={reference.id}>
+                    <input
+                      type="checkbox"
+                      checked={references.includes(reference.id)}
+                      onChange={(e) =>
+                        setReferences((current) =>
+                          e.target.checked
+                            ? [...current, reference.id]
+                            : current.filter((id) => id !== reference.id),
+                        )
+                      }
+                    />
+                    {reference.role !== "golden" ? (
+                      <img src={apiUrl(reference.url)} alt={reference.name} />
+                    ) : (
+                      <Glyph />
+                    )}
+                    <span>
+                      {reference.name}
+                      <small>
+                        {reference.role === "golden"
+                          ? "Golden GLB reference"
+                          : "Image reference"}
+                      </small>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p>
+                Chưa có reference trong game này. Nhập ảnh ở Single Asset hoặc
+                tạo concept local tại checkpoint kế tiếp.
+              </p>
+            )}
+          </details>
+          <p className="batch-scope-note">
+            Không tự thêm module ngoài yêu cầu. Style consistency cần được
+            review; không có cam kết khóa style tuyệt đối.
+          </p>
+        </section>
+      </div>
+      {batch && (
+        <>
+          <section className="batch-manifest">
+            <div className="batch-manifest-header">
+              <div>
+                <div className="overline">MANIFEST REVIEW</div>
+                <h2>{batch.name}</h2>
+                <span className="mono">
+                  {batch.id.slice(0, 12)} · {batch.items.length} independent
+                  assets
+                </span>
+              </div>
+              <div className="batch-run-actions">
+                <button
+                  className="secondary"
+                  disabled={busy}
+                  onClick={() => control(batch.paused ? "resume" : "pause")}
+                >
+                  {batch.paused ? "Resume batch" : "Pause batch"}
+                </button>
+                <button
+                  className="primary"
+                  disabled={
+                    busy ||
+                    batch.paused ||
+                    !selectedItems.length ||
+                    blockedItems.length > 0
+                  }
+                  onClick={() => runBatch()}
+                >
+                  <Glyph kind="play" />
+                  Generate Selected ({selectedItems.length})
+                </button>
+              </div>
+            </div>
+            <div className="batch-checkpoints">
+              <span className={batch.paused ? "paused" : ""}>
+                {batch.paused
+                  ? "PAUSED AT CHECKPOINT"
+                  : "HYBRID QUEUE · ONE HEAVY GPU JOB"}
+              </span>
+              <b>
+                {batch.progress.completed} / {batch.progress.total} completed
+              </b>
+              <small>
+                {batch.progress.active} active · {batch.progress.blocked}{" "}
+                blocked
+              </small>
+              <small>Concept → approval → 3D → Blender → QA → Library</small>
+            </div>
+            {blockedItems.length > 0 && (
+              <div className="batch-spec-warning">
+                <strong>
+                  {blockedItems.length} selected asset chưa đủ thông số / xác
+                  nhận.
+                </strong>
+                <span>
+                  Nhấn Edit để bổ sung chiều rộng, sâu, cao và duyệt yêu cầu. Có
+                  thể bỏ chọn asset chưa sẵn sàng.
+                </span>
+              </div>
+            )}
+            <details className="advanced batch-config-preview"><summary>EffectiveGenerationConfig · preview before enqueue <span>{selectedItems.length} selected</span></summary><p>Scheduling chỉ thay đổi thời điểm chạy. Engine, checkpoint, seeds và các stage yêu cầu được giữ trong manifest; retry không tự hạ quality.</p>{selectedItems.map(item => <div className="batch-effective-item" key={item.asset_id}><div><strong>{item.name}</strong><span>{item.quality_lock === false ? 'Explicit override' : 'Quality Lock'}</span></div>{item.config_warning && <p className="batch-preflight-warning">{item.config_warning}</p>}{item.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}{item.effective_config ? <pre>{JSON.stringify(item.effective_config,null,2)}</pre> : <p>Chưa có config đã resolve cho stage này. Backend phải resolve và lưu config trước khi enqueue; chưa phải kiểm chứng chất lượng.</p>}</div>)}</details>
+            <div className="batch-table-toolbar">
+              <div className="segmented">
+                {[
+                  ["all", "All assets"],
+                  ["selected", "Selected"],
+                  ["approval", "To review"],
+                  ["issues", "Needs attention"],
+                ].map(([value, title]) => (
+                  <button
+                    key={value}
+                    className={filter === value ? "selected" : ""}
+                    onClick={() => setFilter(value)}
+                  >
+                    {title}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <button
+                  className="text-button"
+                  disabled={busy || !selectedItems.some(failed)}
+                  onClick={() =>
+                    execute(async () => {
+                      for (const item of selectedItems.filter(failed))
+                        await call(
+                          `/api/batches/${batch.id}/items/${item.asset_id}/action`,
+                          { action: "retry" },
+                        );
+                      await refresh(batch.id);
+                    })
+                  }
+                >
+                  Retry selected issues
+                </button>
+                <button
+                  className="text-button"
+                  disabled={busy}
+                  onClick={() => control("duplicate")}
+                >
+                  Duplicate config
+                </button>
+              </div>
+            </div>
+            <div className="batch-table-scroll">
+              <table className="batch-table">
+                <thead>
+                  <tr>
+                    <th>
+                      <input
+                        aria-label="Select all batch assets"
+                        type="checkbox"
+                        checked={
+                          batch.items.length > 0 &&
+                          batch.items.every((item) => item.selected)
+                        }
+                        disabled={busy}
+                        onChange={(e) =>
+                          execute(async () => {
+                            const selected = e.target.checked;
+                            await Promise.all(
+                              batch.items
+                                .filter((item) => item.selected !== selected)
+                                .map((item) =>
+                                  call(
+                                    `/api/batches/${batch.id}/items/${item.asset_id}`,
+                                    { selected },
+                                  ),
+                                ),
+                            );
+                            await refresh(batch.id);
+                          })
+                        }
+                      />
+                    </th>
+                    <th>Asset / family</th>
+                    <th>Dimensions · W × D × H</th>
+                    <th>Checkpoint</th>
+                    <th>Review / actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleItems.map((item) => (
+                    <tr
+                      key={item.asset_id}
+                      className={item.skipped ? "batch-row-skipped" : ""}
+                    >
+                      <td>
+                        <input
+                          aria-label={`Select ${item.name}`}
+                          type="checkbox"
+                          checked={item.selected}
+                          disabled={busy}
+                          onChange={(e) =>
+                            execute(() =>
+                              patchItem(item.asset_id, {
+                                selected: e.target.checked,
+                              }),
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="batch-asset-title"
+                          onClick={() => edit(item)}
+                        >
+                          {item.name}
+                        </button>
+                        <span className="batch-row-meta">
+                          {item.asset_family ||
+                            item.category ||
+                            "Uncategorized"}{" "}
+                          · {item.candidates} candidate
+                          {item.candidates !== 1 ? "s" : ""}
+                          {item.priority > 0
+                            ? ` · priority ${item.priority}`
+                            : ""}
+                        </span>
+                        <span className="batch-stable-id">
+                          {item.asset_id.slice(0, 12)}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={
+                            dimensionsValid(item)
+                              ? "batch-dimensions"
+                              : "batch-missing"
+                          }
+                        >
+                          {[
+                            item.target_width_m,
+                            item.target_depth_m,
+                            item.target_height_m,
+                          ]
+                            .map((n) => (n === null ? "—" : n))
+                            .join(" × ")}{" "}
+                          m
+                        </span>
+                        <span className="batch-row-meta">
+                          {item.confirmed && !needsSpecs(item)
+                            ? "Specs confirmed"
+                            : item.missing_fields?.length
+                              ? `Missing: ${item.missing_fields.join(", ")}`
+                              : "Needs confirmation"}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`batch-state batch-state-${shortStatus(item.status)}`}
+                        >
+                          {item.skipped ? "Skipped" : item.status}
+                        </span>
+                        <span className="batch-row-meta">
+                          {item.versions?.length || 0} saved version
+                          {item.versions?.length !== 1 ? "s" : ""}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="batch-row-actions">
+                          <button onClick={() => edit(item)}>Edit</button>
+                          {item.concept_artifact_id &&
+                            ["Concept Ready", "Awaiting Approval"].includes(
+                              item.status,
+                            ) && (
+                              <button
+                                className="batch-review-button"
+                                onClick={() => {
+                                  setApproval(item);
+                                  setReviewer("");
+                                  setNotes("");
+                                }}
+                              >
+                                Review concept
+                              </button>
+                            )}
+                          {item.versions?.length > 0 && (
+                            <button
+                              onClick={() => onOpenAsset?.(item.asset_id)}
+                              disabled={!onOpenAsset}
+                            >
+                              Review candidates
+                            </button>
+                          )}
+                          <select
+                            aria-label={`Actions ${item.name}`}
+                            value=""
+                            disabled={busy}
+                            onChange={(e) => {
+                              if (e.target.value)
+                                itemAction(item, e.target.value);
+                            }}
+                          >
+                            <option value="">More…</option>
+                            <option value="prioritize">Prioritize</option>
+                            <option value="skip">Skip asset</option>
+                            <option value="retry">Retry checkpoint</option>
+                            <option value="regenerate">
+                              Regenerate explicitly
+                            </option>
+                          </select>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!visibleItems.length && (
+                <div className="batch-empty">
+                  Không có asset trong bộ lọc này.
+                </div>
+              )}
+            </div>
+            <p className="batch-manifest-note">
+              Xác nhận manifest không phải duyệt chất lượng model. Không tự chạy
+              lại output thành công khi Resume; Regenerate là một thao tác
+              riêng.
+            </p>
+          </section>
+          <div className="batch-bottom">
+            <section className="batch-preflight">
+              <div className="batch-panel-title">
+                <h2>Preflight & checkpoints</h2>
+                <span>LOCAL ONLY</span>
+              </div>
+              <div className="batch-preflight-facts">
+                <div>
+                  <span>GPU scheduling</span>
+                  <strong>1 heavy GPU job</strong>
+                </div>
+                <div>
+                  <span>Estimated jobs</span>
+                  <strong>
+                    {batch.preflight?.estimated_jobs ?? "Not available"}
+                  </strong>
+                </div>
+                <div>
+                  <span>Free RAM</span>
+                  <strong>
+                    {batch.preflight?.ram_free_bytes
+                      ? `${(batch.preflight.ram_free_bytes / 1073741824).toFixed(1)} GB`
+                      : "Not measured"}
+                  </strong>
+                </div>
+                <div>
+                  <span>Free SSD</span>
+                  <strong>
+                    {batch.preflight?.disk_free_bytes
+                      ? `${(batch.preflight.disk_free_bytes / 1073741824).toFixed(1)} GB`
+                      : "Not measured"}
+                  </strong>
+                </div>
+              </div>
+              {batch.preflight?.warnings?.map((warning, index) => (
+                <p className="batch-preflight-warning" key={index}>
+                  {String(warning)}
+                </p>
+              ))}
+              <details className="advanced">
+                <summary>Planner & engine details</summary>
+                <pre>
+                  {JSON.stringify(
+                    {
+                      planner: batch.preflight?.planner,
+                      engines: batch.preflight?.engine_status,
+                      gpu: batch.preflight?.gpu,
+                    },
+                    null,
+                    2,
+                  )}
+                </pre>
+              </details>
+              <button
+                className="danger-button"
+                disabled={busy}
+                onClick={() => control("cancel")}
+              >
+                Cancel batch jobs
+              </button>
+            </section>
+            <section className="batch-export">
+              <div className="batch-panel-title">
+                <h2>Export what exists.</h2>
+              </div>
+              <p>
+                ZIP chỉ chứa output thật đã tạo. Asset lỗi hoặc chưa có mesh
+                không được biến thành model hoàn thành.
+              </p>
+              <label className="studio-field">
+                Export selection
+                <select
+                  aria-label="Batch export selection"
+                  value={exportSelection}
+                  onChange={(e) => setExportSelection(e.target.value)}
+                >
+                  <option value="selected">Selected assets</option>
+                  <option value="approved">Approved assets only</option>
+                  <option value="all">Full batch</option>
+                </select>
+              </label>
+              <div className="batch-export-links">
+                {hasModels(exportSelection) ? (
+                  <a
+                    className="batch-export-primary"
+                    href={exportUrl("zip")}
+                    download
+                  >
+                    Download asset ZIP
+                  </a>
+                ) : (
+                  <span className="batch-disabled-export">
+                    Chưa có model thật trong selection này.
+                  </span>
+                )}
+                <a href={exportUrl("json")} download>
+                  Manifest JSON
+                </a>
+                <a href={exportUrl("csv")} download>
+                  Manifest CSV
+                </a>
+              </div>
+              <small>
+                Cấu hình, prompt và manifest có thể lưu trước khi generation.
+                Unity-oriented folders không phải chứng nhận mobile performance.
+              </small>
+            </section>
+          </div>
+        </>
+      )}
+      {!batch && (
+        <div className="batch-start-note">
+          <Glyph kind="list" />
+          <div>
+            <h3>Review the plan before spending GPU time.</h3>
+            <p>
+              Analyze chỉ tạo manifest. Stage AI chỉ bắt đầu khi bạn chọn asset,
+              xác nhận thông số và nhấn Generate Selected.
+            </p>
+          </div>
+        </div>
+      )}
+      {editing && (
+        <div
+          className="batch-modal-overlay"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setEditing(null);
+          }}
+        >
+          <section
+            className="batch-edit-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="batch-edit-title"
+          >
+            <div className="batch-dialog-header">
+              <div>
+                <span className="overline">
+                  MANIFEST ITEM · {editing.asset_id.slice(0, 12)}
+                </span>
+                <h2 id="batch-edit-title">Edit asset specifications</h2>
+              </div>
+              <button
+                aria-label="Close asset editor"
+                className="icon-button"
+                disabled={busy}
+                onClick={() => setEditing(null)}
+              >
+                <Glyph kind="close" />
+              </button>
+            </div>
+            <label className="studio-field">
+              Asset name
+              <input
+                autoFocus
+                value={editing.name}
+                onChange={(e) =>
+                  setEditing({ ...editing, name: e.target.value })
+                }
+              />
+            </label>
+            <div className="batch-edit-pair">
+              <label className="studio-field">
+                Category
+                <input
+                  value={editing.category}
+                  onChange={(e) =>
+                    setEditing({ ...editing, category: e.target.value })
+                  }
+                />
+              </label>
+              <label className="studio-field">
+                Asset family
+                <input
+                  value={editing.asset_family}
+                  onChange={(e) =>
+                    setEditing({ ...editing, asset_family: e.target.value })
+                  }
+                />
+              </label>
+            </div>
+            <label className="studio-field">
+              Individual generation prompt
+              <textarea
+                aria-label="Individual asset prompt"
+                value={editing.prompt}
+                onChange={(e) =>
+                  setEditing({ ...editing, prompt: e.target.value })
+                }
+              />
+            </label>
+            <fieldset className="batch-dimensions-editor">
+              <legend>Target dimensions · meters</legend>
+              {[
+                ["target_width_m", "Width"],
+                ["target_depth_m", "Depth"],
+                ["target_height_m", "Height"],
+              ].map(([key, title]) => (
+                <label className="studio-field" key={key}>
+                  {title}
+                  <input
+                    aria-label={`Asset ${title.toLowerCase()} meters`}
+                    type="number"
+                    min="0.001"
+                    step="0.1"
+                    value={editing[key as "target_width_m"] ?? ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        [key]: e.target.value ? Number(e.target.value) : null,
+                        confirmed: false,
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </fieldset>
+            <label className="studio-field">
+              Expected materials
+                <input
+                  value={materialsText}
+                  onChange={(e) => setMaterialsText(e.target.value)}
+                placeholder="e.g. limestone, slate, aged oak"
+              />
+            </label>
+            <label className="batch-confirm">
+              <input
+                type="checkbox"
+                checked={editing.confirmed}
+                disabled={!dimensionsValid(editing)}
+                onChange={(e) =>
+                  setEditing({ ...editing, confirmed: e.target.checked })
+                }
+              />
+              <span>
+                I confirm the dimensions and generation requirements
+                <small>
+                  {dimensionsValid(editing)
+                    ? "Các thông số này do người dùng xác nhận; không phải số liệu tự suy đoán."
+                    : "Điền đủ chiều rộng, sâu, cao dương trước khi xác nhận."}
+                </small>
+              </span>
+            </label>
+            <details className="advanced">
+              <summary>Per-asset overrides & references</summary>
+              <div className="batch-edit-pair">
+                <label className="studio-field">
+                  Quality
+                  <select
+                    aria-label="Asset quality"
+                    value={editing.quality}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        quality: e.target.value as ManifestItem["quality"],
+                      })
+                    }
+                  >
+                    {["Fast", "Balanced", "Maximum"].map((q) => (
+                      <option key={q}>{q}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="studio-field">
+                  Candidates
+                  <input
+                    type="number"
+                    min="1"
+                    max="4"
+                    value={editing.candidates}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        candidates: Number(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+              </div>
+              <label className="studio-field">
+                Preferred engine
+                <select
+                  aria-label="Asset preferred engine"
+                  value={editing.preferred_engine}
+                  onChange={(e) =>
+                    setEditing({ ...editing, preferred_engine: e.target.value })
+                  }
+                >
+                  <option value="auto">Auto · verified local engine</option>
+                  <option value="trellis2_community">
+                    TRELLIS.2 community
+                  </option>
+                  <option value="triposg">TripoSG · shape only</option>
+                </select>
+              </label>
+              <label className="studio-field">
+                Style overrides JSON
+                <textarea
+                  className="code-input"
+                  value={styleJson}
+                  onChange={(e) => setStyleJson(e.target.value)}
+                />
+                <small>
+                  Project Art Bible được kế thừa; đây là override cho asset này.
+                </small>
+              </label>
+              <label className="studio-field">
+                Dependencies · stable IDs, comma-separated
+                <input
+                  value={dependenciesText}
+                  onChange={(e) => setDependenciesText(e.target.value)}
+                />
+              </label>
+              <label className="studio-field">
+                Target outputs · comma-separated
+                <input
+                  value={outputsText}
+                  onChange={(e) => setOutputsText(e.target.value)}
+                />
+              </label>
+              <div className="batch-reference-list">
+                {imageReferences.map((reference) => (
+                  <label key={reference.id}>
+                    <input
+                      type="checkbox"
+                      checked={editing.reference_ids.includes(reference.id)}
+                      onChange={(e) =>
+                        setEditing({
+                          ...editing,
+                          reference_ids: e.target.checked
+                            ? [...editing.reference_ids, reference.id]
+                            : editing.reference_ids.filter(
+                                (id) => id !== reference.id,
+                              ),
+                        })
+                      }
+                    />
+                    <span>{reference.name}</span>
+                  </label>
+                ))}
+              </div>
+            </details>
+            {editing.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}
+            {editing.config_warning && <p className="batch-preflight-warning">{editing.config_warning}</p>}
+            <details className="advanced"><summary>Current EffectiveGenerationConfig</summary>{editing.effective_config ? <pre>{JSON.stringify(editing.effective_config,null,2)}</pre> : <p>Chưa resolve. Config mới phải được backend kiểm tra trước khi enqueue.</p>}</details>
+            {lowersQuality && <div className="batch-override-panel"><label className="batch-confirm batch-quality-override"><input type="checkbox" checked={qualityOverride} onChange={e=>setQualityOverride(e.target.checked)}/><span>I explicitly approve this quality/configuration change<small>Giảm preset / candidates, thay engine hoặc bỏ output yêu cầu cần được bạn chủ động duyệt. Không có automatic downgrade.</small></span></label><label className="studio-field">Quality override reason<input value={qualityReason} onChange={e=>setQualityReason(e.target.value)} placeholder="Why this different configuration is appropriate"/></label></div>}
+            {error && (
+              <p role="alert" className="error-text">
+                {error}
+              </p>
+            )}
+            <div className="batch-dialog-footer">
+              <button
+                className="secondary"
+                disabled={busy}
+                onClick={() => setEditing(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="primary"
+                disabled={
+                  busy || !editing.name.trim() || !editing.prompt.trim() || (lowersQuality && (!qualityOverride || !qualityReason.trim()))
+                }
+                onClick={saveItem}
+              >
+                Save specifications
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+      {approval && (
+        <div
+          className="batch-modal-overlay"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setApproval(null);
+          }}
+        >
+          <section
+            className="batch-concept-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="batch-concept-title"
+          >
+            <div className="batch-dialog-header">
+              <div>
+                <div className="overline">HUMAN CONCEPT APPROVAL</div>
+                <h2 id="batch-concept-title">{approval.name}</h2>
+              </div>
+              <button
+                aria-label="Close concept review"
+                className="icon-button"
+                disabled={busy}
+                onClick={() => setApproval(null)}
+              >
+                <Glyph kind="close" />
+              </button>
+            </div>
+            <img
+              src={apiUrl(
+                artifacts.find((a) => a.id === approval.concept_artifact_id)
+                  ?.url ||
+                  `/api/artifacts/${approval.concept_artifact_id}/file`,
+              )}
+              alt={`Actual concept for ${approval.name}`}
+            />
+            <p>
+              Kiểm tra silhouette, style, vật liệu và độ bám Art Bible. Duyệt
+              ảnh chỉ cho phép chuyển sang 3D; chưa phải duyệt Master hoặc chất
+              lượng Meshy.
+            </p>
+            <label className="studio-field">
+              Reviewer
+              <input
+                autoFocus
+                value={reviewer}
+                onChange={(e) => setReviewer(e.target.value)}
+              />
+            </label>
+            <label className="studio-field">
+              Review notes
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </label>
+            {error && (
+              <p role="alert" className="error-text">
+                {error}
+              </p>
+            )}
+            <div className="batch-dialog-footer">
+              <button
+                className="secondary"
+                disabled={busy}
+                onClick={() => setApproval(null)}
+              >
+                Keep awaiting approval
+              </button>
+              <button
+                className="primary"
+                disabled={busy || !reviewer.trim()}
+                onClick={approveConcept}
+              >
+                <Glyph kind="check" />
+                Approve concept & continue
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}

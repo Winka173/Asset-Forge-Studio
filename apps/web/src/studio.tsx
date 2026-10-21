@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
+import { BatchStudio } from "./batch-studio";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
 type Artifact = {
   id: string;
   name: string;
   role: string;
+  asset_id?: string;
   url: string;
   metadata: {
     triangles?: number;
@@ -46,6 +48,7 @@ type Asset = {
   thumbnail_url?: string;
   thumbnail_kind?: "model_render" | "reference" | null;
   updated_at: string;
+  concept_approvals?: {artifact_id:string;sha256:string;reviewer:string}[];
 };
 type Job = {
   progress?: { stage: string; percent: number | null; scope: string };
@@ -82,6 +85,7 @@ type Engine = {
   blocker?: string;
 };
 type Draft = {
+  conceptJobId?: string;
   mode: "Image" | "Text" | "Text + Image";
   prompt: string;
   name: string;
@@ -207,6 +211,7 @@ function route(): Page {
 }
 
 export function Studio() {
+  const [creationMode,setCreationMode]=useState<'single'|'batch'>('single');
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
       localStorage.getItem("afs.project") || "runavelle",
@@ -284,6 +289,12 @@ export function Studio() {
     versions.find((v) => v.id === versionId) ||
     versions.filter((v) => v.role === "candidate").at(-1);
   const source = data.artifacts.find((a) => a.id === draft.source);
+  const sourceNeedsApproval=Boolean(source?.metadata.requires_concept_approval) && !selectedAsset?.concept_approvals?.some(a=>a.artifact_id===source?.id);
+  useEffect(()=>{
+    if (!draft.conceptJobId) return;
+    const concept=data.artifacts.find(a=>a.role==='concept' && a.metadata.job_id===draft.conceptJobId);
+    if(concept && draft.source!==concept.id){setDraft(d=>({...d,source:concept.id,mode:'Text + Image'}));setPreviewTab('Concept');}
+  },[data.artifacts,draft.conceptJobId]);
   const activeJobs = data.jobs.filter((j) => activeStates.includes(j.status));
   const filteredAssets = data.assets
     .filter(
@@ -347,6 +358,7 @@ export function Studio() {
           name: routeAsset.name,
           prompt: routeAsset.prompt || "",
           source: routeAsset.reference_ids[0] || "",
+          mode: routeAsset.reference_ids.length ? "Text + Image" : initialDraft.mode,
         };
         restored =
           restored.assetId === routeAsset.id
@@ -540,11 +552,18 @@ export function Studio() {
   }
   async function generate() {
     await run(async () => {
-      if (!source) throw new Error("Chọn một ảnh thật trước khi tạo model.");
-      if (draft.mode === "Text")
-        throw new Error(
-          "Text-to-concept chưa được cài. Hãy chuyển sang Image để chạy engine local.",
-        );
+      if (!source || draft.mode==='Text') {
+        if(!data.capabilities.text_to_concept)throw new Error('SDXL local chưa sẵn sàng. Nhập ảnh concept để tiếp tục.');
+        if(!draft.prompt.trim())throw new Error('Nhập prompt để tạo concept.');
+        const model=await ensureAsset();
+        const body={asset_id:model.id,prompt:draft.prompt,quality:draft.quality,seed:Number(draft.seeds.split(',')[0])};
+        const key=`afs.concept.request.${projectId}`,serialized=JSON.stringify(body),previous=JSON.parse(localStorage.getItem(key)||'null');
+        const id=previous?.serialized===serialized?previous.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({serialized,id}));
+        const job=await request<Job>('/api/studio/concept',{...body,request_id:id});
+        change({assetId:model.id,source:'',conceptJobId:job.id});setPreviewTab('Concept');await reload();
+        setNotice('Đang tạo concept bằng SDXL local. Bạn cần duyệt ảnh trước khi dựng 3D.');return;
+      }
+      if(sourceNeedsApproval)throw new Error('Duyệt concept trước khi tạo 3D.');
       const seeds = draft.seeds.split(",").map((s) => Number(s.trim()));
       if (
         !draft.seeds.trim() ||
@@ -626,6 +645,7 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
+    setCreationMode('single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
     setDraft({
@@ -635,6 +655,7 @@ export function Studio() {
       name: asset.name,
       prompt: asset.prompt || "",
       source: asset.reference_ids[0] || "",
+      mode: asset.reference_ids.length ? "Text + Image" : initialDraft.mode,
     });
     setPreviewTab("Model");
     location.hash = `create/${asset.id}`;
@@ -901,6 +922,11 @@ export function Studio() {
           </div>
         </header>
         <main className={`studio-main page-${page.toLowerCase()}`}>
+          {page==='Create' && <div className="segmented creation-mode" role="tablist" aria-label="Creation workflow">
+            <button role="tab" aria-selected={creationMode==='single'} onClick={()=>setCreationMode('single')}>Single Asset</button>
+            <button role="tab" aria-selected={creationMode==='batch'} onClick={()=>setCreationMode('batch')}>Batch Assets</button>
+          </div>}
+          {page==='Create' && creationMode==='batch' && <BatchStudio projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">
               {error}
@@ -1042,7 +1068,7 @@ export function Studio() {
               )}
             </>
           )}
-          {page === "Create" && (
+          {page === "Create" && creationMode==='single' && (
             <>
               <div className="page-heading compact">
                 <div>
@@ -1098,11 +1124,9 @@ export function Studio() {
                   {draft.mode === "Text" ? (
                     <div className="capability-note">
                       <Icon name="Image" size={22} />
-                      <h3>Text-to-concept chưa sẵn sàng</h3>
+                      <h3>{data.capabilities.text_to_concept ? 'SDXL local → Concept Preview' : 'Text-to-concept chưa sẵn sàng'}</h3>
                       <p>
-                        Chưa có engine text-to-image local đã được kiểm chứng.
-                        Bạn có thể lưu prompt rồi nhập một ảnh concept để tạo
-                        3D.
+                        {data.capabilities.text_to_concept ? 'Tạo ảnh từ prompt, kiểm tra hình dáng và duyệt concept trước khi dựng 3D. Không gửi dữ liệu lên cloud.' : 'Nhập ảnh concept để tạo 3D. Không tạo kết quả giả khi thiếu engine.'}
                       </p>
                       <button
                         className="secondary"
@@ -1327,19 +1351,19 @@ export function Studio() {
                     </p>
                   </details>
                   <div className="generate-actions">
+                    {sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
                     <button
                       className="primary generate-button"
                       disabled={
                         busy ||
-                        !source ||
-                        draft.mode === "Text" ||
-                        !data.capabilities.image_to_3d ||
+                        sourceNeedsApproval ||
+                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
                         loadedProject !== projectId
                       }
                       onClick={generate}
                     >
                       <Icon name="Cube" size={18} />
-                      {busy ? "Đang xử lý…" : "Generate 3D"}
+                      {busy ? "Đang xử lý…" : (!source || draft.mode==='Text') && draft.prompt.trim() ? 'Generate concept' : "Generate 3D"}
                       <Icon name="Arrow" size={17} />
                     </button>
                     <button
