@@ -108,3 +108,18 @@ def test_grouped_missing_input_resolution_keeps_original_and_quality(client):
     model=studio.asset(empty['asset_id']);assert model['original_prompt']=='' and model['prompt']=='Stone tower height 9 m'
     assert model['resolved_specification']['dimensions']['target_height_m']==9
     assert next(i for i in batch.batch(identifier)['items'] if i['asset_id']==empty['asset_id'])['quality']=='Maximum'
+
+def test_library_metadata_changes_preserve_latest_master_and_review_state(client):
+    from apps.api import library
+    model,record,path=source(client)
+    studio.save_asset(studio.asset(model['id']) | dict(master_artifact_id=record['id'],revisions=[dict(id='preserve-worker-version')],art_review_status='not_reviewed'))
+    library.patch_metadata(model['id'],dict(tags=['review-later']))
+    current=studio.asset(model['id'])
+    assert current['master_artifact_id']==record['id'] and current['revisions']==[dict(id='preserve-worker-version')]
+    assert current['tags']==['review-later'] and current['art_review_status']=='not_reviewed'
+    unsorted=client.get('/api/library?project_id=runavelle&category=Unsorted').json()
+    assert [a['id'] for a in unsorted['items']]==[model['id']]
+    for action in ('archive','restore'):
+        result=client.post('/api/library/bulk',json=dict(asset_ids=[model['id']],action=action)).json()
+        assert not result['errors'] and result['completed'][0]['asset_id']==model['id']
+    assert studio.asset(model['id'])['archived'] is False and path.exists() and not jobs.listing()

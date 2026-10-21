@@ -1,3 +1,4 @@
+import {WorkspaceTools,ContinueWork,InterfaceSettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
@@ -230,6 +231,7 @@ function route(): Page {
 function normalizeDraft(value:Draft):Draft {const seeds:unknown=value.seeds;return {...value,seeds:Array.isArray(seeds)?seeds.join(','):typeof seeds==='string'&&seeds.trim()?seeds:'42'};}
 
 export function Studio() {
+  const interfacePreferences=useInterfacePreferences();
   const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'>('single');
   const [createStep,setCreateStep]=useState(0);
   const [page, setPage] = useState<Page>(route),
@@ -471,7 +473,7 @@ export function Studio() {
   }, [modal, busy]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (modal) return;
+      if (modal||document.querySelector('[data-workspace-dialog],.afs-select-menu')) return;
       if (event.altKey && /^[1-6]$/.test(event.key)) {
         event.preventDefault();
         const destination=pages[Number(event.key) - 1];
@@ -584,6 +586,7 @@ export function Studio() {
     location.hash = `create/${created.id}`;
     return created;
   }
+  function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   async function generate() {
@@ -881,7 +884,7 @@ export function Studio() {
     );
   }
   return (
-    <div className={`studio${collapsed ? " sidebar-collapsed" : ""}`}>
+    <div data-interface={interfacePreferences.mode} data-motion={interfacePreferences.motion} className={`studio${collapsed ? " sidebar-collapsed" : ""}`}>
       <aside className="studio-sidebar">
         <a href="#home" className="studio-brand">
           <div className="brand-symbol">
@@ -980,7 +983,8 @@ export function Studio() {
             <span>/</span>
             <strong>{page}</strong>
           </div>
-          <div className="topbar-meta">
+          <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
+
             <span className="local-chip">
               <span className="live-dot" /> LOCAL
             </span>
@@ -1018,7 +1022,8 @@ export function Studio() {
             </div>
           )}
           {projectId && page === "Home" && (
-            <>
+            <><ContinueWork assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at})):[]} onAsset={openLibraryAsset} onQueue={()=>navigate('Production')}/>
+
               <div className="page-heading">
                 <div>
                   <div className="overline">YOUR LOCAL 3D WORKSPACE</div>
@@ -1845,7 +1850,7 @@ export function Studio() {
                   </p>
                 </div>
               </div>
-              <div className="settings-grid">
+              <div className="settings-grid"><InterfaceSettings/>
                 <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">

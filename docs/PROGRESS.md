@@ -1,3 +1,11 @@
+# Workspace utilities acceptance - 2026-10-22 (Asia/Saigon)
+
+0.8.3 delivered on main adds project-scoped Ctrl+K search, Home continuation, grouped opt-in production notifications, saved Library filters/scroll, reload-safe archive Undo, stable keyboard review order with a separate review-later tag, and Focused/Detailed/reduced-motion preferences. Select explanations are now portalled and bounded by the viewport. Bulk actions explicitly say loaded assets when the backend result is capped; no misleading all-assets claim beyond the loaded set. Metadata updates reread under a SQLite write lock and preserve worker-owned masters and revision history.
+
+Browser acceptance used the actual 349-prompt Runavelle file plus licensed real skinned GLBs in an isolated Library: navigation, cross-project search isolation, review tag persistence, archive/Undo after reload, scroll restoration, settings persistence, actual model rendering and unchanged source hashes passed with zero inference jobs. The packaged Windows test also passed the full utility workflow and close/reopen persistence, with 66 backend tests and native GLB/export smoke passing; no new AI-generation or artistic-quality claim follows from these UI checks.
+
+---
+
 # Preview update - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.2 passed the 65-test backend suite, packaged native GLB/export/restart smoke, and real licensed GLB animation/rig viewer acceptance. Actual clip playback, scrub, non-loop stop, speed selection, skeleton canvas pixels, joint pose changes and unchanged source hashes were checked; the model reloads after closing and reopening Windows. Static models retain their existing viewer and do not show nonfunctional motion controls. Technical fixture: Khronos/Cesium Rigged Simple, CC BY 4.0; it is not an AI-generated character, automatic rigging or retarget quality proof. Source and license: evidence/motion_fixture_license.json; native result: evidence/motion_native.json.

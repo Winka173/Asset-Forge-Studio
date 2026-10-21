@@ -52,7 +52,7 @@ def listing(project_id:str,search:str='',category:str='',status:str='',qa:str=''
         hay=' '.join([m['name'],m.get('settings',{}).get('source_asset_id',''),m.get('category',''),*m.get('tags',[])])
         if search and search.casefold() not in hay.casefold():continue
         if favorite and not m.get('favorite'):continue
-        if category and m.get('category')!=category:continue
+        if category and (m.get('category') or 'Unsorted')!=category:continue
         if status=='needs_attention' and not m.get('attention_required'):continue
         if status and status!='needs_attention' and m.get('production_status')!=status:continue
         if qa and m.get('qa_status')!=qa:continue
@@ -85,6 +85,17 @@ class Bulk(BaseModel):
     tags:list[str]=Field(default_factory=list,max_length=50)
 
 
+def patch_metadata(identifier,updates):
+    # Read again under the write lock so a concurrent completed worker's master,
+    # statuses and revision history are never replaced by a stale UI snapshot.
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row=db.execute('SELECT payload FROM assets WHERE id=?',(identifier,)).fetchone()
+        if not row:raise HTTPException(404,'Asset no longer exists')
+        latest=json.loads(row['payload']);latest.update(updates,updated_at=store.now())
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(latest),identifier))
+
+
 @router.post('/bulk')
 def bulk(body:Bulk):
     from .export_profiles import export_asset,export_history
@@ -94,13 +105,13 @@ def bulk(body:Bulk):
             model=studio.asset(identifier)
             if body.action in ('archive','restore'):
                 if body.action=='archive' and any(j['payload'].get('asset_id')==identifier and j['status'] not in jobs.TERMINAL for j in jobs.listing()):raise HTTPException(409,'Finish or cancel active production before archiving. No files were deleted.')
-                model['archived']=body.action=='archive';studio.save_asset(model);completed.append(dict(asset_id=identifier,archived=model['archived']))
+                patch_metadata(identifier,dict(archived=body.action=='archive'));completed.append(dict(asset_id=identifier,archived=body.action=='archive'))
             elif body.action in ('category','tags'):
                 if body.action=='category':
                     if not body.category or not body.category.strip():raise HTTPException(400,'Enter a category')
                     model['category']=body.category.strip()
                 else:model['tags']=list(dict.fromkeys(t.strip()[:100] for t in body.tags if t.strip()))
-                studio.save_asset(model);completed.append(dict(asset_id=identifier))
+                patch_metadata(identifier,{key:model[key] for key in ('category','tags') if key in model and key==('category' if body.action=='category' else 'tags')});completed.append(dict(asset_id=identifier))
             else:
                 with store.connect() as db:mine=[store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE asset_id=? AND role='candidate' ORDER BY created_at DESC",(identifier,))]
                 record=next((a for a in mine if a['metadata'].get('stage')=='blender_processed'),mine[0] if mine else None)

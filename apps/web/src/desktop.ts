@@ -37,8 +37,8 @@ async function setup(session:Session):Promise<void> {
 }
 function nativeFeatures() {
   document.addEventListener('click',event=>{const anchor=(event.target as Element)?.closest<HTMLAnchorElement>('a[download]');if(!anchor)return;const url=new URL(anchor.href);if(url.hostname!=='127.0.0.1'||!url.pathname.startsWith('/api/'))return;event.preventDefault();url.searchParams.delete('afs_token');native('desktop_download',{apiPath:url.pathname+url.search}).catch(e=>{alert(redactApiSecrets(String(e)));});});
-  let previous=new Map<string,string>();
-  setInterval(async()=>{try{const response=await apiFetch('/api/jobs');if(!response.ok)return;const jobs: {id:string;status:string}[]=await response.json();for(const job of jobs){if(previous.has(job.id)&&previous.get(job.id)!==job.status&&job.status==='REVIEW_REQUIRED')native('desktop_notify',{message:`Local job ${job.id.slice(0,8)} finished. Output awaits review.`}).catch(()=>{});}previous=new Map(jobs.map(job=>[job.id,job.status]));}catch{/* Offline status is displayed by the normal studio API views. */}},6000);
+  // Asset-level, grouped notifications are owned by WorkspaceTools and require explicit opt-in.
+
 }
 export async function bootDesktop() {
   if(!isDesktop())return;

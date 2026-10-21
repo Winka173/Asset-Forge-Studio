@@ -1,0 +1,15 @@
+{
+  "status": "PASS_REAL_WORKSPACE_TOOLS_NO_INFERENCE",
+  "native": true,
+  "checks": [
+    "real skinned GLB viewer; stable review order; next/previous; persistent review-later tag independent of approval",
+    "Ctrl+K search, Enter selection, Escape close and project isolation",
+    "archive + Undo across reload preserves source and restores stable identity",
+    "actual 349-source Library scroll position restored after reload including React effects",
+    "Focused/Detailed and reduced motion persist; select explanation portalled and viewport bounded; palette animation disabled",
+    "Home continuation; Create starts fresh; Ctrl+Enter in search cannot trigger generation",
+    "packaged Windows app close/reopen preserves interface settings and no duplicate jobs"
+  ],
+  "errors": [],
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workspace-tools\\2026-10-21T19-51-32-602Z"
+}
