@@ -1,0 +1,288 @@
+{
+  "recorded_at_utc": "2026-10-21T09:08:55.531134+00:00",
+  "mode": "import",
+  "editor": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.4.8f1\\Editor\\Unity.exe",
+  "version": "6000.4.8f1",
+  "project_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation\\6000.4.8f1",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation-runs\\20261021T090854_6000.4.8f1_import",
+  "source_manifest": {
+    "input_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\jobs\\0cd41c06dfa040908ead8f880ff6593b\\output",
+    "input_sha256": "83aa7abe34e254561914ca5b2b8fdcf0adf5e28eea67301ccef688d287d59760",
+    "files": [
+      {
+        "name": "LOD0.fbx",
+        "bytes": 61050236,
+        "sha256": "eeb247bfdbfe8e2ad03698c85635365d164bfc24996e08b40f12b1ae201cf0f9",
+        "copied_sha256": "eeb247bfdbfe8e2ad03698c85635365d164bfc24996e08b40f12b1ae201cf0f9"
+      },
+      {
+        "name": "LOD1.fbx",
+        "bytes": 50495884,
+        "sha256": "50b112dc13756faf372914c796266fc269c0350961a92f0e00c3e652d54908f2",
+        "copied_sha256": "50b112dc13756faf372914c796266fc269c0350961a92f0e00c3e652d54908f2"
+      },
+      {
+        "name": "LOD2.fbx",
+        "bytes": 41056716,
+        "sha256": "b2f99f01f9a96df188a48a3c5d75f84bbb5dd4230faea4219afead93035396f8",
+        "copied_sha256": "b2f99f01f9a96df188a48a3c5d75f84bbb5dd4230faea4219afead93035396f8"
+      },
+      {
+        "name": "LOD3.fbx",
+        "bytes": 32910092,
+        "sha256": "3b1444d7e298b79cb13f6e84f7a64c4e96f83d0d58b9b3a8b0a109d041167415",
+        "copied_sha256": "3b1444d7e298b79cb13f6e84f7a64c4e96f83d0d58b9b3a8b0a109d041167415"
+      },
+      {
+        "name": "textures/texture_000.png",
+        "bytes": 28300961,
+        "sha256": "4517058f20268a2e5286821ed29a9525df436f9de69f19db0bc22a3413f785b4",
+        "copied_sha256": "4517058f20268a2e5286821ed29a9525df436f9de69f19db0bc22a3413f785b4"
+      },
+      {
+        "name": "textures/texture_001.png",
+        "bytes": 8174640,
+        "sha256": "009bdaa89f0a32eea53ec0246cd44d43be77377373bf53fa1eab66e6ccda5715",
+        "copied_sha256": "009bdaa89f0a32eea53ec0246cd44d43be77377373bf53fa1eab66e6ccda5715"
+      }
+    ],
+    "derived_texture": {
+      "path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation\\6000.4.8f1\\Assets\\ArcherTower\\textures\\Unity_MetallicSmoothness.png",
+      "sha256": "55e3759b2995c902372d387497f8fcb18814921976f106e0aec32f747c8ac7f6",
+      "operation": "R = source B (metallic); A = 255 - source G (roughness); G=B=0",
+      "source_sha256": "009bdaa89f0a32eea53ec0246cd44d43be77377373bf53fa1eab66e6ccda5715",
+      "color_space": "linear",
+      "normal_ao_emission": "NOT_GENERATED"
+    },
+    "blender_report_sha256": "66ffc0b8e84d1272639557d08cb1293148a758c27f57a0106eeca866685f711d",
+    "expected_lod_triangles": [
+      984215,
+      639738,
+      344475,
+      147631
+    ]
+  },
+  "status": "PASS_EDITOR_VALIDATION",
+  "mobile_device_performance": "NOT_TESTED",
+  "mesh_quality_parity": "NOT_TESTED",
+  "human_quality_approval": "NOT_TESTED",
+  "command_flags": [
+    "-batchmode",
+    "-projectPath",
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation\\6000.4.8f1",
+    "-executeMethod",
+    "AssetForgeValidation.Run",
+    "-logFile",
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation-runs\\20261021T090854_6000.4.8f1_import\\unity.log",
+    "-quit",
+    "-accept-apiupdate",
+    "-nographics"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 26.299646399987978,
+  "log_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation-runs\\20261021T090854_6000.4.8f1_import\\unity.log",
+  "console_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-validation-runs\\20261021T090854_6000.4.8f1_import\\console.log",
+  "report": {
+    "unity_version": "6000.4.8f1",
+    "mode": "import",
+    "graphics_device": "Null Device",
+    "graphics_api": "Null",
+    "platform": "WindowsEditor",
+    "mobile_device_performance": "NOT_TESTED",
+    "geometry_quality": "NEEDS_HUMAN_REVIEW",
+    "mesh_quality_parity": "NOT_TESTED",
+    "lods": [
+      {
+        "level": 0,
+        "source": "Assets/ArcherTower/LOD0.fbx",
+        "triangles": 984215,
+        "vertices": 697950,
+        "matches_blender_triangles": true,
+        "meshes": [
+          {
+            "name": "geometry_0",
+            "triangles": 984215,
+            "vertices": 697950,
+            "submeshes": 1,
+            "normal_count": 697950,
+            "uv0_count": 697950
+          }
+        ]
+      },
+      {
+        "level": 1,
+        "source": "Assets/ArcherTower/LOD1.fbx",
+        "triangles": 639738,
+        "vertices": 512829,
+        "matches_blender_triangles": true,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD1",
+            "triangles": 639738,
+            "vertices": 512829,
+            "submeshes": 1,
+            "normal_count": 512829,
+            "uv0_count": 512829
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "source": "Assets/ArcherTower/LOD2.fbx",
+        "triangles": 344475,
+        "vertices": 341463,
+        "matches_blender_triangles": true,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD2",
+            "triangles": 344475,
+            "vertices": 341463,
+            "submeshes": 1,
+            "normal_count": 341463,
+            "uv0_count": 341463
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "source": "Assets/ArcherTower/LOD3.fbx",
+        "triangles": 147631,
+        "vertices": 175128,
+        "matches_blender_triangles": true,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD3",
+            "triangles": 147631,
+            "vertices": 175128,
+            "submeshes": 1,
+            "normal_count": 175128,
+            "uv0_count": 175128
+          }
+        ]
+      }
+    ],
+    "automatic_fbx_materials": [
+      {
+        "origin": "automatic FBX importer / LOD0",
+        "name": "Material_0",
+        "shader": "Standard",
+        "textures": [
+          {
+            "property": "_MainTex",
+            "asset_path": "Assets/ArcherTower/textures/texture_000.png",
+            "width": 2048,
+            "height": 2048,
+            "srgb": true
+          }
+        ],
+        "keywords": []
+      },
+      {
+        "origin": "automatic FBX importer / LOD1",
+        "name": "Material_0",
+        "shader": "Standard",
+        "textures": [
+          {
+            "property": "_MainTex",
+            "asset_path": "Assets/ArcherTower/textures/texture_000.png",
+            "width": 2048,
+            "height": 2048,
+            "srgb": true
+          }
+        ],
+        "keywords": []
+      },
+      {
+        "origin": "automatic FBX importer / LOD2",
+        "name": "Material_0",
+        "shader": "Standard",
+        "textures": [
+          {
+            "property": "_MainTex",
+            "asset_path": "Assets/ArcherTower/textures/texture_000.png",
+            "width": 2048,
+            "height": 2048,
+            "srgb": true
+          }
+        ],
+        "keywords": []
+      },
+      {
+        "origin": "automatic FBX importer / LOD3",
+        "name": "Material_0",
+        "shader": "Standard",
+        "textures": [
+          {
+            "property": "_MainTex",
+            "asset_path": "Assets/ArcherTower/textures/texture_000.png",
+            "width": 2048,
+            "height": 2048,
+            "srgb": true
+          }
+        ],
+        "keywords": []
+      }
+    ],
+    "assigned_material": {
+      "origin": "explicit glTF MR -> Unity Standard packing; not generated PBR",
+      "name": "ArcherTower_Standard",
+      "shader": "Standard",
+      "textures": [
+        {
+          "property": "_MainTex",
+          "asset_path": "Assets/ArcherTower/textures/texture_000.png",
+          "width": 4096,
+          "height": 4096,
+          "srgb": true
+        },
+        {
+          "property": "_MetallicGlossMap",
+          "asset_path": "Assets/ArcherTower/textures/Unity_MetallicSmoothness.png",
+          "width": 4096,
+          "height": 4096,
+          "srgb": false
+        }
+      ],
+      "keywords": [
+        "_METALLICGLOSSMAP"
+      ]
+    },
+    "material_mapping": {
+      "base_color": "source texture_000.png, sRGB",
+      "metallic": "source texture_001 B -> Unity R, linear",
+      "smoothness": "1 - source texture_001 G -> Unity A, linear",
+      "normal": "SOURCE_ABSENT_NOT_GENERATED",
+      "ao": "SOURCE_ABSENT_NOT_GENERATED",
+      "emission": "DISABLED_NO_SOURCE_EMISSION_MAP"
+    },
+    "bounds_m": {
+      "center": [
+        2.43308e-08,
+        5,
+        -6.798655e-08
+      ],
+      "size": [
+        4.712229,
+        10,
+        4.110227
+      ],
+      "expected_height": 10
+    },
+    "lod_group": {
+      "levels": 4,
+      "screen_relative_transitions": [
+        0.6,
+        0.3,
+        0.12,
+        0.03
+      ],
+      "device_performance": "NOT_TESTED"
+    },
+    "prefab_path": "Assets/QA/ArcherTower_Validated.prefab",
+    "scene_path": "Assets/QA/ArcherTowerValidation.unity",
+    "render_status": "NOT_REQUESTED_CPU_IMPORT_ONLY",
+    "failures": [],
+    "warnings": [],
+    "checks_passed": true
+  }
+}
