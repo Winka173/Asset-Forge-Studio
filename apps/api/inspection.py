@@ -53,8 +53,12 @@ def inspect_glb(path):
         if not np.isfinite(vertices).all():
             raise ValueError("Mesh contains NaN/Inf coordinates")
         all_bounds.extend([vertices.min(axis=0), vertices.max(axis=0)])
+        welded = mesh.copy()
+        welded.merge_vertices(merge_tex=True, merge_norm=True, digits_vertex=8)
         rows.append({"node": node, "triangles": len(mesh.faces), "vertices": len(mesh.vertices),
                      "watertight": bool(mesh.is_watertight), "winding_consistent": bool(mesh.is_winding_consistent),
+                     "watertight_after_position_weld_1e8": bool(welded.is_watertight),
+                     "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
                      "has_uv": getattr(mesh.visual, "uv", None) is not None})
     if not rows:
         raise ValueError("GLB contains no renderable meshes")

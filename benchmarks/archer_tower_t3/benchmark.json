@@ -8,7 +8,7 @@
   "exposure": 0,
   "view_transform": "Standard",
   "lens": "orthographic",
-  "ortho_scale_m": 14,
+  "ortho_scale_m": 24,
   "target_xyz_m": [0, 0, 5],
   "camera_distance_m": 25,
   "views": {

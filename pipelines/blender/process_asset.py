@@ -42,12 +42,21 @@ def mesh_stats(objects):
     for obj in objects:
         bm = bmesh.new(); bm.from_mesh(obj.data)
         obj.data.calc_loop_triangles()
-        result.append({'name': obj.name, 'triangles': len(obj.data.loop_triangles), 'vertices': len(obj.data.vertices),
+        row = {'name': obj.name, 'triangles': len(obj.data.loop_triangles), 'vertices': len(obj.data.vertices),
                        'non_manifold_edges': sum(not e.is_manifold for e in bm.edges),
                        'boundary_edges': sum(e.is_boundary for e in bm.edges),
                        'loose_vertices': sum(not v.link_edges for v in bm.verts),
                        'uv_layers': len(obj.data.uv_layers),
-                       'materials': [m.name if m else None for m in obj.data.materials]})
+                       'materials': [m.name if m else None for m in obj.data.materials]}
+        # GLB often duplicates positions across UV and hard-normal seams. Analyze a copy;
+        # never report those split edges as proven physical holes or mutate the source.
+        epsilon = max(max(obj.dimensions), 1e-5) * 1e-7
+        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=epsilon)
+        row['position_weld_analysis'] = {'epsilon_local_m': epsilon,
+            'boundary_edges': sum(e.is_boundary for e in bm.edges),
+            'non_manifold_edges': sum(not e.is_manifold for e in bm.edges),
+            'note': 'analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections'}
+        result.append(row)
         bm.free()
     return result
 

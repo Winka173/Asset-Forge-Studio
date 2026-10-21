@@ -3,7 +3,7 @@ import * as T from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-export function CompareViewer({ left, right, view, wireframe, onError }: {left?: string; right?: string; view: string; wireframe: boolean; onError: (s: string) => void}) {
+export function CompareViewer({ left, right, conceptUrl, view, wireframe, onError }: {left?: string; right?: string; conceptUrl?: string; view: string; wireframe: boolean; onError: (s: string) => void}) {
   const host = useRef<HTMLDivElement>(null);
   const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[]} | null>(null);
   const [loaded, setLoaded] = useState(0);
@@ -48,6 +48,12 @@ export function CompareViewer({ left, right, view, wireframe, onError }: {left?:
       new GLTFLoader().load(url, result => {
         if (disposed) { disposeObject(result.scene); return; }
         scenes[i].add(result.scene); models.push(result.scene); setLoaded(v => v + 1);
+        const box = new T.Box3(); models.forEach(m => box.union(new T.Box3().setFromObject(m)));
+        const center = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3());
+        const dir = camera.position.clone().sub(controls.target).normalize();
+        const aspect = (div.clientWidth / 2) / div.clientHeight;
+        const distance = Math.max(size.y, size.x / aspect, size.z / aspect) * 0.65 / Math.tan(T.MathUtils.degToRad(camera.fov / 2));
+        controls.target.copy(center); camera.position.copy(center).addScaledVector(dir, Math.max(distance, 0.1)); controls.update();
       }, undefined, err => { if (!disposed) onError(`GLB viewer: ${String(err)}`); });
     });
     runtime.current = {camera, controls, scenes};
@@ -62,18 +68,19 @@ export function CompareViewer({ left, right, view, wireframe, onError }: {left?:
       scenes.forEach((scene, i) => { renderer.setViewport(i * w / 2, 0, w / 2, h); renderer.setScissor(i * w / 2, 0, w / 2, h); renderer.render(scene, camera); });
     }
     animate();
-    return () => { disposed = true; runtime.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); scenes.forEach(disposeObject); renderer.dispose(); div.replaceChildren(); };
+    return () => { disposed = true; runtime.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); scenes.forEach(disposeObject); renderer.dispose(); renderer.domElement.remove(); };
   }, [left, right]);
   useEffect(() => {
     const rt = runtime.current; if (!rt) return;
     const directions: Record<string, number[]> = {three_quarter: [1, 0.5, 1], front: [0, 0.15, 1], side: [1, 0.15, 0], back: [0, 0.15, -1], top: [0, 1, 0.001], gameplay: [1, 1, 1]};
     const dir = new T.Vector3(...(directions[view] as [number, number, number])).normalize().multiplyScalar(25);
-    rt.controls.target.set(0, 5, 0); rt.camera.position.copy(rt.controls.target).add(dir); rt.controls.update();
+    const distance = rt.camera.position.distanceTo(rt.controls.target);
+    rt.camera.position.copy(rt.controls.target).add(dir.normalize().multiplyScalar(distance)); rt.controls.update();
   }, [view, left, right]);
   useEffect(() => {
     runtime.current?.scenes.forEach(scene => scene.traverse(child => {
       if (child instanceof T.Mesh) (Array.isArray(child.material) ? child.material : [child.material]).forEach((m: T.MeshStandardMaterial) => { m.wireframe = wireframe; });
     }));
   }, [wireframe, loaded]);
-  return <div className="viewer" ref={host} data-loaded={loaded} aria-label="Hai GLB đồng bộ camera, scale giữ nguyên"><span className="viewport-caption">Y-up · mét · marker 1,8 m · kéo để orbit · cuộn để zoom</span></div>;
+  return <div className="viewer" ref={host} data-loaded={loaded} aria-label="Hai GLB đồng bộ camera, scale giữ nguyên">{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · shared fit, giữ scale tương đối · kéo để orbit · cuộn để zoom</span></div>;
 }
