@@ -1,0 +1,453 @@
+{
+  "runs": [
+    {
+      "run": "generation/trellis2/20261021T135941_42_0e5892",
+      "engine": "trellis2_community",
+      "seed": 42,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 112.25,
+      "native_triangles": 1684058,
+      "torch_memory_bytes": 3364545536,
+      "torch_memory_scope": "end-phase lower bound (upstream resets)",
+      "sampled_whole_gpu_peak_mib": 7565.0,
+      "gpu_energy_kwh_proxy": 0.001725935469444609,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "ea8439535752cda67237ded91f4f2e39b829be3f01843f8c03b12bcd18af2aa3",
+      "output_sha256": "e2fcc9d952b97a51f5eb81a7cecbbce53e3c11395d7ccfcfdbc57667bdfc0c27",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "provenance_file": "data\\generation\\trellis2\\20261021T135941_42_0e5892\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/trellis2/20261021T140519_42_33aade",
+      "engine": "trellis2_community",
+      "seed": 42,
+      "status": "FAILED",
+      "error": "supplied_alpha_input requires a real non-opaque alpha mask",
+      "duration_seconds": 58.76499999999942,
+      "native_triangles": null,
+      "torch_memory_bytes": null,
+      "torch_memory_scope": "end-phase lower bound (upstream resets)",
+      "sampled_whole_gpu_peak_mib": 3153.0,
+      "gpu_energy_kwh_proxy": 0.0006022773472221678,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "1627b55fbe7a99ca509078cc27c31cc2383c105ae7d8d6c4d32985a7213021d3",
+      "output_sha256": null,
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "provenance_file": "data\\generation\\trellis2\\20261021T140519_42_33aade\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/trellis2/20261021T140717_42_c0d7b7",
+      "engine": "trellis2_community",
+      "seed": 42,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 169.90600000000268,
+      "native_triangles": 6085784,
+      "torch_memory_bytes": 3364545536,
+      "torch_memory_scope": "end-phase lower bound (upstream resets)",
+      "sampled_whole_gpu_peak_mib": 7577.0,
+      "gpu_energy_kwh_proxy": 0.004982544295833348,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "ea8439535752cda67237ded91f4f2e39b829be3f01843f8c03b12bcd18af2aa3",
+      "output_sha256": "3eab8e880905e3a19ffd7f221284bba1d05cc1a472976105ec54297300745c1d",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "provenance_file": "data\\generation\\trellis2\\20261021T140717_42_c0d7b7\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/trellis2/20261021T141104_43_d17ec2",
+      "engine": "trellis2_community",
+      "seed": 43,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 174.10899999999674,
+      "native_triangles": 6702958,
+      "torch_memory_bytes": 3432954368,
+      "torch_memory_scope": "end-phase lower bound (upstream resets)",
+      "sampled_whole_gpu_peak_mib": 6611.0,
+      "gpu_energy_kwh_proxy": 0.005223905511111113,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "83aa7abe34e254561914ca5b2b8fdcf0adf5e28eea67301ccef688d287d59760",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "provenance_file": "data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/triposg/20261021T142447_42_3e6e1c",
+      "engine": "triposg",
+      "seed": 42,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 33.28100000000268,
+      "native_triangles": 1855308,
+      "torch_memory_bytes": 5005592576,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 8318.0,
+      "gpu_energy_kwh_proxy": 0.001402833905555572,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "0c898a90227d4fd97a7098518c2ac660527a40a2e7ecf1bb9966cfa5787e5dda",
+      "model_revision": null,
+      "provenance_file": "data\\generation\\triposg\\20261021T142447_42_3e6e1c\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "generation/triposg/20261021T142616_43_36e099",
+      "engine": "triposg",
+      "seed": 43,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 30.703000000008615,
+      "native_triangles": 1675292,
+      "torch_memory_bytes": 4990482432,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 8320.0,
+      "gpu_energy_kwh_proxy": 0.0013278604944445657,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "99a9155c136f2eb9d0d030f7dd9f3092b99cdd6c5f5b8af6e1282d3c596eed4a",
+      "model_revision": null,
+      "provenance_file": "data\\generation\\triposg\\20261021T142616_43_36e099\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "jobs/b2a5df4f4b634f269b627604e7296829",
+      "engine": "triposg",
+      "seed": 44,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 31.797000000005937,
+      "native_triangles": 1720182,
+      "torch_memory_bytes": 5002991104,
+      "torch_memory_scope": "whole worker Torch allocated",
+      "sampled_whole_gpu_peak_mib": 8474.0,
+      "gpu_energy_kwh_proxy": 0.0014498981847221163,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "output_sha256": "abd958d5392577f687e39d417a48fc96d2b4d84c9b66c4e1f5ebfd1cbd605b1b",
+      "model_revision": null,
+      "provenance_file": "data\\jobs\\b2a5df4f4b634f269b627604e7296829\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    },
+    {
+      "run": "jobs/dd7b81f1235d4435872a907578a7c72e",
+      "engine": "trellis2_community",
+      "seed": 44,
+      "status": "GENERATED_NEEDS_REVIEW",
+      "error": null,
+      "duration_seconds": 95.6869999999908,
+      "native_triangles": 1669610,
+      "torch_memory_bytes": 3364545536,
+      "torch_memory_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+      "sampled_whole_gpu_peak_mib": 7781.0,
+      "gpu_energy_kwh_proxy": 0.0015424918083331031,
+      "energy_scope": "whole GPU sampled, excludes CPU/system; no monetary tariff assumed",
+      "input_sha256": "ea8439535752cda67237ded91f4f2e39b829be3f01843f8c03b12bcd18af2aa3",
+      "output_sha256": "94928839f65e7baa5182828386716a2a8a5123f8ecd8acc061557bc6890683c1",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "provenance_file": "data\\jobs\\dd7b81f1235d4435872a907578a7c72e\\output\\generation.json",
+      "mesh_quality_parity": "NOT_TESTED",
+      "human_score": null
+    }
+  ],
+  "jobs": [
+    {
+      "id": "742edc6288b2436c9c74b217b4838185",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:03:09.111838+00:00",
+      "updated_at": "2026-10-21T07:04:02.248325+00:00",
+      "payload": {
+        "artifact_id": "bf77486beb45480c8d4ee742583dc73b",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "back"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "98687b91d4084ce3be7b2a067d9d6c06",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:05:29.923611+00:00",
+      "updated_at": "2026-10-21T07:07:13.239655+00:00",
+      "payload": {
+        "artifact_id": "bf77486beb45480c8d4ee742583dc73b",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "back"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "3d917d68e585402aaa981d9918d63008",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:14:24.091332+00:00",
+      "updated_at": "2026-10-21T07:17:04.816335+00:00",
+      "payload": {
+        "artifact_id": "5e6d202355754df9bd363b4cf1852a55",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "ffab269f281a4ee18d7e9e0231c435d3",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:19:44.983078+00:00",
+      "updated_at": "2026-10-21T07:22:18.721168+00:00",
+      "payload": {
+        "artifact_id": "d556149fe86a4afeba7011f17ecc0e5e",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "59c6a5da4df34c1c9746a56eabb29003",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:29:09.002349+00:00",
+      "updated_at": "2026-10-21T07:32:18.250331+00:00",
+      "payload": {
+        "artifact_id": "ad7a9d5448174db8a0b793544df6fc33",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "93e359d6848d40cbb2ec72d80db40e2e",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:29:09.151744+00:00",
+      "updated_at": "2026-10-21T07:35:19.576358+00:00",
+      "payload": {
+        "artifact_id": "8a75d9ac5b9b4e43932f716b7b60cf5e",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "00b097a4173a43d0a3b1712ff1d15344",
+      "status": "CANCELLED",
+      "created_at": "2026-10-21T07:38:23.774178+00:00",
+      "updated_at": "2026-10-21T07:38:26.637992+00:00",
+      "payload": {
+        "engine": "triposg",
+        "artifact_id": "72d81e5c3b624527843f307ff72fd1a5",
+        "steps": 50,
+        "pipeline_type": "1024_cascade",
+        "texture_size": 4096,
+        "auto_blender": true,
+        "benchmark_height_m": 10.0,
+        "kind": "inference",
+        "tournament_id": "38e2becca6894bab823cbb46d586dbd1",
+        "purpose": "evaluation_only",
+        "seed": 44
+      },
+      "error": null
+    },
+    {
+      "id": "b2a5df4f4b634f269b627604e7296829",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:38:26.705056+00:00",
+      "updated_at": "2026-10-21T07:39:01.721424+00:00",
+      "payload": {
+        "engine": "triposg",
+        "artifact_id": "72d81e5c3b624527843f307ff72fd1a5",
+        "steps": 50,
+        "pipeline_type": "1024_cascade",
+        "texture_size": 4096,
+        "auto_blender": true,
+        "benchmark_height_m": 10.0,
+        "kind": "inference",
+        "tournament_id": "38e2becca6894bab823cbb46d586dbd1",
+        "purpose": "evaluation_only",
+        "seed": 44,
+        "retry_of": "00b097a4173a43d0a3b1712ff1d15344"
+      },
+      "error": null
+    },
+    {
+      "id": "9f4c46ef77f841e98941e9263fbb1dc5",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:39:01.722404+00:00",
+      "updated_at": "2026-10-21T07:42:23.211730+00:00",
+      "payload": {
+        "kind": "blender",
+        "artifact_id": "a1d69cd6cf63404bb9d8a97dce6574dc",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "parent_job": "b2a5df4f4b634f269b627604e7296829"
+      },
+      "error": null
+    },
+    {
+      "id": "0cd41c06dfa040908ead8f880ff6593b",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:43:21.539317+00:00",
+      "updated_at": "2026-10-21T07:44:22.366547+00:00",
+      "payload": {
+        "artifact_id": "d556149fe86a4afeba7011f17ecc0e5e",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "yaw_degrees": 0,
+        "merge_distance_m": 0,
+        "recalculate_normals": false,
+        "render": false,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "kind": "blender"
+      },
+      "error": null
+    },
+    {
+      "id": "dd7b81f1235d4435872a907578a7c72e",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-21T07:44:00.074379+00:00",
+      "updated_at": "2026-10-21T07:46:01.874427+00:00",
+      "payload": {
+        "engine": "trellis2_community",
+        "artifact_id": "d0f50fd87648427da8131ee760a19cee",
+        "steps": 12,
+        "pipeline_type": "512",
+        "texture_size": 2048,
+        "auto_blender": false,
+        "benchmark_height_m": 10,
+        "kind": "inference",
+        "tournament_id": "6d6420a5284b48d69154d83646fc1e22",
+        "purpose": "evaluation_only",
+        "seed": 44
+      },
+      "error": null
+    }
+  ],
+  "meshy_golden_glb": "NOT_AVAILABLE_USER_CONFIRMED_IMAGE_ONLY",
+  "unity": "NOT_TESTED",
+  "production_approval": "NEEDS_REVIEW",
+  "all_model_outputs_retained": true
+}

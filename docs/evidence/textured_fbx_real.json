@@ -1,0 +1,568 @@
+{
+  "status": "NEEDS_REVIEW",
+  "input_sha256": "83aa7abe34e254561914ca5b2b8fdcf0adf5e28eea67301ccef688d287d59760",
+  "script_sha256": "483a7f4465f9cb7874e3957b668af477e8d18b86861235225591b092d7a73d9d",
+  "blender_version": "4.5.14 LTS",
+  "dimensions_xyz_m_blender": [
+    4.712228775024414,
+    4.110225677490234,
+    10.0
+  ],
+  "normalization": {
+    "applied": true,
+    "target_height_m": 10.0,
+    "scale": 9.9714044224633,
+    "yaw_degrees": 0
+  },
+  "before": [
+    {
+      "name": "geometry_0",
+      "triangles": 984215,
+      "vertices": 696922,
+      "non_manifold_edges": 381641,
+      "boundary_edges": 381641,
+      "loose_vertices": 0,
+      "uv_layers": 1,
+      "materials": [
+        "Material_0"
+      ],
+      "position_weld_analysis": {
+        "epsilon_local_m": 1.0028676986694336e-07,
+        "boundary_edges": 3,
+        "non_manifold_edges": 5522,
+        "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+      }
+    }
+  ],
+  "after": [
+    {
+      "name": "geometry_0",
+      "triangles": 984215,
+      "vertices": 696922,
+      "non_manifold_edges": 381641,
+      "boundary_edges": 381641,
+      "loose_vertices": 0,
+      "uv_layers": 1,
+      "materials": [
+        "Material_0"
+      ],
+      "position_weld_analysis": {
+        "epsilon_local_m": 1e-06,
+        "boundary_edges": 3,
+        "non_manifold_edges": 5522,
+        "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+      }
+    }
+  ],
+  "materials": [
+    {
+      "name": "Material_0",
+      "channels": {
+        "base_color": {
+          "status": "TEXTURE",
+          "textures": [
+            {
+              "file": "texture_000.png",
+              "source_name": "Image_0",
+              "color_space": "sRGB",
+              "size": [
+                4096,
+                4096
+              ],
+              "note": "actual source image; packed channels may share one file"
+            }
+          ],
+          "constant": [
+            0.800000011920929,
+            0.800000011920929,
+            0.800000011920929,
+            1.0
+          ]
+        },
+        "metallic": {
+          "status": "TEXTURE",
+          "textures": [
+            {
+              "file": "texture_001.png",
+              "source_name": "Image_1",
+              "color_space": "Non-Color",
+              "size": [
+                4096,
+                4096
+              ],
+              "note": "actual source image; packed channels may share one file"
+            }
+          ],
+          "constant": 0.0
+        },
+        "roughness": {
+          "status": "TEXTURE",
+          "textures": [
+            {
+              "file": "texture_001.png",
+              "source_name": "Image_1",
+              "color_space": "Non-Color",
+              "size": [
+                4096,
+                4096
+              ],
+              "note": "actual source image; packed channels may share one file"
+            }
+          ],
+          "constant": 0.5
+        },
+        "normal": {
+          "status": "CONSTANT",
+          "textures": [],
+          "constant": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "emissive": {
+          "status": "CONSTANT",
+          "textures": [],
+          "constant": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "ao": "NOT_TESTED",
+      "plausibility": "NOT_TESTED",
+      "status": "NEEDS_REVIEW"
+    }
+  ],
+  "lods": [
+    {
+      "level": 1,
+      "ratio": 0.65,
+      "meshes": [
+        {
+          "name": "geometry_0_LOD1",
+          "triangles": 639738,
+          "vertices": 510871,
+          "non_manifold_edges": 353940,
+          "boundary_edges": 353864,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 87365,
+            "non_manifold_edges": 92501,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "quality": "NEEDS_REVIEW",
+      "baking": "NOT_TESTED"
+    },
+    {
+      "level": 2,
+      "ratio": 0.35,
+      "meshes": [
+        {
+          "name": "geometry_0_LOD2",
+          "triangles": 344475,
+          "vertices": 337915,
+          "non_manifold_edges": 303065,
+          "boundary_edges": 302763,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.000248146057129e-06,
+            "boundary_edges": 219178,
+            "non_manifold_edges": 221349,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "quality": "NEEDS_REVIEW",
+      "baking": "NOT_TESTED"
+    },
+    {
+      "level": 3,
+      "ratio": 0.15,
+      "meshes": [
+        {
+          "name": "geometry_0_LOD3",
+          "triangles": 147631,
+          "vertices": 177125,
+          "non_manifold_edges": 172818,
+          "boundary_edges": 167005,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.0014488220214843e-06,
+            "boundary_edges": 161497,
+            "non_manifold_edges": 167304,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "quality": "NEEDS_REVIEW",
+      "baking": "NOT_TESTED"
+    }
+  ],
+  "framing": [],
+  "rendered": [],
+  "checks": {
+    "export_reopen": "PASS",
+    "uv_overlap": "NOT_TESTED",
+    "self_intersections": "NOT_TESTED",
+    "lod_silhouette_error": "NOT_TESTED",
+    "normal_bake": "NOT_TESTED",
+    "unity": "NOT_TESTED",
+    "human_review": "NOT_TESTED",
+    "pbr_reconstruction": "NOT_TESTED",
+    "modular_connectors": "NOT_TESTED",
+    "fbx_reopen": "PASS",
+    "fbx_pbr_unity_mapping": "NOT_TESTED"
+  },
+  "reopened": [
+    {
+      "file": "collider.glb",
+      "meshes": [
+        {
+          "name": "COLLIDER_AABB",
+          "triangles": 12,
+          "vertices": 24,
+          "non_manifold_edges": 24,
+          "boundary_edges": 24,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 0,
+            "non_manifold_edges": 0,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ]
+    },
+    {
+      "file": "LOD0.glb",
+      "meshes": [
+        {
+          "name": "geometry_0",
+          "triangles": 984215,
+          "vertices": 720790,
+          "non_manifold_edges": 415653,
+          "boundary_edges": 415653,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 3,
+            "non_manifold_edges": 5522,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ]
+    },
+    {
+      "file": "LOD1.glb",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD1",
+          "triangles": 639738,
+          "vertices": 516349,
+          "non_manifold_edges": 358256,
+          "boundary_edges": 358256,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 87379,
+            "non_manifold_edges": 92439,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ]
+    },
+    {
+      "file": "LOD2.glb",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD2",
+          "triangles": 344475,
+          "vertices": 343123,
+          "non_manifold_edges": 306769,
+          "boundary_edges": 306769,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.000248146057129e-06,
+            "boundary_edges": 219192,
+            "non_manifold_edges": 221061,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ]
+    },
+    {
+      "file": "LOD3.glb",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD3",
+          "triangles": 147631,
+          "vertices": 172500,
+          "non_manifold_edges": 170427,
+          "boundary_edges": 170427,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.0014488220214843e-06,
+            "boundary_edges": 161509,
+            "non_manifold_edges": 161509,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ]
+    }
+  ],
+  "reopened_fbx": [
+    {
+      "file": "LOD0.fbx",
+      "meshes": [
+        {
+          "name": "geometry_0",
+          "triangles": 984215,
+          "vertices": 696922,
+          "non_manifold_edges": 381641,
+          "boundary_edges": 381641,
+          "loose_vertices": 0,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 3,
+            "non_manifold_edges": 5522,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "bounds_blender_m": [
+        [
+          -2.356114387512207,
+          -2.0551135540008545,
+          -3.365267389199289e-07
+        ],
+        [
+          2.356114387512207,
+          2.0551137924194336,
+          10.0
+        ]
+      ]
+    },
+    {
+      "file": "LOD1.fbx",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD1",
+          "triangles": 639738,
+          "vertices": 510871,
+          "non_manifold_edges": 353864,
+          "boundary_edges": 353864,
+          "loose_vertices": 152,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1e-06,
+            "boundary_edges": 87365,
+            "non_manifold_edges": 92425,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "bounds_blender_m": [
+        [
+          -2.3562145233154297,
+          -2.055274248123169,
+          -3.3655652487141197e-07
+        ],
+        [
+          2.3561346530914307,
+          2.0552966594696045,
+          10.0
+        ]
+      ]
+    },
+    {
+      "file": "LOD2.fbx",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD2",
+          "triangles": 344475,
+          "vertices": 337915,
+          "non_manifold_edges": 302763,
+          "boundary_edges": 302763,
+          "loose_vertices": 597,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.000248146057129e-06,
+            "boundary_edges": 219178,
+            "non_manifold_edges": 221047,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "bounds_blender_m": [
+        [
+          -2.3553171157836914,
+          -2.0552995204925537,
+          -0.0021060495637357235
+        ],
+        [
+          2.3558130264282227,
+          2.0558173656463623,
+          10.000375747680664
+        ]
+      ]
+    },
+    {
+      "file": "LOD3.fbx",
+      "meshes": [
+        {
+          "name": "geometry_0_LOD3",
+          "triangles": 147631,
+          "vertices": 177125,
+          "non_manifold_edges": 167005,
+          "boundary_edges": 167005,
+          "loose_vertices": 10840,
+          "uv_layers": 1,
+          "materials": [
+            "Material_0"
+          ],
+          "position_weld_analysis": {
+            "epsilon_local_m": 1.0014488220214843e-06,
+            "boundary_edges": 161497,
+            "non_manifold_edges": 161497,
+            "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+          }
+        }
+      ],
+      "bounds_blender_m": [
+        [
+          -2.3615775108337402,
+          -2.0714197158813477,
+          -0.0076716928742825985
+        ],
+        [
+          2.3648080825805664,
+          2.055556058883667,
+          10.006816864013672
+        ]
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "benchmark.json",
+      "bytes": 1406,
+      "sha256": "9ac45f107fa0dedd482c26992d309720466c1c7589e30ebaa299a152b1b5f1da"
+    },
+    {
+      "path": "collider.glb",
+      "bytes": 1824,
+      "sha256": "dd5f1e3fc20160320a2225ea58dcc8f8f02ce71203334ad5780e3dc3772adb8e"
+    },
+    {
+      "path": "LOD0.fbx",
+      "bytes": 61050236,
+      "sha256": "eeb247bfdbfe8e2ad03698c85635365d164bfc24996e08b40f12b1ae201cf0f9"
+    },
+    {
+      "path": "LOD0.glb",
+      "bytes": 65228180,
+      "sha256": "f921ca713360a45e9d056ba538b8ad583601a5342b0ece329fd81f0291995523"
+    },
+    {
+      "path": "LOD1.fbx",
+      "bytes": 50495884,
+      "sha256": "50b112dc13756faf372914c796266fc269c0350961a92f0e00c3e652d54908f2"
+    },
+    {
+      "path": "LOD1.glb",
+      "bytes": 54552348,
+      "sha256": "77f73c426c454400650763bb34ff6dd877e352246a7a3d6ef4c34be9c3661c43"
+    },
+    {
+      "path": "LOD2.fbx",
+      "bytes": 41056716,
+      "sha256": "b2f99f01f9a96df188a48a3c5d75f84bbb5dd4230faea4219afead93035396f8"
+    },
+    {
+      "path": "LOD2.glb",
+      "bytes": 45465960,
+      "sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6"
+    },
+    {
+      "path": "LOD3.fbx",
+      "bytes": 32910092,
+      "sha256": "3b1444d7e298b79cb13f6e84f7a64c4e96f83d0d58b9b3a8b0a109d041167415"
+    },
+    {
+      "path": "LOD3.glb",
+      "bytes": 37643892,
+      "sha256": "068493e2fca5e2730db34c9c11a4c6ae247451c2b87a01a39f1ca58c8a59d88d"
+    },
+    {
+      "path": "master.blend",
+      "bytes": 119788743,
+      "sha256": "3865cf01227ddd51f54c511b229f830a714f2854855dacd553741626a89d3a8d"
+    },
+    {
+      "path": "raw.blend",
+      "bytes": 123725747,
+      "sha256": "85643e61bea1b247f0dca2cfe392ad91ced435834b8cf7f91587b4164627b089"
+    },
+    {
+      "path": "request.json",
+      "bytes": 680,
+      "sha256": "369ca41ab2a381a3d5a885cc4512cafbb7c1e0feec2477cc2ad9f79bf0e40bc0"
+    },
+    {
+      "path": "textures/texture_000.png",
+      "bytes": 28300961,
+      "sha256": "4517058f20268a2e5286821ed29a9525df436f9de69f19db0bc22a3413f785b4"
+    },
+    {
+      "path": "textures/texture_001.png",
+      "bytes": 8174640,
+      "sha256": "009bdaa89f0a32eea53ec0246cd44d43be77377373bf53fa1eab66e6ccda5715"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "run": "20261021T142447_42_3e6e1c",
+    "status": "GENERATED_NEEDS_REVIEW",
+    "duration_seconds": 33.28100000000268,
+    "triangles": 1855308,
+    "peak_allocated_bytes": 5005592576,
+    "peak_reserved_bytes": 5190451200
+  },
+  {
+    "run": "20261021T142616_43_36e099",
+    "status": "GENERATED_NEEDS_REVIEW",
+    "duration_seconds": 30.703000000008615,
+    "triangles": 1675292,
+    "peak_allocated_bytes": 4990482432,
+    "peak_reserved_bytes": 5125439488
+  }
+]

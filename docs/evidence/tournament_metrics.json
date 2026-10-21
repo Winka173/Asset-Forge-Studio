@@ -1,0 +1,60 @@
+{
+  "trellis2": [
+    {
+      "run": "20261021T135941_42_0e5892",
+      "status": "GENERATED_NEEDS_REVIEW",
+      "seconds": 112.25,
+      "seed": 42,
+      "triangles_raw": 1684058,
+      "torch_peak_GiB": 3.133477210998535,
+      "sampled_whole_gpu_peak_MiB": 7565.0
+    },
+    {
+      "run": "20261021T140519_42_33aade",
+      "status": "FAILED",
+      "seconds": 58.76499999999942,
+      "seed": 42,
+      "triangles_raw": null,
+      "torch_peak_GiB": 0.0,
+      "sampled_whole_gpu_peak_MiB": 3153.0
+    },
+    {
+      "run": "20261021T140717_42_c0d7b7",
+      "status": "GENERATED_NEEDS_REVIEW",
+      "seconds": 169.90600000000268,
+      "seed": 42,
+      "triangles_raw": 6085784,
+      "torch_peak_GiB": 3.133477210998535,
+      "sampled_whole_gpu_peak_MiB": 7577.0
+    },
+    {
+      "run": "20261021T141104_43_d17ec2",
+      "status": "GENERATED_NEEDS_REVIEW",
+      "seconds": 174.10899999999674,
+      "seed": 43,
+      "triangles_raw": 6702958,
+      "torch_peak_GiB": 3.197187900543213,
+      "sampled_whole_gpu_peak_MiB": 6611.0
+    }
+  ],
+  "triposg": [
+    {
+      "run": "20261021T142447_42_3e6e1c",
+      "status": "GENERATED_NEEDS_REVIEW",
+      "seconds": 33.28100000000268,
+      "seed": 42,
+      "triangles_raw": 1855308,
+      "torch_peak_GiB": 4.661821365356445,
+      "sampled_whole_gpu_peak_MiB": 8318.0
+    },
+    {
+      "run": "20261021T142616_43_36e099",
+      "status": "GENERATED_NEEDS_REVIEW",
+      "seconds": 30.703000000008615,
+      "seed": 43,
+      "triangles_raw": 1675292,
+      "torch_peak_GiB": 4.647748947143555,
+      "sampled_whole_gpu_peak_MiB": 8320.0
+    }
+  ]
+}

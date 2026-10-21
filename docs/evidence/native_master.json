@@ -1,0 +1,13 @@
+{
+  "status": "NEEDS_REVIEW",
+  "source_sha256": "88643d2d2c9f363b5b1650d690ebae93c49f9a1f58c54b73b6b9da57dea015a8",
+  "blend_sha256": "e91f195969af8300e80ece91701ed951f4ea5c4ac3dbcdc498b288927e10b614",
+  "triangles": 6702958,
+  "vertices": 3288364,
+  "reopen": "PASS",
+  "coordinate_system": "native TRELLIS Z-up, canonical uncalibrated units",
+  "uv": "NOT_AVAILABLE_IN_NATIVE_GEOMETRY",
+  "pbr": "Sparse PBR field retained in source NPZ; this .blend is geometry only",
+  "commercial_use": "EVALUATION_ONLY_PENDING_AUDIT",
+  "human_approval": "NOT_TESTED"
+}
