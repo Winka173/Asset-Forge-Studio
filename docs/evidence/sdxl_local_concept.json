@@ -1,0 +1,92 @@
+{
+  "status": "GENERATED_NEEDS_REVIEW",
+  "engine": "sdxl_local",
+  "request": {
+    "kind": "concept",
+    "project_id": "runavelle",
+    "asset_id": "db3559e8d2d440ddb7da5615958f7742",
+    "name": "Archer Tower text-concept QA concept",
+    "prompt": "An isolated fantasy archer watchtower, blue slate conical roof, limestone walls, timber balcony, cyan crystal on roof, game asset concept, three quarter view, white background\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.",
+    "user_prompt": "An isolated fantasy archer watchtower, blue slate conical roof, limestone walls, timber balcony, cyan crystal on roof, game asset concept, three quarter view, white background",
+    "project_style_snapshot": {
+      "id": "runavelle",
+      "name": "Runavelle",
+      "description": "Archer Tower quality benchmark",
+      "art_bible": {
+        "game_id": "runavelle",
+        "version": 1,
+        "units": "meter",
+        "palette": {
+          "limestone": "#e4d7b5",
+          "oak": "#69442e",
+          "slate": "#263b59",
+          "bronze": "#99704a",
+          "banner": "#1b315f",
+          "mana": "#55e5ef"
+        },
+        "materials": [
+          "ivory limestone",
+          "chestnut oak",
+          "midnight blue slate",
+          "aged bronze",
+          "navy gold cloth",
+          "cyan mana"
+        ],
+        "golden_references": [],
+        "camera": {
+          "approval": "NEEDS_REVIEW",
+          "projection": "orthographic"
+        },
+        "license_policy": "commercial_required",
+        "constraints": {
+          "dimensions_m": null,
+          "door_orientation": "NEEDS_REVIEW",
+          "balconies": 2,
+          "symmetry": "NEEDS_REVIEW"
+        }
+      },
+      "palette": [],
+      "material_language": "",
+      "default_style": "",
+      "units": "m",
+      "target_height_m": 10,
+      "export_settings": {},
+      "cover_artifact_id": null
+    },
+    "seed": 42,
+    "steps": 20,
+    "size": 768,
+    "retry_of": "5431b414916d43abb26670ff15bf517a",
+    "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\completion-acceptance-data\\jobs\\08eff8484b8a42efa3ab4c9c338aa2f9\\output",
+    "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\completion-acceptance-data\\jobs\\08eff8484b8a42efa3ab4c9c338aa2f9\\request.json",
+    "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+  },
+  "script_sha256": "5ead3bf83bb8f07dae425627cd51a88f7390f36dd8cdf0b930723c923c91a2e2",
+  "network": "OFFLINE",
+  "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+  "purpose": "concept_preview_requires_user_approval",
+  "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+  "weight_sha256": {
+    "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+    "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+    "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+    "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+    "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+  },
+  "prompt_encoding": {
+    "chunks": 1,
+    "tokens_not_truncated": true,
+    "pooled": "mean across CLIP-2 chunks",
+    "experimental_long_prompt": false
+  },
+  "output_sha256": "95ba98952d20c5cf6c4ca65478ef0bb36a7f598acc20f385656fa0b992bb5d61",
+  "peak_allocated_bytes": 5448973312,
+  "peak_reserved_bytes": 5819596800,
+  "torch": "2.11.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dimensions": [
+    768,
+    768
+  ],
+  "duration_seconds": 15.186999999990803
+}
