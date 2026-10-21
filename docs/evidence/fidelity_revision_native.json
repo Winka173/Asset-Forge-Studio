@@ -1,0 +1,258 @@
+{
+  "status": "PASS_REAL_AUTOMATIC_FIDELITY_CPU_REVISION_AND_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fidelity-revision-native\\2026-10-21T17-48-43-927Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.6.1\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "real_cpu_revision_automatic_hash_bound_measurement_10m_supersedes_original_9m_quality_and_delivery_preserved",
+      "passed": true,
+      "requirement_report": {
+        "schema_version": "1.0",
+        "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+        "artifact_id": "805f2bcfdec1469695d60cfa306ccf5b",
+        "artifact_sha256": "404801cf5584aa374445687e21e1d70f2ab1878a00bcdaec618fa8c02d1e3204",
+        "contract": {
+          "schema_version": "1.0",
+          "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+          "artifact_id": "805f2bcfdec1469695d60cfa306ccf5b",
+          "prompt_sha256": "bc0566c8d05d5e8a3f30cb9f68bb83b62fc2b46bcaf1ccea2618cbe2312d9826",
+          "source": "effective_revision_prompt",
+          "requirements": [
+            {
+              "kind": "dimension",
+              "excerpt": "height 9 m",
+              "source_start": 41,
+              "source_end": 51,
+              "axis": 1,
+              "target_m": 9,
+              "id": "aaacdcfd1bc35a81",
+              "superseded_by": "4d4ca56289945be3"
+            },
+            {
+              "kind": "dimension",
+              "excerpt": "height 10 m",
+              "source_start": 138,
+              "source_end": 149,
+              "axis": 1,
+              "target_m": 10,
+              "id": "4d4ca56289945be3"
+            },
+            {
+              "kind": "component_mention",
+              "excerpt": "archer tower",
+              "source_start": 6,
+              "source_end": 18,
+              "verification": "Visual presence/absence and negation require inspection",
+              "id": "19b4d085208c6da2"
+            },
+            {
+              "kind": "component_mention",
+              "excerpt": "ballista",
+              "source_start": 31,
+              "source_end": 39,
+              "verification": "Visual presence/absence and negation require inspection",
+              "id": "e9c96d18a4d7b0ed"
+            },
+            {
+              "kind": "color_mention",
+              "excerpt": "blue roof",
+              "source_start": 20,
+              "source_end": 29,
+              "verification": "Material names and average texture colors do not prove this requirement",
+              "id": "a65651b8676932f8"
+            },
+            {
+              "kind": "appearance_mention",
+              "excerpt": "Stone",
+              "source_start": 0,
+              "source_end": 5,
+              "verification": "Visual inspection required",
+              "id": "b870c91eef0c47d4"
+            }
+          ],
+          "coverage": "Conservative English explicit dimensions and selected component/color/style mentions; not exhaustive semantic parsing",
+          "contract_hash": "52144dcb0cb2304da98d666870b8315ce2a8a3ac1241099b1101ce161763a571"
+        },
+        "checks": [
+          {
+            "requirement_id": "aaacdcfd1bc35a81",
+            "status": "superseded",
+            "method": "later_explicit_dimension",
+            "evidence": null
+          },
+          {
+            "requirement_id": "4d4ca56289945be3",
+            "status": "passed",
+            "method": "measured_glb_world_bounds",
+            "evidence": {
+              "expected_m": 10,
+              "actual_m": 10.000000953674316,
+              "tolerance_m": 0.1
+            }
+          },
+          {
+            "requirement_id": "19b4d085208c6da2",
+            "status": "not_evaluated",
+            "method": "visual_evaluator_unavailable",
+            "evidence": null
+          },
+          {
+            "requirement_id": "e9c96d18a4d7b0ed",
+            "status": "not_evaluated",
+            "method": "visual_evaluator_unavailable",
+            "evidence": null
+          },
+          {
+            "requirement_id": "a65651b8676932f8",
+            "status": "not_evaluated",
+            "method": "visual_evaluator_unavailable",
+            "evidence": null
+          },
+          {
+            "requirement_id": "b870c91eef0c47d4",
+            "status": "not_evaluated",
+            "method": "visual_evaluator_unavailable",
+            "evidence": null
+          }
+        ],
+        "report_id": "bde64dfa4736b50d006f3d380fa58a280a24bfa05ba98489d17b3189e94de721",
+        "evaluated_at": "2026-10-21T17:53:48.509778+00:00",
+        "visual_evaluation": "unavailable",
+        "artistic_approval": false,
+        "summary": {
+          "measured": 1,
+          "mismatches": 0,
+          "unverified": 4
+        },
+        "policy": "Informational checks; existing technical QA and review/export policies remain authoritative. Visual unknowns do not block Auto."
+      },
+      "export": {
+        "id": "f58b56225ed75c52a465b439dc1f2691",
+        "status": "COMPLETED",
+        "delivery_scope": "staged",
+        "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+        "project_id": "9da6bfb46d7d441591a7bc2495558191",
+        "source_asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+        "artifact_id": "805f2bcfdec1469695d60cfa306ccf5b",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\Library\\revision-previews"
+        },
+        "created_at": "2026-10-21T17:53:55.524932+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\Library\\revision-previews\\9da6bfb46d7d441591a7bc2495558191\\selective\\665c9ad7f6b5415c8e3b57ac8ae3f074\\f58b56225ed75c52a465b439dc1f2691",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\Library\\revision-previews",
+        "filename": "665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb",
+        "files": [
+          {
+            "name": "665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb",
+            "bytes": 69649680,
+            "sha256": "404801cf5584aa374445687e21e1d70f2ab1878a00bcdaec618fa8c02d1e3204",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/f58b56225ed75c52a465b439dc1f2691/files/665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4239,
+            "sha256": "3a686104a78825580d626f0060eeee855242cc118cbe71992a9a7a6938da47f2",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/f58b56225ed75c52a465b439dc1f2691/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 972590,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            9.644291877746582,
+            10.000000953674316,
+            6.84223484992981
+          ],
+          "bounds_xyz_m": [
+            [
+              -4.822146045975387,
+              0,
+              -3.4211173499934375
+            ],
+            [
+              4.822145831771195,
+              10.000000953674316,
+              3.421117499936372
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 972590,
+              "vertices": 664465,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\Library\\revision-previews\\9da6bfb46d7d441591a7bc2495558191\\manifest.json",
+        "revision_id": "939d7f1fb0474e3290fed39661001d2f"
+      }
+    }
+  ],
+  "errors": [],
+  "inference": "No new GPU inference. Actual local source and CPU Blender only.",
+  "revision": {
+    "revision_id": "939d7f1fb0474e3290fed39661001d2f",
+    "group_id": "e3fa3268a4734a099d5cebab0478f228",
+    "execution_group_id": "3c9b253415ac40598ef5ac17c38f5b28",
+    "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+    "plan": {
+      "method": "blender_transform",
+      "refinement_goal": "Explicit user revision instructions",
+      "earliest_stage": "blender",
+      "target_height_m": 10,
+      "explanation": "Uniform scaling through the installed Blender pipeline; original geometry and textures remain available.",
+      "parent_artifact_id": "cbda30b668d0455d9ca365d6c2dacd02",
+      "parent_sha256": "2a1cbf7bf42d05512bbc789c1c2c2fdfaa14fbebcab8a993333e6341dbd7eeb1",
+      "capabilities": {
+        "direct_mesh_edit": false,
+        "direct_material_edit": false,
+        "uniform_blender_scale": true
+      },
+      "artistic_evaluation": "not_available"
+    }
+  }
+}

@@ -1,3 +1,17 @@
+# Current verified baseline - 2026-10-22 (Asia/Saigon)
+
+Stable 0.6.0 is unified on main at a98a4e0. 55 backend tests and native Windows build/smoke passed. Real 349-source import/admission (312 primary, 37 FUTURE), shared Single/Batch queue, incremental GLB delivery, stage checkpoint recovery, Production/Library UI, separate technical/artistic statuses, short-prompt enrichment, CPU scale revisions, staged publication/rollback and Create reset are recorded in evidence/stable_0_6_release.json. No full 349-GPU development run was launched.
+
+Existing Unity import and procedural World Plan slices were previously validated with native scenes, prefab instances, terrain and navigation; they remain experimental. They do not implement unrestricted prompt-to-map generation.
+
+Still unfinished: Meshy-quality artistic acceptance; comprehensive multi-engine benchmarks / commercial clearance; local visual prompt-fidelity inference; editable runtime VFX; rig/deformation/retarget and combat animation; map biomes/rivers/material/performance expansion. Unreal remains deferred by the user. Optional local semantic inference has an adapter but no verified installed model.
+
+The user now authorizes the next quality roadmap, starting with hash-bound prompt requirements and real measured checks, then a Unity combat/effect slice. Prior no-merge and no-new-module directions below are historical and superseded.
+
+---
+
+## Historical checkpoints
+
 # Current verified state ? 2026-10-21
 
 The entries below this section are historical checkpoints, superseded where noted here.

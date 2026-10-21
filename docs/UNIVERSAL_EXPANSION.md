@@ -1,3 +1,9 @@
+# Current authority and status - 2026-10-22
+
+The user explicitly authorized merging the expansion into main; unified Stable 0.6.0 is now canonical. Earlier branch separation below is historical. See PROGRESS.md and evidence/stable_0_6_release.json for the current tested baseline. The new approved roadmap covers prompt-fidelity checks, consistent modular/material kits, one real Unity combat/animation/VFX scene, elemental recipes and a small assembled map, in verified increments. Existing experimental World Plan functionality is preserved. Unreal remains deferred.
+
+---
+
 # Universal Expansion V2 Reviewed — implementation ledger
 
 Work branch: `feature/universal-expansion-v2-reviewed`, based on `d1b1e49`. User explicitly forbids merging into main for now. The complete source specification is [V2 Reviewed](../doc/Asset_Forge_Studio_Universal_Expansion_Master_Prompt_V2_Reviewed.md); it supersedes the prior Universal prompt and earlier prohibitions on future modules. No production game repository is modified.

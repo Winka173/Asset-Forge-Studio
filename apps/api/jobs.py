@@ -347,10 +347,13 @@ class Worker:
                         'framing': report['framing'], 'unity': 'NOT_TESTED', 'quality': 'NEEDS_REVIEW', 'glb_inspections': inspections}
             (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
             if get(identifier)['status'] == 'CANCELLED': return
-            store.add_artifact(folder / 'output/LOD0.glb', 'candidate', artifact['name'] + ' / processed LOD0',
+            processed=store.add_artifact(folder / 'output/LOD0.glb', 'candidate', artifact['name'] + ' / processed LOD0',
                                inspections['LOD0.glb'] | {'parent_id': artifact['id'], 'parent_sha256': artifact['sha256'],
                                 'project_id': payload.get('project_id') or artifact.get('project_id'), 'asset_id': payload.get('asset_id') or artifact.get('asset_id'),
                                 'job_id': identifier, 'stage': 'blender_processed', 'license': artifact['metadata'].get('license', 'NEEDS_REVIEW')})
+            if processed.get('asset_id'):
+                from .fidelity import evaluate
+                evaluate(processed['asset_id'],processed['id'],inspections['LOD0.glb'])
             transition(identifier, 'REVIEW_REQUIRED')
         except Exception as exc:
             if process and process.poll() is None: kill_tree(process)
