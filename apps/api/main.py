@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -28,7 +29,16 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.3.4", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.3.5", lifespan=lifespan)
+@app.exception_handler(RequestValidationError)
+async def readable_validation_error(request: Request, exc: RequestValidationError):
+    # Validation input can contain multi-megabyte prompts. Return field messages only.
+    return JSONResponse(status_code=422,content={'detail':[
+        {key:error[key] for key in ('loc','msg','type') if key in error}
+        for error in exc.errors()
+    ]})
+
+
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
 local_port = os.environ.get('AFS_PORT', '8765')
@@ -299,6 +309,8 @@ from .studio import router as studio_router
 app.include_router(studio_router)
 from .batch import router as batch_router
 app.include_router(batch_router)
+from .batch_semantics import router as batch_semantics_router
+app.include_router(batch_semantics_router)
 from .universal import router as universal_router
 app.include_router(universal_router)
 

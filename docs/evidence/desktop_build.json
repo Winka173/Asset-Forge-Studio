@@ -1,24 +1,26 @@
 ﻿{
-    "version":  "0.3.4",
-    "timestamp_utc":  "20261021T125753Z",
-    "git_commit":  "537d375211c554a2a046a5767dcc2c8390f4ba0c",
+    "version":  "0.3.5",
+    "timestamp_utc":  "20261021T133138Z",
+    "git_commit":  "d34bc8d2f42366a0b85b30088e69b25918eef5c9",
     "git_branch":  "release/pc-stable",
     "git_dirty":  true,
     "changed_files":  [
+                          " M apps/api/batch.py",
+                          " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/web/src/select.tsx",
+                          " M apps/api/manifest.py",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/batch.css",
                           " M desktop/smoke.mjs",
-                          " M docs/evidence/desktop_build.json",
-                          " M docs/evidence/desktop_smoke.json",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? docs/evidence/ui_native_select_before.png",
-                          "?? docs/evidence/ui_native_select_diagnosis.json",
-                          "?? docs/evidence/ui_select_position.json",
-                          "?? docs/evidence/ui_select_position.png"
+                          "?? apps/api/batch_semantics.py",
+                          "?? desktop/verify-batch-import.mjs",
+                          "?? engines/local_semantics.py",
+                          "?? tests/test_runavelle_import.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -27,7 +29,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-build\\candidates\\20261021T125753Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-build\\candidates\\20261021T133138Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -38,12 +40,12 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "c5f234b417a06575be8daae741cb45836ddb8eeadc46a0beaff935116bc190f7",
-                            "afs-backend.exe":  "0f3ff1d9eb3384d3b868274edd18fe8c71249ba33d800214dfabf6cef42cf8ed",
-                            "Asset Forge Studio_0.3.4_x64-setup.exe":  "1a1f92033387f326b9f0c3dacbd8205b7093c9e4cc34d65a1c81b4224c9bf151"
+                            "Asset Forge Studio_0.3.5_x64-setup.exe":  "c14f2cdeaff9261b655d23c5f3027e4c085c4bbc40423b18b40f9e7e964b8fdc",
+                            "Asset Forge Studio.exe":  "d418874d639c02bc0597a9262c2be35b4b3d00130a93d94efaa289fbafc0618e",
+                            "afs-backend.exe":  "fb125350f67dd3c3d6f7b3b39da0c847b69ca592abd5f0a3746ae74e07ae67b6"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-smoke\\2026-10-21T13-00-02-264Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-smoke\\2026-10-21T13-34-00-543Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.3.4_x64-setup.exe"
+    "installer":  "Asset Forge Studio_0.3.5_x64-setup.exe"
 }

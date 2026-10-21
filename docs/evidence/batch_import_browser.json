@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Imported entire 2,630,112-character source unchanged",
+    "Import diagnostics and actual original-source download preserveSHA256",
+    "Actual API produces349 items,312selected,37Future excluded;50visible perpage",
+    "Pagination and search expose all37Future assets",
+    "Edit preserves complete individualprompt",
+    "Atomic deselect/select all preserves37Future opt-in rule",
+    "Generate visible but blocked pending spec review; zeroGPUjobs",
+    "Real unavailable Ollama clearly explained; no model picker or executable analysis button",
+    "Real422validation renders concise message without raw source or ctx",
+    "Storage quota failure shows warning without crashing or losing imported source"
+  ],
+  "errors": [],
+  "batch_id": "c9abffda51b2437e9218fb12766748e9",
+  "count": 349,
+  "selected": 312,
+  "future": 37,
+  "no_jobs_enqueued": true
+}
