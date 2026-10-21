@@ -1,3 +1,4 @@
+import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
@@ -107,6 +108,7 @@ type Draft = {
   engine: string;
   quality: "Fast" | "Balanced" | "Maximum";
   seeds: string;
+  inspirationGame?:string;
   steps: number;
   profile: string;
   textureSize: number;
@@ -225,6 +227,8 @@ function route(): Page {
   return pages.find((p) => p.toLowerCase() === (value||localStorage.getItem("afs.lastPage")||"Home").toLowerCase()) || "Home";
 }
 
+function normalizeDraft(value:Draft):Draft {const seeds:unknown=value.seeds;return {...value,seeds:Array.isArray(seeds)?seeds.join(','):typeof seeds==='string'&&seeds.trim()?seeds:'42'};}
+
 export function Studio() {
   const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'>('single');
   const [createStep,setCreateStep]=useState(0);
@@ -243,8 +247,8 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
-  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');if(saved&&['single','batch','world','fx'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
-  useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep}));},[projectId,loadedProject,creationMode,createStep]);
+  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
+  useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
   const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
@@ -398,10 +402,10 @@ export function Studio() {
         projectId: id,
         serialized: JSON.stringify(savedOnServer),
       };
-      setDraft(restored);
+      setDraft(normalizeDraft(restored));
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
-      if(routeAsset?.asset_type==='map_environment')setCreationMode('world');else if(routeAsset?.asset_type==='vfx')setCreationMode('fx');
+      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':'single');setCreateStep(['map_environment','vfx'].includes(routeAsset.asset_type||'')?1:2);}
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -581,12 +585,14 @@ export function Studio() {
     return created;
   }
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
+  function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   async function generate() {
+    if(candidate&&selectedAsset){refineSelected();return;}
     await run(async () => {
       if(workflow.mode!=='expert'){
         if(!workflowReady)throw new Error('Wait for project workflow settings to load.');
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
-        if(!draft.seeds.trim()||seeds.length>4||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–4 distinct integer seeds between 0 and 4294967295.');
+        if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
         const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,workflow};
         const fingerprint=JSON.stringify(body);
@@ -612,11 +618,11 @@ export function Studio() {
       const seeds = draft.seeds.split(",").map((s) => Number(s.trim()));
       if (
         !draft.seeds.trim() ||
-        seeds.length > 4 ||
+        seeds.length > 5 ||
         new Set(seeds).size !== seeds.length ||
         seeds.some((s) => !Number.isInteger(s) || s < 0 || s > 4294967295)
       )
-        throw new Error("Dùng 1–4 seed nguyên khác nhau từ 0 đến 4294967295.");
+        throw new Error("Dùng 1–5 seed nguyên khác nhau từ 0 đến 4294967295.");
       const asset = await ensureAsset();
       const body = {
         asset_id: asset.id,
@@ -706,7 +712,7 @@ export function Studio() {
     setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
-    setDraft({
+    setDraft(normalizeDraft({
       ...initialDraft,
       ...asset.settings,
       assetId: asset.id,
@@ -714,7 +720,7 @@ export function Studio() {
       prompt: asset.prompt || "",
       source: asset.reference_ids[0] || "",
       mode: asset.reference_ids.length ? "Text + Image" : initialDraft.mode,
-    });
+    }));
     setPreviewTab("Model");
     location.hash = `create/${asset.id}`;
     setPage("Create");
@@ -1002,14 +1008,7 @@ export function Studio() {
           {projectId && page==='Create' && createStep>0 && creationMode==='fx' && <FxStudio key={`${projectId}:${selectedAsset?.asset_type==='vfx'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='vfx'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
-          {error && (
-            <div role="alert" className="studio-message error">
-              {error}
-              <button aria-label="Đóng lỗi" onClick={() => setError("")}>
-                <Icon name="Close" size={16} />
-              </button>
-            </div>
-          )}
+          {error&&<ErrorNotice message={error} onRefresh={()=>reload().catch(e=>setError(String(e)))} onEdit={page==='Create'&&creationMode==='single'?()=>setCreateStep(1):undefined} onDismiss={()=>setError('')}/>}
           {notice && (
             <div role="status" className="studio-message">
               {notice}
@@ -1263,11 +1262,44 @@ export function Studio() {
                       </label>
                     </>
                   )}
+                  <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
                   </div>}
                   {createStep===2&&<div className="create-settings-step">
                   <div className="create-input-recap"><div><strong>{draft.name.trim()||'New asset'}</strong><p>{draft.mode==='Image'?(source?.name||'Reference image'):draft.prompt}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
-                  <div
+                  <label className="studio-field result-count-field">Results to choose from<Select aria-label="Result count" value={draft.seeds.split(',').filter(s=>s.trim()).length} onChange={e=>{const count=Number(e.target.value);const value=Number(draft.seeds.split(',')[0]);const first=Number.isInteger(value)&&value>=0&&value<=4294967295?value:42;change({seeds:Array.from({length:count},(_,i)=>String((first+i)%4294967296)).join(',')});}}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select><small>One by default. Extra seeds share the GPU queue; source candidates stay in History.</small></label>
+                  <div className="generate-actions">
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
+                    <button
+                      className="primary generate-button"
+                      disabled={
+                        busy ||
+                        (!(candidate&&selectedAsset)&&(!workflowReady ||
+                        (workflow.mode==='expert' && sourceNeedsApproval) ||
+                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
+                        loadedProject !== projectId))
+                      }
+                      onClick={generate}
+                    >
+                      <Icon name="Cube" size={18} />
+                      {candidate&&selectedAsset?"Refine this result":busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
+                      <Icon name="Arrow" size={17} />
+                    </button>
+                    <button
+                      className="quiet-button"
+                      disabled={busy || !draft.name.trim()}
+                      onClick={() =>
+                        run(async () => {
+                          await ensureAsset();
+                          await reload();
+                          setNotice("Asset draft đã lưu vào Library.");
+                        })
+                      }
+                    >
+                      Save draft to library
+                    </button>
+                  </div>
+                  <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary>                  <div
                     className="studio-field"
                     role="group"
                     aria-label="Quality"
@@ -1343,37 +1375,7 @@ export function Studio() {
                       Chỉ engine đã tạo output thật mới xuất hiện ở đây.
                     </small>
                   </label>
-                  <div className="generate-actions">
-                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
-                    <button
-                      className="primary generate-button"
-                      disabled={
-                        busy ||
-                        !workflowReady ||
-                        (workflow.mode==='expert' && sourceNeedsApproval) ||
-                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
-                        loadedProject !== projectId
-                      }
-                      onClick={generate}
-                    >
-                      <Icon name="Cube" size={18} />
-                      {busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
-                      <Icon name="Arrow" size={17} />
-                    </button>
-                    <button
-                      className="quiet-button"
-                      disabled={busy || !draft.name.trim()}
-                      onClick={() =>
-                        run(async () => {
-                          await ensureAsset();
-                          await reload();
-                          setNotice("Asset draft đã lưu vào Library.");
-                        })
-                      }
-                    >
-                      Save draft to library
-                    </button>
-                  </div>
+</details>
                   <details className="advanced"><summary>Output requirements & compatibility</summary><OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/></details>
                   <details className="advanced">
                     <summary>
@@ -1383,7 +1385,7 @@ export function Studio() {
                   {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
 
                     <label className="studio-field">
-                      Seeds · up to 4
+                      Seeds · up to 5
                       <input
                         value={draft.seeds}
                         onChange={(e) => change({ seeds: e.target.value })}

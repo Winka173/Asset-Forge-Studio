@@ -1,14 +1,15 @@
+import {selectHelp} from "./select-help";
 import { Children, isValidElement, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type SelectHTMLAttributes } from "react";
 import { createPortal } from "react-dom";
 
-type Choice = { value: string; label: ReactNode; text: string; disabled: boolean; group?: string };
+type Choice = { value: string; label: ReactNode; text: string; disabled: boolean; group?: string;description?:string };
 function textOf(node: ReactNode): string {
   return Children.toArray(node).map(child => isValidElement<{ children?: ReactNode }>(child) ? textOf(child.props.children) : String(child)).join("");
 }
 function choicesOf(children: ReactNode, group?: string, disabled = false): Choice[] {
   return Children.toArray(children).flatMap(child => {
-    if (!isValidElement<{ children?: ReactNode; value?: string | number; disabled?: boolean; label?: string }>(child)) return [];
-    if (child.type === "option") return [{ value: String(child.props.value ?? textOf(child.props.children)), label: child.props.children, text: textOf(child.props.children), disabled: disabled || !!child.props.disabled, group }];
+    if (!isValidElement<{ children?: ReactNode; value?: string | number; disabled?: boolean; label?: string; "data-description"?:string }>(child)) return [];
+    if (child.type === "option") return [{ value: String(child.props.value ?? textOf(child.props.children)), label: child.props.children, text: textOf(child.props.children), disabled: disabled || !!child.props.disabled, group,description:child.props["data-description"] }];
     return choicesOf(child.props.children, child.type === "optgroup" ? child.props.label : group, disabled || !!child.props.disabled);
   });
 }
@@ -20,6 +21,8 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
   const trigger = useRef<HTMLButtonElement>(null);
   const native = useRef<HTMLSelectElement>(null);
   const menu = useRef<HTMLDivElement>(null);
+  const [helpOpen,setHelpOpen]=useState(false);
+  const [query,setQuery]=useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [uncontrolled, setUncontrolled] = useState(String(props.defaultValue ?? ""));
@@ -30,9 +33,11 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
   const choicesSignature = JSON.stringify(choices.map(choice => [choice.value, choice.text, choice.disabled, choice.group]));
   const value = props.value === undefined ? uncontrolled : String(props.value);
   const selected = choices.find(c => c.value === value) ?? choices[0];
-  const enabled = choices.map((c, i) => c.disabled ? -1 : i).filter(i => i >= 0);
+  const visible=choices.map((choice,index)=>({choice,index})).filter(({choice})=>!query||choice.text.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+  const enabled = visible.map(({choice:c,index:i}) => c.disabled ? -1 : i).filter(i => i >= 0);
   const show = () => {
-    if (props.disabled || !enabled.length) return;
+    if (props.disabled || !choices.some(c=>!c.disabled)) return;
+    setHelpOpen(false);setQuery('');
     setActive(Math.max(0, choices.findIndex(c => c.value === selected?.value)));
     setOpen(true);
   };
@@ -116,7 +121,9 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
     setInferredLabel(text || undefined);
   }, [children]);
   const label = props["aria-label"] || inferredLabel;
-  return <span className={`afs-select ${className}${open ? " is-open" : ""}${props.disabled ? " is-disabled" : ""}`}>
+  const explanation=selectHelp(label||'',value,selected?.text||'');
+  useEffect(()=>{if(!helpOpen)return;const dismiss=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setHelpOpen(false);}};document.addEventListener('keydown',dismiss,true);return()=>document.removeEventListener('keydown',dismiss,true);},[helpOpen]);
+  return <span className={`afs-select has-help ${className}${open ? " is-open" : ""}${props.disabled ? " is-disabled" : ""}`}>
     <select {...props} className="afs-select-native" ref={native} tabIndex={-1} aria-hidden="true" onFocus={() => trigger.current?.focus()} onChange={event => { setUncontrolled(event.target.value); props.onChange?.(event); }}>{children}</select>
     <button ref={trigger} type="button" id={props.id ? `${props.id}-trigger` : undefined} role="combobox" aria-label={label} aria-labelledby={props["aria-labelledby"]} aria-expanded={open} aria-controls={open ? listId : undefined} aria-haspopup="listbox" aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined} aria-describedby={props["aria-describedby"]} aria-invalid={props["aria-invalid"]} aria-required={props.required} disabled={props.disabled} title={props.title} className="afs-select-trigger" onClick={() => open ? setOpen(false) : show()} onKeyDown={event => {
       if (["ArrowDown", "ArrowUp", "Home", "End", "Enter", " ", "Escape"].includes(event.key)) {
@@ -134,12 +141,15 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
         const found = choices.findIndex(c => !c.disabled && c.text.toLocaleLowerCase().startsWith(search.current.value));
         if (found >= 0) { if (!open) show(); setActive(found); }
       }
-    }}><span className="afs-select-value">{selected?.label || "Select an option"}</span><svg aria-hidden="true" width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="m5 8 5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
-    {open && createPortal(<div ref={menu} id={listId} role="listbox" aria-label={label} className="afs-select-menu" style={position}>
-      {choices.map((choice, i) => <div key={`${choice.value}-${i}`}>
+    }}><span className="afs-select-value">{selected?.label || "Select an option"}</span><svg aria-hidden="true" width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="m5 8 5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></button><button type="button" className="afs-select-help-button" aria-label={`Explain ${label||'options'}`} aria-expanded={helpOpen} aria-controls={helpOpen?generatedId+'-help':undefined} onClick={event=>{event.preventDefault();setHelpOpen(v=>!v);}} title="What does this setting do?">i</button>
+    {helpOpen&&<span id={generatedId+'-help'} role="note" className="afs-select-help"><strong>{label||'Choose an option'}</strong><span>{explanation.purpose}</span>{(selected?.description||explanation.option)&&<span><b>{selected?.text}: </b>{selected?.description||explanation.option}</span>}<small>Arrow keys to browse; Enter to select; Esc to close.</small></span>}
+    {open && createPortal(<div ref={menu} className="afs-select-menu" style={position}>
+      {choices.length>=10&&<input className="afs-select-search" aria-label={`Search ${label||'options'}`} placeholder="Type to filter..." value={query} onChange={e=>{setQuery(e.target.value);setActive(choices.findIndex(c=>!c.disabled&&c.text.toLocaleLowerCase().includes(e.target.value.toLocaleLowerCase())));}} onKeyDown={e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();setOpen(false);trigger.current?.focus();}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();trigger.current?.focus();}else if(e.key==='Enter'){e.preventDefault();choose(active);}}}/>}
+      <div id={listId} role="listbox" aria-label={label}>{!visible.length&&<p className="afs-select-empty" role="status">No matching options</p>}
+      {visible.map(({choice,index:i}) => <div key={`${choice.value}-${i}`}>
         {choice.group && choice.group !== choices[i - 1]?.group && <div className="afs-select-group">{choice.group}</div>}
-        <div id={`${listId}-${i}`} role="option" aria-selected={choice.value === selected?.value} aria-disabled={choice.disabled || undefined} data-index={i} className={`afs-select-option${active === i ? " is-active" : ""}`} onMouseMove={() => !choice.disabled && setActive(i)} onPointerDown={event => event.preventDefault()} onClick={() => choose(i)}><span>{choice.label}</span>{choice.value === selected?.value && <span className="afs-select-check" aria-hidden="true">✓</span>}</div>
-      </div>)}
+        <div id={`${listId}-${i}`} role="option" aria-selected={choice.value === selected?.value} aria-disabled={choice.disabled || undefined} data-index={i} className={`afs-select-option${active === i ? " is-active" : ""}`} onMouseMove={() => !choice.disabled && setActive(i)} onPointerDown={event => event.preventDefault()} onClick={() => choose(i)}><span>{choice.label}{(choice.description||selectHelp(label||'',choice.value,choice.text).option)&&<small className="afs-select-option-description">{choice.description||selectHelp(label||'',choice.value,choice.text).option}</small>}</span>{choice.value === selected?.value && <span className="afs-select-check" aria-hidden="true">✓</span>}</div>
+      </div>)}</div>
     </div>, document.fullscreenElement || document.body)}
   </span>;
 }

@@ -1,6 +1,6 @@
 {
   "status": "PASS_NATIVE_CLEAN_PROFILE_CREATE_WIZARD_AND_349_REIMPORT",
-  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workspace-native\\2026-10-21T18-39-09-297Z",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workspace-native\\2026-10-21T19-07-38-449Z",
   "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
   "checks": [
     {
@@ -12,10 +12,18 @@
       "name": "actual_349_source_reimport_retains_ids_full_prompts_312_primary_37_future_and_no_duplicate_assets",
       "passed": true,
       "source_sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
-      "batch_id": "59786c9f7d064b30bc465108b7d81c87"
+      "batch_id": "a7151a49287a482c9aebb82eb92d49e7"
     },
     {
       "name": "native_responsive_spacing_five_workspaces_generate_above_fold_at_1280x800_and_1536x1000",
+      "passed": true
+    },
+    {
+      "name": "real_archer_model_inspector_preview_refine_history_tabs_preserve_viewer_and_do_not_generate",
+      "passed": true
+    },
+    {
+      "name": "legacy_array_seeds_and_deep_link_ignore_other_asset_workflow_cache_refine_existing_without_regeneration",
       "passed": true
     },
     {
