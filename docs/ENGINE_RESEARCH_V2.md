@@ -17,6 +17,14 @@ The current TRELLIS v1 core cache is ~3.3 GB and may be read without modifying t
 
 PyPI publishes Windows CPython 3.11 wheels for `spconv-cu126==2.3.8` (68,809,127 bytes) and `cumm-cu126==0.8.2` (2,174,435 bytes). Wheel availability does not prove sm_120 kernel support. Test a real sparse convolution, compare a tiny result against dense Torch convolution, then try model inference. If it fails, preserve error logs and investigate native/NVRTC/CPU alternatives rather than recording a successful engine run.
 
+### Hi3DGen normal-estimator fallback found in official history
+
+The official ByteDance `app.py` at revision `68f06b745379` explicitly loads `hugoycj/StableNormal`, entrypoint `StableNormal_turbo`, `yoso_version='yoso-normal-v1-8-1'`. This is a documented earlier configuration, rather than an invented normal-estimator substitution. StableNormal code and the referenced model card both declare Apache-2.0. Its model index includes ControlNetVAE, UNet and VAE; the inspected YOSO implementation creates its empty conditioning tensor itself. No additional Stable Diffusion base download has been established as necessary for this configuration.
+
+Proposed trial: pin this original normal route, use the existing real RGBA mask, save the predicted normal image, unload the normal model before geometry generation, then run the normal-conditioned Hi3DGen model. Explicit download authorization has been requested for approximately 5.3 GB total geometry+normal weights plus isolated dependencies. Nothing in this audit is a successful Hi3DGen inference claim. Actual package/runtime compatibility, geometry quality and commercial clearance of the input-mask lineage remain unverified.
+
+Sources: [official earlier app](https://github.com/bytedance/Hi3DGen/blob/68f06b745379/app.py), [StableNormal code](https://github.com/hugoycj/StableNormal), [normal model card](https://huggingface.co/Stable-X/yoso-normal-v1-8-1).
+
 ## Required evidence for every trial
 
 - Pinned code/model/config, isolated Python environment and dependency lock; exact input/mask hashes and license lineage.
