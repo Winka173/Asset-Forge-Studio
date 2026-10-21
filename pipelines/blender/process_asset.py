@@ -67,6 +67,13 @@ def export_glb(path, objects):
                               export_animations=False, export_yup=True)
 
 
+def export_fbx(path, objects):
+    select(objects)
+    bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True, object_types={'MESH'},
+        apply_unit_scale=True, apply_scale_options='FBX_SCALE_UNITS', axis_forward='-Z', axis_up='Y',
+        path_mode='COPY', embed_textures=True, bake_anim=False, add_leaf_bones=False)
+
+
 def material_inventory(objects, folder):
     materials = {m for o in objects for m in o.data.materials if m}
     result = []
@@ -227,6 +234,7 @@ def run(request):
     bpy.ops.file.pack_all()
     bpy.ops.wm.save_as_mainfile(filepath=str(output / 'master.blend'))
     export_glb(output / 'LOD0.glb', objects)
+    if request.get('export_fbx', True): export_fbx(output / 'LOD0.fbx', objects)
     lod_stats = []
     for index, ratio in enumerate(request.get('lod_ratios', [0.65, 0.35, 0.15]), 1):
         if not 0 < ratio < 1: raise ValueError('LOD ratio must be between zero and one')
@@ -240,6 +248,7 @@ def run(request):
             modifier.ratio = min(1.0, max(ratio, 8 / max(triangles, 1)))
             select([clone]); bpy.ops.object.modifier_apply(modifier=modifier.name)
         export_glb(output / f'LOD{index}.glb', duplicates)
+        if request.get('export_fbx', True): export_fbx(output / f'LOD{index}.fbx', duplicates)
         lod_stats.append({'level': index, 'ratio': ratio, 'meshes': mesh_stats(duplicates), 'quality': 'NEEDS_REVIEW', 'baking': 'NOT_TESTED'})
         for clone in duplicates: bpy.data.objects.remove(clone, do_unlink=True)
     bpy.ops.mesh.primitive_cube_add(size=1, location=Vector(low).lerp(Vector(high), 0.5))
@@ -263,6 +272,15 @@ def run(request):
         if not imported: raise ValueError(f'Export cannot reopen: {path.name}')
         reopen.append({'file': path.name, 'meshes': mesh_stats(imported)})
     report['reopened'] = reopen; report['checks']['export_reopen'] = 'PASS'
+    reopened_fbx = []
+    for path in sorted(output.glob('*.fbx')):
+        bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.fbx(filepath=str(path))
+        imported = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+        if not imported: raise ValueError(f'FBX export cannot reopen: {path.name}')
+        reopened_fbx.append({'file': path.name, 'meshes': mesh_stats(imported), 'bounds_blender_m': bounds(imported)})
+    report['reopened_fbx'] = reopened_fbx
+    report['checks']['fbx_reopen'] = 'PASS' if reopened_fbx else 'NOT_TESTED'
+    report['checks']['fbx_pbr_unity_mapping'] = 'NOT_TESTED'
     report['artifacts'] = [{'path': p.relative_to(output).as_posix(), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in output.rglob('*') if p.is_file()]
     write(output / 'report.json', report)
     print('AFS_PIPELINE_SUCCESS ' + str(output / 'report.json'), flush=True)

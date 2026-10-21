@@ -1,10 +1,10 @@
 {
   "fixture": "trimesh box, NOT AI generation, NOT Archer Tower, NOT Meshy",
-  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\qa\\2a24e51a29e64e71af0f5e59b86dc552",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\qa\\7bf978e8c37941fc93b8c7a65b3c8f6d",
   "report": {
     "status": "NEEDS_REVIEW",
     "input_sha256": "4e5cf5269258e8d153e71d0219e33651f6247309f7bcf56db8c6561d885867c8",
-    "script_sha256": "87063f282ecd942aef5bf7387f7f0150ec7ec6192edf49f8da8e82f2bc09f941",
+    "script_sha256": "483a7f4465f9cb7874e3957b668af477e8d18b86861235225591b092d7a73d9d",
     "blender_version": "4.5.14 LTS",
     "dimensions_xyz_m_blender": [
       2.0,
@@ -26,7 +26,13 @@
         "boundary_edges": 0,
         "loose_vertices": 0,
         "uv_layers": 0,
-        "materials": []
+        "materials": [],
+        "position_weld_analysis": {
+          "epsilon_local_m": 1e-06,
+          "boundary_edges": 0,
+          "non_manifold_edges": 0,
+          "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+        }
       }
     ],
     "after": [
@@ -38,7 +44,13 @@
         "boundary_edges": 0,
         "loose_vertices": 0,
         "uv_layers": 0,
-        "materials": []
+        "materials": [],
+        "position_weld_analysis": {
+          "epsilon_local_m": 1e-06,
+          "boundary_edges": 0,
+          "non_manifold_edges": 0,
+          "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+        }
       }
     ],
     "materials": [],
@@ -55,7 +67,13 @@
             "boundary_edges": 0,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ],
         "quality": "NEEDS_REVIEW",
@@ -73,7 +91,13 @@
             "boundary_edges": 0,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ],
         "quality": "NEEDS_REVIEW",
@@ -91,7 +115,13 @@
             "boundary_edges": 0,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ],
         "quality": "NEEDS_REVIEW",
@@ -102,7 +132,7 @@
       {
         "resolution": "mobile",
         "view": "three_quarter",
-        "status": "FAIL"
+        "status": "PASS"
       }
     ],
     "rendered": [
@@ -119,7 +149,9 @@
       "unity": "NOT_TESTED",
       "human_review": "NOT_TESTED",
       "pbr_reconstruction": "NOT_TESTED",
-      "modular_connectors": "NOT_TESTED"
+      "modular_connectors": "NOT_TESTED",
+      "fbx_reopen": "PASS",
+      "fbx_pbr_unity_mapping": "NOT_TESTED"
     },
     "reopened": [
       {
@@ -133,7 +165,13 @@
             "boundary_edges": 24,
             "loose_vertices": 0,
             "uv_layers": 1,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ]
       },
@@ -148,7 +186,13 @@
             "boundary_edges": 24,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ]
       },
@@ -163,7 +207,13 @@
             "boundary_edges": 22,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ]
       },
@@ -178,7 +228,13 @@
             "boundary_edges": 22,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
         ]
       },
@@ -193,8 +249,148 @@
             "boundary_edges": 22,
             "loose_vertices": 0,
             "uv_layers": 0,
-            "materials": []
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
           }
+        ]
+      }
+    ],
+    "reopened_fbx": [
+      {
+        "file": "LOD0.fbx",
+        "meshes": [
+          {
+            "name": "geometry_0",
+            "triangles": 12,
+            "vertices": 8,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "bounds_blender_m": [
+          [
+            -1.0,
+            -1.5000008344650269,
+            -2.443810274144198e-07
+          ],
+          [
+            1.0,
+            1.5000008344650269,
+            10.0
+          ]
+        ]
+      },
+      {
+        "file": "LOD1.fbx",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD1",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "bounds_blender_m": [
+          [
+            -1.0,
+            -1.5000008344650269,
+            -2.443810274144198e-07
+          ],
+          [
+            1.0,
+            1.5000008344650269,
+            10.0
+          ]
+        ]
+      },
+      {
+        "file": "LOD2.fbx",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD2",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "bounds_blender_m": [
+          [
+            -1.0,
+            -1.5000008344650269,
+            -2.443810274144198e-07
+          ],
+          [
+            1.0,
+            1.5000008344650269,
+            10.0
+          ]
+        ]
+      },
+      {
+        "file": "LOD3.fbx",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD3",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": [],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1e-06,
+              "boundary_edges": 0,
+              "non_manifold_edges": 0,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "bounds_blender_m": [
+          [
+            -1.0,
+            -1.5000008344650269,
+            -2.443810274144198e-07
+          ],
+          [
+            1.0,
+            1.5000008344650269,
+            10.0
+          ]
         ]
       }
     ],
@@ -202,7 +398,7 @@
       {
         "path": "benchmark.json",
         "bytes": 1406,
-        "sha256": "101265719f2f7096f75deb7a819066f5acf01284f33ad8f9dd7663c4213ec91f"
+        "sha256": "9ac45f107fa0dedd482c26992d309720466c1c7589e30ebaa299a152b1b5f1da"
       },
       {
         "path": "collider.glb",
@@ -210,9 +406,19 @@
         "sha256": "b3f3ec22638440d32985e4230908b6219e1a2637dbe41bb807a4e91c687620b3"
       },
       {
+        "path": "LOD0.fbx",
+        "bytes": 11388,
+        "sha256": "430895ede87cf44a3aa7878c87b2c79bf43aa000ef1d995612e652c4acfd85b7"
+      },
+      {
         "path": "LOD0.glb",
         "bytes": 1436,
         "sha256": "a7488410e8f9c7d4fafc2aa1b428ca2cf1983ac97a5c9c6a192a3283b1ea69e2"
+      },
+      {
+        "path": "LOD1.fbx",
+        "bytes": 11500,
+        "sha256": "e9f581dcfd7a1db49ad75c7e3b5e030909ffe0e14deda781e08884a0ca65f24e"
       },
       {
         "path": "LOD1.glb",
@@ -220,9 +426,19 @@
         "sha256": "27ee48b4932c32ec72e4fdf7db8d9fd6976e89613b9763f35fab17689e098300"
       },
       {
+        "path": "LOD2.fbx",
+        "bytes": 11500,
+        "sha256": "32e4a27a999c1bcf391073b19cf2f1eb1e40c587d64ea6b99788e6ba76ab07f2"
+      },
+      {
         "path": "LOD2.glb",
         "bytes": 1372,
         "sha256": "4b25d2de6b109c0e1353cc9b1605c1ab45d02f05417b825140eda3b332f854f5"
+      },
+      {
+        "path": "LOD3.fbx",
+        "bytes": 11500,
+        "sha256": "b52a2fd0b1d3775afa6c61e2e91239e414f4c67e6b1741619e91555eeba8ffef"
       },
       {
         "path": "LOD3.glb",
@@ -232,32 +448,32 @@
       {
         "path": "master.blend",
         "bytes": 378992,
-        "sha256": "c2d3ca1557f0f0c4effe9b81c6ffc4f2cb3c68a6307690e7833adf72f8ad6735"
+        "sha256": "51701a65672e98e82dcadbc822b4701c9afabe8f271d108cd8ed2a29ced7942a"
       },
       {
         "path": "mobile_three_quarter.png",
-        "bytes": 1595349,
-        "sha256": "a494d7cc811c79af5ab5c4516cef141892ade5cf3a89a58770c285573753fe19"
+        "bytes": 947969,
+        "sha256": "94f4d94967c50c8d721b39cad34de5bda8f5f5ca2fad547dd22f8177c83741b3"
       },
       {
         "path": "mobile_three_quarter_asset.png",
-        "bytes": 1029778,
-        "sha256": "c0025f49647d908f7093356ac5f8b4205069c23b77b48d37773bf77652f4f9f2"
+        "bytes": 523299,
+        "sha256": "5fe1696ebffd9174ca79dacea1cb5676ca33b89768a3cb287efce5fada90a8fb"
       },
       {
         "path": "mobile_three_quarter_passes.exr",
-        "bytes": 6582640,
-        "sha256": "c6e0626cea6e73c7d1ce3aa3879f8e0297f89da838d1bfddaa1f40b918c625e4"
+        "bytes": 2959068,
+        "sha256": "7ad049fdcdff10011e758a4f0c67fd6c47f1581af6ca7d0d5058eec17d1a6abb"
       },
       {
         "path": "raw.blend",
         "bytes": 378830,
-        "sha256": "d591a6e3ed62cdb6443f0e116786d7c7afa3733162c9d05f81304a9aa90dcfc0"
+        "sha256": "8494bb61039026a8352574bc08714d3f46b3016edab16d2dfde928d5352243e5"
       },
       {
         "path": "request.json",
         "bytes": 563,
-        "sha256": "fe48db2eb792cefee65622d815165d1ad6ff7267a87f2025005a0817e700b2b1"
+        "sha256": "5b565b0821d4c63312e171ffe9cafd254128549028ebca110f74b95f058d6235"
       }
     ]
   },
