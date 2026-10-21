@@ -12,7 +12,7 @@ use windows_sys::Win32::{Foundation::{CloseHandle,HANDLE}, System::JobObjects::{
 
 const HIDDEN: u32 = 0x08000000;
 #[derive(Clone, Serialize, Deserialize)]
-struct Config {workspace: String, library: String, blender: Option<String>, setup_complete: bool}
+struct Config {workspace: String, library: String, blender: Option<String>, setup_complete: bool, #[serde(default)] export_directories: Vec<String>}
 #[derive(Clone, Serialize)]
 struct Bootstrap {phase: String, message: String, api_base: Option<String>, api_token: Option<String>, backend_pid: Option<u32>, workspace: String, library: String, logs: String, setup_complete: bool, version: String}
 struct JobHandle(HANDLE);
@@ -29,7 +29,7 @@ fn load_config(root: &Path) -> Config {
     if let Ok(bytes)=fs::read(root.join("desktop-config.json")) {if let Ok(config)=serde_json::from_slice(&bytes) {return config;}}
     let original=PathBuf::from(env!("AFS_DEFAULT_WORKSPACE"));
     let workspace=if original.is_dir(){original}else{root.join("Workspace")};
-    Config{workspace:workspace.to_string_lossy().into(),library:root.join("Library").to_string_lossy().into(),blender:None,setup_complete:false}
+    Config{workspace:workspace.to_string_lossy().into(),library:root.join("Library").to_string_lossy().into(),blender:None,setup_complete:false,export_directories:Vec::new()}
 }
 fn snapshot(state:&Shared) -> Bootstrap {let value=state.lock().unwrap(); let ready=value.phase=="READY"; Bootstrap{phase:value.phase.clone(),message:value.message.clone(),api_base:if ready{Some(format!("http://127.0.0.1:{}",value.port))}else{None},api_token:if ready{Some(value.token.clone())}else{None},backend_pid:value.child.as_ref().map(Child::id),workspace:value.config.workspace.clone(),library:value.config.library.clone(),logs:value.root.join("logs").to_string_lossy().into(),setup_complete:value.config.setup_complete,version:env!("CARGO_PKG_VERSION").into()}}
 fn credentials(state:&Shared)->(String,String){let value=state.lock().unwrap();(format!("http://127.0.0.1:{}",value.port),value.token.clone())}
@@ -76,6 +76,17 @@ fn stop_backend(state:&Shared,cancel:bool)->Result<(),String>{
 #[tauri::command] async fn desktop_pick_blender(app:tauri::AppHandle,state:State<'_,Shared>)->Result<Option<String>,String>{let file=app.dialog().file().set_title("Choose blender.exe").add_filter("Blender executable",&["exe"]).blocking_pick_file();let Some(file)=file else{return Ok(None)};let path=file.into_path().map_err(|_|"Not a local file".to_string())?;if !path.file_name().map(|s|s.to_string_lossy().eq_ignore_ascii_case("blender.exe")).unwrap_or(false){return Err("Choose blender.exe".into());}stop_backend(&state,false)?;let text=path.to_string_lossy().to_string();{let mut value=state.lock().unwrap();value.config.blender=Some(text.clone());save_config(&value.root,&value.config)?;}start_backend(app,state.inner().clone());Ok(Some(text))}
 #[tauri::command] fn desktop_open_folder(state:State<Shared>,scope:String)->Result<(),String>{let value=state.lock().unwrap();let path=match scope.as_str(){"library"=>PathBuf::from(&value.config.library),"workspace"=>PathBuf::from(&value.config.workspace),"logs"=>value.root.join("logs"),_=>return Err("Unknown native folder scope".into())};if !path.is_dir(){return Err("Directory does not exist".into());}Command::new("explorer.exe").arg(path).creation_flags(HIDDEN).spawn().map_err(|e|e.to_string())?;Ok(())}
 #[tauri::command] fn desktop_notify(app:tauri::AppHandle,message:String)->Result<(),String>{if message.len()>300{return Err("Notification too long".into());}app.notification().builder().title("Asset Forge Studio").body(message).show().map_err(|e|e.to_string())}
+#[tauri::command] async fn desktop_pick_export_directory(app:tauri::AppHandle,state:State<'_,Shared>)->Result<Option<String>,String>{
+    let selected=app.dialog().file().set_title("Choose game asset delivery directory").blocking_pick_folder();let Some(selected)=selected else{return Ok(None)};
+    let path=selected.into_path().map_err(|_|"A local folder is required".to_string())?.canonicalize().map_err(|e|e.to_string())?;
+    let text=path.to_string_lossy().trim_start_matches(r"\\?\").to_string();let mut value=state.lock().unwrap();if !value.config.export_directories.contains(&text){value.config.export_directories.push(text.clone());save_config(&value.root,&value.config)?;}Ok(Some(text))
+}
+#[tauri::command] fn desktop_open_export_directory(state:State<Shared>,path:String)->Result<(),String>{
+    let target=PathBuf::from(path).canonicalize().map_err(|_|"Export directory does not exist".to_string())?;
+    let value=state.lock().unwrap();let roots=value.config.export_directories.iter().map(PathBuf::from).chain(std::iter::once(PathBuf::from(&value.config.library)));
+    if !target.is_dir() || !roots.filter_map(|p|p.canonicalize().ok()).any(|p|target.starts_with(p)){return Err("Choose this export root with the folder picker first".into());}
+    Command::new("explorer.exe").arg(target).creation_flags(HIDDEN).spawn().map_err(|e|e.to_string())?;Ok(())
+}
 #[tauri::command] async fn desktop_download(app:tauri::AppHandle,state:State<'_,Shared>,api_path:String)->Result<Option<String>,String>{
     if !api_path.starts_with("/api/")||api_path.contains("..")||api_path.contains("//")||api_path.contains("afs_token"){return Err("Only scoped API downloads are allowed".into());}
     let(base,token)=credentials(&state);let response=ureq::get(&(base+&api_path)).set("X-AFS-Token",&token).timeout(Duration::from_secs(300)).call().map_err(|_|"Local download failed".to_string())?;
@@ -100,7 +111,7 @@ fn main(){
         .plugin(tauri_plugin_single_instance::init(|app,_,_|{if let Some(window)=app.get_webview_window("main"){let _=window.show();let _=window.set_focus();}}))
         .plugin(tauri_plugin_dialog::init()).plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_window_state::Builder::default().with_state_flags(tauri_plugin_window_state::StateFlags::POSITION|tauri_plugin_window_state::StateFlags::SIZE|tauri_plugin_window_state::StateFlags::MAXIMIZED).build())
-        .manage(state.clone()).invoke_handler(tauri::generate_handler![desktop_bootstrap,desktop_retry_backend,desktop_finish_setup,desktop_pick_directory,desktop_pick_blender,desktop_open_folder,desktop_notify,desktop_download,desktop_request_close])
+        .manage(state.clone()).invoke_handler(tauri::generate_handler![desktop_bootstrap,desktop_retry_backend,desktop_finish_setup,desktop_pick_directory,desktop_pick_blender,desktop_open_folder,desktop_pick_export_directory,desktop_open_export_directory,desktop_notify,desktop_download,desktop_request_close])
         .setup(move|app|{start_backend(app.handle().clone(),state.clone());Ok(())})
         .on_window_event(move|window,event|{if let tauri::WindowEvent::CloseRequested{api,..}=event{if ALLOW_EXIT.load(Ordering::SeqCst){return;}api.prevent_close();if CLOSING.swap(true,Ordering::SeqCst){return;}let state=close_state.clone();let app=window.app_handle().clone();thread::spawn(move||{
             let active=health(&state).map(|value|active_count(&value));let cancel=match active {Ok(0)=>false,Ok(count)=>{let yes=app.dialog().message(format!("{} active/queued local jobs. Cancel them, checkpoint outputs and exit?",count)).title("Local jobs are still running").buttons(MessageDialogButtons::OkCancelCustom("Cancel jobs and exit".into(),"Keep studio running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true},Err(_)=>{let yes=app.dialog().message("Backend is not responding. Exit may interrupt local jobs. Keep the studio open unless you intend to cancel them.").title("Check local backend").buttons(MessageDialogButtons::OkCancelCustom("Cancel and exit".into(),"Keep running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true}};

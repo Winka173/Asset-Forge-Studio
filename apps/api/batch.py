@@ -32,6 +32,7 @@ def save(value):
 
 
 def missing(item):
+    if item.get('automation',{}).get('enabled'):return [] if item.get('prompt','').strip() else ['prompt']
     return [k for k in ['target_width_m','target_depth_m','target_height_m'] if item.get(k) is None]+([] if item.get('confirmed') else ['specification_confirmation'])+([] if item.get('prompt','').strip() else ['prompt'])
 
 
@@ -57,6 +58,9 @@ def detail(value):
             if state=='Approved' and any(e.get('files') for e in model['exports']):state='Exported'
         elif source:state='Concept Ready' if approved else 'Awaiting Approval'
         item['status']=state
+        auto=item.get('automation',{})
+        if auto.get('enabled'):
+            item['status']={'exported':'Exported','completed':'Technically Validated','blocked':'Blocked','failed':'Failed','paused':'Paused','running':'Generating','queued':'Pending'}.get(auto.get('status'),state)
         if item.get('last_error') and state not in ['Generating','Processing']:item['status']='Failed/Blocked'
         item['effective_config']=None
         item.pop('config_warning',None)
@@ -69,14 +73,21 @@ def detail(value):
                 item['config_warning']='Auto can use textured TRELLIS.2 with this image; TripoSG requires reviewed alpha. Multi-engine coverage is incomplete until an alpha reference is selected.'
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER
-    count=sum(i['candidates']*(2 if value['mode']=='Maximum Quality Batch' and i['preferred_engine']=='auto' else 1) for i in value['items'] if i['selected'])
+    from .automation import plan_engines
+    count=sum(i['candidates']*len(i.get('automation',{}).get('engines') or plan_engines(i,next((a for a in artifacts if a['id'] in i['reference_ids'] and a['role'] in ('concept','reference')),None))) for i in value['items'] if i['selected'])
+    concepts_needed=sum(not i.get('concept_artifact_id') for i in value['items'] if i['selected'])
     warnings=list(value.get('warnings',[]))
     if len(value['items'])>30:warnings.append('Batch lớn: duyệt subset trước. Không tự giảm chất lượng để tăng tốc.')
     value['preflight']=dict(engines={k:a.probe() for k,a in ADAPTERS.items()},concept_engine=CONCEPT_ADAPTER.probe(),ram_free_bytes=psutil.virtual_memory().available,
-        disk_free_bytes=shutil.disk_usage(store.DATA).free,estimated_jobs=count,estimated_storage_bytes=None,planner='strict_local_structured_parser; no configured local LLM',warnings=warnings,
+        disk_free_bytes=shutil.disk_usage(store.DATA).free,estimated_jobs=count*2+concepts_needed,estimated_candidate_jobs=count,estimated_storage_bytes=None,planner='strict_local_structured_parser; optional local metadata adapter',warnings=warnings,
         scheduler=dict(heavy_gpu_concurrency=1,cpu_concurrency=2,quality_downgrade=False))
     value['progress']=dict(total=len(value['items']),completed=sum(i['status'] in ['Approved','Exported'] for i in value['items']),
         active=sum(i['status'] in ['Generating','Processing'] for i in value['items']),blocked=sum(bool(i['missing_fields']) or i['status'] in ['Failed/Blocked','QA Failed'] for i in value['items']))
+    if value.get('automation'):
+        from datetime import datetime,timezone
+        states=[i.get('automation',{}).get('status','pending') for i in value['items']]
+        exported=states.count('exported');active=sum(s in ('running','queued') and i.get('started',False) for s,i in zip(states,value['items']))
+        value['progress'].update(completed=sum(s in ('exported','completed') for s in states),exported=exported,needs_review=exported,failed=states.count('failed'),blocked=states.count('blocked'),active=sum(s=='running' for s in states),queued=states.count('queued'),pending=sum(s in ('pending','paused') for s in states),remaining=len(states)-exported,pause_state=value['automation'].get('pause_state'),pause_reason=value['automation'].get('pause_reason'),eta_seconds=None,elapsed_seconds=max(0,(datetime.now(timezone.utc)-datetime.fromisoformat(value['automation']['started_at'])).total_seconds()))
     return value
 
 
@@ -217,6 +228,9 @@ def edit(identifier:str,asset_id:str,body:dict):
 
 
 def advance(identifier):
+    if batch(identifier).get('automation'):
+        from .automation import advance as automatic_advance
+        return automatic_advance(identifier)
     with LOCK:
         value=detail(batch(identifier))
         if value['paused']:return value
@@ -255,10 +269,21 @@ def advance(identifier):
 
 class Run(BaseModel):
     selected_ids:list[str] | None=None
+    automatic:bool=False
+    dry_run:bool=False
+
+
+@router.post('/{identifier}/run-all')
+def run_all(identifier:str,body:Run):
+    from .automation import start
+    return start(identifier,dry_run=body.dry_run)
 
 
 @router.post('/{identifier}/run')
 def run(identifier:str,body:Run):
+    if body.automatic:
+        from .automation import start
+        return start(identifier,body.selected_ids,dry_run=body.dry_run)
     with LOCK:
         value=batch(identifier);selected=set(body.selected_ids) if body.selected_ids is not None else {i['asset_id'] for i in value['items'] if i['selected']}
         for item in value['items']:
@@ -283,7 +308,22 @@ def control(identifier:str,body:Control):
                 copy.update(source_file=value['source_file'],import_diagnostics=value['import_diagnostics'],master_prompt=value['master_prompt'])
                 save(stored(copy))
             return copy
+        if body.action in ('retry_failed','skip_failed'):
+            from .automation import leaves
+            failures=leaves([j for j in jobs.listing() if j['payload'].get('batch_id')==identifier])
+            for item in value['items']:
+                auto=item.get('automation',{})
+                affected=[j for j in failures if j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt'] and j['status'] in ('FAILED','BLOCKED','CANCELLED')]
+                if auto.get('status') in ('failed','blocked') or affected:
+                    if body.action=='skip_failed':item['skipped']=True;auto['status']='skipped'
+                    else:
+                        for job in affected:jobs.retry(job['id'])
+                        auto.update(status='queued',error=None);item.pop('last_error',None)
+            if body.action=='retry_failed':value['paused']=False
+            save(stored(value));return detail(value)
         if body.action not in ['pause','resume','cancel']:raise HTTPException(400,'Action không hợp lệ')
+        if value.get('automation'):
+            value['automation']['pause_reason']='User paused at stage boundary' if body.action=='pause' else 'User cancelled pending work' if body.action=='cancel' else None
         value['paused']=body.action!='resume';save(value)
         if body.action=='cancel':
             for job in jobs.listing():
@@ -298,14 +338,19 @@ def item_action(identifier:str,asset_id:str,body:Control):
     with LOCK:
         value=batch(identifier);item=next((i for i in value['items'] if i['asset_id']==asset_id),None)
         if not item:raise HTTPException(404,'Asset không thuộc batch')
-        if body.action=='prioritize':item['priority']=min(1000,max(i['priority'] for i in value['items'])+1)
+        if body.action=='authorize_export' and item.get('automation'):
+            item['automation']['export_authorized']=True
+        elif body.action=='prioritize':item['priority']=min(1000,max(i['priority'] for i in value['items'])+1)
         elif body.action=='skip':item['skipped']=True
         elif body.action=='regenerate':
+            if any(j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['status'] not in jobs.TERMINAL for j in jobs.listing()):raise HTTPException(409,'Finish or cancel the active asset stages before regenerating. Existing checkpoints are preserved.')
             item.update(attempt=item['attempt']+1,started=True,skipped=False)
+            if item.get('automation'):
+                item['automation']=dict(enabled=True,engines=item['automation']['engines'],attempt=item['attempt'],status='queued',stage='pending',checkpoints={},human_approved=False)
             item.pop('last_error',None)
         elif body.action=='retry':
             item.pop('last_error',None)
-            failed=[j for j in jobs.listing() if j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['status'] in ['FAILED','BLOCKED','CANCELLED']]
+            failed=[j for j in jobs.listing() if j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['payload'].get('batch_attempt',0)==item['attempt'] and j['status'] in ['FAILED','BLOCKED','CANCELLED']]
             if failed:jobs.retry(failed[0]['id'])
         else:raise HTTPException(400,'Action không hợp lệ')
         save(value)

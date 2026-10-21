@@ -1,0 +1,73 @@
+﻿{
+    "version":  "0.5.0",
+    "timestamp_utc":  "20261021T150828Z",
+    "git_commit":  "145d473868e7c645040924804bf737df1badb0eb",
+    "git_branch":  "feature/universal-expansion-v2-reviewed",
+    "git_dirty":  true,
+    "changed_files":  [
+                          " M CLAUDE.md",
+                          " M apps/api/batch.py",
+                          " M apps/api/inspection.py",
+                          " M apps/api/jobs.py",
+                          " M apps/api/main.py",
+                          " M apps/api/manifest.py",
+                          " M apps/api/studio.py",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/batch.css",
+                          " M apps/web/src/refinement.css",
+                          " M apps/web/src/studio.tsx",
+                          " M desktop/smoke.mjs",
+                          " M docs/evidence/desktop_build.json",
+                          " M docs/evidence/desktop_smoke.json",
+                          " M engines/sdxl_worker.py",
+                          " M package-lock.json",
+                          " M package.json",
+                          " M scripts/desktop.ps1",
+                          " M src-tauri/Cargo.lock",
+                          " M src-tauri/Cargo.toml",
+                          " M src-tauri/src/main.rs",
+                          " M src-tauri/tauri.conf.json",
+                          " M tests/test_runavelle_import.py",
+                          "?? apps/api/automation.py",
+                          "?? apps/api/export_profiles.py",
+                          "?? apps/web/src/activity-indicator.css",
+                          "?? apps/web/src/activity-indicator.tsx",
+                          "?? apps/web/src/export-settings.css",
+                          "?? apps/web/src/export-settings.tsx",
+                          "?? desktop/verify-auto.mjs",
+                          "?? desktop/verify-single-auto.mjs",
+                          "?? desktop/verify-single-recovery.mjs",
+                          "?? docs/AUTOMATION_PRODUCTION.md",
+                          "?? scripts/verify_auto_production.py",
+                          "?? tests/test_automation.py",
+                          "?? tests/test_export_profiles.py"
+                      ],
+    "changed_features":  [
+                             "Tauri Windows shell and bundled API",
+                             "Hybrid shared scheduler and Batch Studio",
+                             "Immutable quality configuration and local SDXL concept approval"
+                         ],
+    "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
+    "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T150828Z",
+    "tests":  [
+                  "Frontend TypeScript and production build PASS",
+                  "Actual backend pytest suite PASS",
+                  "New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS"
+              ],
+    "known_issues":  [
+                         "Unsigned local build; clean-machine installation not yet verified",
+                         "Editor/browser tests do not establish mobile performance or Meshy visual parity"
+                     ],
+    "artifact_sha256":  {
+                            "Asset Forge Studio Expansion.exe":  "2c0fc85bb2d7caa3e7a5e3c7fae14c6780e774de51b3096752079edffad59de4",
+                            "afs-backend.exe":  "82b6f23fef02a036f9ebca51a798f186ab617c96dac23de5f1d45ea9cb06a2c6",
+                            "Asset Forge Studio Expansion_0.5.0_x64-setup.exe":  "7aeb49614d635eb2c92746d417a284b0075568abcfb8b3f72a9c873ea6b8f0dc"
+                        },
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T15-10-31-817Z\\smoke-report.json",
+    "executable":  "Asset Forge Studio Expansion.exe",
+    "channel":  "expansion",
+    "installer":  "Asset Forge Studio Expansion_0.5.0_x64-setup.exe",
+    "previous_latest_kept_running":  true,
+    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\expansion\\0.5.0\\20261021T150828Z"
+}

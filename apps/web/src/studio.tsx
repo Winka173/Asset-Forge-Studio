@@ -7,6 +7,8 @@ import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
 import { UnityImportPanel } from "./unity-panel";
+import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
+import { ActivityIndicator } from "./activity-indicator";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
@@ -233,6 +235,10 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
+  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false});
+  const [workflowReady,setWorkflowReady]=useState(false);
+  useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
+  async function changeWorkflow(fields:Partial<typeof workflow>){const next={...workflow,...fields};setWorkflow(next);try{await request(`/api/automation/projects/${projectId}`,next);}catch(e){setError(String(e));}}
   const [assetId, setAssetId] = useState(""),
     [versionId, setVersionId] = useState(""),
     [search, setSearch] = useState(""),
@@ -453,7 +459,8 @@ export function Studio() {
       if (modal) return;
       if (event.altKey && /^[1-6]$/.test(event.key)) {
         event.preventDefault();
-        navigate(pages[Number(event.key) - 1]);
+        const destination=pages[Number(event.key) - 1];
+        if(destination==='Create')newAsset();else navigate(destination);
       }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
@@ -463,7 +470,7 @@ export function Studio() {
             setNotice("Draft saved locally · Ctrl+Enter to generate from an image.");
           });
       }
-      if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && source && draft.mode !== "Text" && !busy) {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && (source || draft.prompt.trim()) && !busy) {
         event.preventDefault();
         generate();
       }
@@ -564,6 +571,19 @@ export function Studio() {
   }
   async function generate() {
     await run(async () => {
+      if(workflow.mode!=='expert'){
+        if(!workflowReady)throw new Error('Wait for project workflow settings to load.');
+        const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
+        if(!draft.seeds.trim()||seeds.length>4||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–4 distinct integer seeds between 0 and 4294967295.');
+        const model=await ensureAsset();
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,workflow};
+        const fingerprint=JSON.stringify(body);
+        const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
+        const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
+        await reload();setAssetId(model.id);setVersionId('');setPreviewTab('Model');
+        setNotice(`${workflow.mode==='auto'?'Automatic':'Assisted'} local pipeline queued (${result.batch_id.slice(0,8)}). Progress and exports remain available after refresh.`);
+        return;
+      }
       if (!source || draft.mode==='Text') {
         if(!data.capabilities.text_to_concept)throw new Error('SDXL local chưa sẵn sàng. Nhập ảnh concept để tiếp tục.');
         if(!draft.prompt.trim())throw new Error('Nhập prompt để tạo concept.');
@@ -650,7 +670,7 @@ export function Studio() {
       await reload();
     });
   }
-  function newAsset(mode: Draft["mode"] = "Image") {
+  function newAsset(mode: Draft["mode"] = "Text") {
     setCreationMode('single');
     if (!projectId) {
       editProject(false);
@@ -880,6 +900,7 @@ export function Studio() {
               aria-current={page === p ? "page" : undefined}
               title={`${p} · Alt+${pages.indexOf(p) + 1}`}
               aria-keyshortcuts={`Alt+${pages.indexOf(p) + 1}`}
+              onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:undefined}
             >
               <Icon name={p} size={18} />
               <span>{p}</span>
@@ -963,7 +984,7 @@ export function Studio() {
             <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='world'} onClick={()=>{setCreationMode('world');setAssetId('');change({assetId:''});location.hash='create';}}>Map / World</button>
           </div>}
           {projectId && page==='Create' && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
-          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
+          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">
               {error}
@@ -1107,15 +1128,18 @@ export function Studio() {
           )}
           {projectId && page === "Create" && creationMode==='single' && (
             <>
-              <div className="page-heading compact">
+              <div className="page-heading compact single-studio-heading">
                 <div>
-                  <div className="overline">CREATE / IMAGE TO 3D</div>
+                  <div className="overline">CREATE / LOCAL ASSET PRODUCTION</div>
                   <h1>{selectedAsset?.name || "Create an asset"}</h1>
                 </div>
                 <span className="draft-indicator">{draftStatus}</span>
+                {workflow.mode!=='expert' && <button className="primary generate-button single-header-generate" disabled={busy||!workflowReady||loadedProject!==projectId||(!draft.prompt.trim()&&!source)} onClick={generate}><Icon name="Cube" size={18}/>{busy?'Preparing pipeline…':'Generate asset'}</button>}
               </div>
               <div className="create-workspace">
                 <section className="create-controls">
+                  <label className="studio-field">Workflow<Select aria-label="Single workflow mode" value={workflow.mode} disabled={!workflowReady||busy} onChange={event=>void changeWorkflow({mode:event.target.value as typeof workflow.mode})}><option value="auto">Auto · prompt to exported model</option><option value="assisted">Assisted · review checkpoints</option><option value="expert">Expert · manual stages</option></Select></label>
+                  {workflow.mode==='assisted'&&<div className="selective-export-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint}><input type="checkbox" checked={workflow.checkpoints[checkpoint]} onChange={event=>void changeWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/><span>Review {checkpoint}</span></label>)}</div>}
                   <div
                     className="input-tabs"
                     role="tablist"
@@ -1163,7 +1187,7 @@ export function Studio() {
                       <Icon name="Image" size={22} />
                       <h3>{data.capabilities.text_to_concept ? 'SDXL local → Concept Preview' : 'Text-to-concept chưa sẵn sàng'}</h3>
                       <p>
-                        {data.capabilities.text_to_concept ? 'Tạo ảnh từ prompt, kiểm tra hình dáng và duyệt concept trước khi dựng 3D. Không gửi dữ liệu lên cloud.' : 'Nhập ảnh concept để tạo 3D. Không tạo kết quả giả khi thiếu engine.'}
+                        {data.capabilities.text_to_concept ? workflow.mode==='expert' ? 'Tạo và duyệt concept trước khi dựng 3D trong Expert. Không gửi dữ liệu lên cloud.' : 'AFS tự tạo concept, dựng 3D, chạy Blender và xuất file. Chỉ checkpoint Assisted đã bật mới cần bạn dừng lại.' : 'Nhập ảnh concept để tạo 3D. Không tạo kết quả giả khi thiếu engine.'}
                       </p>
                       <button
                         className="secondary"
@@ -1388,20 +1412,23 @@ export function Studio() {
                       engine; không đổi môi trường Python đang cài.
                     </p>
                   </details>
+                  <details className="selective-export-history"><summary>Export settings ? GLB Only by default</summary><BatchExportSettings key={projectId} projectId={projectId}/></details>
+                  {(busy || activeJobs.some(job=>job.payload.asset_id===selectedAsset?.id)) && <ActivityIndicator label={busy?"Preparing local pipeline":"Local pipeline is running"} detail="Measured job stages appear in Jobs. You can leave this screen without losing progress."/>}
                   <div className="generate-actions">
-                    {sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
                     <button
                       className="primary generate-button"
                       disabled={
                         busy ||
-                        sourceNeedsApproval ||
+                        !workflowReady ||
+                        (workflow.mode==='expert' && sourceNeedsApproval) ||
                         ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
                         loadedProject !== projectId
                       }
                       onClick={generate}
                     >
                       <Icon name="Cube" size={18} />
-                      {busy ? "Đang xử lý…" : (!source || draft.mode==='Text') && draft.prompt.trim() ? 'Generate concept' : "Generate 3D"}
+                      {busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
                       <Icon name="Arrow" size={17} />
                     </button>
                     <button
@@ -1446,6 +1473,7 @@ export function Studio() {
                     )}
                   </div>
                   <div className="preview-stage">
+                    {(busy || activeJobs.some(job=>job.payload.asset_id===selectedAsset?.id)) && <div className="preview-activity"><ActivityIndicator compact label={busy?'Preparing local pipeline':'Local AI pipeline is active'} detail={activeJobs.find(job=>job.payload.asset_id===selectedAsset?.id)?.progress?.stage || 'Waiting for the shared GPU scheduler'}/></div>}
                     {previewTab === "Concept" && source ? (
                       <img
                         className="concept-large"
@@ -2334,6 +2362,8 @@ export function Studio() {
             )}
             {modal === "export" && (
               <>
+                {selectedAsset && <SingleSelectiveExport projectId={projectId} assetId={selectedAsset.id} artifactId={candidate?.id}/>}
+                <details className="selective-export-history"><summary>Advanced · legacy Blender conversion presets</summary>
                 <div className="export-organization-note"><Icon name="Library" size={18}/><span>Download ZIP để giữ cấu trúc <strong>Project / Asset / Preset</strong>. File xuất của mỗi game nằm trong thư mục riêng.</span></div>
                 <p>
                   Xuất từ version thật đang chọn. Preset Unity tạo file và LOD
@@ -2381,6 +2411,7 @@ export function Studio() {
                   </div>
                 )}
                 {exportDirectory && <p className="export-directory">Export folder: <code>{exportDirectory}</code></p>}
+                </details>
               </>
             )}
             {error && (

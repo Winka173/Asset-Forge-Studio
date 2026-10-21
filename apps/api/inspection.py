@@ -42,7 +42,7 @@ def glb_document(path):
 
 def inspect_glb(path):
     doc = glb_document(path)
-    scene = trimesh.load(path, force="scene", process=False)
+    scene = trimesh.load(path, file_type="glb", force="scene", process=False)
     rows, all_bounds = [], []
     for node in scene.graph.nodes_geometry:
         transform, key = scene.graph[node]

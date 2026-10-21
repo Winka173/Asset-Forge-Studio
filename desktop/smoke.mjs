@@ -52,6 +52,7 @@ try{
   const beforeScroll=await page.evaluate(()=>scrollY);await engineControl.press('End');await engineControl.press('Home');if(Math.abs(await page.evaluate(()=>scrollY)-beforeScroll)>1)throw Error('Custom select keyboard navigation moved the page');await engineControl.press('Enter');
   report.checks.push({name:'native_custom_select_long_form_viewport_and_keyboard_scroll',passed:true,popup_bounds:bounds,viewport_height:height});
   await page.getByRole('button',{name:'Export',exact:true}).click();
+  await page.getByRole('dialog').getByText('Advanced · legacy Blender conversion presets',{exact:true}).click();
   const exportResponse=page.waitForResponse(r=>r.url().endsWith(`/api/assets/${asset.id}/export`)&&r.request().method()==='POST');
   await page.getByRole('button',{name:'Prepare export',exact:true}).click();
   const response=await exportResponse;if(!response.ok())throw Error('Native UI export failed');const exported=await response.json();
@@ -71,8 +72,10 @@ try{
   await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();await page.getByRole('tab',{name:'Batch Assets',exact:true}).click();
   await page.getByLabel('Batch Master Prompt').fill('- Castle T1-T3\n- Archer Tower T1-T3\n- Magic Tower T1-T3\n- House T1-T3\n- A modular Wall/Gate');
   const analyzed=page.waitForResponse(r=>r.url().endsWith('/api/batches/analyze')&&r.request().method()==='POST');await page.getByRole('button',{name:'Analyze Prompt',exact:true}).click();const batch=await(await analyzed).json();if(batch.items.length!==14)throw Error('Native Batch UI did not produce 14 explicit items');await page.locator('.batch-table tbody tr').nth(13).waitFor();
-  if(!await page.getByRole('button',{name:'Generate Selected (14)',exact:true}).isDisabled())throw Error('Unconfirmed dimensions must block native Batch generation');
-  await page.screenshot({path:path.join(run,'desktop-batch.png'),fullPage:true});report.checks.push({name:'native_batch_manifest_and_missing_specs_guard',passed:true,batch_id:batch.id,manifest_count:14});
+  await page.getByRole('button',{name:'Generate All (14)',exact:true}).waitFor();
+  await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent.includes('Generate All (14)')&&!button.disabled));
+  if((await api('/api/jobs')).length!==0)throw Error('Analyze started GPU work');
+  await page.screenshot({path:path.join(run,'desktop-batch.png'),fullPage:true});report.checks.push({name:'native_auto_batch_manifest_ready_no_gpu_before_explicit_click',passed:true,batch_id:batch.id,manifest_count:14});
   await close();report.checks.push({name:'graceful_close_owned_backend_exited',passed:true});await browser.close().catch(()=>{});
   child=launch();browser=await connect();page=browser.contexts()[0].pages()[0];await page.locator('.studio-sidebar').waitFor({timeout:180000});const second=await session();if(second.api_token===first.api_token)throw Error('Desktop API token was not rotated');const persisted=await api(`/api/studio?project_id=${project.id}`);const savedBatch=await api(`/api/batches/${batch.id}`);if(savedBatch.items.length!==14||!savedBatch.paused)throw Error('Native batch checkpoint lost after relaunch');if(!persisted.assets.some(a=>a.id===asset.id&&a.versions.some(v=>v.id===artifact.id)))throw Error('Library data lost after desktop relaunch');
   await page.locator('.studio-sidebar nav a[aria-label="Library"]').click();await page.getByRole('button',{name:asset.name,exact:true}).click();await page.waitForFunction(()=>Number(document.querySelector('.viewer')?.dataset.loaded)>0&&Number(document.querySelector('.viewer')?.dataset.textures)>0,{timeout:90000});await page.screenshot({path:path.join(run,'desktop-reopened.png'),fullPage:true});await close();report.checks.push({name:'native_relaunch_persistence_and_token_rotation',passed:true});

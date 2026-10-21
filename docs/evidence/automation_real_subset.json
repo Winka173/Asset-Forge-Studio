@@ -1,0 +1,732 @@
+{
+  "status": "PASS_REAL_GPU_AUTOMATIC_PRODUCTION",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z",
+  "source_sha256": "8234e96aed3529fd40e822631d6f9ceaafa2c50e7f56e9e1de9884bb5f52976c",
+  "checks": [
+    {
+      "name": "actual349_all_including_future_dry_plan_no_gpu",
+      "passed": true,
+      "plan": {
+        "total": 349,
+        "future": 37,
+        "candidate_jobs": 349,
+        "source_hashes_preserved": true
+      }
+    },
+    {
+      "name": "incremental_export_before_batch_end_then_safe_pause",
+      "passed": true,
+      "completed_assets": [
+        "2b8f1fb5843f582bb608c0178a324b04"
+      ],
+      "completed_job_ids": [
+        "67a53baacbde4ecea9e4b5c63d39d0b7",
+        "6f7e1326aed94345878a4f935786b2ee",
+        "707a2d03be4543f7bf30fef4a01baf4e",
+        "b8ae91aefab74f9bb49ac9282fc8bf8c"
+      ]
+    },
+    {
+      "name": "restart_manual_resume_three_real_outputs_without_regenerating_completed",
+      "passed": true
+    }
+  ],
+  "jobs": [
+    {
+      "id": "76e51eb73aa04621834d4810cd662e68",
+      "kind": "blender",
+      "asset_id": "487d5e22568f53aca9b152063c17dc7b",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 196.79699999999139,
+      "worker_tree_peak_rss_bytes": 4954738688,
+      "ram_peak_used_bytes": 34617614336,
+      "blender": {
+        "status": "NEEDS_REVIEW",
+        "blender_version": "4.5.14 LTS",
+        "dimensions_xyz_m_blender": [
+          3.6696982383728027,
+          3.416873574256897,
+          4.0
+        ],
+        "before": [
+          {
+            "name": "geometry_0",
+            "triangles": 944741,
+            "vertices": 683193,
+            "non_manifold_edges": 387853,
+            "boundary_edges": 387853,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.0028635263442992e-07,
+              "boundary_edges": 87,
+              "non_manifold_edges": 1933,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "after": [
+          {
+            "name": "geometry_0",
+            "triangles": 944741,
+            "vertices": 683193,
+            "non_manifold_edges": 387853,
+            "boundary_edges": 387853,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 4e-07,
+              "boundary_edges": 87,
+              "non_manifold_edges": 1933,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "channels": {
+              "base_color": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_000.png",
+                    "source_name": "Image_0",
+                    "color_space": "sRGB",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              },
+              "metallic": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.0
+              },
+              "roughness": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.5
+              },
+              "normal": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "emissive": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            },
+            "ao": "NOT_TESTED",
+            "plausibility": "NOT_TESTED",
+            "status": "NEEDS_REVIEW"
+          }
+        ],
+        "checks": {
+          "export_reopen": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "lod_silhouette_error": "NOT_TESTED",
+          "normal_bake": "NOT_TESTED",
+          "unity": "NOT_TESTED",
+          "human_review": "NOT_TESTED",
+          "pbr_reconstruction": "NOT_TESTED",
+          "modular_connectors": "NOT_TESTED",
+          "fbx_reopen": "PASS",
+          "fbx_pbr_unity_mapping": "NOT_TESTED"
+        },
+        "rendered": [
+          "mobile_front_passes.exr",
+          "mobile_front_asset.png",
+          "mobile_front.png",
+          "mobile_three_quarter_passes.exr",
+          "mobile_three_quarter_asset.png",
+          "mobile_three_quarter.png",
+          "mobile_side_passes.exr",
+          "mobile_side_asset.png",
+          "mobile_side.png",
+          "mobile_back_passes.exr",
+          "mobile_back_asset.png",
+          "mobile_back.png",
+          "mobile_top_passes.exr",
+          "mobile_top_asset.png",
+          "mobile_top.png",
+          "mobile_gameplay_passes.exr",
+          "mobile_gameplay_asset.png",
+          "mobile_gameplay.png",
+          "pc1440_front_passes.exr",
+          "pc1440_front_asset.png",
+          "pc1440_front.png",
+          "pc1440_three_quarter_passes.exr",
+          "pc1440_three_quarter_asset.png",
+          "pc1440_three_quarter.png",
+          "pc1440_side_passes.exr",
+          "pc1440_side_asset.png",
+          "pc1440_side.png",
+          "pc1440_back_passes.exr",
+          "pc1440_back_asset.png",
+          "pc1440_back.png",
+          "pc1440_top_passes.exr",
+          "pc1440_top_asset.png",
+          "pc1440_top.png",
+          "pc1440_gameplay_passes.exr",
+          "pc1440_gameplay_asset.png",
+          "pc1440_gameplay.png"
+        ]
+      }
+    },
+    {
+      "id": "1e4adf1ee7994111ab1387eaa6cbf4a7",
+      "kind": "inference",
+      "asset_id": "487d5e22568f53aca9b152063c17dc7b",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 591.5779999999795,
+      "worker_tree_peak_rss_bytes": 29539135488,
+      "ram_peak_used_bytes": 63690452992,
+      "generation": {
+        "duration_seconds": 586.1870000000054,
+        "raw_triangles": 18734206,
+        "peak_allocated_bytes": 5692155904,
+        "peak_reserved_bytes": 5939134464,
+        "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+        "output_sha256": "ac8f0e7eacd31a8cbd2767334e1b42cab78c1999a6f4c253bd791eb05ea05b23"
+      },
+      "whole_device_peak_vram_mib": 10107.0
+    },
+    {
+      "id": "4379bd0733e645c49c032543ab44f210",
+      "kind": "concept",
+      "asset_id": "487d5e22568f53aca9b152063c17dc7b",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 39.453000000008615,
+      "worker_tree_peak_rss_bytes": 8853741568,
+      "ram_peak_used_bytes": 38230265856,
+      "generation": {
+        "duration_seconds": 37.45299999997951,
+        "raw_triangles": null,
+        "peak_allocated_bytes": 5613612032,
+        "peak_reserved_bytes": 7866417152,
+        "peak_scope": null,
+        "output_sha256": "2e9c5e134de934db777303dbda035a42b4da54c913420dc485fdbcb74d7d5eed"
+      },
+      "whole_device_peak_vram_mib": 12285.0
+    },
+    {
+      "id": "12e4ab7d51d04fdd9226bc599299b235",
+      "kind": "blender",
+      "asset_id": "d145d0662fcd544cbd11b537b01ed144",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 410.56200000000536,
+      "worker_tree_peak_rss_bytes": 4744458240,
+      "ram_peak_used_bytes": 60828413952,
+      "blender": {
+        "status": "NEEDS_REVIEW",
+        "blender_version": "4.5.14 LTS",
+        "dimensions_xyz_m_blender": [
+          17.00881862640381,
+          11.714177131652832,
+          17.0
+        ],
+        "before": [
+          {
+            "name": "geometry_0",
+            "triangles": 971714,
+            "vertices": 739906,
+            "non_manifold_edges": 461164,
+            "boundary_edges": 461164,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.0025126934051513e-07,
+              "boundary_edges": 89,
+              "non_manifold_edges": 2970,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "after": [
+          {
+            "name": "geometry_0",
+            "triangles": 971714,
+            "vertices": 739906,
+            "non_manifold_edges": 461164,
+            "boundary_edges": 461164,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.7008819580078125e-06,
+              "boundary_edges": 89,
+              "non_manifold_edges": 2970,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "channels": {
+              "base_color": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_000.png",
+                    "source_name": "Image_0",
+                    "color_space": "sRGB",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              },
+              "metallic": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.0
+              },
+              "roughness": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.5
+              },
+              "normal": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "emissive": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            },
+            "ao": "NOT_TESTED",
+            "plausibility": "NOT_TESTED",
+            "status": "NEEDS_REVIEW"
+          }
+        ],
+        "checks": {
+          "export_reopen": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "lod_silhouette_error": "NOT_TESTED",
+          "normal_bake": "NOT_TESTED",
+          "unity": "NOT_TESTED",
+          "human_review": "NOT_TESTED",
+          "pbr_reconstruction": "NOT_TESTED",
+          "modular_connectors": "NOT_TESTED",
+          "fbx_reopen": "PASS",
+          "fbx_pbr_unity_mapping": "NOT_TESTED"
+        },
+        "rendered": [
+          "mobile_front_passes.exr",
+          "mobile_front_asset.png",
+          "mobile_front.png",
+          "mobile_three_quarter_passes.exr",
+          "mobile_three_quarter_asset.png",
+          "mobile_three_quarter.png",
+          "mobile_side_passes.exr",
+          "mobile_side_asset.png",
+          "mobile_side.png",
+          "mobile_back_passes.exr",
+          "mobile_back_asset.png",
+          "mobile_back.png",
+          "mobile_top_passes.exr",
+          "mobile_top_asset.png",
+          "mobile_top.png",
+          "mobile_gameplay_passes.exr",
+          "mobile_gameplay_asset.png",
+          "mobile_gameplay.png",
+          "pc1440_front_passes.exr",
+          "pc1440_front_asset.png",
+          "pc1440_front.png",
+          "pc1440_three_quarter_passes.exr",
+          "pc1440_three_quarter_asset.png",
+          "pc1440_three_quarter.png",
+          "pc1440_side_passes.exr",
+          "pc1440_side_asset.png",
+          "pc1440_side.png",
+          "pc1440_back_passes.exr",
+          "pc1440_back_asset.png",
+          "pc1440_back.png",
+          "pc1440_top_passes.exr",
+          "pc1440_top_asset.png",
+          "pc1440_top.png",
+          "pc1440_gameplay_passes.exr",
+          "pc1440_gameplay_asset.png",
+          "pc1440_gameplay.png"
+        ]
+      }
+    },
+    {
+      "id": "3a161a0e5b7e49ca8848c60c2923e51b",
+      "kind": "unity_import",
+      "asset_id": "2b8f1fb5843f582bb608c0178a324b04",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 42.640999999974156,
+      "worker_tree_peak_rss_bytes": 2522300416,
+      "ram_peak_used_bytes": 54942576640,
+      "whole_device_peak_vram_mib": null
+    },
+    {
+      "id": "594a809dff57464b9033ce9a663ae3f1",
+      "kind": "inference",
+      "asset_id": "d145d0662fcd544cbd11b537b01ed144",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 715.7339999999967,
+      "worker_tree_peak_rss_bytes": 31336235008,
+      "ram_peak_used_bytes": 62803746816,
+      "generation": {
+        "duration_seconds": 711.4840000000258,
+        "raw_triangles": 23552970,
+        "peak_allocated_bytes": 6840322048,
+        "peak_reserved_bytes": 7304380416,
+        "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+        "output_sha256": "f02404e8496a5014dae987d4b17ac96150fc54fecb32bb4f0d596f6fbe10d71e"
+      },
+      "whole_device_peak_vram_mib": 10820.0
+    },
+    {
+      "id": "67a53baacbde4ecea9e4b5c63d39d0b7",
+      "kind": "concept",
+      "asset_id": "d145d0662fcd544cbd11b537b01ed144",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 33.75,
+      "worker_tree_peak_rss_bytes": 8919068672,
+      "ram_peak_used_bytes": 38328954880,
+      "generation": {
+        "duration_seconds": 32.203000000008615,
+        "raw_triangles": null,
+        "peak_allocated_bytes": 5629660160,
+        "peak_reserved_bytes": 7883194368,
+        "peak_scope": null,
+        "output_sha256": "0a3ec03caa56e1fd71db8f08a814b4d80408fef4d6850ca7fb434497b2d1c4c3"
+      },
+      "whole_device_peak_vram_mib": 12104.0
+    },
+    {
+      "id": "b8ae91aefab74f9bb49ac9282fc8bf8c",
+      "kind": "blender",
+      "asset_id": "2b8f1fb5843f582bb608c0178a324b04",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 211.59299999999348,
+      "worker_tree_peak_rss_bytes": 5074948096,
+      "ram_peak_used_bytes": 35398819840,
+      "blender": {
+        "status": "NEEDS_REVIEW",
+        "blender_version": "4.5.14 LTS",
+        "dimensions_xyz_m_blender": [
+          5.332908391952515,
+          4.650804042816162,
+          6.0
+        ],
+        "before": [
+          {
+            "name": "geometry_0",
+            "triangles": 952566,
+            "vertices": 671519,
+            "non_manifold_edges": 361762,
+            "boundary_edges": 361762,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 1.0039275884628295e-07,
+              "boundary_edges": 47,
+              "non_manifold_edges": 1385,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "after": [
+          {
+            "name": "geometry_0",
+            "triangles": 952566,
+            "vertices": 671519,
+            "non_manifold_edges": 361762,
+            "boundary_edges": 361762,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": [
+              "Material_0"
+            ],
+            "position_weld_analysis": {
+              "epsilon_local_m": 6e-07,
+              "boundary_edges": 47,
+              "non_manifold_edges": 1385,
+              "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+            }
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "channels": {
+              "base_color": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_000.png",
+                    "source_name": "Image_0",
+                    "color_space": "sRGB",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              },
+              "metallic": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.0
+              },
+              "roughness": {
+                "status": "TEXTURE",
+                "textures": [
+                  {
+                    "file": "texture_001.png",
+                    "source_name": "Image_1",
+                    "color_space": "Non-Color",
+                    "size": [
+                      4096,
+                      4096
+                    ],
+                    "note": "actual source image; packed channels may share one file"
+                  }
+                ],
+                "constant": 0.5
+              },
+              "normal": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "emissive": {
+                "status": "CONSTANT",
+                "textures": [],
+                "constant": [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              }
+            },
+            "ao": "NOT_TESTED",
+            "plausibility": "NOT_TESTED",
+            "status": "NEEDS_REVIEW"
+          }
+        ],
+        "checks": {
+          "export_reopen": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "lod_silhouette_error": "NOT_TESTED",
+          "normal_bake": "NOT_TESTED",
+          "unity": "NOT_TESTED",
+          "human_review": "NOT_TESTED",
+          "pbr_reconstruction": "NOT_TESTED",
+          "modular_connectors": "NOT_TESTED",
+          "fbx_reopen": "PASS",
+          "fbx_pbr_unity_mapping": "NOT_TESTED"
+        },
+        "rendered": [
+          "mobile_front_passes.exr",
+          "mobile_front_asset.png",
+          "mobile_front.png",
+          "mobile_three_quarter_passes.exr",
+          "mobile_three_quarter_asset.png",
+          "mobile_three_quarter.png",
+          "mobile_side_passes.exr",
+          "mobile_side_asset.png",
+          "mobile_side.png",
+          "mobile_back_passes.exr",
+          "mobile_back_asset.png",
+          "mobile_back.png",
+          "mobile_top_passes.exr",
+          "mobile_top_asset.png",
+          "mobile_top.png",
+          "mobile_gameplay_passes.exr",
+          "mobile_gameplay_asset.png",
+          "mobile_gameplay.png",
+          "pc1440_front_passes.exr",
+          "pc1440_front_asset.png",
+          "pc1440_front.png",
+          "pc1440_three_quarter_passes.exr",
+          "pc1440_three_quarter_asset.png",
+          "pc1440_three_quarter.png",
+          "pc1440_side_passes.exr",
+          "pc1440_side_asset.png",
+          "pc1440_side.png",
+          "pc1440_back_passes.exr",
+          "pc1440_back_asset.png",
+          "pc1440_back.png",
+          "pc1440_top_passes.exr",
+          "pc1440_top_asset.png",
+          "pc1440_top.png",
+          "pc1440_gameplay_passes.exr",
+          "pc1440_gameplay_asset.png",
+          "pc1440_gameplay.png"
+        ]
+      }
+    },
+    {
+      "id": "6f7e1326aed94345878a4f935786b2ee",
+      "kind": "inference",
+      "asset_id": "2b8f1fb5843f582bb608c0178a324b04",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 553.3120000000054,
+      "worker_tree_peak_rss_bytes": 29557129216,
+      "ram_peak_used_bytes": 60724039680,
+      "generation": {
+        "duration_seconds": 549.4689999999828,
+        "raw_triangles": 18202644,
+        "peak_allocated_bytes": 5526620672,
+        "peak_reserved_bytes": 5800722432,
+        "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+        "output_sha256": "372c49fd0879da4adfd8fc332c244993b59bf79d0162912581eef5a9c28c814c"
+      },
+      "whole_device_peak_vram_mib": 10379.0
+    },
+    {
+      "id": "707a2d03be4543f7bf30fef4a01baf4e",
+      "kind": "concept",
+      "asset_id": "2b8f1fb5843f582bb608c0178a324b04",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 37.187999999994645,
+      "worker_tree_peak_rss_bytes": 8825380864,
+      "ram_peak_used_bytes": 40759410688,
+      "generation": {
+        "duration_seconds": 35.235000000015134,
+        "raw_triangles": null,
+        "peak_allocated_bytes": 5629660160,
+        "peak_reserved_bytes": 7883194368,
+        "peak_scope": null,
+        "output_sha256": "98d0d496e5d94040ebde35bfadc3bb000898c17c60ba1ecee4e4a8b4238533a9"
+      },
+      "whole_device_peak_vram_mib": 12096.0
+    }
+  ],
+  "limitations": [
+    "Evaluation-only TRELLIS.2 community outputs; commercial clearance and artistic approval not granted",
+    "No Meshy parity claim; only three assets generated, not all 349",
+    "System-wide GPU/RAM measurements include concurrent development workloads"
+  ]
+}

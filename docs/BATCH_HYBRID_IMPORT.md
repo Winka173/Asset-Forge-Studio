@@ -1,5 +1,7 @@
 # Batch Hybrid Import — audit and acceptance
 
+> Historical import acceptance below predates Automation V3. Current Auto workflow selects all 349 entries, including 37 FUTURE, as explicitly requested for Generate All; source FUTURE labels remain intact. Analyze still schedules zero GPU work. Expert retains explicit specification controls. See [Automation production](AUTOMATION_PRODUCTION.md).
+
 ## Root cause
 
 The original Analyze action called `/api/batches/analyze`, a deterministic local parser, not a local LLM. The actual Downloads file is 2,640,840 bytes / 2,630,112 decoded characters. The request schema capped input at 1,000,000 characters, so FastAPI returned 422 before entering the parser. The frontend stringified the entire validation error, including `input`, escaped newlines and `ctx`. No valid manifest reached frontend state; the empty review panel was the result of that rejected request. CSS did not hide a successfully parsed manifest in this failure.

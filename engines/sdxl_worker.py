@@ -57,7 +57,7 @@ def main():
                 encoder.to('cpu'); torch.cuda.empty_cache()
             return torch.cat(embeddings, dim=-1), pools[-1]
         chunks = max(1, *( (len(t(text, add_special_tokens=False).input_ids)+74)//75 for t in [pipe.tokenizer,pipe.tokenizer_2] for text in [prompt,negative]))
-        if chunks > 16: raise ValueError('Concept conditioning supports at most 1200 CLIP tokens; full draft remains saved')
+        if chunks > 64: raise ValueError('Concept conditioning exceeds 4800 CLIP tokens; source remains saved, no silent truncation')
         with torch.inference_mode():
             print('STAGE encode_prompt', flush=True)
             embeds, pooled = encode(prompt, chunks); neg_embeds, neg_pooled = encode(negative, chunks)
