@@ -16,6 +16,14 @@ Dev frontend: `npm --prefix apps/web run dev`; API: `uv run uvicorn apps.api.mai
 
 ## Vertical slice hiện có
 
+UI mới có Home / Create / Library / Jobs / Compare / Settings, project switcher, Art Bible và library riêng từng game. Create dùng preview lớn, cấu hình kỹ thuật nằm trong Advanced. Draft, asset ID, phiên bản, Master và lịch sử export được lưu trên máy; refresh không tự gửi lại Generate. Phím tắt: Alt+1…6 chuyển trang, Ctrl+S lưu draft, Ctrl+Enter tạo từ ảnh.
+
+Luồng đã kiểm thử bằng Archer Tower thật: Auto/Fast → TRELLIS.2 → Blender → chọn Master trong database QA → Enhance → GLB → đóng/mở lại browser và backend → Library khôi phục prompt/model/versions. [Bằng chứng](docs/evidence/studio_real_flow.json), [ảnh UI](docs/evidence/studio_create.png). Approved trong database QA chỉ kiểm tra workflow, không phải duyệt mỹ thuật của người dùng.
+
+Master giữ GLB gốc hoặc xuất FBX qua Blender. Unity Mobile / Unity PC hiện dùng mục tiêu thử lần lượt 25.000 / 100.000 tam giác, đã tạo file và kiểm tra mở lại thật; chất lượng decimation/bake và import trong Unity vẫn cần duyệt. [Export evidence](docs/evidence/studio_exports.json).
+
+Text → concept local chưa được tích hợp. Prompt được lưu với asset; engine image-to-3D hiện không dùng prompt để sửa style. Cần chọn/nhập ảnh concept thật để Generate. Không có thành công giả cho text-only.
+
 - Concept trong doc → local TRELLIS.2 Windows community, CPU offload → GLB có UV/base color/metallic–roughness.
 - TripoSG shape-only đã chạy thật hai seeds; web hỗ trợ adapter selection, 1–4 seeds, inference tuần tự, cancellation/retry và tự xếp Blender. SF3D vẫn gated; không hiện nút giả để generate.
 - Raw geometry/field `.npz` giữ trước remesh/decimation; mọi seed và lần lỗi có folder/log riêng.
@@ -67,12 +75,12 @@ uv run python -m scripts.verify_blender
 npm --prefix apps/web run build
 ```
 
-Browser QA sử dụng Chrome đã cài, Playwright và database riêng `.local/browser-data`; không dùng database sản xuất:
+Browser QA sử dụng Chrome đã cài, Playwright và database riêng `.local/studio-ui-tests`; không dùng database sản xuất:
 
 ```powershell
-$env:AFS_DATA = Join-Path (Get-Location) '.local/browser-data'
-uv run python -m scripts.bootstrap
-uv run uvicorn apps.api.main:app --host 127.0.0.1 --port 8765
+$env:AFS_DATA = Join-Path (Get-Location) '.local/studio-ui-tests'
+$env:AFS_PORT = '8767'
+uv run uvicorn apps.api.main:app --host 127.0.0.1 --port 8767
 # Terminal khác, sau khi uvicorn sẵn sàng:
 cd apps/web
 npx playwright test
