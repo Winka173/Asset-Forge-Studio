@@ -1,5 +1,7 @@
 # Windows desktop development and operation
 
+Current automation releases are Stable **0.3.6** and Expansion **0.5.0**. Stable portable EXE: `dist/windows/stable/0.3.6/Asset Forge Studio.exe`. Expansion tested portable EXE: `dist/windows/expansion/0.5.0/20261021T150828Z/Asset Forge Studio Expansion.exe`. Use the `public_delivery_location` when present, otherwise `delivery_location` in the corresponding `docs/evidence/automation_*_build.json` report for the exact tested EXE directory. When any edition is running, publishing preserves it and writes a separate version directory; `latest` can therefore remain an older open build. Keep each EXE beside its own `afs-backend.exe`.
+
 ## Separate PC and Expansion distributions (2026-10-21)
 
 The verified PC **0.3.1** release remains a rollback copy at `dist/windows/stable/Asset Forge Studio.exe`; its installer is alongside it. The existing `dist/windows/latest/` location remains unchanged for compatibility. SHA-256 values are recorded in `evidence/desktop_stable_release.json`. Following the user's explicit request, new stable UI/default/export updates are built on `release/pc-stable` and published to `dist/windows/stable/latest/Asset Forge Studio.exe` with the original application identity.

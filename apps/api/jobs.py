@@ -78,6 +78,22 @@ def enqueue(payload, db=None):
     return get(identifier)
 
 
+def ensure_blender(job):
+    """Atomic child admission repairs a crash between validated inference and postprocessing."""
+    payload=job['payload']
+    if job['status']!='REVIEW_REQUIRED' or payload['kind']!='inference' or not payload.get('auto_blender'):return
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        existing=[decode(r) for r in db.execute('SELECT * FROM jobs')]
+        if any(j['payload'].get('parent_job')==job['id'] for j in existing):return
+        manifest=json.loads((store.DATA/'jobs'/job['id']/'manifest.json').read_text(encoding='utf-8'))
+        height=payload.get('benchmark_height_m')
+        return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,
+            batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
+            effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),
+            render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
+
+
 def retry(identifier):
     original = get(identifier)
     if original['status'] not in TERMINAL: raise ValueError('Cancel or finish current attempt before retry')
@@ -178,8 +194,11 @@ class Worker:
                 with file_lock(store.DATA/'.scheduler.lock'):
                     with store.connect() as db:
                         db.execute("UPDATE jobs SET status='BLOCKED',error='Worker interrupted; retry creates a new attempt',updated_at=? WHERE status IN ('RUNNING','GENERATED','POSTPROCESSING','VALIDATING')", (store.now(),))
+                    from .automation import startup_recovery,tick
+                    startup_recovery()
                     while not self.stop.is_set():
                         self.active={k:v for k,v in self.active.items() if v[0].is_alive()}
+                        tick()
                         with store.connect() as db:
                             rows=db.execute("SELECT * FROM jobs WHERE status='QUEUED' ORDER BY created_at").fetchall()
                             candidates=[]
@@ -192,7 +211,7 @@ class Worker:
                                     if not parent:continue
                                     value=json.loads(parent['payload']);item=next((i for i in value['items'] if i['asset_id']==job['payload'].get('asset_id')),None)
                                     if value['paused'] or not item or item.get('skipped'):continue
-                                    priority=item['priority']
+                                    priority=item['priority']+(20 if job['payload']['kind']=='inference' else 10 if job['payload']['kind']=='blender' else 0)
                                 readiness,reason=dependency_readiness(job)
                                 if readiness=='blocked':transition(job['id'],'BLOCKED',reason);continue
                                 if readiness=='waiting':continue
@@ -216,6 +235,12 @@ class Worker:
         try:
             with resource_slot(kind):
                 if self.stop.is_set() or get(job['id'])['status']!='QUEUED':return
+                if job['payload'].get('batch_id'):
+                    from . import batch
+                    with batch.LOCK:
+                        parent=batch.batch(job['payload']['batch_id'])
+                        if parent['paused']:return
+                        transition(job['id'],'RUNNING')
                 started=time.monotonic();started_at=store.now();samples=[];finished=threading.Event()
                 def monitor():
                     while not finished.wait(.5):
@@ -249,7 +274,7 @@ class Worker:
         identifier = job['id']; payload = job['payload']; process = None
         folder = store.DATA / 'jobs' / identifier; folder.mkdir(parents=True, exist_ok=True)
         try:
-            transition(identifier, 'RUNNING')
+            if get(identifier)['status']=='QUEUED':transition(identifier, 'RUNNING')
             if payload['kind']=='batch_semantics':
                 from .batch_semantics import execute
                 execute(job,folder)
@@ -447,13 +472,7 @@ class Worker:
             (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
             transition(identifier, 'REVIEW_REQUIRED')
             if payload.get('auto_blender'):
-                height = payload.get('benchmark_height_m')
-                enqueue({'kind': 'blender', 'artifact_id': record['id'], 'normalize': bool(height), 'target_height_m': height,
-                         'batch_id': payload.get('batch_id'), 'effective_config':payload.get('effective_config'), 'effective_config_hash':payload.get('effective_config_hash'),
-                         'batch_attempt':payload.get('batch_attempt',0),
-                         'project_id': payload.get('project_id') or record.get('project_id'), 'asset_id': payload.get('asset_id') or record.get('asset_id'),
-                         'render': True, 'resolutions': ['mobile', 'pc1440'], 'views': ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'],
-                         'parent_job': identifier,'depends_on':[identifier]})
+                ensure_blender(get(identifier))
         finally:
             if process and process.poll() is None: kill_tree(process)
             (folder / 'gpu_samples.json').write_text(json.dumps(samples, indent=2), encoding='utf-8')

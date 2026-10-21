@@ -1,5 +1,13 @@
 # Asset Forge Studio development contract
 
+## Automation-first production (V3, user instruction)
+
+Automatic by default; manual only when requested. Single and Batch expose Auto, Assisted checkpoints and Expert controls. Auto import analyzes losslessly without starting GPU work; only explicit Generate starts production. Generate All includes descriptive FUTURE tags. Missing ordinary scale metadata receives editable values with explicit/inherited/inferred/defaulted provenance, never invented gameplay contracts.
+
+Automatic technical concept/candidate selection is not artist approval. Keep every source and candidate, preserve approved masters and the Single/Batch quality resolver. Deliver each technically validated asset immediately with GLB Only + optional manifest by default. Export choices never lower generation quality or force FBX/native packages. Never claim untested engine import or mid-inference resume.
+
+Persist stage checkpoints and bounded asset windows in SQLite. One heavy GPU stage at a time. Graceful Pause stops new admission and lets active stages checkpoint. Restart defaults to waiting for manual Resume; GPU auto-resume requires explicit opt-in. Reuse completed outputs and idempotent exports, retry only interrupted/transient stages within bounds, keep failures isolated. Atomic game delivery publishes validated files before updating the project manifest; retain version history and reject externally edited files/indexes. Never commit to game repositories or alter scenes automatically.
+
 User requirements take priority. Preserve the current local AI pipeline, immutable artifacts, existing game data, per-engine Python environments and Quality Lock. No paid AI APIs/cloud inference. Universal Expansion V2 Reviewed now authorizes additional modules in evidence-based vertical slices; do not present planned modules as working.
 
 ## Mandatory Windows completion loop (user instruction, 2026-10-21)

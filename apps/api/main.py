@@ -29,7 +29,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.3.5", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.3.6", lifespan=lifespan)
 @app.exception_handler(RequestValidationError)
 async def readable_validation_error(request: Request, exc: RequestValidationError):
     # Validation input can contain multi-megabyte prompts. Return field messages only.
@@ -66,7 +66,7 @@ async def local_origin(request: Request, call_next):
 
 @app.get('/api/desktop/health')
 def desktop_health():
-    active=[j for j in jobs.listing() if j['status'] not in jobs.TERMINAL]
+    active=shutdown_jobs()
     return dict(ready=True,service='Asset Forge Studio',version=app.version,active_jobs=len(active),data_path=str(store.DATA),
                 workspace=str(store.WORKSPACE),pid=os.getpid(),scheduler=dict(gpu_concurrency=1,cpu_concurrency=int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))
 
@@ -74,12 +74,18 @@ def desktop_health():
 class Shutdown(BaseModel):cancel_active:bool=False
 
 
+def shutdown_jobs():
+    with store.connect() as db:paused={r['id'] for r in db.execute('SELECT id,payload FROM batches') if json.loads(r['payload']).get('paused')}
+    return [j for j in jobs.listing() if j['status'] not in jobs.TERMINAL and not (j['status']=='QUEUED' and j['payload'].get('batch_id') in paused)]
+
+
+
 @app.post('/api/desktop/shutdown')
 def desktop_shutdown(body:Shutdown):
     if not os.environ.get('AFS_API_TOKEN'):raise HTTPException(403,'Managed desktop session required')
     callback=getattr(app.state,'request_shutdown',None)
     if callback is None:raise HTTPException(503,'Backend is not managed by desktop lifecycle')
-    active=[j for j in jobs.listing() if j['status'] not in jobs.TERMINAL]
+    active=shutdown_jobs()
     if active and not body.cancel_active:raise HTTPException(409,'Jobs are running; explicitly cancel-and-exit or return to app')
     for job in active:
         try:jobs.transition(job['id'],'CANCELLED','User requested cancel-and-exit from desktop')
@@ -311,6 +317,10 @@ from .batch import router as batch_router
 app.include_router(batch_router)
 from .batch_semantics import router as batch_semantics_router
 app.include_router(batch_semantics_router)
+from .automation import router as automation_router
+from .export_profiles import router as export_profiles_router
+app.include_router(automation_router)
+app.include_router(export_profiles_router)
 from .universal import router as universal_router
 app.include_router(universal_router)
 

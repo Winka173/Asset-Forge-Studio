@@ -1,0 +1,126 @@
+{
+  "status": "PASS_REAL_NATIVE_SINGLE_RECOVERY_AND_DELIVERY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\single-auto-native\\2026-10-21T14-48-30-645Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\expansion\\latest\\Asset Forge Studio Expansion.exe",
+  "checks": [
+    {
+      "name": "native_retry_failed_blender_only_reuses_real_concept_and_3d_maximum_checkpoints",
+      "passed": true,
+      "gpu_job_ids": [
+        "3d1b375b060a48ffa76f1ed35656db28",
+        "c6917273e5054f78b3f8c31a14f1b169"
+      ],
+      "cpu_retry": "e317b6d245414a15a05209fc118d34ed",
+      "quality_hash": "83b8a6f382775441bb6d93c945e68094bd1daf1f78a6b786033fdf45c7d612e8"
+    },
+    {
+      "name": "native_relaunch_retains_real_single_export_without_regeneration",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "initial_failure": "Error: {\"status\":\"failed\",\"stage\":\"blender\",\"checkpoints\":{\"27e665214a21434597e0ffac4e8a47b3\":{\"stage\":\"blender\",\"state\":\"FAILED\",\"updated_at\":\"2026-10-21T15:01:42.345196+00:00\"},\"3d1b375b060a48ffa76f1ed35656db28\":{\"stage\":\"inference\",\"state\":\"REVIEW_REQUIRED\",\"updated_at\":\"2026-10-21T15:01:42.248430+00:00\"},\"c6917273e5054f78b3f8c31a14f1b169\":{\"stage\":\"concept\",\"state\":\"REVIEW_REQUIRED\",\"updated_at\":\"2026-10-21T14:49:29.382373+00:00\"}},\"engines\":[\"trellis2_community\"],\"enabled\":true,\"attempt\":0,\"engine_policy\":\"Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score\",\"human_approved\":false,\"concept_selection\":{\"artifact_id\":\"0a3998da35354d19a0305460d428d057\",\"sha256\":\"0a3ec03caa56e1fd71db8f08a814b4d80408fef4d6850ca7fb434497b2d1c4c3\",\"method\":\"Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback\",\"measurements\":{\"width\":1024,\"height\":1024,\"mode\":\"RGB\",\"has_transparency\":false,\"laplacian_variance_proxy\":456.3412780761719,\"approval\":\"NEEDS_REVIEW\",\"multi_view_consistency\":\"NOT_TESTED\",\"background\":\"unsegmented\"},\"artistic_approval\":false},\"error\":\"Error -3 while decompressing data: incorrect header check\"}",
+  "mid_inference_resume": false,
+  "delivery": {
+    "id": "bb4f6476ae1858ddb840e661a5766208",
+    "status": "COMPLETED",
+    "asset_id": "aa9df2048b044465b811708608581b7d",
+    "project_id": "9e5b1a343b7449729e7f591d17c27943",
+    "source_asset_id": "aa9df2048b044465b811708608581b7d",
+    "artifact_id": "c5d0b861d7a04e178e8b5607ea205ad1",
+    "settings": {
+      "preset": "glb_only",
+      "glb": true,
+      "manifest": true,
+      "zip": false,
+      "fbx": false,
+      "blend": false,
+      "textures": false,
+      "lods": false,
+      "high_poly": false,
+      "unity_package": false,
+      "unreal_package": false,
+      "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\single-auto-native\\2026-10-21T14-48-30-645Z\\GameAssets"
+    },
+    "created_at": "2026-10-21T15:13:32.615879+00:00",
+    "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\single-auto-native\\2026-10-21T14-48-30-645Z\\GameAssets\\9e5b1a343b7449729e7f591d17c27943\\selective\\aa9df2048b044465b811708608581b7d\\bb4f6476ae1858ddb840e661a5766208",
+    "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\single-auto-native\\2026-10-21T14-48-30-645Z\\GameAssets",
+    "filename": "aa9df2048b044465b811708608581b7d--aeac06440b.glb",
+    "files": [
+      {
+        "name": "aa9df2048b044465b811708608581b7d--aeac06440b.glb",
+        "bytes": 66919752,
+        "sha256": "a47327be1ba500f58cf37517a02b5f6d781d64e7ccc7a11cebb4d7383b127f02",
+        "kind": "glb",
+        "url": "/api/export-profiles/exports/bb4f6476ae1858ddb840e661a5766208/files/aa9df2048b044465b811708608581b7d--aeac06440b.glb"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 4139,
+        "sha256": "3e2b2e369f6efc3ac812e0a1df0e1aa4ce00f60bdc8932ecc7e96705a52461b6",
+        "kind": "manifest",
+        "url": "/api/export-profiles/exports/bb4f6476ae1858ddb840e661a5766208/files/manifest.json"
+      }
+    ],
+    "qa": {
+      "status": "NEEDS_REVIEW",
+      "triangles": 968822,
+      "mesh_instances": 1,
+      "dimensions_xyz_m": [
+        17.01260471343994,
+        17,
+        11.721438884735107
+      ],
+      "bounds_xyz_m": [
+        [
+          -8.506302293390036,
+          0,
+          -5.860719561576843
+        ],
+        [
+          8.506302420049906,
+          17,
+          5.860719323158264
+        ]
+      ],
+      "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+      "meshes": [
+        {
+          "node": "geometry_0",
+          "triangles": 968822,
+          "vertices": 741817,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": false,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        }
+      ],
+      "materials": [
+        {
+          "name": "Material_0",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": false,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 1,
+          "roughness_factor": 1
+        }
+      ],
+      "images": 2,
+      "checks": {
+        "container": "PASS",
+        "finite_nonempty_geometry": "PASS",
+        "external_resources": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "pbr_plausibility": "NOT_TESTED",
+        "dimensions_approved": "NOT_TESTED",
+        "unity_import": "NOT_TESTED",
+        "human_quality": "NOT_TESTED"
+      }
+    },
+    "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\single-auto-native\\2026-10-21T14-48-30-645Z\\GameAssets\\9e5b1a343b7449729e7f591d17c27943\\manifest.json"
+  }
+}

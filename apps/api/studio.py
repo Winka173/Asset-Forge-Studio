@@ -86,12 +86,14 @@ def create_project(body: ProjectInput):
 
 @router.post('/projects/{identifier}')
 def update_project(identifier: str, body: ProjectInput):
-    project(identifier)
+    previous=project(identifier)
     if not body.name.strip(): raise HTTPException(400, 'Tên game không được để trống')
     if body.cover_artifact_id:
         cover = scoped_artifact(body.cover_artifact_id, identifier)
         if cover['role'] not in ('concept', 'reference'): raise HTTPException(400, 'Cover cần ảnh')
-    value = body.model_dump() | dict(id=identifier)
+    updates=body.model_dump(exclude_unset=True)
+    if 'export_settings' in updates:updates['export_settings']=previous.get('export_settings',{}) | updates['export_settings']
+    value = previous | updates | dict(id=identifier)
     with store.connect() as db: db.execute('UPDATE projects SET payload=? WHERE id=?', (json.dumps(value), identifier))
     return value
 
@@ -287,7 +289,9 @@ def concept(body: ConceptInput):
     value=asset(body.asset_id);config=project(value['project_id'])
     if body.batch_id:
         from .batch import batch
-        if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')
+        parent=batch(body.batch_id)
+        if not any(i['asset_id']==value['id'] for i in parent['items']):raise HTTPException(400,'Asset không thuộc batch')
+        config=parent['style_snapshot']
     if not CONCEPT_ADAPTER.installed:raise HTTPException(409,'SDXL local chưa đủ weights/environment; không tải tự động')
     style='; '.join(filter(None,[config.get('default_style'),config.get('material_language'),', '.join(config.get('palette',[]))]))
     bible=config.get('art_bible',{})
@@ -365,10 +369,18 @@ def generate(body: Generate):
     value = asset(body.asset_id); config = project(value['project_id'])
     if body.batch_id:
         from .batch import batch
-        if not any(i['asset_id']==value['id'] for i in batch(body.batch_id)['items']):raise HTTPException(400,'Asset không thuộc batch')
+        parent=batch(body.batch_id)
+        if not any(i['asset_id']==value['id'] for i in parent['items']):raise HTTPException(400,'Asset không thuộc batch')
+        config=parent['style_snapshot']
     source = scoped_artifact(body.artifact_id, value['project_id'])
     if source['role'] not in ('concept', 'reference'): raise HTTPException(400, 'Cần ảnh concept/reference đã chọn')
-    if source['metadata'].get('requires_concept_approval') and not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in value.get('concept_approvals',[])):
+    automatic_selection=False
+    if body.batch_id:
+        parent=batch(body.batch_id)
+        item=next(i for i in parent['items'] if i['asset_id']==value['id'])
+        selection=item.get('automation',{}).get('concept_selection',{})
+        automatic_selection=bool(parent.get('automation') and not parent['paused'] and item.get('started') and selection.get('artifact_id')==source['id'] and selection.get('sha256')==source['sha256'])
+    if source['metadata'].get('requires_concept_approval') and not automatic_selection and not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in value.get('concept_approvals',[])):
         raise HTTPException(409,'Cần duyệt concept thật trước khi tạo 3D')
     if len(set(body.seeds)) != len(body.seeds) or any(not 0 <= s < 2**32 for s in body.seeds):
         raise HTTPException(400, 'Cần 1–4 seed nguyên không trùng trong 0..4294967295')

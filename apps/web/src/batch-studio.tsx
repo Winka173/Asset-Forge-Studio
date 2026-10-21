@@ -1,4 +1,6 @@
 import { Select } from "./select";
+import { ActivityIndicator } from "./activity-indicator";
+import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
@@ -20,6 +22,9 @@ type ManifestItem = {
   source_char_end?: number;
   source_sha256?: string;
   semantic_metadata?: Record<string, unknown>;
+  spec_provenance?: Record<string, unknown>;
+  automatic_concept_selection?: Record<string, unknown>;
+  automation?: {status?:string;stage?:string;error?:string;export?:{filename:string;export_directory:string;files:{name:string;bytes:number;url:string}[]}};
   name: string;
   category: string;
   prompt: string;
@@ -52,6 +57,8 @@ type ManifestItem = {
   config_warning?: string;
 };
 type LocalModels = {available:boolean;models:{name:string;digest?:string;bytes?:number}[];reason?:string;execution?:string};
+type Workflow = {mode:'auto'|'assisted'|'expert';checkpoints:{concept:boolean;candidate:boolean;export:boolean};retry_limit:number;disk_reserve_gb:number;max_active_assets:number;auto_resume:boolean};
+const defaultWorkflow:Workflow={mode:'auto',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false};
 type Mode = "Fast Batch" | "Quality Batch" | "Maximum Quality Batch";
 type Batch = {
   id: string;
@@ -59,6 +66,7 @@ type Batch = {
   name: string;
   mode: Mode;
   paused: boolean;
+  automation?: {mode?:string;policy?:Record<string,unknown>};
   quality_lock?: boolean;
   master_prompt: string;
   items: ManifestItem[];
@@ -68,6 +76,17 @@ type Batch = {
     completed: number;
     blocked: number;
     active: number;
+    failed?: number;
+    needs_review?: number;
+    remaining?: number;
+    eta_seconds?: number|null;
+    pause_reason?: string|null;
+    exported?: number;
+    elapsed_seconds?: number;
+    queued?: number;
+    candidate_jobs_remaining?: number;
+    pending?: number;
+    pause_state?: 'pausing'|'paused'|string;
   };
   preflight?: {
     engine_status?: unknown;
@@ -107,7 +126,7 @@ const needsSpecs = (item: ManifestItem) =>
   !item.confirmed ||
   (item.missing_fields?.length || 0) > 0;
 const failed = (item: ManifestItem) =>
-  ["Failed", "Blocked", "Failed/Blocked", "QA Failed"].includes(item.status);
+  ["Failed", "Blocked", "Failed/Blocked", "QA Failed", "Needs Input", "Invalid GLB", "Export Failed"].includes(item.status);
 const shortStatus = (status: string) =>
   status.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-");
 async function call<T>(url: string, body?: unknown): Promise<T> {
@@ -183,6 +202,11 @@ export function BatchStudio({
     [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
     [references, setReferences] = useState<string[]>([]);
   const [sourceFile, setSourceFile] = useState<{name:string;bytes:number}|null>(null);
+  const [exportSettingsBusy,setExportSettingsBusy]=useState(false);
+  const [workflow,setWorkflow] = useState<Workflow>(defaultWorkflow),[workflowReady,setWorkflowReady]=useState(false);
+  const automatic=workflow.mode!=='expert';
+  useEffect(()=>{let alive=true;setWorkflowReady(false);setWorkflow(defaultWorkflow);call<Workflow>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(value);setWorkflowReady(true);}}).catch(error=>{if(alive)setError(error instanceof Error?error.message:String(error));});return()=>{alive=false;};},[projectId]);
+  async function updateWorkflow(patch:Partial<Workflow>){await execute(async()=>{const value=await call<Workflow>(`/api/automation/projects/${projectId}`,{...workflow,...patch});setWorkflow(value);setWorkflowReady(true);});}
   const uploadedFile = useRef<File|null>(null);
   const [localModels,setLocalModels] = useState<LocalModels|null>(null), [localModel,setLocalModel] = useState(''), [checkingModels,setCheckingModels] = useState(false), [modelsError,setModelsError] = useState('');
   async function checkLocalModels() {
@@ -230,19 +254,22 @@ export function BatchStudio({
       (item) =>
         (!assetSearch.trim() || `${item.name} ${item.source_asset_id || ''} ${item.asset_family} ${item.category} ${item.source_status || ''}`.toLocaleLowerCase().includes(assetSearch.trim().toLocaleLowerCase())) && (filter === "all" ||
         (filter === "issues"
-          ? failed(item) || needsSpecs(item)
+          ? failed(item) || (!automatic && needsSpecs(item))
+          : filter === 'completed' ? ['Approved','Game-ready','Completed','Needs Review','Ready for Review','Exported','Technically Validated'].includes(item.status)
           : filter === "approval"
             ? [
                 "Concept Ready",
                 "Awaiting Approval",
                 "Ready for Review",
+                "Needs Review",
+                "Exported",
               ].includes(item.status)
             : item.selected)),
     ) || [];
   const pageCount = Math.max(1, Math.ceil(visibleItems.length / 50));
   const currentPage = Math.min(manifestPage, pageCount);
   const pageItems = visibleItems.slice((currentPage - 1) * 50, currentPage * 50);
-  const selectableItems = visibleItems.filter(item => item.source_status?.toLowerCase() !== 'future');
+  const selectableItems = visibleItems;
   useEffect(() => { setManifestPage(1); }, [assetSearch, filter, selectedBatch]);
   const imageReferences = artifacts.filter((a) =>
     ["concept", "reference", "golden"].includes(a.role),
@@ -380,33 +407,36 @@ export function BatchStudio({
     await onRefresh?.();
   }
   async function analyze() {
-    if (locked.current) return;
+    await execute(()=>analyzeSource(prompt,uploadedFile.current,sourceFile?.name,format));
+  }
+  async function analyzeSource(text:string,file:File|null,filename?:string,inputFormat=format) {
     setAnalyzing(true);
-    try { await execute(async () => {
-      if (!prompt.trim())
+    try {
+      if (!text.trim())
         throw new Error(
           "Nhập Master Prompt hoặc import manifest trước khi phân tích.",
         );
       let created: Batch;
-      if (uploadedFile.current) {
-        const body=new FormData();body.append('file',uploadedFile.current);body.append('project_id',projectId);body.append('name',name.trim()||'Untitled batch');body.append('format',format);body.append('mode',mode);body.append('reference_ids',JSON.stringify(references));
+      const batchName=name.trim()||filename?.replace(/\.[^.]+$/,'')||'Untitled batch';
+      if (file) {
+        const body=new FormData();body.append('file',file);body.append('project_id',projectId);body.append('name',batchName);body.append('format',inputFormat);body.append('mode',mode);body.append('reference_ids',JSON.stringify(references));
         created=await call<Batch>('/api/batches/import',body);
       } else created = await call<Batch>("/api/batches/analyze", {
         project_id: projectId,
-        name: name.trim() || "Untitled batch",
-        master_prompt: prompt,
-        format,
+        name: batchName,
+        master_prompt: text,
+        format:inputFormat,
         mode,
         reference_ids: references,
-        source_filename: sourceFile?.name,
+        source_filename: filename,
       });
       adopt(created);
       await refresh(created.id);
       setNotice(
-        `Đã phân tích và lưu ${created.items.length} asset. ${created.items.filter(item => item.selected).length} được chọn; Future để ngoài danh sách chạy mặc định. Chưa khởi chạy AI.`,
+        `Đã phân tích và lưu ${created.items.length} asset. ${created.items.filter(item => item.selected).length} được chọn, gồm cả Future. Nhấn Generate All để bắt đầu; Analyze chưa chạy AI.`,
       );
       requestAnimationFrame(() => manifestRef.current?.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}));
-    }); } finally { setAnalyzing(false); }
+    } finally { setAnalyzing(false); }
   }
   async function readManifest(file?: File) {
     if (!file) return;
@@ -419,6 +449,7 @@ export function BatchStudio({
       // Content detection is authoritative; extensions can be misleading.
       setFormat("auto");
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ""));
+      if(workflow.mode!=='expert'){await analyzeSource(text,file,file.name,'auto');return;}
       setNotice(
         "Đã đọc file local. Nhấn Analyze Prompt để kiểm chứng schema và xem manifest.",
       );
@@ -427,12 +458,20 @@ export function BatchStudio({
   async function runBatch(ids = selectedItems.map((item) => item.asset_id)) {
     if (!batch) return;
     await execute(async () => {
-      await call(`/api/batches/${batch.id}/run`, { selected_ids: ids });
+      await call(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic });
       await refresh(batch.id);
       await onRefresh?.();
       setNotice(
-        "Đã tiếp tục checkpoint hợp lệ. Một heavy GPU job chạy mỗi lần; CPU / I/O có thể overlap theo resource limits. Concept cần được người dùng duyệt.",
+        automatic ? 'Đã bắt đầu automatic production cho các asset được chọn. Concept được chọn kỹ thuật tự động; output lưu Needs Review, không phải artistic approval.' : 'Đã tiếp tục workflow manual. Concept và thông số cần người dùng duyệt.',
       );
+    });
+  }
+  async function runAll() {
+    if (!batch) return;
+    await execute(async()=>{
+      await call(`/api/batches/${batch.id}/run-all`,{});
+      await refresh(batch.id);await onRefresh?.();
+      setNotice(`Đã bắt đầu automatic production cho toàn bộ ${batch.items.length} asset, gồm Future. Quality Lock giữ nguyên; output cần review sau khi tạo.`);
     });
   }
   async function control(action: string) {
@@ -448,7 +487,7 @@ export function BatchStudio({
           ? "Batch dừng ở checkpoint an toàn; stage đang chạy được giữ lại."
           : action === "resume"
             ? "Đã tiếp tục batch, không chạy lại stage thành công."
-            : action === "duplicate"
+            : action === 'retry_failed' ? 'Đã retry các checkpoint lỗi đủ điều kiện; không lặp lại output thành công.' : action === 'skip_failed' ? 'Đã bỏ qua các asset lỗi và giữ nguyên output đã hoàn tất.' : action === "duplicate"
               ? "Đã tạo bản cấu hình batch mới để bạn chỉnh sửa."
               : "Đã yêu cầu dừng batch. Output đã thành công vẫn được giữ lại.",
       );
@@ -589,7 +628,10 @@ export function BatchStudio({
         </div>
       )}
       {draftWarning && <p className="batch-storage-warning" role="status">{draftWarning}</p>}
-      {analyzing && <div className="batch-analyzing" role="status" aria-live="polite"><span className="batch-loading-dot"/>Đang đọc toàn bộ prompt và xây manifest. Bạn có thể duyệt và chọn asset sau khi hoàn tất; chưa chạy GPU.</div>}
+      {busy && <ActivityIndicator label={analyzing ? 'Analyzing your source file' : 'Updating local batch'} detail={analyzing ? 'Reading the complete prompt and building the manifest. GPU production has not started.' : 'Waiting for the local backend to finish this action.'}/>}
+      {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
+      <div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate All starts production when you choose.'}</p></div>
+      <details className="advanced batch-workflow-options"><summary>Advanced · workflow checkpoints and recovery</summary>{workflow.mode==='assisted' && <div className="batch-checkpoint-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint} className="check-field"><input type="checkbox" disabled={busy} checked={workflow.checkpoints[checkpoint]} onChange={event=>updateWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/>Review {checkpoint==='candidate'?'3D candidate':checkpoint==='export'?'before export':'concept'}</label>)}</div>}<div className="batch-edit-pair"><label className="studio-field">Retry limit<input type="number" min="0" max="3" disabled={busy} value={workflow.retry_limit} onChange={event=>updateWorkflow({retry_limit:Number(event.target.value)})}/></label><label className="studio-field">Disk reserve (GB)<input type="number" min="1" disabled={busy} value={workflow.disk_reserve_gb} onChange={event=>updateWorkflow({disk_reserve_gb:Number(event.target.value)})}/></label></div><label className="studio-field">After reopening<Select aria-label="Batch recovery policy" value={workflow.auto_resume ? "auto" : "manual"} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({auto_resume:event.target.value==="auto"})}><option value="manual">Wait for manual Resume</option><option value="auto">Auto-resume after reopening</option></Select><small>Automatic GPU restart requires this explicit opt-in. Completed outputs and exports remain available in either mode.</small></label><p>One logical batch, up to {workflow.max_active_assets} active assets. Only one heavy GPU task runs at a time. Pause finishes the current stage before stopping; recovery reuses completed checkpoints.</p></details>
       <div className="batch-intake">
         <section className="batch-brief">
           <div className="batch-panel-title">
@@ -615,8 +657,7 @@ export function BatchStudio({
             />}
             <small>
               {prompt.length.toLocaleString('vi-VN')} ký tự ·{' '}
-              Prompt dài được giữ nguyên. Không áp giới hạn 1.000 ký tự; chưa
-              xác nhận thì chưa generate.
+              Prompt dài được giữ nguyên. Import và Analyze không chạy GPU; Generate All bắt đầu production tự động.
             </small>
           </label>
           <div className="batch-intake-actions">
@@ -626,7 +667,7 @@ export function BatchStudio({
               <input
                 aria-label="Import asset manifest"
                 type="file"
-                disabled={busy}
+                disabled={busy||!workflowReady}
                 accept=".json,.csv,.md,.markdown,.txt"
                 onChange={(e) => {
                   readManifest(e.target.files?.[0]);
@@ -646,7 +687,7 @@ export function BatchStudio({
             </Select>
             <button
               className="primary"
-              disabled={busy || !projectId || !prompt.trim()}
+              disabled={busy || !workflowReady || !projectId || !prompt.trim()}
               onClick={analyze}
             >
               <Glyph kind="list" />
@@ -750,7 +791,10 @@ export function BatchStudio({
                   assets
                 </span>
               </div>
-              <div className="batch-run-actions">
+            </div>
+              <BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/>
+              <div className="batch-run-actions batch-production-actions">
+                <button className="primary batch-generate-all" disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={runAll}><Glyph kind="play"/>Generate All ({batch.items.length})</button>
                 <button
                   className="secondary"
                   disabled={busy}
@@ -758,12 +802,16 @@ export function BatchStudio({
                 >
                   {batch.paused ? "Resume batch" : "Pause batch"}
                 </button>
+                <button className="secondary" disabled={busy} onClick={()=>control('cancel')}>Cancel Batch</button>
+                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry Failed</button>
+                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}>Skip Failed</button>
                 <button
-                  className="primary"
+                  className="secondary"
                   disabled={
                     busy ||
+                    exportSettingsBusy || !workflowReady ||
                     !selectedItems.length ||
-                    blockedItems.length > 0
+                    (!automatic && blockedItems.length > 0)
                   }
                   onClick={() => runBatch()}
                 >
@@ -771,13 +819,13 @@ export function BatchStudio({
                   Generate Selected ({selectedItems.length})
                 </button>
               </div>
-            </div>
-            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · not selected by default</span><span>No GPU starts until Generate</span></div>
+            <div className="batch-production-summary"><div><strong>{batch.items.reduce((sum,item)=>sum+item.candidates,0)} candidates</strong><span>Configured across {batch.items.length} independent assets</span></div><div><strong>{batch.preflight?.estimated_jobs != null ? `${batch.preflight.estimated_jobs} estimated jobs` : 'Job estimate pending'}</strong><span>1 heavy GPU task at a time · bounded CPU overlap</span></div><div><strong>Automatic production</strong><span>Concept selection is technical; generated models remain Needs Review.</span></div></div>
+            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate All</span><span>No GPU starts until Generate</span></div>
             {batch.import_diagnostics && <details className="batch-import-diagnostics" open><summary>Import report · {batch.import_diagnostics.status || 'Parsed'}</summary><div><span>Detected: {batch.import_diagnostics.detected_format || 'Unknown'}</span><span>Parser: {batch.import_diagnostics.parser_method || 'Deterministic'}</span><span>Local AI: {batch.import_diagnostics.local_ai_used ? 'Used' : 'Not used'}</span><span>Parsed: {batch.import_diagnostics.parsed_count ?? batch.items.length}{batch.import_diagnostics.expected_count ? ` / ${batch.import_diagnostics.expected_count} expected` : ''}</span><span>Primary: {batch.import_diagnostics.primary_count ?? '—'} · Future: {batch.import_diagnostics.future_count ?? '—'}</span></div>{batch.import_diagnostics.source_file?.sha256 && <code>SHA256: {batch.import_diagnostics.source_file.sha256}</code>}{(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url) && <a href={apiUrl(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url)} download>Download original source</a>}{batch.import_diagnostics.warnings?.map((warning,index)=><p key={`w${index}`}>{warning}</p>)}{batch.import_diagnostics.errors?.map((message,index)=><p className="error-text" key={`e${index}`}>{message}</p>)}</details>}
             <details className="batch-import-diagnostics batch-local-analysis"><summary>Optional local AI · metadata suggestions</summary><p>Phân tích theo đoạn bằng CPU. Không tạo model, không sửa prompt, dimensions hay cấu hình generation. Mọi gợi ý cần review riêng.</p><div><span>{checkingModels?'Checking local Ollama…':localModels?.available?'Local Ollama available':'Local Ollama unavailable'}</span><button type="button" className="text-button" disabled={checkingModels} onClick={checkLocalModels}>Refresh local models</button></div>{localModels?.reason && <p>{localModels.reason}</p>}{modelsError && <p role="alert">{modelsError}</p>}<small>{localModels?.execution || 'CPU only · metadata only'} · Không tự tải model.</small>{!!localModels?.models.length && <label className="studio-field">Installed local model<Select aria-label="Local metadata model" value={localModel} onChange={event=>setLocalModel(event.target.value)}>{localModels.models.map(model=><option key={model.name} value={model.name}>{model.name}</option>)}</Select></label>}<button className="secondary" disabled={busy||checkingModels||!localModels?.available||!localModel||!selectedItems.length} onClick={()=>execute(async()=>{const job=await call<{id:string}>(`/api/batch-analysis/${batch.id}`,{model:localModel,selected_ids:selectedItems.map(item=>item.asset_id)});setNotice(`Đã xếp CPU metadata analysis ${job.id.slice(0,12)}. Kết quả nằm trong Edit asset để review; chưa áp dụng vào generation.`);})}>Analyze selected metadata ({selectedItems.length})</button></details>
             <div className="batch-checkpoints">
               <span className={batch.paused ? "paused" : ""}>
-                {batch.paused
+                {batch.progress.pause_state==='pausing' ? 'PAUSING · FINISHING CURRENT STAGE' : batch.paused
                   ? "PAUSED AT CHECKPOINT"
                   : "HYBRID QUEUE · ONE HEAVY GPU JOB"}
               </span>
@@ -785,12 +833,16 @@ export function BatchStudio({
                 {batch.progress.completed} / {batch.progress.total} completed
               </b>
               <small>
-                {batch.progress.active} active · {batch.progress.blocked}{" "}
+                {batch.progress.active} active · {automatic ? batch.items.filter(item=>['Blocked','Failed','Failed/Blocked','QA Failed'].includes(item.status)).length : batch.progress.blocked}{" "}
                 blocked
               </small>
-              <small>Concept → approval → 3D → Blender → QA → Library</small>
+              <small>{batch.progress.failed ?? batch.items.filter(failed).length} failed · {batch.progress.needs_review ?? batch.items.filter(item=>['Needs Review','Ready for Review'].includes(item.status)).length} needs review · {batch.progress.remaining ?? Math.max(0,batch.progress.total-batch.progress.completed)} remaining</small>
+              <small>{batch.progress.exported ?? batch.items.filter(item=>item.exports?.length>0).length} exported{typeof batch.progress.queued==='number'?` · ${batch.progress.queued} queued`:''}{typeof batch.progress.pending==='number'?` · ${batch.progress.pending} pending`:''}{typeof batch.progress.candidate_jobs_remaining==='number'?` · ${batch.progress.candidate_jobs_remaining} candidate jobs remaining`:''}{typeof batch.progress.elapsed_seconds==='number'?` · ${Math.floor(batch.progress.elapsed_seconds/60)}m ${Math.floor(batch.progress.elapsed_seconds%60)}s elapsed`:''}</small>
+              <small>{typeof batch.progress.eta_seconds==='number' && Number.isFinite(batch.progress.eta_seconds) ? `Estimated remaining: ${Math.ceil(batch.progress.eta_seconds/60)} min` : 'ETA unavailable until reliable measurements exist'}</small>
+              <small>{automatic ? 'Concept → automatic technical selection → 3D → Blender → QA → Library' : 'Concept → human review → 3D → Blender → QA → Library'}</small>
             </div>
-            {blockedItems.length > 0 && (
+            {batch.progress.pause_reason && <p role="status" className="batch-storage-warning">Paused: {batch.progress.pause_reason}</p>}
+            {!automatic && blockedItems.length > 0 && (
               <div className="batch-spec-warning">
                 <strong>
                   {blockedItems.length} selected asset chưa đủ thông số / xác
@@ -809,7 +861,8 @@ export function BatchStudio({
                 {[
                   ["all", "All assets"],
                   ["selected", "Selected"],
-                  ["approval", "To review"],
+                  ["approval", "View Needs Review"],
+                  ["completed", "View Completed"],
                   ["issues", "Needs attention"],
                 ].map(([value, title]) => (
                   <button
@@ -854,7 +907,7 @@ export function BatchStudio({
                     <th>
                       <input
                         aria-label="Select all batch assets"
-                        title="Select matching assets across all pages; Future remains opt-in"
+                        title="Select matching assets across all pages, including Future"
                         type="checkbox"
                         checked={
                           selectableItems.length > 0 &&
@@ -940,7 +993,7 @@ export function BatchStudio({
                           m
                         </span>
                         <span className="batch-row-meta">
-                          {item.confirmed && !needsSpecs(item)
+                          {automatic && !item.automation ? 'Scale resolves automatically on Generate' : item.confirmed && !needsSpecs(item)
                             ? "Specs confirmed"
                             : item.missing_fields?.length
                               ? `Missing: ${item.missing_fields.join(", ")}`
@@ -954,6 +1007,9 @@ export function BatchStudio({
                           {item.skipped ? "Skipped" : item.status}
                         </span>
                         <span className="batch-row-meta">
+                          {item.automation?.stage && <span>Stage: {item.automation.stage} · </span>}
+                          {item.automation?.export && <span className="batch-row-meta">Exported: {item.automation.export.filename} · {(item.automation.export.files.reduce((sum,file)=>sum+file.bytes,0)/1048576).toFixed(1)} MB <a href={apiUrl(item.automation.export.files.find(file=>file.name.endsWith('.glb'))?.url)} download>GLB</a><button className="text-button" onClick={()=>{if(window.__TAURI__)window.__TAURI__.core.invoke('desktop_open_export_directory',{path:item.automation!.export!.export_directory}).catch(error=>setError(String(error)));}}>Open folder</button></span>}
+                          {item.automation?.error && <span className="error-text">{item.automation.error}</span>}
                           {item.versions?.length || 0} saved version
                           {item.versions?.length !== 1 ? "s" : ""}
                         </span>
@@ -962,9 +1018,9 @@ export function BatchStudio({
                         <div className="batch-row-actions">
                           <button onClick={() => edit(item)}>Edit</button>
                           {item.concept_artifact_id &&
-                            ["Concept Ready", "Awaiting Approval"].includes(
+                            (["Concept Ready", "Awaiting Approval"].includes(
                               item.status,
-                            ) && (
+                            ) || item.automation?.stage==='Review concept') && (
                               <button
                                 className="batch-review-button"
                                 onClick={() => {
@@ -984,6 +1040,7 @@ export function BatchStudio({
                               Review candidates
                             </button>
                           )}
+                          {item.automation?.stage==='Review before export' && <button className="batch-review-button" disabled={busy} onClick={()=>itemAction(item,'authorize_export')}>Continue export</button>}
                           <Select
                             aria-label={`Actions ${item.name}`}
                             value=""
@@ -1085,6 +1142,7 @@ export function BatchStudio({
               <div className="batch-panel-title">
                 <h2>Export what exists.</h2>
               </div>
+              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export Selected</button><button className="secondary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export All Completed</button></div>
               <p>
                 ZIP chỉ chứa output thật đã tạo. Asset lỗi hoặc chưa có mesh
                 không được biến thành model hoàn thành.
@@ -1136,8 +1194,7 @@ export function BatchStudio({
           <div>
             <h3>Review the plan before spending GPU time.</h3>
             <p>
-              Analyze chỉ tạo manifest. Stage AI chỉ bắt đầu khi bạn chọn asset,
-              xác nhận thông số và nhấn Generate Selected.
+              Import → Analyze → Generate All → Library. Analyze giữ nguyên prompt và không chạy GPU. Generate All gồm cả Future; thông số và concept được xử lý tự động, output chờ review sau khi tạo.
             </p>
           </div>
         </div>
@@ -1213,6 +1270,8 @@ export function BatchStudio({
             </label>
             {editing.source_asset_id && <div className="batch-source-provenance"><strong>Original source · {editing.source_asset_id}</strong><span>{editing.source_status || 'Unspecified'} · lines {editing.source_line_start ?? '—'}–{editing.source_line_end ?? '—'}</span>{editing.source_sha256 && <code>SHA256: {editing.source_sha256}</code>}<small>Source provenance is read-only. Editing the generation prompt preserves the original imported file.</small></div>}
             {editing.source_char_start !== undefined && <p className="batch-source-status">Source character span: {editing.source_char_start}–{editing.source_char_end ?? '—'}</p>}
+            {editing.spec_provenance && <details className="batch-import-diagnostics"><summary>Specification provenance · original / inferred / defaulted</summary><pre>{JSON.stringify(editing.spec_provenance,null,2)}</pre></details>}
+            {editing.automatic_concept_selection && <details className="batch-import-diagnostics"><summary>Automatic concept selection · technical evidence</summary><p>Automatic selection is not human artistic approval.</p><pre>{JSON.stringify(editing.automatic_concept_selection,null,2)}</pre></details>}
             {!!editing.semantic_metadata && Object.keys(editing.semantic_metadata).length>0 && <details className="batch-import-diagnostics"><summary>Local AI suggestions · Needs Review</summary><p>Read-only suggestions. Chưa áp dụng vào generation; prompt và source gốc được giữ nguyên.</p><pre>{JSON.stringify(editing.semantic_metadata,null,2)}</pre></details>}
             <fieldset className="batch-dimensions-editor">
               <legend>Target dimensions · meters</legend>

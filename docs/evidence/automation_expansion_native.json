@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-native\\2026-10-21T15-15-46-039Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\expansion\\0.5.0\\20261021T150828Z\\Asset Forge Studio Expansion.exe",
+  "checks": [
+    {
+      "name": "native_auto_import349_no_analyze_click_future_included_no_gpu_sticky_generate",
+      "passed": true,
+      "dry_plan": {
+        "total": 349,
+        "future": 37,
+        "candidate_jobs": 349,
+        "source_hashes_preserved": true
+      },
+      "generate_bounds": {
+        "x": 473.76190185546875,
+        "y": 28.761905670166016,
+        "width": 189.44049072265625,
+        "height": 50.000003814697266
+      }
+    },
+    {
+      "name": "native_real_textured_glb_selective_export_hash_manifest_no_inference_and_create_new_draft",
+      "passed": true,
+      "export_id": "c4426d700e7e5f60aa43c1fec09ccc2f"
+    },
+    {
+      "name": "native_forced_shutdown_recovery_defaults_manual_resume_no_duplicate_jobs",
+      "passed": true,
+      "job_ids": [
+        "7d80271df26649b68088aed43147e14c",
+        "bad08c5d90e545f5a0e26fc3d2bcf9ff"
+      ],
+      "mid_inference_resume": false
+    },
+    {
+      "name": "native_graceful_close_reopen_preserves_manifest",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "gpu_inference": "NOT_RUN; separate real subset report",
+  "version": "0.5.0",
+  "batch_id": "ff3354dc367143fcb6e83d235533c9b4"
+}

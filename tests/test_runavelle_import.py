@@ -25,7 +25,7 @@ def test_actual_source_all_spans_hashes_and_counts(source):
     assert len(headings)==len(rows)==349
     assert len({i['source_asset_id'] for i in rows})==349
     assert sum(i['source_status']=='FUTURE' for i in rows)==37
-    assert sum(i['selected'] for i in rows)==312
+    assert sum(i['selected'] for i in rows)==349
     lines=text.splitlines(keepends=True)
     for index,(row,heading) in enumerate(zip(rows,headings)):
         stop=headings[index+1].start() if index+1<len(headings) else len(text)

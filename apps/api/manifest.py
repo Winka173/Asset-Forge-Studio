@@ -80,7 +80,7 @@ def normalize(row):
     imported_status=row.pop('status',None)
     if imported_status and 'FUTURE' in str(imported_status).upper():row.setdefault('source_status','FUTURE')
     if str(row.get('source_asset_id','')).startswith('FUT_'):row.setdefault('source_status','FUTURE')
-    if row.get('source_status','').upper()=='FUTURE':row.setdefault('selected',False)
+    # FUTURE is descriptive metadata; explicit user exclusions still win.
     row.pop('version',None)  # completion status is derived, never trusted from input.
     return row
 
@@ -96,7 +96,7 @@ def heading_prompts(text):
         if not re.sub(r'[\s*#_`\-]','',body):raise ValueError(f'{heading[1]}: empty prompt body at line {text.count(chr(10),0,heading.start())+1}')
         future=heading[1].startswith('FUT_') or bool(re.search(r'\*\*STATUS:\s*FUTURE\b',original,re.I))
         row=dict(source_asset_id=heading[1],source_status='FUTURE' if future else 'PROPOSED',
-                 name=heading[2].strip(),prompt=original,selected=not future,confirmed=False,
+                 name=heading[2].strip(),prompt=original,selected=True,confirmed=False,
                  source_line_start=text.count('\n',0,heading.start())+1,
                  source_line_end=text.count('\n',0,end-1)+1,
                  source_char_start=heading.start(),source_char_end=end,
@@ -145,7 +145,7 @@ def parse(text, fmt='auto'):
         table=[line for line in lines if line.startswith('|')]
         if blocks:
             rows=blocks
-            warnings.append('Long-form Markdown: original asset IDs and complete prompt blocks preserved. FUTURE assets are deselected; proposed dimensions require review. Analyze creates no GPU jobs.')
+            warnings.append('Long-form Markdown: original asset IDs and complete prompt blocks preserved. FUTURE is a descriptive tag and remains eligible. Analyze creates no GPU jobs; estimated scale stays editable.')
         elif len(table)>=2:
             headers=[h.strip().lower().replace(' ','_') for h in table[0].strip('|').split('|')]
             rows=[dict(zip(headers,[v.strip() for v in line.strip('|').split('|')])) for line in table[1:] if not re.fullmatch(r'[|:\-\s]+',line)]

@@ -1,0 +1,336 @@
+{
+  "status": "PASS_NATIVE_REAL_BATCH_DELIVERY_AND_RECOVERY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\expansion\\0.5.0\\20261021T150828Z\\Asset Forge Studio Expansion.exe",
+  "checks": [
+    {
+      "name": "three_real_glb_exports_future_included_filters_reexport_schema11_provenance_without_inference",
+      "passed": true,
+      "deliveries": [
+        {
+          "id": "d9f074fc271556c3980f95b58e1b1acc",
+          "status": "COMPLETED",
+          "asset_id": "2b8f1fb5843f582bb608c0178a324b04",
+          "project_id": "5dd19732816c44329df8a70a7ad3aa81",
+          "source_asset_id": "BLD_HOUSE_T1_Timber_Cottage",
+          "artifact_id": "20335f31e65c43e19adfefe3d7a5f33a",
+          "settings": {
+            "preset": "glb_only",
+            "glb": true,
+            "manifest": true,
+            "zip": false,
+            "fbx": false,
+            "blend": false,
+            "textures": false,
+            "lods": false,
+            "high_poly": false,
+            "unity_package": false,
+            "unreal_package": false,
+            "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets"
+          },
+          "created_at": "2026-10-21T15:16:54.777765+00:00",
+          "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\selective\\2b8f1fb5843f582bb608c0178a324b04\\d9f074fc271556c3980f95b58e1b1acc",
+          "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets",
+          "filename": "BLD_HOUSE_T1_Timber_Cottage--964ea086e9.glb",
+          "files": [
+            {
+              "name": "BLD_HOUSE_T1_Timber_Cottage--964ea086e9.glb",
+              "bytes": 74152480,
+              "sha256": "d65834f72fcdbaaadb4793f7e41f955d6a056aa4f8e08e09316068d8aff431d3",
+              "kind": "glb",
+              "url": "/api/export-profiles/exports/d9f074fc271556c3980f95b58e1b1acc/files/BLD_HOUSE_T1_Timber_Cottage--964ea086e9.glb"
+            },
+            {
+              "name": "manifest.json",
+              "bytes": 4152,
+              "sha256": "01024a07eba7af54557a83d58d568f985bb5eebd0eea5badbf9e56ad69c51775",
+              "kind": "manifest",
+              "url": "/api/export-profiles/exports/d9f074fc271556c3980f95b58e1b1acc/files/manifest.json"
+            }
+          ],
+          "qa": {
+            "status": "NEEDS_REVIEW",
+            "triangles": 952566,
+            "mesh_instances": 1,
+            "dimensions_xyz_m": [
+              5.332908391952515,
+              6.000000238418579,
+              4.650804042816162
+            ],
+            "bounds_xyz_m": [
+              [
+                -2.666454240679741,
+                0,
+                -2.3254020353779197
+              ],
+              [
+                2.6664541512727737,
+                6.000000238418579,
+                2.3254020074382424
+              ]
+            ],
+            "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+            "meshes": [
+              {
+                "node": "geometry_0",
+                "triangles": 952566,
+                "vertices": 740369,
+                "watertight": false,
+                "winding_consistent": true,
+                "watertight_after_position_weld_1e8": false,
+                "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+                "has_uv": true
+              }
+            ],
+            "materials": [
+              {
+                "name": "Material_0",
+                "base_color_texture": true,
+                "metallic_roughness_texture": true,
+                "normal_texture": false,
+                "ao_texture": false,
+                "emissive_texture": false,
+                "metallic_factor": 1,
+                "roughness_factor": 1
+              }
+            ],
+            "images": 2,
+            "checks": {
+              "container": "PASS",
+              "finite_nonempty_geometry": "PASS",
+              "external_resources": "PASS",
+              "uv_overlap": "NOT_TESTED",
+              "self_intersections": "NOT_TESTED",
+              "pbr_plausibility": "NOT_TESTED",
+              "dimensions_approved": "NOT_TESTED",
+              "unity_import": "NOT_TESTED",
+              "human_quality": "NOT_TESTED"
+            }
+          },
+          "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\manifest.json"
+        },
+        {
+          "id": "4c2d518d82915c86a46b78f85c447628",
+          "status": "COMPLETED",
+          "asset_id": "d145d0662fcd544cbd11b537b01ed144",
+          "project_id": "5dd19732816c44329df8a70a7ad3aa81",
+          "source_asset_id": "BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower",
+          "artifact_id": "f39e73786e54496397aee459de6843ed",
+          "settings": {
+            "preset": "glb_only",
+            "glb": true,
+            "manifest": true,
+            "zip": false,
+            "fbx": false,
+            "blend": false,
+            "textures": false,
+            "lods": false,
+            "high_poly": false,
+            "unity_package": false,
+            "unreal_package": false,
+            "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets"
+          },
+          "created_at": "2026-10-21T15:17:04.927003+00:00",
+          "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\selective\\d145d0662fcd544cbd11b537b01ed144\\4c2d518d82915c86a46b78f85c447628",
+          "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets",
+          "filename": "BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower--fde6ec9f29.glb",
+          "files": [
+            {
+              "name": "BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower--fde6ec9f29.glb",
+              "bytes": 66857832,
+              "sha256": "5e7104ea4533769f420d40b20778b825578ab9b57c2feeb918af2ce033540f35",
+              "kind": "glb",
+              "url": "/api/export-profiles/exports/4c2d518d82915c86a46b78f85c447628/files/BLD_ARCHER_TOWER_T3_Royal_Ballista_Tower--fde6ec9f29.glb"
+            },
+            {
+              "name": "manifest.json",
+              "bytes": 4148,
+              "sha256": "85a3f3a652184f6b6d5e4a769598a5fa6f05883b5a0d7ccfc0f5c84809b92025",
+              "kind": "manifest",
+              "url": "/api/export-profiles/exports/4c2d518d82915c86a46b78f85c447628/files/manifest.json"
+            }
+          ],
+          "qa": {
+            "status": "NEEDS_REVIEW",
+            "triangles": 971714,
+            "mesh_instances": 1,
+            "dimensions_xyz_m": [
+              17.00881862640381,
+              17,
+              11.714177131652832
+            ],
+            "bounds_xyz_m": [
+              [
+                -8.504409251734614,
+                0,
+                -5.857088502496481
+              ],
+              [
+                8.504409374669194,
+                17,
+                5.857088629156351
+              ]
+            ],
+            "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+            "meshes": [
+              {
+                "node": "geometry_0",
+                "triangles": 971714,
+                "vertices": 742017,
+                "watertight": false,
+                "winding_consistent": true,
+                "watertight_after_position_weld_1e8": false,
+                "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+                "has_uv": true
+              }
+            ],
+            "materials": [
+              {
+                "name": "Material_0",
+                "base_color_texture": true,
+                "metallic_roughness_texture": true,
+                "normal_texture": false,
+                "ao_texture": false,
+                "emissive_texture": false,
+                "metallic_factor": 1,
+                "roughness_factor": 1
+              }
+            ],
+            "images": 2,
+            "checks": {
+              "container": "PASS",
+              "finite_nonempty_geometry": "PASS",
+              "external_resources": "PASS",
+              "uv_overlap": "NOT_TESTED",
+              "self_intersections": "NOT_TESTED",
+              "pbr_plausibility": "NOT_TESTED",
+              "dimensions_approved": "NOT_TESTED",
+              "unity_import": "NOT_TESTED",
+              "human_quality": "NOT_TESTED"
+            }
+          },
+          "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\manifest.json"
+        },
+        {
+          "id": "bf5d5fb31a7253e189a5b6c30d516f73",
+          "status": "COMPLETED",
+          "asset_id": "487d5e22568f53aca9b152063c17dc7b",
+          "project_id": "5dd19732816c44329df8a70a7ad3aa81",
+          "source_asset_id": "FUT_ENV_FOREST_WATCH_POST",
+          "artifact_id": "5d3b467e1f154998913030cda12c3b81",
+          "settings": {
+            "preset": "glb_only",
+            "glb": true,
+            "manifest": true,
+            "zip": false,
+            "fbx": false,
+            "blend": false,
+            "textures": false,
+            "lods": false,
+            "high_poly": false,
+            "unity_package": false,
+            "unreal_package": false,
+            "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets"
+          },
+          "created_at": "2026-10-21T15:17:15.089374+00:00",
+          "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\selective\\487d5e22568f53aca9b152063c17dc7b\\bf5d5fb31a7253e189a5b6c30d516f73",
+          "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets",
+          "filename": "FUT_ENV_FOREST_WATCH_POST--75883be97d.glb",
+          "files": [
+            {
+              "name": "FUT_ENV_FOREST_WATCH_POST--75883be97d.glb",
+              "bytes": 65138752,
+              "sha256": "a6cbe7abb447aa91c9b834b1fda1c83e53617ec5aff8478161f01866e52edc3e",
+              "kind": "glb",
+              "url": "/api/export-profiles/exports/bf5d5fb31a7253e189a5b6c30d516f73/files/FUT_ENV_FOREST_WATCH_POST--75883be97d.glb"
+            },
+            {
+              "name": "manifest.json",
+              "bytes": 4088,
+              "sha256": "c34528cdbdf92ae2882ef8331bc1d1e090273b545dd6bd1762154a5f207d1336",
+              "kind": "manifest",
+              "url": "/api/export-profiles/exports/bf5d5fb31a7253e189a5b6c30d516f73/files/manifest.json"
+            }
+          ],
+          "qa": {
+            "status": "NEEDS_REVIEW",
+            "triangles": 944741,
+            "mesh_instances": 1,
+            "dimensions_xyz_m": [
+              3.6696982383728027,
+              4,
+              3.416873574256897
+            ],
+            "bounds_xyz_m": [
+              [
+                -1.8348491284996271,
+                0,
+                -1.7084368420764804
+              ],
+              [
+                1.8348491098731756,
+                4,
+                1.7084367321804166
+              ]
+            ],
+            "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+            "meshes": [
+              {
+                "node": "geometry_0",
+                "triangles": 944741,
+                "vertices": 684555,
+                "watertight": false,
+                "winding_consistent": true,
+                "watertight_after_position_weld_1e8": false,
+                "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+                "has_uv": true
+              }
+            ],
+            "materials": [
+              {
+                "name": "Material_0",
+                "base_color_texture": true,
+                "metallic_roughness_texture": true,
+                "normal_texture": false,
+                "ao_texture": false,
+                "emissive_texture": false,
+                "metallic_factor": 1,
+                "roughness_factor": 1
+              }
+            ],
+            "images": 2,
+            "checks": {
+              "container": "PASS",
+              "finite_nonempty_geometry": "PASS",
+              "external_resources": "PASS",
+              "uv_overlap": "NOT_TESTED",
+              "self_intersections": "NOT_TESTED",
+              "pbr_plausibility": "NOT_TESTED",
+              "dimensions_approved": "NOT_TESTED",
+              "unity_import": "NOT_TESTED",
+              "human_quality": "NOT_TESTED"
+            }
+          },
+          "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\auto-production\\20261021T142112Z\\GameAssets\\5dd19732816c44329df8a70a7ad3aa81\\manifest.json"
+        }
+      ]
+    },
+    {
+      "name": "native_real_batch_pause_close_reopen_resume_skips_all_completed_exported_stages",
+      "passed": true,
+      "job_ids": [
+        "76e51eb73aa04621834d4810cd662e68",
+        "1e4adf1ee7994111ab1387eaa6cbf4a7",
+        "4379bd0733e645c49c032543ab44f210",
+        "12e4ab7d51d04fdd9226bc599299b235",
+        "3a161a0e5b7e49ca8848c60c2923e51b",
+        "594a809dff57464b9033ce9a663ae3f1",
+        "67a53baacbde4ecea9e4b5c63d39d0b7",
+        "b8ae91aefab74f9bb49ac9282fc8bf8c",
+        "6f7e1326aed94345878a4f935786b2ee",
+        "707a2d03be4543f7bf30fef4a01baf4e"
+      ]
+    }
+  ],
+  "errors": []
+}

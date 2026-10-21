@@ -53,8 +53,19 @@ try{
   $afsLatest=Assert-WorkspacePath (Join-Path $afsRoot "dist/windows/$afsChannel/latest")
   $afsReleases=Assert-WorkspacePath (Join-Path $afsRoot 'dist/windows/releases')
   New-Item -ItemType Directory -Force -Path $afsReleases | Out-Null
-  if(Test-Path -LiteralPath $afsLatest){$afsBackup=Assert-WorkspacePath (Join-Path $afsReleases "known-good-before-$afsStamp");Move-Item -LiteralPath $afsLatest -Destination $afsBackup}
+  if(Test-Path -LiteralPath $afsLatest){
+    # Frozen Python can lazily reopen its executable archive. Never rename its directory
+    # while any studio sidecar is alive, even when Windows permits the directory rename.
+    $afsOpenBuild=@(Get-Process | Where-Object {$_.ProcessName -in @($afsProduct,'afs-backend','asset-forge-studio')})
+    if($afsOpenBuild.Count -gt 0){
+      $afsLatest=Assert-WorkspacePath (Join-Path $afsRoot "dist/windows/$afsChannel/$afsVersion")
+      if(Test-Path -LiteralPath $afsLatest){$afsLatest=Assert-WorkspacePath (Join-Path $afsLatest $afsStamp)}
+      $afsReport.previous_latest_kept_running=$true
+    }else{$afsBackup=Assert-WorkspacePath (Join-Path $afsReleases "known-good-before-$afsStamp");Move-Item -LiteralPath $afsLatest -Destination $afsBackup}
+  }
   Copy-Item -LiteralPath $afsCandidate -Destination $afsLatest -Recurse
+  $afsReport.delivery_location=$afsLatest;$afsReport | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $afsReportFile -Encoding UTF8
+  Copy-Item -LiteralPath $afsReportFile -Destination (Join-Path $afsLatest 'build-report.json')
   Copy-Item -LiteralPath $afsReportFile -Destination docs/evidence/desktop_build.json
   Write-Output "Desktop build and launch verified: $afsLatest"
 }catch{

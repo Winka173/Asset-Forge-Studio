@@ -1,0 +1,72 @@
+{
+  "version": "0.3.6",
+  "timestamp_utc": "20261021T151536Z",
+  "git_commit": "13584bcc6c950b075ed12fae339dab839ce5a55c",
+  "git_branch": "release/pc-stable",
+  "git_dirty": true,
+  "changed_files": [
+    " M CLAUDE.md",
+    " M apps/api/batch.py",
+    " M apps/api/inspection.py",
+    " M apps/api/jobs.py",
+    " M apps/api/main.py",
+    " M apps/api/manifest.py",
+    " M apps/api/studio.py",
+    " M apps/web/src/batch-studio.tsx",
+    " M apps/web/src/batch.css",
+    " M apps/web/src/refinement.css",
+    " M apps/web/src/studio.tsx",
+    " M desktop/smoke.mjs",
+    " M docs/evidence/desktop_build.json",
+    " M docs/evidence/desktop_smoke.json",
+    " M engines/sdxl_worker.py",
+    " M package-lock.json",
+    " M package.json",
+    " M scripts/desktop.ps1",
+    " M src-tauri/Cargo.lock",
+    " M src-tauri/Cargo.toml",
+    " M src-tauri/src/main.rs",
+    " M src-tauri/tauri.conf.json",
+    " M tests/test_runavelle_import.py",
+    "?? apps/api/automation.py",
+    "?? apps/api/export_profiles.py",
+    "?? apps/web/src/activity-indicator.css",
+    "?? apps/web/src/activity-indicator.tsx",
+    "?? apps/web/src/export-settings.css",
+    "?? apps/web/src/export-settings.tsx",
+    "?? desktop/verify-auto.mjs",
+    "?? desktop/verify-real-batch-relaunch.mjs",
+    "?? desktop/verify-single-auto.mjs",
+    "?? desktop/verify-single-recovery.mjs",
+    "?? tests/test_automation.py",
+    "?? tests/test_export_profiles.py"
+  ],
+  "changed_features": [
+    "Tauri Windows shell and bundled API",
+    "Hybrid shared scheduler and Batch Studio",
+    "Immutable quality configuration and local SDXL concept approval"
+  ],
+  "status": "PASS_BUILD_AND_NATIVE_SMOKE",
+  "build_type": "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
+  "candidate": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-build\\candidates\\20261021T151536Z",
+  "tests": [
+    "Frontend TypeScript and production build PASS",
+    "Actual backend pytest suite PASS",
+    "New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS"
+  ],
+  "known_issues": [
+    "Unsigned local build; clean-machine installation not yet verified",
+    "Editor/browser tests do not establish mobile performance or Meshy visual parity"
+  ],
+  "artifact_sha256": {
+    "Asset Forge Studio.exe": "dd1226b4c812e8262d123245dc700cff3213ef15bcbe473e1ffde83f165a810e",
+    "afs-backend.exe": "3832af3b2d78805e9b6e25fa54e6379fa0d96619b0f0f3071a667110be71bdc5",
+    "Asset Forge Studio_0.3.6_x64-setup.exe": "0fcca3106fe87b42be90d71d9f4fe8faa8ed298cdd910a5484e42715249db558"
+  },
+  "smoke_report": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\.local\\desktop-smoke\\2026-10-21T15-18-28-138Z\\smoke-report.json",
+  "executable": "Asset Forge Studio.exe",
+  "channel": "stable",
+  "installer": "Asset Forge Studio_0.3.6_x64-setup.exe",
+  "delivery_location": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\pc-stable-worktree\\dist\\windows\\stable\\latest",
+  "public_delivery_location": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.3.6"
+}
