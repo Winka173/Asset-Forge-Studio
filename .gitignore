@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+node_modules/
+dist/
+data/
+imports/
+models/
+.local/
+*.log
+*.blend1
+benchmarks/archer_tower_t3/input/
+benchmarks/archer_tower_t3/runs/
+!imports/.gitkeep

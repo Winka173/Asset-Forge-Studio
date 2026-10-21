@@ -1,0 +1,27 @@
+{
+  "recorded_at_utc": "2026-10-21T06:41:37.273945+00:00",
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.5 (tags/v3.11.5:cce6ba9, Aug 24 2023, 14:38:34) [MSC v.1936 64 bit (AMD64)]",
+  "python_executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.venv\\Scripts\\python.exe",
+  "ram_bytes": 66154397696,
+  "disk_free_bytes": 275368693760,
+  "gpu": {
+    "exit_code": 0,
+    "output": "NVIDIA GeForce RTX 5070 Ti, 16303, 12968, 610.88"
+  },
+  "wsl": {
+    "exit_code": 1,
+    "output": "The Windows Subsystem for Linux is not installed. You can install by running 'wsl.exe --install'.\r\r\nFor more information please visit https://aka.ms/wslinstall"
+  },
+  "blender_path": "C:\\Users\\Winka\\Tools\\blender-4.5.14-windows-x64\\blender.exe",
+  "blender": {
+    "exit_code": 0,
+    "output": "Blender 4.5.14 LTS\r\n\tbuild date: 2026-09-15\r\n\tbuild time: 01:33:49\r\n\tbuild commit date: 2026-09-14\r\n\tbuild commit time: 14:54\r\n\tbuild hash: 62c1db4208e8\r\n\tbuild branch: blender-v4.5-release\r\n\tbuild platform: Windows\r\n\tbuild type: Release\r\n\tbuild c flags: /W3 /w34062 /w34100 /w34115 /w34189 /w35038 /wd4018 /wd4146 /wd4065 /wd4127 /wd4181 /wd4200 /wd4244 /wd4267 /wd4305 /wd4800 /wd4828 /wd4996 /wd4661 /wd4848 /we4013 /we4133 /we4431 /we4033 /DWIN32 /D_WINDOWS /W3 /nologo /J /Gd /MP /bigobj /Zc:inline  \r\n\tbuild c++ flags: /W3 /w34062 /w34100 /w34115 /w34189 /w35038 /wd4018 /wd4146 /wd4065 /wd4127 /wd4181 /wd4200 /wd4244 /wd4267 /wd4305 /wd4800 /wd4828 /wd4996 /wd4661 /wd4848 /we4013 /we4133 /we4431 /we4033 /DWIN32 /D_WINDOWS /W3  /EHsc /nologo /J /Gd /MP /EHsc /bigobj /permissive- /Zc:__cplusplus /Zc:inline  \r\n\tbuild link flags: /MACHINE:X64  /SUBSYSTEM:CONSOLE /STACK:2097152 /ignore:4049 /ignore:4217 /ignore:4221\r\n\tbuild system: CMake"
+  },
+  "unity_editors": [
+    "C:\\Program Files\\Unity\\Hub\\Editor\\6000.4.8f1\\Editor\\Unity.exe",
+    "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Unity.exe"
+  ],
+  "trellis2_existing": "C:\\Users\\Winka\\Tools\\trellis2\\code",
+  "inference_test": "NOT_TESTED"
+}
