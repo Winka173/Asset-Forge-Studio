@@ -1,0 +1,18 @@
+{
+  "torch": "2.8.0+cu128",
+  "cuda": "12.8",
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "capability": [
+    12,
+    0
+  ],
+  "sparse_conv": {
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\engines\\probe_sparse_gpu.py\", line 31, in main\n    raise RuntimeError(f'Sparse/dense convolution mismatch: {error}')\nRuntimeError: Sparse/dense convolution mismatch: 0.0005065202713012695\n"
+  },
+  "flash_attention": {
+    "status": "PASS",
+    "max_absolute_error": 0.000244140625
+  },
+  "duration_seconds": 14.968999999997322
+}

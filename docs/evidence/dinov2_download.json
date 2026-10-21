@@ -1,0 +1,8 @@
+{
+  "url": "https://dl.fbaipublicfiles.com/dinov2/dinov2_vitl14/dinov2_vitl14_reg4_pretrain.pth",
+  "bytes": 1217607321,
+  "sha256": "36e4deffbaef061a2576705b0c36f93621e2ae20bf6274694821b0b492551b51",
+  "license": "Apache-2.0",
+  "source": "facebookresearch/dinov2 official hub URL",
+  "hash_scope": "local content digest; author does not publish expected SHA256 here"
+}
