@@ -1,0 +1,39 @@
+{
+  "status": "PASS_NATIVE_FORCED_SHUTDOWN_RECOVERY_WITH_DOCUMENTED_MANUAL_RETRY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fx-recovery-continued\\2026-10-21T20-12-56-765Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_forced_shutdown_during_active_stage_blocks_interrupted_attempt_and_holds_pending_GPU_after_reopen",
+      "passed": true,
+      "pending": "59b4606de9ce494e8eb1ba880ce0e4f9",
+      "interrupted": "02182cd527de4d9fb27bd60bb54a01ba",
+      "prior_completed": [
+        "677e97e72c6045fb82dd550d938ef0e1",
+        "6d812c2fdb104f01a8d6a624af93abae",
+        "c0c879535fde445c918f722e5598fc83",
+        "fe5699da68584c1ebf6867e6df9271cf"
+      ],
+      "scope": "Actual forced termination of this isolated QA Windows process and reopen; no internal Unity checkpoint resume or Windows OS reboot claimed"
+    },
+    {
+      "name": "actual_manual_retry_of_Unity_package_manager_failure_finishes_exact_immutable_config_in_a_new_attempt",
+      "passed": true,
+      "failed_attempt": "2fbfc4c07dd64a88a2b00f61d0a994ec",
+      "retry": "441053051c164af990f89de94be97a73",
+      "new_package_sha256": "3195942e5dba63ae97c340c34570c7e6da1ddc25a8f38ff7b2008faabd225532",
+      "old_package_hashes_unchanged": [
+        "d3b102746c0771bf51560ac2893295537eaeaaa9e812883d6c00cda25cdd6601",
+        "12ed01c84bfa63fe2fa016b2f186dfa28e8b457e8a4ba61152fc08043e733fd7",
+        "c253b3acce459c9bca1d4a8e27850f6304295c2df8ef8392ab9fb3695d41ab08",
+        "de4a3c221a888ebe0bc5676cee6f993777ae43d9a346dddfd6144deef9899017",
+        "478c573e883db6b98314368ab2301b6bf4d85ca042bef8e6e6653a8d37d4eecb"
+      ],
+      "no_completed_regeneration": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual procedural effect, runtime sources/shader/prefab and Unity GPU captures; no character rig/retarget or artistic acceptance claim",
+  "previous_failure": "Error: Unity stage fx_native_build_and_gpu_frames exited 1; inspect unity.log/unity_reopen.log",
+  "previous_run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fx-recovery-native\\2026-10-21T20-10-07-140Z"
+}

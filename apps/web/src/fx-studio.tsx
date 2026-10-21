@@ -1,4 +1,4 @@
-﻿import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {apiUrl} from './api';
 import {Select} from './select';
 import {ErrorNotice} from './error-notice';
@@ -22,6 +22,7 @@ export function FxStudio({projectId,assetId,onSaved,onProduction}:{projectId:str
  const selected=workspace?.recipes.find(r=>r.artifact.id===version),recipe=selected?.recipe,job=workspace?.jobs.find(j=>j.payload.artifact_id===version),frames=workspace?.artifacts.filter(a=>a.role==='preview'&&a.metadata.job_id===job?.id&&/^frame_\d+\.png$/.test(a.name)).sort((a,b)=>a.name.localeCompare(b.name))||[],output=workspace?.artifacts.filter(a=>a.metadata.job_id===job?.id&&['engine_package','effect_source','qa_report'].includes(a.role))||[];
  const group=selected?.artifact.metadata.candidate_group,alternatives=group?workspace?.recipes.filter(r=>r.artifact.metadata.candidate_group===group)||[]:[];
  useEffect(()=>{setFrame(0);setPlaying(false);if(recipe){setName(recipe.name);setPrompt(recipe.prompt);setOverrides({});}},[version,Boolean(recipe)]);
+ useEffect(()=>{if(frames.length){setFrame(Math.min(4,frames.length-1));setPlaying(false);}},[version,frames.length]);
  useEffect(()=>{if(!playing||!frames.length)return;const timer=setInterval(()=>{if(document.hidden)return;setFrame(v=>{if(v+1<frames.length)return v+1;if(loop)return 0;setPlaying(false);return frames.length-1;});},1000*(recipe?.duration||2.4)/frames.length/speed);return()=>clearInterval(timer);},[playing,frames.length,recipe?.duration,speed,loop]);
  async function generate(){if(submitting.current)return;submitting.current=true;setBusy(true);setError('');try{
   const planned=await managementCall<{recipe:Recipe}>('/api/fx/plan',{project_id:projectId,prompt,name,overrides,...(selected?{base_recipe_id:version}:{})});

@@ -1,4 +1,4 @@
-import {WorkspaceTools,ContinueWork,InterfaceSettings,useInterfacePreferences} from "./workspace-tools";
+import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
@@ -473,7 +473,7 @@ export function Studio() {
   }, [modal, busy]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (modal||document.querySelector('[data-workspace-dialog],.afs-select-menu')) return;
+      if (modal||document.querySelector('[data-workspace-dialog],.afs-select-menu,.afs-select-help')) return;
       if (event.altKey && /^[1-6]$/.test(event.key)) {
         event.preventDefault();
         const destination=pages[Number(event.key) - 1];
@@ -1850,7 +1850,7 @@ export function Studio() {
                   </p>
                 </div>
               </div>
-              <div className="settings-grid"><InterfaceSettings/>
+              <div className="settings-grid"><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
                 <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">

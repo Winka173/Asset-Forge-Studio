@@ -323,6 +323,24 @@ def startup_recovery():
             # Explicit user pause/cancel is never revoked by startup.
             if not value['paused'] and not opt_in:value['paused']=True;auto['pause_reason']='Application reopened. Manual Resume required; completed checkpoints retained.'
             auto['recovered_at']=store.now();batch.save(batch.stored(value))
+    # Native effects, maps and manual engine jobs also use the global queue.
+    # Their queued GPU work must obey the same explicit restart opt-in as batches.
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        for row in db.execute("SELECT id,payload FROM jobs WHERE status='QUEUED'").fetchall():
+            payload=json.loads(row['payload'])
+            if payload.get('batch_id') or jobs.resource_class(payload)!='gpu':continue
+            project=db.execute('SELECT payload FROM projects WHERE id=?',(payload.get('project_id'),)).fetchone()
+            settings=json.loads(project['payload']).get('workflow_settings',{}) if project else {}
+            if settings.get('auto_resume') is True:continue
+            payload['production_paused']=True
+            payload['recovery_notice']=dict(at=store.now(),reason='AFS reopened. Pending GPU work waits for manual Resume; no mid-inference resume is claimed.')
+            db.execute('UPDATE jobs SET payload=?,updated_at=? WHERE id=?',(json.dumps(payload),store.now(),row['id']))
+            if payload.get('asset_id'):
+                asset_row=db.execute('SELECT payload FROM assets WHERE id=?',(payload['asset_id'],)).fetchone()
+                if asset_row:
+                    latest=json.loads(asset_row['payload']);latest.update(production_paused=True,recovery_notice=payload['recovery_notice'])
+                    db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(latest),payload['asset_id']))
 
 
 _last_tick=0.0

@@ -1,3 +1,11 @@
+# Standalone recovery - 2026-10-22 (Asia/Saigon)
+
+Windows 0.8.5 passed 71 backend tests and native GLB/export/restart smoke. Startup now holds queued standalone GPU work (effects/maps/manual engine jobs) unless the project explicitly opted into auto-resume, while explicit Pause remains effective. CPU-only validation remains eligible. Settings exposes the project recovery policy and explains that paused work still needs Resume. Select explanations cover interface preferences, and effect previews open on a real visible captured frame.
+
+Actual forced termination of an isolated packaged Windows process left the active Unity attempt interrupted and pending sibling work paused after reopening. Previously completed packages remained unchanged. One Unity Package Manager attempt failed with "Failed to resolve packages: operation cancelled"; this was not counted as success. A manual Retry into a new immutable attempt subsequently generated a real package, passed empty-project import validation, retained Maximum config and preserved all completed outputs. Evidence includes the interruption, runtime failure and successful continuation: evidence/fx_recovery_interrupted.json and evidence/fx_recovery_native.json. This is forced-process recovery, not a Windows OS reboot or mid-inference checkpoint claim. Automatic transient standalone repair is not established by this manual Retry test.
+
+---
+
 # Effect alternatives and playback - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.4 passed 69 backend tests, native GLB/export/restart smoke and real effect acceptance. Effects now request 1-5 Maximum-quality seed alternatives within one stable asset and the shared one-heavy-GPU scheduler. Admission is durable/idempotent across partial failures. Native acceptance actually generated two different Ice alternatives, imported each Unity package into an empty project, compared real frame hashes, selected an alternative and generated an inherited Fire revision. Previous packages remained byte-identical. Play/pause, frame stepping, speed, non-loop end, grouped completion inbox and Windows close/reopen passed. Evidence: evidence/fx_candidates_native.json. This is procedural Unity output, not arbitrary AI VFX or target-device artistic/performance acceptance.

@@ -1,6 +1,8 @@
 /** Plain-language explanations. No unsupported capability is implied by an option. */
 export function selectHelp(label:string,value:string,text:string):{purpose:string;option?:string} {
  const name=label.toLowerCase();
+ if(/workspace detail/.test(name))return {purpose:'Choose how much technical metadata the workspace shows. All generation and export capabilities remain available.',option:value==='focused'?'Keep daily creation and review controls prominent.':'Show additional job and asset metadata without changing output quality.'};
+ if(/interface motion/.test(name))return {purpose:'Choose interface animation behavior. This does not change model, animation or effect playback.',option:value==='reduced'?'Remove decorative UI transitions and animations.':'Respect the reduced-motion setting configured in Windows.'};
  if(/playback speed/.test(name))return {purpose:'Change preview speed without editing the saved animation clip.',option:`Play at ${value} times the source timeline speed.`};
  if(/animation clip/.test(name))return {purpose:'Choose an animation clip that is actually stored in this model. This previews the clip; it does not retarget it to another character.'};
  if(/rig bone/.test(name))return {purpose:'Choose an existing joint to inspect its hierarchy or test a preview rotation. This does not generate or attach a rig.'};

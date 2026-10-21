@@ -96,3 +96,25 @@ def test_alternative_status_includes_running_sibling_at_pause_boundary(client):
     jobs.transition(first,'FAILED','Test failure projection only; no successful output simulated')
     current=statuses.refresh_all()[result['asset_id']]
     assert current['production_status']=='failed' and current['attention_required']
+
+def test_standalone_gpu_restart_requires_opt_in_and_explicit_pause_is_preserved(client):
+    from apps.api import automation,production
+    created=client.post('/api/fx/build-candidates',json=dict(recipe=dict(project_id='runavelle',name='Recover queued effects'),request_id='fx-recovery-default',count=2)).json()
+    before=[j['id'] for j in jobs.listing()];automation.startup_recovery()
+    assert [j['id'] for j in jobs.listing()]==before
+    assert all(j['status']=='QUEUED' and not production.eligible(j['payload']) for j in jobs.listing())
+    model=studio.asset(created['asset_id']);assert model['production_paused'] and 'manual Resume' in model['recovery_notice']['reason']
+    client.post('/api/production/control',json=dict(scope='job',job_id=created['results'][0]['job']['id'],action='resume'))
+    assert all(production.eligible(j['payload']) for j in jobs.listing())
+    automation.save_project_workflow('runavelle',automation.Workflow(auto_resume=True))
+    automation.startup_recovery();assert all(production.eligible(j['payload']) for j in jobs.listing())
+    client.post('/api/production/control',json=dict(scope='job',job_id=created['results'][0]['job']['id'],action='pause'))
+    automation.startup_recovery();assert not any(production.eligible(j['payload']) for j in jobs.listing())
+
+
+def test_standalone_cpu_validation_can_recover_without_gpu_opt_in(client):
+    from apps.api import automation,production
+    model=client.post('/api/assets',json=dict(project_id='runavelle',name='CPU-only validation',prompt='Imported validation source')).json()
+    job=jobs.enqueue(dict(kind='blender',project_id='runavelle',asset_id=model['id'],use_gpu=False))
+    automation.startup_recovery()
+    assert production.eligible(jobs.get(job['id'])['payload']) and not studio.asset(model['id']).get('production_paused')
