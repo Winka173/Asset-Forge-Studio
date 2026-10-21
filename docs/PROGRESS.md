@@ -1,3 +1,13 @@
+# Safe Windows exit - 2026-10-22 (Asia/Saigon)
+
+Windows 0.8.6 passed 74 backend tests, bundled native GLB/export/restart smoke and real Unity close/reopen acceptance. Closing with active work now temporarily holds scheduling, keeps the window open until the current stage saves, then exits without cancelling queued assets. A visible status banner offers Keep studio open; this restores the previous admission state. Independent close generations prevent an earlier cancelled close from racing a later close request.
+
+The temporary exit hold is distinct from an explicit Pause. Recovery restores only the temporary hold, then applies each project's existing auto-resume policy. Later explicit Pause/Resume is never silently reverted. The native test actually generated two effect packages: cancelled a pending close using Keep Open, closed again during the first Unity stage, verified that stage completed before exit, reopened with explicit auto-resume enabled, and observed only the pending second job run. The first package hash remained unchanged, only two jobs existed, no jobs were cancelled/blocked, and artistic status remained not_reviewed. See evidence/exit_checkpoint_native.json. Default manual recovery and real forced-process interruption were verified separately in 0.8.5; no Windows OS reboot or mid-inference resume is claimed.
+
+Open gates remain universal semantic map generation, runtime map walkthrough, automatic humanoid rigging/retarget quality, reference-game research integration, standalone transient native repair and Meshy artistic acceptance. Existing procedural maps/effects and imported-clip preview must not be presented as completion of these gates.
+
+---
+
 # Standalone recovery - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.5 passed 71 backend tests and native GLB/export/restart smoke. Startup now holds queued standalone GPU work (effects/maps/manual engine jobs) unless the project explicitly opted into auto-resume, while explicit Pause remains effective. CPU-only validation remains eligible. Settings exposes the project recovery policy and explains that paused work still needs Resume. Select explanations cover interface preferences, and effect previews open on a real visible captured frame.

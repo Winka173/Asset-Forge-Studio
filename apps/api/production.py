@@ -18,6 +18,32 @@ def global_paused():
     return bool(row and json.loads(row['payload']).get('paused'))
 
 
+
+def prepare_exit_checkpoint():
+    """Temporary shutdown admission hold, distinct from an explicit user Pause."""
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row=db.execute('SELECT payload FROM drafts WHERE project_id=?',('__afs_production__',)).fetchone()
+        previous=json.loads(row['payload']) if row else dict(paused=False)
+        if previous.get('exit_checkpoint'):return previous
+        value=dict(paused=True,updated_at=store.now(),exit_checkpoint=dict(previous=previous,at=store.now()))
+        db.execute('INSERT OR REPLACE INTO drafts VALUES (?,?)',('__afs_production__',json.dumps(value)))
+    return value
+
+
+def restore_exit_checkpoint():
+    # Restart and Keep Open restore only our temporary hold. A later explicit
+    # Pause/Resume replaces the record and cannot be silently undone here.
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row=db.execute('SELECT payload FROM drafts WHERE project_id=?',('__afs_production__',)).fetchone()
+        value=json.loads(row['payload']) if row else {}
+        if not value.get('exit_checkpoint'):return False
+        previous=value['exit_checkpoint']['previous'];previous['updated_at']=store.now()
+        db.execute('UPDATE drafts SET payload=? WHERE project_id=?',(json.dumps(previous),'__afs_production__'))
+    return True
+
+
 def eligible(payload):
     if global_paused() or payload.get('production_paused'):return False
     if payload.get('asset_id') and not payload.get('batch_id'):

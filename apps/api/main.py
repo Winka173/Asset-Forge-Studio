@@ -30,7 +30,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.5", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.6", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -83,13 +83,28 @@ def shutdown_jobs():
     return [j for j in jobs.listing() if j['status'] not in jobs.TERMINAL and not (j['status']=='QUEUED' and not eligible(j['payload']))]
 
 
+@app.post('/api/desktop/prepare-exit')
+def desktop_prepare_exit():
+    if not os.environ.get('AFS_API_TOKEN'):raise HTTPException(403,'Managed desktop session required')
+    from .production import prepare_exit_checkpoint
+    prepare_exit_checkpoint()
+    return dict(status='WAITING_FOR_STAGE_CHECKPOINT',active_jobs=len(shutdown_jobs()),cancelled_jobs=0)
+
+
+@app.post('/api/desktop/cancel-exit')
+def desktop_cancel_exit():
+    if not os.environ.get('AFS_API_TOKEN'):raise HTTPException(403,'Managed desktop session required')
+    from .production import restore_exit_checkpoint
+    return dict(restored=restore_exit_checkpoint(),cancelled_jobs=0)
+
+
 @app.post('/api/desktop/shutdown')
 def desktop_shutdown(body:Shutdown):
     if not os.environ.get('AFS_API_TOKEN'):raise HTTPException(403,'Managed desktop session required')
     callback=getattr(app.state,'request_shutdown',None)
     if callback is None:raise HTTPException(503,'Backend is not managed by desktop lifecycle')
     active=shutdown_jobs()
-    if active and not body.cancel_active:raise HTTPException(409,'Jobs are running; explicitly cancel-and-exit or return to app')
+    if active and not body.cancel_active:raise HTTPException(409,'Jobs are running; pause scheduling and wait for a safe stage checkpoint, or explicitly cancel')
     for job in active:
         try:jobs.transition(job['id'],'CANCELLED','User requested cancel-and-exit from desktop')
         except ValueError:pass

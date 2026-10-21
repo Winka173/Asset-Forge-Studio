@@ -36,6 +36,16 @@ async function setup(session:Session):Promise<void> {
   });
 }
 function nativeFeatures() {
+  window.addEventListener('afs-desktop-exit',event=>{
+    const value=(event as CustomEvent<{phase:string;message:string}>).detail;
+    let banner=document.querySelector<HTMLDivElement>('.desktop-checkpoint-exit');
+    if(value.phase==='cancelled'){banner?.remove();return;}
+    if(!banner){banner=element('div',undefined,'desktop-checkpoint-exit');banner.setAttribute('role','status');document.body.append(banner);}
+    banner.dataset.desktopClosing=value.phase;banner.replaceChildren();banner.append(element('strong',value.phase==='error'?'AFS kept open':value.phase==='stopping'?'Checkpoint saved':'Finishing this stage before exit'),element('p',value.message));
+    if(value.phase==='waiting'){const keep=element('button','Keep studio open');keep.onclick=()=>{keep.disabled=true;native('desktop_cancel_close').catch(e=>{keep.disabled=false;banner!.append(element('p',redactApiSecrets(String(e))));});};banner.append(keep);}
+    if(value.phase==='error'){const dismiss=element('button','Dismiss');dismiss.onclick=()=>banner?.remove();banner.append(dismiss);}
+  });
+
   document.addEventListener('click',event=>{const anchor=(event.target as Element)?.closest<HTMLAnchorElement>('a[download]');if(!anchor)return;const url=new URL(anchor.href);if(url.hostname!=='127.0.0.1'||!url.pathname.startsWith('/api/'))return;event.preventDefault();url.searchParams.delete('afs_token');native('desktop_download',{apiPath:url.pathname+url.search}).catch(e=>{alert(redactApiSecrets(String(e)));});});
   // Asset-level, grouped notifications are owned by WorkspaceTools and require explicit opt-in.
 

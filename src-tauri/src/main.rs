@@ -2,11 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{fs, io, net::TcpListener, path::{Path, PathBuf}, process::{Child, Command, Stdio}, sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}}, thread, time::{Duration, Instant}};
+use std::{fs, io, net::TcpListener, path::{Path, PathBuf}, process::{Child, Command, Stdio}, sync::{Arc, Mutex, atomic::{AtomicBool, AtomicU64, Ordering}}, thread, time::{Duration, Instant}};
 use std::os::windows::process::CommandExt;
 use std::os::windows::io::AsRawHandle;
 use tauri::{Manager, State};
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_notification::NotificationExt;
 use windows_sys::Win32::{Foundation::{CloseHandle,HANDLE}, System::JobObjects::{CreateJobObjectW,SetInformationJobObject,AssignProcessToJobObject,JOBOBJECT_EXTENDED_LIMIT_INFORMATION,JobObjectExtendedLimitInformation,JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE}};
 
@@ -21,6 +21,7 @@ impl Drop for JobHandle {fn drop(&mut self) {unsafe {CloseHandle(self.0);}}}
 struct Backend {config: Config, root: PathBuf, phase: String, message: String, token: String, port: u16, child: Option<Child>, job: Option<JobHandle>}
 type Shared = Arc<Mutex<Backend>>;
 static CLOSING: AtomicBool = AtomicBool::new(false);
+static CLOSE_EPOCH: AtomicU64 = AtomicU64::new(0);
 static ALLOW_EXIT: AtomicBool = AtomicBool::new(false);
 
 fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap()).join("AssetForgeStudio"))}
@@ -93,6 +94,24 @@ fn stop_backend(state:&Shared,cancel:bool)->Result<(),String>{
     let suggested=response.header("Content-Disposition").and_then(|s|s.split("filename=\"").nth(1)).and_then(|s|s.split('"').next()).and_then(|s|Path::new(s).file_name()).map(|s|s.to_string_lossy().to_string()).unwrap_or("asset-forge-export.bin".into());
     let selected=app.dialog().file().set_file_name(&suggested).blocking_save_file();let Some(selected)=selected else{return Ok(None)};let target=selected.into_path().map_err(|_|"Not a local save path".to_string())?;let temporary=target.with_extension("afs-download-part");let mut output=fs::File::create(&temporary).map_err(|e|e.to_string())?;io::copy(&mut response.into_reader(),&mut output).map_err(|_|"Download interrupted; partial file retained".to_string())?;drop(output);fs::rename(&temporary,&target).map_err(|e|e.to_string())?;Ok(Some(target.to_string_lossy().into()))
 }
+fn exit_notice(app:&tauri::AppHandle,phase:&str,message:&str){
+    if let Some(window)=app.get_webview_window("main"){
+        let payload=json!({"phase":phase,"message":message}).to_string();
+        let _=window.eval(format!("window.dispatchEvent(new CustomEvent('afs-desktop-exit',{{detail:{}}}))",payload));
+        let _=window.set_title(if phase=="waiting" {"Asset Forge Studio - saving stage before exit"} else {"Asset Forge Studio"});
+    }
+}
+fn exit_control(state:&Shared,path:&str)->Result<(),String>{
+    let(base,token)=credentials(state);
+    ureq::post(&(base+path)).set("X-AFS-Token",&token).timeout(Duration::from_secs(15)).send_json(json!({})).map_err(|_|"Could not save the exit checkpoint. Studio stays open; inspect local jobs.".to_string())?;
+    Ok(())
+}
+#[tauri::command] async fn desktop_cancel_close(app:tauri::AppHandle,state:State<'_,Shared>)->Result<(),String>{
+    if state.lock().unwrap().phase=="STOPPING" {return Err("The saved backend is already shutting down.".into());}
+    CLOSING.store(false,Ordering::SeqCst);CLOSE_EPOCH.fetch_add(1,Ordering::SeqCst);
+    exit_control(&state,"/api/desktop/cancel-exit")?;
+    exit_notice(&app,"cancelled","Studio kept open. Previous queue pause settings were restored.");Ok(())
+}
 #[tauri::command] fn desktop_request_close(app:tauri::AppHandle){if let Some(window)=app.get_webview_window("main"){let _=window.close();}}
 
 fn main(){
@@ -112,11 +131,33 @@ fn main(){
         .plugin(tauri_plugin_single_instance::init(|app,_,_|{if let Some(window)=app.get_webview_window("main"){let _=window.show();let _=window.set_focus();}}))
         .plugin(tauri_plugin_dialog::init()).plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_window_state::Builder::default().with_state_flags(tauri_plugin_window_state::StateFlags::POSITION|tauri_plugin_window_state::StateFlags::SIZE|tauri_plugin_window_state::StateFlags::MAXIMIZED).build())
-        .manage(state.clone()).invoke_handler(tauri::generate_handler![desktop_bootstrap,desktop_retry_backend,desktop_finish_setup,desktop_pick_directory,desktop_pick_blender,desktop_open_folder,desktop_pick_export_directory,desktop_open_export_directory,desktop_notify,desktop_download,desktop_request_close])
+        .manage(state.clone()).invoke_handler(tauri::generate_handler![desktop_bootstrap,desktop_retry_backend,desktop_finish_setup,desktop_pick_directory,desktop_pick_blender,desktop_open_folder,desktop_pick_export_directory,desktop_open_export_directory,desktop_notify,desktop_download,desktop_request_close,desktop_cancel_close])
         .setup(move|app|{start_backend(app.handle().clone(),state.clone());Ok(())})
-        .on_window_event(move|window,event|{if let tauri::WindowEvent::CloseRequested{api,..}=event{if ALLOW_EXIT.load(Ordering::SeqCst){return;}api.prevent_close();if CLOSING.swap(true,Ordering::SeqCst){return;}let state=close_state.clone();let app=window.app_handle().clone();thread::spawn(move||{
-            let active=health(&state).map(|value|active_count(&value));let cancel=match active {Ok(0)=>false,Ok(count)=>{let yes=app.dialog().message(format!("{} active/queued local jobs. Cancel them, checkpoint outputs and exit?",count)).title("Local jobs are still running").buttons(MessageDialogButtons::OkCancelCustom("Cancel jobs and exit".into(),"Keep studio running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true},Err(_)=>{let yes=app.dialog().message("Backend is not responding. Exit may interrupt local jobs. Keep the studio open unless you intend to cancel them.").title("Check local backend").buttons(MessageDialogButtons::OkCancelCustom("Cancel and exit".into(),"Keep running".into())).blocking_show();if !yes{CLOSING.store(false,Ordering::SeqCst);return;}true}};
-            match stop_backend(&state,cancel){Ok(())=>{ALLOW_EXIT.store(true,Ordering::SeqCst);app.exit(0);},Err(message)=>{app.dialog().message(message).title("Studio kept open").blocking_show();CLOSING.store(false,Ordering::SeqCst);}}
+        .on_window_event(move|window,event|{if let tauri::WindowEvent::CloseRequested{api,..}=event{if ALLOW_EXIT.load(Ordering::SeqCst){return;}api.prevent_close();if CLOSING.swap(true,Ordering::SeqCst){return;}let epoch=CLOSE_EPOCH.fetch_add(1,Ordering::SeqCst)+1;let state=close_state.clone();let app=window.app_handle().clone();thread::spawn(move||{
+            let current=||CLOSING.load(Ordering::SeqCst)&&CLOSE_EPOCH.load(Ordering::SeqCst)==epoch;
+            let result=(||->Result<(),String>{
+                if active_count(&health(&state)?)>0{
+                    exit_control(&state,"/api/desktop/prepare-exit")?;
+                    if !current(){return Ok(());}
+                    exit_notice(&app,"waiting","No new jobs will start. The current stage will finish and save before AFS exits.");
+                    loop{
+                        if !current(){return Ok(());}
+                        if active_count(&health(&state)?)==0{break;}
+                        thread::sleep(Duration::from_millis(700));
+                    }
+                }
+                if !current(){return Ok(());}
+                {state.lock().unwrap().phase="STOPPING".into();}
+                exit_notice(&app,"stopping","Stage checkpoint saved. Closing the local backend...");
+                stop_backend(&state,false)?;
+                ALLOW_EXIT.store(true,Ordering::SeqCst);app.exit(0);Ok(())
+            })();
+            if let Err(message)=result{
+                if CLOSE_EPOCH.load(Ordering::SeqCst)!=epoch{return;}
+                CLOSING.store(false,Ordering::SeqCst);
+                {state.lock().unwrap().phase="READY".into();}
+                exit_notice(&app,"error",&message);
+            }
         });}})
         .run(context).expect("Asset Forge Studio desktop startup failed");
 }

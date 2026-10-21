@@ -1,0 +1,22 @@
+{
+  "status": "PASS_NATIVE_GRACEFUL_STAGE_EXIT_KEEP_OPEN_AND_OPT_IN_AUTO_RESUME",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\exit-checkpoint-native\\2026-10-21T20-19-18-594Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_close_holds_admission_without_cancelling_and_Keep_Open_restores_previous_queue",
+      "passed": true
+    },
+    {
+      "name": "real_stage_finishes_before_exit_pending_job_auto_resumes_only_under_explicit_project_opt_in_without_regenerating_completed_output",
+      "passed": true,
+      "first_completed": "1918c50608aa48c383396160b5e2e54d",
+      "second": "82e81f9b31a74d53a90f9ec3c1c63c19",
+      "first_package_sha256": "eec57aff7fa7ddff5183d487ae640251fc6bede46079c8b8bb9248ee061bf47f",
+      "exit_wait_seconds": 29.13,
+      "scope": "Actual Unity stages, Windows close/reopen, no simulated completion or forced cancellation"
+    }
+  ],
+  "errors": [],
+  "scope": "Actual procedural effect, runtime sources/shader/prefab and Unity GPU captures; no character rig/retarget or artistic acceptance claim"
+}

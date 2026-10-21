@@ -312,6 +312,8 @@ def advance(identifier):
 
 
 def startup_recovery():
+    from .production import restore_exit_checkpoint
+    restore_exit_checkpoint()
     from . import batch
     with batch.LOCK:
         with store.connect() as db:values=[json.loads(r['payload']) for r in db.execute('SELECT payload FROM batches')]

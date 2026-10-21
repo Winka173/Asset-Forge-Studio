@@ -473,7 +473,7 @@ export function Studio() {
   }, [modal, busy]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (modal||document.querySelector('[data-workspace-dialog],.afs-select-menu,.afs-select-help')) return;
+      if (modal||document.querySelector('[data-workspace-dialog],.afs-select-menu,.afs-select-help,[data-desktop-closing=waiting],[data-desktop-closing=stopping]')) return;
       if (event.altKey && /^[1-6]$/.test(event.key)) {
         event.preventDefault();
         const destination=pages[Number(event.key) - 1];
