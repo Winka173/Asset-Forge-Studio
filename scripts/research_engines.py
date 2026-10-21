@@ -10,6 +10,11 @@ ENGINES = {
     'hunyuan21': ('Tencent-Hunyuan/Hunyuan3D-2.1', 'tencent/Hunyuan3D-2.1'),
     'spar3d': ('Stability-AI/stable-point-aware-3d', 'stabilityai/stable-point-aware-3d'),
     'trellis2': ('microsoft/TRELLIS.2', 'microsoft/TRELLIS.2-4B'),
+    'trellis_v1': ('microsoft/TRELLIS', 'microsoft/TRELLIS-image-large'),
+    'hi3dgen': ('bytedance/Hi3DGen', 'Stable-X/trellis-normal-v0-1'),
+    'hi3dgen_normal': ('hugoycj/StableNormal', 'Stable-X/yoso-normal-v1-8-1'),
+    'hunyuan2mv': ('Tencent-Hunyuan/Hunyuan3D-2', 'tencent/Hunyuan3D-2mv'),
+    'partpacker': ('NVlabs/PartPacker', 'nvidia/PartPacker'),
 }
 
 

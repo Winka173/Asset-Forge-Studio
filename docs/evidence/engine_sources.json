@@ -1,5 +1,5 @@
 {
-  "recorded_at_utc": "2026-10-21T06:54:20.800923+00:00",
+  "recorded_at_utc": "2026-10-21T07:55:30.198754+00:00",
   "weights_downloaded": false,
   "engines": {
     "triposg": {
@@ -359,6 +359,302 @@
         {
           "path": "texturing_pipeline.json",
           "bytes": 2965
+        }
+      ]
+    },
+    "trellis_v1": {
+      "repo": "https://github.com/microsoft/TRELLIS",
+      "model": "https://huggingface.co/microsoft/TRELLIS-image-large",
+      "inference": "NOT_TESTED",
+      "code_revision": "442aa1e1afb9014e80681d3bf604e8d728a86ee7",
+      "model_revision": "25e0d31ffbebe4b5a97464dd851910efc3002d96",
+      "gated": false,
+      "license_metadata": "mit",
+      "all_repo_file_bytes": 3299240850,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "README.md",
+          "bytes": 464
+        },
+        {
+          "path": "ckpts/slat_dec_gs_swin8_B_64l8gs32_fp16.json",
+          "bytes": 843
+        },
+        {
+          "path": "ckpts/slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors",
+          "bytes": 171450952
+        },
+        {
+          "path": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.json",
+          "bytes": 372
+        },
+        {
+          "path": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors",
+          "bytes": 181903412
+        },
+        {
+          "path": "ckpts/slat_dec_rf_swin8_B_64l8r16_fp16.json",
+          "bytes": 396
+        },
+        {
+          "path": "ckpts/slat_dec_rf_swin8_B_64l8r16_fp16.safetensors",
+          "bytes": 171450488
+        },
+        {
+          "path": "ckpts/slat_enc_swin8_B_64l8_fp16.json",
+          "bytes": 321
+        },
+        {
+          "path": "ckpts/slat_enc_swin8_B_64l8_fp16.safetensors",
+          "bytes": 173242816
+        },
+        {
+          "path": "ckpts/slat_flow_img_dit_L_64l8p2_fp16.json",
+          "bytes": 442
+        },
+        {
+          "path": "ckpts/slat_flow_img_dit_L_64l8p2_fp16.safetensors",
+          "bytes": 1203755136
+        },
+        {
+          "path": "ckpts/ss_dec_conv3d_16l8_fp16.json",
+          "bytes": 245
+        },
+        {
+          "path": "ckpts/ss_dec_conv3d_16l8_fp16.safetensors",
+          "bytes": 147591972
+        },
+        {
+          "path": "ckpts/ss_enc_conv3d_16l8_fp16.json",
+          "bytes": 244
+        },
+        {
+          "path": "ckpts/ss_enc_conv3d_16l8_fp16.safetensors",
+          "bytes": 119068016
+        },
+        {
+          "path": "ckpts/ss_flow_img_dit_L_16l8_fp16.json",
+          "bytes": 385
+        },
+        {
+          "path": "ckpts/ss_flow_img_dit_L_16l8_fp16.safetensors",
+          "bytes": 1130770840
+        },
+        {
+          "path": "pipeline.json",
+          "bytes": 1987
+        }
+      ]
+    },
+    "hi3dgen": {
+      "repo": "https://github.com/bytedance/Hi3DGen",
+      "model": "https://huggingface.co/Stable-X/trellis-normal-v0-1",
+      "inference": "NOT_TESTED",
+      "code_revision": "2b12d057e82bdeb751edfe7fab82632f7df2c7ba",
+      "model_revision": "fdfac1d0e0cb3f86adcac69239c1abdd82228e17",
+      "gated": false,
+      "license_metadata": "mit",
+      "all_repo_file_bytes": 2649945378,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "README.md",
+          "bytes": 136
+        },
+        {
+          "path": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.json",
+          "bytes": 372
+        },
+        {
+          "path": "ckpts/slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors",
+          "bytes": 181903412
+        },
+        {
+          "path": "ckpts/slat_flow_normal_dit_L_64l8p2_fp16.json",
+          "bytes": 442
+        },
+        {
+          "path": "ckpts/slat_flow_normal_dit_L_64l8p2_fp16.safetensors",
+          "bytes": 1200919136
+        },
+        {
+          "path": "ckpts/ss_dec_conv3d_16l8_fp16.json",
+          "bytes": 245
+        },
+        {
+          "path": "ckpts/ss_dec_conv3d_16l8_fp16.safetensors",
+          "bytes": 147591972
+        },
+        {
+          "path": "ckpts/ss_flow_normal_dit_L_16l8_fp16.json",
+          "bytes": 385
+        },
+        {
+          "path": "ckpts/ss_flow_normal_dit_L_16l8_fp16.safetensors",
+          "bytes": 1119525912
+        },
+        {
+          "path": "pipeline.json",
+          "bytes": 1847
+        }
+      ]
+    },
+    "hi3dgen_normal": {
+      "repo": "https://github.com/hugoycj/StableNormal",
+      "model": "https://huggingface.co/Stable-X/yoso-normal-v1-8-1",
+      "inference": "NOT_TESTED",
+      "code_revision": "1b7203c988384cb62286a25865d7354be8fdbbf7",
+      "model_revision": "4dd7d000d76febb68254ebe27251c2cb79dc1c2a",
+      "gated": false,
+      "license_metadata": "apache-2.0",
+      "all_repo_file_bytes": 2627755289,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "README.md",
+          "bytes": 974
+        },
+        {
+          "path": "controlnet/config.json",
+          "bytes": 1355
+        },
+        {
+          "path": "controlnet/controlnetvae.py",
+          "bytes": 11660
+        },
+        {
+          "path": "controlnet/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 728496840
+        },
+        {
+          "path": "model_index.json",
+          "bytes": 294
+        },
+        {
+          "path": "unet/config.json",
+          "bytes": 1867
+        },
+        {
+          "path": "unet/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 1731904736
+        },
+        {
+          "path": "vae/config.json",
+          "bytes": 702
+        },
+        {
+          "path": "vae/diffusion_pytorch_model.fp16.safetensors",
+          "bytes": 167335342
+        }
+      ]
+    },
+    "hunyuan2mv": {
+      "repo": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+      "model": "https://huggingface.co/tencent/Hunyuan3D-2mv",
+      "inference": "NOT_TESTED",
+      "code_revision": "f8db63096c8282cb27354314d896feba5ba6ff8a",
+      "model_revision": "3a761b539b29fe4ff64714813aa9560fd66f5de0",
+      "gated": false,
+      "license_metadata": "other",
+      "all_repo_file_bytes": 29580875729,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "LICENSE",
+          "bytes": 17828
+        },
+        {
+          "path": "NOTICE",
+          "bytes": 32064
+        },
+        {
+          "path": "README.md",
+          "bytes": 4402
+        },
+        {
+          "path": "config.json",
+          "bytes": 38
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-fast/config.yaml",
+          "bytes": 1633
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-fast/model.fp16.ckpt",
+          "bytes": 4931245140
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-fast/model.fp16.safetensors",
+          "bytes": 4930777530
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-turbo/config.yaml",
+          "bytes": 1667
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-turbo/model.fp16.ckpt",
+          "bytes": 4931245140
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv-turbo/model.fp16.safetensors",
+          "bytes": 4930777530
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv/config.yaml",
+          "bytes": 1608
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv/model.fp16.ckpt",
+          "bytes": 4928618068
+        },
+        {
+          "path": "hunyuan3d-dit-v2-mv/model.fp16.safetensors",
+          "bytes": 4928151562
+        }
+      ]
+    },
+    "partpacker": {
+      "repo": "https://github.com/NVlabs/PartPacker",
+      "model": "https://huggingface.co/nvidia/PartPacker",
+      "inference": "NOT_TESTED",
+      "code_revision": "178d6c9408ecde857e6e716bab2763df6ce8bdc0",
+      "model_revision": "17046fe1729d05db99cb11d7cc6885d777fcfc73",
+      "gated": false,
+      "license_metadata": "other",
+      "all_repo_file_bytes": 3179851260,
+      "files": [
+        {
+          "path": ".gitattributes",
+          "bytes": 1519
+        },
+        {
+          "path": "LICENSE",
+          "bytes": 4102
+        },
+        {
+          "path": "README.md",
+          "bytes": 3726
+        },
+        {
+          "path": "flow.pt",
+          "bytes": 2499190359
+        },
+        {
+          "path": "vae.pt",
+          "bytes": 680651554
         }
       ]
     }
