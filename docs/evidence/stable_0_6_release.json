@@ -1,0 +1,93 @@
+{
+  "version": "0.6.0",
+  "source_implementation_commit": "c2ad663",
+  "branch": "main",
+  "publication": "Prior latest moved to rollback only after all studio processes exited; copied verified build and matched every EXE SHA-256",
+  "public_executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "build_report": "desktop_build.json",
+  "native_reports": [
+    "desktop_smoke.json",
+    "production_349_native.json",
+    "production_relaunch_native.json",
+    "asset_management_native.json",
+    "short_prompt_native.json"
+  ],
+  "backend_tests_passed": 55,
+  "real_short_prompt": "Stone archer tower, blue roof, ballista, height 9 m.",
+  "resources": [
+    {
+      "job_id": "4963833c8c954bd6b8bcff8537f97218",
+      "resource": "gpu",
+      "started_at": "2026-10-21T17:02:00.014839+00:00",
+      "finished_at": "2026-10-21T17:11:51.148716+00:00",
+      "duration_seconds": 591.1409999999742,
+      "ram_peak_used_bytes": 62483525632,
+      "worker_tree_peak_rss_bytes": 25838149632,
+      "device_peak_vram_mib": 14126.0,
+      "device_peak_gpu_utilization_percent": 99.0,
+      "gpu_memory_scope": "Whole device including other desktop processes, not engine-only allocations"
+    },
+    {
+      "job_id": "685507a38f924cbfaca9905917b88e57",
+      "resource": "gpu",
+      "started_at": "2026-10-21T17:00:45.966982+00:00",
+      "finished_at": "2026-10-21T17:01:46.835443+00:00",
+      "duration_seconds": 60.875,
+      "ram_peak_used_bytes": 48942112768,
+      "worker_tree_peak_rss_bytes": 9075183616,
+      "device_peak_vram_mib": 15371.0,
+      "device_peak_gpu_utilization_percent": 98.0,
+      "gpu_memory_scope": "Whole device including other desktop processes, not engine-only allocations"
+    },
+    {
+      "job_id": "eb4f9d1f9c45419c99dd1f8c485d63f8",
+      "resource": "cpu",
+      "started_at": "2026-10-21T17:11:51.356727+00:00",
+      "finished_at": "2026-10-21T17:16:38.384320+00:00",
+      "duration_seconds": 287.03100000001723,
+      "ram_peak_used_bytes": 40264204288,
+      "worker_tree_peak_rss_bytes": 5040107520
+    }
+  ],
+  "limits": [
+    "The generation run started on a pre-SSE-fix 0.6.0 candidate; its full AI/Blender/QA/export passed but its close test failed. The final build reopened and validated these same outputs, retained all job IDs and passed native shutdown/relaunch without inference.",
+    "Uniform scale is the verified direct Blender edit. Other material/geometry refinements regenerate concept plus 3D.",
+    "Technical QA does not verify requested blue roof/ballista, artistic acceptance or Meshy equivalence.",
+    "No full 349-GPU run, clean-machine installer or Unreal verification."
+  ],
+  "real_short_output": {
+    "directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets\\9da6bfb46d7d441591a7bc2495558191\\selective\\665c9ad7f6b5415c8e3b57ac8ae3f074\\98331321edd759e3a54742b11a3b716d",
+    "verified_files": [
+      {
+        "name": "665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb",
+        "bytes": 69620332,
+        "sha256": "2a1cbf7bf42d05512bbc789c1c2c2fdfaa14fbebcab8a993333e6341dbd7eeb1"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 4254,
+        "sha256": "ba0aa88471618f975fd6e7ce877664dc1a57859c322863de1acc8b6a0b37acdf"
+      }
+    ],
+    "dimensions_xyz_m": [
+      8.679862022399902,
+      9.000000476837158,
+      6.158011198043823
+    ],
+    "embedded_images": 2,
+    "materials": [
+      {
+        "name": "Material_0",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": false,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1,
+        "roughness_factor": 1
+      }
+    ],
+    "qa_status": "passed",
+    "art_review_status": "not_reviewed"
+  }
+}

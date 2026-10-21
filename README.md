@@ -4,7 +4,11 @@ Quality-first local 3D workbench cho RTX 5070 Ti 16 GB / RAM 64 GB. Kế hoạch
 
 ## Windows desktop (primary)
 
-Build: `npm run desktop:build`. Open `dist/windows/latest/Asset Forge Studio.exe` with the adjacent `afs-backend.exe`, or use the generated NSIS installer. The native app automatically starts its packaged local backend. AI environments, weights and Blender remain external; no paid API or cloud inference is used. See [Windows setup, build and troubleshooting](docs/WINDOWS_DESKTOP.md) and [Batch / Quality Lock](docs/BATCH_PIPELINE.md).
+Current unified Stable: **0.6.0**, on `main`. The exact tested portable EXE and hashes are in [desktop build evidence](docs/evidence/desktop_build.json); running older copies can keep `latest` from moving during a build. Previous distributions remain rollback copies.
+
+Default flow: **Project -> prompt/reference -> Generate -> Production -> automatic technical QA + GLB delivery -> optional refinement**. Artistic review is separate and optional in Auto mode. Production and Library share the existing local GPU scheduler and immutable versions. See [production workspace](docs/PRODUCTION_WORKSPACE.md) and [asset management](docs/ASSET_MANAGEMENT_WORKFLOW.md) for current behavior; older vertical-slice notes below describe historical tests.
+
+Build: `npm run desktop:build`. Open `dist/windows/stable/latest/Asset Forge Studio.exe` with the adjacent `afs-backend.exe`, or use the generated NSIS installer. The native app automatically starts its packaged local backend. AI environments, weights and Blender remain external; no paid API or cloud inference is used. See [Windows setup, build and troubleshooting](docs/WINDOWS_DESKTOP.md) and [Batch / Quality Lock](docs/BATCH_PIPELINE.md).
 
 Every completed feature requires tests, a production Windows build, actual EXE launch/smoke, then commit/push the authorized feature branch. Browser mode below remains available for debugging. The latest evidence reports distinguish native smoke, real inference and human quality approval.
 

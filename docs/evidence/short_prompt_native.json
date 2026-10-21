@@ -1,0 +1,247 @@
+{
+  "status": "PASS_FINAL_NATIVE_REAL_SHORT_PROMPT_RECOVERY_NO_REGENERATION",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-recovery-native\\2026-10-21T17-17-41-427Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.6.0\\20261021T170457Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_single_one_click_real_full_prompt_maximum_sdxl_trellis2_blender_auto_glb_viewer",
+      "passed": true,
+      "job_ids": [
+        "eb4f9d1f9c45419c99dd1f8c485d63f8",
+        "4963833c8c954bd6b8bcff8537f97218",
+        "685507a38f924cbfaca9905917b88e57"
+      ],
+      "delivery": {
+        "id": "98331321edd759e3a54742b11a3b716d",
+        "status": "COMPLETED",
+        "delivery_scope": "game",
+        "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+        "project_id": "9da6bfb46d7d441591a7bc2495558191",
+        "source_asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+        "artifact_id": "cbda30b668d0455d9ca365d6c2dacd02",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets"
+        },
+        "created_at": "2026-10-21T17:16:44.952256+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets\\9da6bfb46d7d441591a7bc2495558191\\selective\\665c9ad7f6b5415c8e3b57ac8ae3f074\\98331321edd759e3a54742b11a3b716d",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets",
+        "filename": "665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb",
+        "files": [
+          {
+            "name": "665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb",
+            "bytes": 69620332,
+            "sha256": "2a1cbf7bf42d05512bbc789c1c2c2fdfaa14fbebcab8a993333e6341dbd7eeb1",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/98331321edd759e3a54742b11a3b716d/files/665c9ad7f6b5415c8e3b57ac8ae3f074--d44c5f3870.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4254,
+            "sha256": "ba0aa88471618f975fd6e7ce877664dc1a57859c322863de1acc8b6a0b37acdf",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/98331321edd759e3a54742b11a3b716d/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 972590,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            8.679862022399902,
+            9.000000476837158,
+            6.158011198043823
+          ],
+          "bounds_xyz_m": [
+            [
+              -4.33993115532212,
+              0,
+              -3.0790056148543954
+            ],
+            [
+              4.339930867077783,
+              9.000000476837158,
+              3.079005583189428
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 972590,
+              "vertices": 663548,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets\\9da6bfb46d7d441591a7bc2495558191\\manifest.json"
+      },
+      "concept_approval": "AUTOMATIC_TECHNICAL_ONLY",
+      "artistic_approval": false
+    },
+    {
+      "name": "short_prompt_real_export_and_statuses_survive_native_restart_without_regeneration",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "quality": "Maximum; technical acceptance only, no artistic approval",
+  "batch_id": "e3fa3268a4734a099d5cebab0478f228",
+  "asset_id": "665c9ad7f6b5415c8e3b57ac8ae3f074",
+  "resolved_specification": {
+    "generation_prompt": "Stone archer tower, blue roof, ballista, height 9 m.",
+    "category": "Building",
+    "dimensions": {
+      "target_width_m": 8,
+      "target_depth_m": 8,
+      "target_height_m": 9
+    },
+    "provenance": {
+      "target_height_m": {
+        "kind": "explicit",
+        "source": "Exact height expression in original prompt",
+        "value": 9
+      },
+      "target_width_m": {
+        "kind": "defaulted",
+        "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+        "value": 8,
+        "provisional": true
+      },
+      "target_depth_m": {
+        "kind": "defaulted",
+        "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+        "value": 8,
+        "provisional": true
+      },
+      "category": {
+        "kind": "inferred",
+        "source": "Deterministic name / prompt / source-ID rule",
+        "value": "Building"
+      },
+      "units": {
+        "kind": "inherited",
+        "source": "Project Art Bible / settings",
+        "value": "m"
+      },
+      "palette": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": []
+      },
+      "material_language": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": ""
+      },
+      "default_style": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": ""
+      }
+    },
+    "quality": "Maximum",
+    "source_prompt_sha256": "deeb85c01a72bfd49d3facc28c28c84925aed3adc7fbd4c5cb58deab4621ba1a",
+    "project_style_snapshot": {
+      "name": "Runavelle Short Prompt Auto Maximum QA",
+      "description": "",
+      "cover_artifact_id": null,
+      "art_bible": {
+        "game_id": "runavelle",
+        "version": 1,
+        "units": "meter",
+        "palette": {
+          "limestone": "#e4d7b5",
+          "oak": "#69442e",
+          "slate": "#263b59",
+          "bronze": "#99704a",
+          "banner": "#1b315f",
+          "mana": "#55e5ef"
+        },
+        "materials": [
+          "ivory limestone",
+          "chestnut oak",
+          "midnight blue slate",
+          "aged bronze",
+          "navy gold cloth",
+          "cyan mana"
+        ],
+        "golden_references": [],
+        "camera": {
+          "approval": "NEEDS_REVIEW",
+          "projection": "orthographic"
+        },
+        "license_policy": "commercial_required",
+        "constraints": {
+          "dimensions_m": null,
+          "door_orientation": "NEEDS_REVIEW",
+          "balconies": 2,
+          "symmetry": "NEEDS_REVIEW"
+        }
+      },
+      "palette": [],
+      "material_language": "",
+      "default_style": "",
+      "units": "m",
+      "target_height_m": null,
+      "export_settings": {
+        "selective_export": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\short-auto-native\\2026-10-21T17-00-38-496Z\\GameAssets"
+        }
+      },
+      "target_engines": [],
+      "engine_profiles": {},
+      "id": "9da6bfb46d7d441591a7bc2495558191"
+    },
+    "artistic_evaluation": "not_available"
+  }
+}
