@@ -167,6 +167,21 @@ class Approval(BaseModel):
     notes: str = Field(default='', max_length=10000)
 
 
+class Attach(BaseModel):
+    artifact_id: str
+
+
+@router.post('/assets/{identifier}/versions')
+def attach_version(identifier: str, body: Attach):
+    value = asset(identifier)
+    record = scoped_artifact(body.artifact_id, value['project_id'])
+    if record['role'] != 'candidate': raise HTTPException(400, 'Cần model candidate thật')
+    if record.get('asset_id') not in (None, identifier): raise HTTPException(409, 'Version đã thuộc asset khác')
+    with store.connect() as db:
+        db.execute('UPDATE artifacts SET asset_id=? WHERE id=?', (identifier, record['id']))
+    return save_asset(value)
+
+
 @router.post('/assets/{identifier}/approve')
 def approve(identifier: str, body: Approval):
     value = asset(identifier)
@@ -211,6 +226,7 @@ def output_files(export):
 
 @router.get('/studio')
 def studio(project_id: str = 'runavelle'):
+    from engines.adapters import ADAPTERS
     selected = project(project_id)
     with store.connect() as db:
         artifacts = [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE project_id=? ORDER BY created_at', (project_id,))]
@@ -222,9 +238,16 @@ def studio(project_id: str = 'runavelle'):
         value['exports'] = [output_files(e) for e in exports if e.get('asset_id') == value['id']]
         thumbnail = next((a for a in artifacts if a['id'] in value['reference_ids']), None)
         value['thumbnail_url'] = thumbnail['url'] if thumbnail else None
+        value['thumbnail_kind'] = 'reference' if thumbnail else None
+        for version in reversed(value['versions']):
+            job_id = version['metadata'].get('job_id')
+            if job_id and (store.DATA / 'jobs' / job_id / 'output/mobile_three_quarter.png').is_file():
+                value['thumbnail_url'] = f'/api/jobs/{job_id}/files/output/mobile_three_quarter.png'
+                value['thumbnail_kind'] = 'model_render'
+                break
     return dict(projects=projects(), project=selected, assets=values, artifacts=artifacts,
                 jobs=[j for j in jobs.listing() if job_project(j) == project_id], draft=json.loads(row['payload']) if row else {},
-                capabilities=dict(text_to_concept=False, text_conditioning=False, image_to_3d=True))
+                capabilities=dict(text_to_concept=False, text_conditioning=False, image_to_3d=any(a.installed for a in ADAPTERS.values())))
 
 
 class Generate(BaseModel):

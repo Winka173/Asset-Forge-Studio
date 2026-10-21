@@ -102,5 +102,5 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
       });
     });
   }, [background, lighting, loaded, single]);
-  return <div className="viewer" ref={host} data-loaded={loaded} aria-label="Hai GLB đồng bộ camera, scale giữ nguyên">{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · shared fit, giữ scale tương đối · kéo để orbit · cuộn để zoom</span></div>;
+  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
 }

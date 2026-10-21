@@ -1,0 +1,106 @@
+{
+  "purpose": "Real UI/pipeline acceptance only; not artist approval or production Meshy comparison",
+  "base": "http://127.0.0.1:8766",
+  "events": [
+    "Resumed observation of existing real acceptance job; no generation resubmitted"
+  ],
+  "errors": [],
+  "generation": {
+    "jobs": [
+      {
+        "id": "3c8ed2a6101145c7a5862e63be1f27d7",
+        "status": "REVIEW_REQUIRED",
+        "created_at": "2026-10-21T08:39:53.003631+00:00",
+        "updated_at": "2026-10-21T08:41:40.616986+00:00",
+        "payload": {
+          "kind": "inference",
+          "project_id": "runavelle",
+          "asset_id": "7a1e0214b4a340d880534955a1abf3a1",
+          "artifact_id": "9f733d06470c44f38e7e07283b7e7414",
+          "engine": "trellis2_community",
+          "prompt": "Archer Tower T3, Runavelle. Slate blue roof, limestone tower, timber balconies, cyan crystal. Preserve concept silhouette; inspect roof, geometry and unseen back. QA workflow only, no Meshy parity approval.",
+          "project_style_snapshot": {
+            "id": "runavelle",
+            "name": "Runavelle",
+            "description": "Archer Tower quality benchmark",
+            "art_bible": {
+              "game_id": "runavelle",
+              "version": 1,
+              "units": "meter",
+              "palette": {
+                "limestone": "#e4d7b5",
+                "oak": "#69442e",
+                "slate": "#263b59",
+                "bronze": "#99704a",
+                "banner": "#1b315f",
+                "mana": "#55e5ef"
+              },
+              "materials": [
+                "ivory limestone",
+                "chestnut oak",
+                "midnight blue slate",
+                "aged bronze",
+                "navy gold cloth",
+                "cyan mana"
+              ],
+              "golden_references": [],
+              "camera": {
+                "approval": "NEEDS_REVIEW",
+                "projection": "orthographic"
+              },
+              "license_policy": "commercial_required",
+              "constraints": {
+                "dimensions_m": null,
+                "door_orientation": "NEEDS_REVIEW",
+                "balconies": 2,
+                "symmetry": "NEEDS_REVIEW"
+              }
+            },
+            "palette": [],
+            "material_language": "",
+            "default_style": "",
+            "units": "m",
+            "target_height_m": 10,
+            "export_settings": {},
+            "cover_artifact_id": null
+          },
+          "steps": 12,
+          "pipeline_type": "512",
+          "texture_size": 2048,
+          "auto_blender": true,
+          "benchmark_height_m": 10,
+          "tournament_id": "1ecc6c3616904576935b6154509d4b1f",
+          "purpose": "evaluation_only",
+          "quality": "Fast",
+          "prompt_conditioning": "NOT_SUPPORTED_RECORDED_ONLY",
+          "auto_selection": "prefer proven textured engine, not measured universal quality ranking",
+          "seed": 42
+        },
+        "error": null,
+        "progress": {
+          "stage": "REVIEW_REQUIRED",
+          "percent": null,
+          "scope": "current_stage_only"
+        }
+      }
+    ],
+    "engine": "trellis2_community"
+  },
+  "export_bytes": 44479916,
+  "asset": {
+    "id": "7a1e0214b4a340d880534955a1abf3a1",
+    "master": "d327c5a3477a461ba508c2cd37658108",
+    "versions": 3,
+    "prompt_restored": true,
+    "exports": 1
+  },
+  "inference_count_after_reopen": 1,
+  "status": "PASS",
+  "backend_restart_verified": {
+    "status": "PASS",
+    "same_asset_id": "7a1e0214b4a340d880534955a1abf3a1",
+    "same_master_id": "d327c5a3477a461ba508c2cd37658108",
+    "same_versions": 3,
+    "errors": []
+  }
+}

@@ -123,7 +123,9 @@ def artifact_file(identifier: str):
         path = store.safe_path(record["relative_path"])
     except (KeyError, ValueError):
         raise HTTPException(404, "Unknown artifact")
-    return FileResponse(path, filename=record["name"])
+    filename = record['name'].replace('/', '_').replace('\\', '_')
+    if not filename.lower().endswith(path.suffix.lower()): filename += path.suffix
+    return FileResponse(path, filename=filename)
 
 
 RUBRIC = ["silhouette_proportions", "roof_crenellations", "front_back_coherence", "texture_pbr",

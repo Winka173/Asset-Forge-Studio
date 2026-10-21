@@ -1,0 +1,123 @@
+{
+  "status": "PASS",
+  "scope": "actual Blender file generation and reopen only",
+  "exports": [
+    {
+      "preset": "Master",
+      "format": "fbx",
+      "job_id": "c006c9a5343b4bd1b17f7bae71e0fc60",
+      "files": [
+        {
+          "name": "LOD0.fbx",
+          "bytes": 43240092,
+          "url": "/api/jobs/c006c9a5343b4bd1b17f7bae71e0fc60/files/output/LOD0.fbx"
+        },
+        {
+          "name": "textures/texture_000.png",
+          "bytes": 7668863,
+          "url": "/api/jobs/c006c9a5343b4bd1b17f7bae71e0fc60/files/output/textures/texture_000.png"
+        },
+        {
+          "name": "textures/texture_001.png",
+          "bytes": 3651450,
+          "url": "/api/jobs/c006c9a5343b4bd1b17f7bae71e0fc60/files/output/textures/texture_001.png"
+        }
+      ],
+      "measured_triangles": 989389,
+      "validation": {
+        "export_reopen": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "lod_silhouette_error": "NOT_TESTED",
+        "normal_bake": "NOT_TESTED",
+        "unity": "NOT_TESTED",
+        "human_review": "NOT_TESTED",
+        "pbr_reconstruction": "NOT_TESTED",
+        "modular_connectors": "NOT_TESTED",
+        "fbx_reopen": "PASS",
+        "fbx_pbr_unity_mapping": "NOT_TESTED"
+      },
+      "unity": "NOT_TESTED",
+      "visual_quality": "NEEDS_REVIEW"
+    },
+    {
+      "preset": "Unity Mobile",
+      "format": "fbx",
+      "job_id": "9c1960d1afd842d0b65aabe1443e93e9",
+      "files": [
+        {
+          "name": "LOD2.fbx",
+          "bytes": 8993548,
+          "url": "/api/jobs/9c1960d1afd842d0b65aabe1443e93e9/files/output/LOD2.fbx"
+        },
+        {
+          "name": "textures/texture_000.png",
+          "bytes": 7668863,
+          "url": "/api/jobs/9c1960d1afd842d0b65aabe1443e93e9/files/output/textures/texture_000.png"
+        },
+        {
+          "name": "textures/texture_001.png",
+          "bytes": 3651450,
+          "url": "/api/jobs/9c1960d1afd842d0b65aabe1443e93e9/files/output/textures/texture_001.png"
+        }
+      ],
+      "measured_triangles": 25000,
+      "validation": {
+        "export_reopen": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "lod_silhouette_error": "NOT_TESTED",
+        "normal_bake": "NOT_TESTED",
+        "unity": "NOT_TESTED",
+        "human_review": "NOT_TESTED",
+        "pbr_reconstruction": "NOT_TESTED",
+        "modular_connectors": "NOT_TESTED",
+        "fbx_reopen": "PASS",
+        "fbx_pbr_unity_mapping": "NOT_TESTED"
+      },
+      "unity": "NOT_TESTED",
+      "visual_quality": "NEEDS_REVIEW"
+    },
+    {
+      "preset": "Unity PC",
+      "format": "glb",
+      "job_id": "b4d77d03290a4cd487885b1384cbc398",
+      "files": [
+        {
+          "name": "LOD1.glb",
+          "bytes": 14962192,
+          "url": "/api/jobs/b4d77d03290a4cd487885b1384cbc398/files/output/LOD1.glb"
+        },
+        {
+          "name": "textures/texture_000.png",
+          "bytes": 7668863,
+          "url": "/api/jobs/b4d77d03290a4cd487885b1384cbc398/files/output/textures/texture_000.png"
+        },
+        {
+          "name": "textures/texture_001.png",
+          "bytes": 3651450,
+          "url": "/api/jobs/b4d77d03290a4cd487885b1384cbc398/files/output/textures/texture_001.png"
+        }
+      ],
+      "measured_triangles": 100000,
+      "validation": {
+        "export_reopen": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "lod_silhouette_error": "NOT_TESTED",
+        "normal_bake": "NOT_TESTED",
+        "unity": "NOT_TESTED",
+        "human_review": "NOT_TESTED",
+        "pbr_reconstruction": "NOT_TESTED",
+        "modular_connectors": "NOT_TESTED",
+        "fbx_reopen": "PASS",
+        "fbx_pbr_unity_mapping": "NOT_TESTED"
+      },
+      "unity": "NOT_TESTED",
+      "visual_quality": "NEEDS_REVIEW"
+    }
+  ],
+  "original_master_unchanged": true,
+  "artist_approval": "NOT_TESTED",
+  "unity_import": "NOT_TESTED"
+}

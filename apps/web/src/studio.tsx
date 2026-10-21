@@ -425,6 +425,29 @@ export function Studio() {
     };
   }, [modal, busy]);
   useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (modal) return;
+      if (event.altKey && /^[1-6]$/.test(event.key)) {
+        event.preventDefault();
+        navigate(pages[Number(event.key) - 1]);
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        if (projectId && loadedProject === projectId)
+          run(async () => {
+            await request(`/api/projects/${projectId}/draft`, { draft });
+            setNotice("Draft saved locally · Ctrl+Enter to generate from an image.");
+          });
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && source && draft.mode !== "Text" && !busy) {
+        event.preventDefault();
+        generate();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [modal, busy, page, projectId, loadedProject, draft, data.assets, source]);
+  useEffect(() => {
     request<{ engines: Engine[] }>("/api/engines")
       .then((r) => setEngines(r.engines))
       .catch((e) => setError(String(e)));
@@ -806,9 +829,10 @@ export function Studio() {
               key={p}
               href={`#${p.toLowerCase()}`}
               className={page === p ? "current" : ""}
-              title={p}
               aria-label={p}
               aria-current={page === p ? "page" : undefined}
+              title={`${p} · Alt+${pages.indexOf(p) + 1}`}
+              aria-keyshortcuts={`Alt+${pages.indexOf(p) + 1}`}
             >
               <Icon name={p} size={18} />
               <span>{p}</span>
@@ -1406,7 +1430,7 @@ export function Studio() {
                             onClick={() => setMaterial(m)}
                           >
                             {m === "textured"
-                              ? "PBR"
+                              ? "Textured"
                               : m === "clay"
                                 ? "Clay"
                                 : m === "normals"
