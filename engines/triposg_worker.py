@@ -28,7 +28,8 @@ def main():
     req = json.loads(Path(args.request).read_text(encoding='utf-8-sig'))
     root = Path(__file__).resolve().parents[1]
     output = Path(req['output']).resolve()
-    if output.exists() or not output.is_relative_to(root / 'data'): raise ValueError('Require new immutable project data directory')
+    allowed_data = Path(os.environ.get('AFS_DATA', root / 'data')).resolve()
+    if output.exists() or not output.is_relative_to(allowed_data): raise ValueError('Require new immutable configured data directory')
     source = Path(req['engine_path']).resolve(); sys.path.insert(0, str(source))
     output.mkdir(parents=True)
     report = {'status': 'RUNNING', 'engine': 'triposg', 'request': req, 'input_sha256': digest(req['image']),

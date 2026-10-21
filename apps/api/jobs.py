@@ -17,7 +17,8 @@ WORKER_LOCK = store.ROOT / '.local/worker.lock'
 TERMINAL = {'REVIEW_REQUIRED', 'FAILED', 'CANCELLED', 'BLOCKED'}
 TRANSITIONS = {
     'QUEUED': {'RUNNING', 'CANCELLED', 'BLOCKED'},
-    'RUNNING': {'POSTPROCESSING', 'FAILED', 'CANCELLED', 'BLOCKED'},
+    'RUNNING': {'GENERATED', 'POSTPROCESSING', 'FAILED', 'CANCELLED', 'BLOCKED'},
+    'GENERATED': {'VALIDATING', 'FAILED', 'CANCELLED', 'BLOCKED'},
     'POSTPROCESSING': {'VALIDATING', 'FAILED', 'CANCELLED', 'BLOCKED'},
     'VALIDATING': {'REVIEW_REQUIRED', 'FAILED', 'CANCELLED', 'BLOCKED'},
 }
@@ -113,7 +114,7 @@ class Worker:
                 with exclusive_worker_lock():
                     # Recover only while owning the lock: a crashed attempt is never silently resumed.
                     with store.connect() as db:
-                        db.execute("UPDATE jobs SET status='BLOCKED',error='Worker interrupted; retry creates a new attempt',updated_at=? WHERE status IN ('RUNNING','POSTPROCESSING','VALIDATING')", (store.now(),))
+                        db.execute("UPDATE jobs SET status='BLOCKED',error='Worker interrupted; retry creates a new attempt',updated_at=? WHERE status IN ('RUNNING','GENERATED','POSTPROCESSING','VALIDATING')", (store.now(),))
                         row = db.execute("SELECT * FROM jobs WHERE status='QUEUED' ORDER BY created_at LIMIT 1").fetchone()
                     if row: self.execute(decode(row))
             except OSError:
@@ -130,6 +131,9 @@ class Worker:
             artifact = store.get_artifact(payload['artifact_id'])
             source = store.safe_path(artifact['relative_path'])
             if store.digest(source) != artifact['sha256']: raise ValueError('Immutable source checksum changed')
+            if payload['kind'] == 'inference':
+                self.inference(job, artifact, source, folder)
+                return
             from scripts.audit import audit
             blender = audit()['blender_path']
             if not blender: raise ValueError('Blender executable not found; set AFS_BLENDER')
@@ -143,6 +147,7 @@ class Worker:
             with (folder / 'worker.log').open('w', encoding='utf-8') as log:
                 process = subprocess.Popen([blender, '-b', '--factory-startup', '--python-exit-code', '1', '--python',
                     str(store.ROOT / 'pipelines/blender/process_asset.py'), '--', '--request', str(request_path)], stdout=log, stderr=subprocess.STDOUT)
+                (folder / 'process.json').write_text(json.dumps({'pid': process.pid, 'created_at': store.now(), 'kind': 'blender'}), encoding='utf-8')
                 while process.poll() is None:
                     if get(identifier)['status'] == 'CANCELLED' or self.stop.is_set():
                         kill_tree(process)
@@ -172,6 +177,60 @@ class Worker:
             if process and process.poll() is None: kill_tree(process)
             current = get(identifier)['status']
             if current not in TERMINAL: transition(identifier, 'FAILED', str(exc))
+
+    def inference(self, job, source_record, source, folder):
+        from engines.adapters import ADAPTERS
+        from .inspection import inspect_image
+        payload = job['payload']; identifier = job['id']; adapter = ADAPTERS[payload['engine']]
+        request_path = folder / 'request.json'
+        request = {'image': str(source), 'output': str(folder / 'output'), 'seed': payload['seed'],
+                   'steps': payload['steps'], 'pipeline_type': payload['pipeline_type'], 'texture_size': payload['texture_size'],
+                   'export_triangle_target': 1_000_000, 'supplied_alpha_input': bool(source_record['metadata'].get('has_transparency')),
+                   'input_review': 'NEEDS_REVIEW', 'request_path': str(request_path)}
+        events = []
+        command, cwd, request = adapter.generate(request, events.append)
+        request_path.write_text(json.dumps(request, indent=2), encoding='utf-8')
+        (folder / 'events.json').write_text(json.dumps(events, indent=2), encoding='utf-8')
+        process = None; samples = []; started = time.monotonic()
+        try:
+            with (folder / 'worker.log').open('w', encoding='utf-8') as log:
+                process = subprocess.Popen(command, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
+                (folder / 'process.json').write_text(json.dumps({'pid': process.pid, 'created_at': store.now(), 'kind': 'inference'}), encoding='utf-8')
+                while process.poll() is None:
+                    if get(identifier)['status'] == 'CANCELLED' or self.stop.is_set():
+                        adapter.cancel({'process': process})
+                        if get(identifier)['status'] != 'CANCELLED': transition(identifier, 'BLOCKED', 'Server stopped; new attempt required')
+                        return
+                    gpu = subprocess.run(['nvidia-smi', '--query-gpu=memory.used,power.draw', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=10)
+                    samples.append({'seconds': time.monotonic()-started, 'all_gpu_memory_mib_and_power_w': gpu.stdout.strip()})
+                    self.stop.wait(0.5)
+            if get(identifier)['status'] == 'CANCELLED': return
+            if process.returncode: raise RuntimeError(f'Local engine exit {process.returncode}; inspect worker.log')
+            transition(identifier, 'GENERATED'); transition(identifier, 'VALIDATING')
+            output = folder / 'output'
+            generation = json.loads((output / 'generation.json').read_text(encoding='utf-8'))
+            if generation['status'] != 'GENERATED_NEEDS_REVIEW': raise ValueError('Engine did not report successful real generation')
+            inspection = adapter.verify_outputs(output)
+            record = store.add_artifact(output / 'raw.glb', 'candidate', f'{adapter.id} seed {payload["seed"]} / {identifier[:6]}', inspection | {
+                'engine': adapter.id, 'seed': payload['seed'], 'generation': generation, 'job_id': identifier,
+                'parent_id': source_record['id'], 'tournament_id': payload['tournament_id'], 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
+            for name in ['source_alpha.png', 'conditioning.png']:
+                path = output / name
+                if path.exists(): store.add_artifact(path, 'reference', f'{adapter.id} {name}', inspect_image(path) | {
+                    'origin': 'engine_preprocessing', 'parent_id': source_record['id'], 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
+            manifest = {'source_artifact': source_record['id'], 'source_sha256': source_record['sha256'],
+                        'candidate_artifact': record['id'], 'engine': adapter.id, 'duration_seconds': time.monotonic()-started,
+                        'tournament_id': payload['tournament_id'], 'quality': 'NEEDS_REVIEW', 'unity': 'NOT_TESTED', 'mesh_quality_parity': 'NOT_TESTED'}
+            (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
+            transition(identifier, 'REVIEW_REQUIRED')
+            if payload.get('auto_blender'):
+                height = payload.get('benchmark_height_m')
+                enqueue({'kind': 'blender', 'artifact_id': record['id'], 'normalize': bool(height), 'target_height_m': height,
+                         'render': True, 'resolutions': ['mobile', 'pc1440'], 'views': ['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'],
+                         'parent_job': identifier})
+        finally:
+            if process and process.poll() is None: kill_tree(process)
+            (folder / 'gpu_samples.json').write_text(json.dumps(samples, indent=2), encoding='utf-8')
 
 
 worker = Worker()

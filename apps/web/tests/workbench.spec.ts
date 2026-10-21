@@ -29,9 +29,12 @@ test('real WebGL import, synchronized comparison and persisted human review', as
   const source = state.artifacts.filter((a: {role: string}) => a.role === 'candidate').at(-1);
   await page.getByRole('combobox', {name: 'GLB nguồn Blender'}).selectOption(source.id);
   await page.getByRole('checkbox', {name: '6 góc × mobile + 1440p'}).uncheck();
+  const queuedResponse = page.waitForResponse(r => r.url().endsWith('/api/jobs/blender') && r.request().method() === 'POST');
   await page.getByRole('button', {name: 'Xếp job Blender'}).click();
-  await expect(page.locator('.job-row').first()).toContainText('REVIEW_REQUIRED', {timeout: 45000});
-  await page.locator('.job-row').first().locator('button').first().click();
+  const queued = await (await queuedResponse).json();
+  const jobRow = page.locator('.job-row').filter({hasText: queued.id.slice(0,10)});
+  await expect(jobRow).toContainText('REVIEW_REQUIRED', {timeout: 45000});
+  await jobRow.locator('button').first().click();
   await expect(page.getByRole('link', {name: /output\/LOD0.glb/})).toBeVisible();
   await expect(page.locator('.render-grid img').first()).toBeVisible();
   expect(errors).toEqual([]);

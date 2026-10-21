@@ -1,0 +1,83 @@
+{
+  "started_at": "2026-10-21T07:38:23.399Z",
+  "purpose": "real production concept / actual GPU inference, not fixture",
+  "checks": {
+    "cancel_running_job": "PASS",
+    "real_inference": "REVIEW_REQUIRED",
+    "blender_postprocess": "REVIEW_REQUIRED",
+    "glb_reopen": "PASS",
+    "fbx_reopen": "PASS",
+    "real_webgl_viewer": "PASS",
+    "meshy_3d_comparison": "BLOCKED_NO_GOLDEN_GLB"
+  },
+  "initial_job": "00b097a4173a43d0a3b1712ff1d15344",
+  "cancelled_pid": 74988,
+  "retry_job": "b2a5df4f4b634f269b627604e7296829",
+  "blender_job": "9f4c46ef77f841e98941e9263fbb1dc5",
+  "output_file_count": 54,
+  "framing": [
+    {
+      "resolution": "mobile",
+      "view": "front",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "three_quarter",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "side",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "back",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "top",
+      "status": "PASS"
+    },
+    {
+      "resolution": "mobile",
+      "view": "gameplay",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "front",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "three_quarter",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "side",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "back",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "top",
+      "status": "PASS"
+    },
+    {
+      "resolution": "pc1440",
+      "view": "gameplay",
+      "status": "PASS"
+    }
+  ],
+  "browser_errors": [],
+  "result": "PASS",
+  "finished_at": "2026-10-21T07:42:24.713Z"
+}

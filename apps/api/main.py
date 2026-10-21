@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import uuid
 from contextlib import asynccontextmanager
@@ -10,6 +11,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 from . import store
 from .inspection import inspect_glb, inspect_image
@@ -26,12 +28,16 @@ async def lifespan(app):
 
 app = FastAPI(title="Asset Forge Studio", version="0.1.0", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
+ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
+if os.environ.get('AFS_DESKTOP') == '1':
+    ALLOWED_ORIGINS.update({'tauri://localhost', 'http://tauri.localhost'})
+app.add_middleware(CORSMiddleware, allow_origins=sorted(ALLOWED_ORIGINS), allow_methods=['GET', 'POST'], allow_headers=['Content-Type'])
 
 
 @app.middleware("http")
 async def local_origin(request: Request, call_next):
     origin = request.headers.get("origin")
-    if origin and origin not in {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}:
+    if origin and origin not in ALLOWED_ORIGINS:
         return JSONResponse({"detail": "Local origin required"}, status_code=403)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -44,7 +50,11 @@ def status():
         rows = db.execute("SELECT * FROM artifacts ORDER BY created_at").fetchall()
     artifacts = [store.artifact(r) for r in rows]
     roles = {a["role"] for a in artifacts}
+    generated = [a for a in artifacts if a['metadata'].get('generation', {}).get('status') == 'GENERATED_NEEDS_REVIEW']
+    processed = [a for a in artifacts if a['metadata'].get('stage') in {'blender_processed', 'blender_bake'}]
     return {"artifacts": artifacts, "gate_a": "NEEDS_REVIEW" if {"concept", "golden", "candidate"} <= roles else "BLOCKED",
+            "local_generation_review": "NEEDS_REVIEW" if generated else "NOT_TESTED",
+            "postprocess_review": "NEEDS_REVIEW" if processed else "NOT_TESTED",
             "mesh_quality_parity": "NOT_TESTED", "unity_import": "NOT_TESTED",
             "missing": sorted({"concept", "golden", "candidate"} - roles),
             "benchmark": json.loads((store.ROOT / "benchmarks/archer_tower_t3/benchmark.json").read_text(encoding="utf-8"))}
@@ -58,10 +68,17 @@ def environment():
 
 @app.get('/api/engines')
 def engine_status():
+    from engines.adapters import ADAPTERS
     registry = json.loads((store.ROOT / 'engines/registry.json').read_text(encoding='utf-8'))
     for engine in registry['engines']:
-        if engine['id'] == 'trellis2_community':
-            engine['installed'] = (Path.home() / 'Tools/trellis2/code/venv/Scripts/python.exe').is_file()
+        if engine['id'] in ADAPTERS:
+            engine.update(ADAPTERS[engine['id']].probe())
+            with store.connect() as db:
+                records = [store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE role='candidate'")]
+            successful = [r for r in records if r['metadata'].get('engine') == engine['id'] and r['metadata'].get('generation', {}).get('status') == 'GENERATED_NEEDS_REVIEW']
+            engine['inference'] = 'PASS' if successful else 'NOT_TESTED'
+            engine['verified_generation_count'] = len(successful)
+            if successful: engine['blocker'] = 'Commercial license / visual approval pending; inference has real output'
     return registry
 
 
@@ -166,6 +183,33 @@ def queue_blender(body: BlenderJob):
     if record['role'] not in {'golden', 'candidate'}: raise HTTPException(400, 'Source must be a real GLB')
     if body.target_height_m and not body.normalize: raise HTTPException(400, 'Height requires explicit normalization')
     return jobs.enqueue(body.model_dump() | {'kind': 'blender'})
+
+
+class Tournament(BaseModel):
+    engine: Literal['triposg', 'trellis2_community']
+    artifact_id: str
+    seeds: list[int] = Field(default=[42, 43], min_length=1, max_length=4)
+    steps: int = Field(default=24, ge=1, le=100)
+    pipeline_type: Literal['512', '1024_cascade'] = '1024_cascade'
+    texture_size: Literal[2048, 4096] = 4096
+    auto_blender: bool = True
+    benchmark_height_m: float | None = Field(default=10, gt=0, le=1000)
+
+
+@app.post('/api/jobs/tournament', status_code=201)
+def tournament(body: Tournament):
+    from engines.adapters import ADAPTERS
+    if len(set(body.seeds)) != len(body.seeds) or any(not 0 <= seed < 2**32 for seed in body.seeds):
+        raise HTTPException(400, 'Seeds must be unique unsigned 32-bit integers')
+    try: record = store.get_artifact(body.artifact_id)
+    except KeyError: raise HTTPException(404, 'Unknown input')
+    if record['role'] not in {'concept', 'reference'}: raise HTTPException(400, 'Input must be a concept/reference image')
+    if body.engine == 'triposg' and not record['metadata'].get('has_transparency'):
+        raise HTTPException(400, 'TripoSG requires supplied alpha image; import one or use preserved TRELLIS source_alpha.png')
+    if not ADAPTERS[body.engine].probe()['installed']: raise HTTPException(409, 'Engine offline installation incomplete; no auto download')
+    group = uuid.uuid4().hex
+    payload = body.model_dump(exclude={'seeds'}) | {'kind': 'inference', 'tournament_id': group, 'purpose': 'evaluation_only'}
+    return {'tournament_id': group, 'jobs': [jobs.enqueue(payload | {'seed': seed}) for seed in body.seeds]}
 
 
 @app.get('/api/jobs')

@@ -33,7 +33,8 @@ def main():
     req = json.loads(Path(args.request).read_text(encoding='utf-8-sig'))
     root = Path(__file__).resolve().parents[1]
     output = Path(req['output']).resolve()
-    if not output.is_relative_to(root / 'data') or output.exists():
+    allowed_data = Path(os.environ.get('AFS_DATA', root / 'data')).resolve()
+    if not output.is_relative_to(allowed_data) or output.exists():
         raise ValueError('Output must be a NEW directory beneath this project data/')
     if req.get('purpose') != 'evaluation_only': raise ValueError('Commercial use blocked pending dependency/weights license audit')
     engine = Path(req['engine_path']).resolve()

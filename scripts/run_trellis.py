@@ -23,7 +23,7 @@ def main():
     if not args.allow_community_evaluation: raise SystemExit('Explicit evaluation opt-in required')
     root = store.ROOT
     engine = Path.home() / 'Tools/trellis2/code'
-    run = root / 'data/generation/trellis2' / (time.strftime('%Y%m%dT%H%M%S') + '_' + str(args.seed) + '_' + uuid.uuid4().hex[:6])
+    run = store.DATA / 'generation/trellis2' / (time.strftime('%Y%m%dT%H%M%S') + '_' + str(args.seed) + '_' + uuid.uuid4().hex[:6])
     run.mkdir(parents=True)
     image = Path(args.image).resolve() if args.image else root / 'doc/852446485_1648007553499526_667194451249758572_n.png'
     request = {'image': str(image), 'output': str(run / 'output'), 'engine_path': str(engine),
@@ -61,6 +61,9 @@ def main():
         'engine': 'trellis2_community', 'seed': args.seed, 'generation': generation, 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
     condition = run / 'output/conditioning.png'
     store.add_artifact(condition, 'reference', f'TRELLIS conditioning seed {args.seed}', inspect_image(condition) | {'origin': 'engine_preprocessing', 'approval': 'NEEDS_REVIEW', 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
+    alpha = run / 'output/source_alpha.png'
+    if alpha.exists():
+        store.add_artifact(alpha, 'reference', f'TRELLIS alpha seed {args.seed}', inspect_image(alpha) | {'origin': 'engine_preprocessing', 'approval': 'NEEDS_REVIEW', 'license': 'EVALUATION_ONLY_PENDING_AUDIT'})
     print('REAL_GENERATION_SUCCESS ' + str(output), flush=True)
 
 

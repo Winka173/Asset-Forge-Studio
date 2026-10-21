@@ -22,7 +22,7 @@ def main():
     weights = root / 'models/triposg'
     if not (weights / 'transformer/diffusion_pytorch_model.safetensors').is_file():
         raise SystemExit('BLOCKED: TripoSG weights not completely downloaded; no inference started')
-    run = root / 'data/generation/triposg' / (time.strftime('%Y%m%dT%H%M%S') + '_' + str(args.seed) + '_' + uuid.uuid4().hex[:6])
+    run = store.DATA / 'generation/triposg' / (time.strftime('%Y%m%dT%H%M%S') + '_' + str(args.seed) + '_' + uuid.uuid4().hex[:6])
     run.mkdir(parents=True)
     request = {'image': str(Path(args.image).resolve()), 'seed': args.seed, 'steps': args.steps,
                'engine_path': str(root / '.local/engines/TripoSG'), 'weights': str(weights), 'output': str(run / 'output'),
