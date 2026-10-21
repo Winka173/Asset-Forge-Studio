@@ -1,0 +1,2495 @@
+import { useEffect, useRef, useState } from "react";
+import { apiFetch, apiUrl } from "./api";
+import { CompareViewer } from "./viewer";
+import { QualityLab } from "./quality-lab";
+
+type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
+type Artifact = {
+  id: string;
+  name: string;
+  role: string;
+  url: string;
+  metadata: {
+    triangles?: number;
+    dimensions_xyz_m?: number[];
+    has_transparency?: boolean;
+    engine?: string;
+    [key: string]: unknown;
+  };
+};
+type Project = {
+  id: string;
+  name: string;
+  description?: string;
+  cover_artifact_id?: string;
+  art_bible?: Record<string, unknown>;
+  palette?: string[];
+  material_language?: string;
+  default_style?: string;
+  units?: string;
+  target_height_m?: number;
+  export_settings?: Record<string, unknown>;
+};
+type Asset = {
+  id: string;
+  project_id: string;
+  name: string;
+  prompt: string;
+  category?: string;
+  favorite?: boolean;
+  status: string;
+  master_artifact_id?: string;
+  reference_ids: string[];
+  settings: Record<string, unknown>;
+  versions: Artifact[];
+  exports: { files?: JobFile[]; [key: string]: unknown }[];
+  thumbnail_url?: string;
+  updated_at: string;
+};
+type Job = {
+  progress?: { stage: string; percent: number | null; scope: string };
+  id: string;
+  status: string;
+  created_at: string;
+  error?: string;
+  kind?: string;
+  payload: {
+    asset_id?: string;
+    engine?: string;
+    seed?: number;
+    [key: string]: unknown;
+  };
+};
+type JobFile = { name: string; url: string; bytes: number };
+type StudioData = {
+  projects: Project[];
+  project?: Project;
+  assets: Asset[];
+  artifacts: Artifact[];
+  jobs: Job[];
+  draft: Partial<Draft>;
+  capabilities: {
+    text_to_concept: boolean;
+    text_conditioning: boolean;
+    image_to_3d: boolean;
+  };
+};
+type Engine = {
+  id: string;
+  installed: boolean;
+  inference: string;
+  blocker?: string;
+};
+type Draft = {
+  mode: "Image" | "Text" | "Text + Image";
+  prompt: string;
+  name: string;
+  source: string;
+  assetId: string;
+  engine: string;
+  quality: "Fast" | "Balanced" | "Maximum";
+  seeds: string;
+  steps: number;
+  profile: string;
+  textureSize: number;
+  autoBlender: boolean;
+  height: number | null;
+};
+const initialDraft: Draft = {
+  mode: "Image",
+  prompt: "",
+  name: "",
+  source: "",
+  assetId: "",
+  engine: "auto",
+  quality: "Maximum",
+  seeds: "42",
+  steps: 32,
+  profile: "1024_cascade",
+  textureSize: 4096,
+  autoBlender: true,
+  height: null,
+};
+const emptyData: StudioData = {
+  projects: [],
+  assets: [],
+  artifacts: [],
+  jobs: [],
+  draft: {},
+  capabilities: {
+    text_to_concept: false,
+    text_conditioning: false,
+    image_to_3d: false,
+  },
+};
+const pages: Page[] = [
+  "Home",
+  "Create",
+  "Library",
+  "Jobs",
+  "Compare",
+  "Settings",
+];
+const activeStates = [
+  "QUEUED",
+  "RUNNING",
+  "GENERATED",
+  "POSTPROCESSING",
+  "VALIDATING",
+];
+const icons: Record<string, string> = {
+  Home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
+  Create: "M12 3v18M3 12h18",
+  Library: "M3 5h7l2 3h9v12H3Z",
+  Jobs: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
+  Compare: "M12 3v18M3 6h6v12H3ZM15 6h6v12h-6Z",
+  Settings:
+    "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2",
+  Cube: "m12 3 9 5v9l-9 5-9-5V8Zm0 10L3 8m9 5 9-5m-9 5v9",
+  Image: "M3 3h18v18H3ZM3 16l6-6 5 5 3-3 4 4M16 7h1",
+  Arrow: "M4 12h16m-6-6 6 6-6 6",
+  Check: "m5 12 4 4L19 6",
+  Star: "m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z",
+  Upload: "M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5",
+  Close: "m5 5 14 14M5 19 19 5",
+  Search: "M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm5 12 6 6",
+  Download: "M12 3v13m-5-5 5 5 5-5M3 17v4h18v-4",
+};
+function Icon({ name, size = 20 }: { name: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={icons[name] || icons.Cube} />
+    </svg>
+  );
+}
+function State({ value }: { value: string }) {
+  return (
+    <span className={`state state-${value.toLowerCase().replaceAll(" ", "-")}`}>
+      {value.replaceAll("_", " ")}
+    </span>
+  );
+}
+async function request<T>(url: string, body?: unknown): Promise<T> {
+  const response = await apiFetch(
+    url,
+    body === undefined
+      ? undefined
+      : {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+  );
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : JSON.stringify(data.detail || `HTTP ${response.status}`),
+    );
+  }
+  return response.json();
+}
+function route(): Page {
+  const value = location.hash.slice(1).split("/")[0];
+  return pages.find((p) => p.toLowerCase() === value.toLowerCase()) || "Home";
+}
+
+export function Studio() {
+  const [page, setPage] = useState<Page>(route),
+    [projectId, setProjectId] = useState(
+      localStorage.getItem("afs.project") || "runavelle",
+    );
+  const [data, setData] = useState<StudioData>(emptyData),
+    [engines, setEngines] = useState<Engine[]>([]),
+    [draft, setDraft] = useState<Draft>(initialDraft);
+  const [loadedProject, setLoadedProject] = useState(""),
+    [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
+    [busy, setBusy] = useState(false),
+    [draftStatus, setDraftStatus] = useState("");
+  const [assetId, setAssetId] = useState(""),
+    [versionId, setVersionId] = useState(""),
+    [search, setSearch] = useState(""),
+    [category, setCategory] = useState("all"),
+    [statusFilter, setStatusFilter] = useState("all"),
+    [favorites, setFavorites] = useState(false),
+    [sort, setSort] = useState("recent");
+  const [gpu, setGpu] = useState<{
+    available: boolean;
+    name?: string;
+    used_mib?: number;
+    total_mib?: number;
+    utilization_percent?: number;
+  } | null>(null);
+  const [previewTab, setPreviewTab] = useState("Model"),
+    [view, setView] = useState("three_quarter"),
+    [material, setMaterial] = useState<
+      "textured" | "clay" | "wireframe" | "normals"
+    >("textured"),
+    [background, setBackground] = useState<"studio" | "dark" | "light">(
+      "studio",
+    ),
+    [light, setLight] = useState<"studio" | "soft">("studio");
+  const [modal, setModal] = useState<
+      | "new-project"
+      | "edit-project"
+      | "archive-project"
+      | "approve"
+      | "export"
+      | null
+    >(null),
+    [modalName, setModalName] = useState(""),
+    [reviewer, setReviewer] = useState(""),
+    [reviewNotes, setReviewNotes] = useState("");
+  const [projectForm, setProjectForm] = useState({
+    name: "",
+    description: "",
+    style: "",
+    materials: "",
+    palette: "",
+    artBible: "{}",
+    exportSettings: "{}",
+    height: null as number | null,
+    units: "m",
+  });
+  const [exportPreset, setExportPreset] = useState("Master"),
+    [exportFormat, setExportFormat] = useState("glb"),
+    [exportFiles, setExportFiles] = useState<JobFile[]>([]),
+    [environment, setEnvironment] = useState<unknown>(null);
+  const projectRef = useRef(projectId),
+    submitting = useRef(false),
+    lastSavedDraft = useRef({ projectId: "", serialized: "" });
+  const [collapsed, setCollapsed] = useState(
+    localStorage.getItem("afs.sidebar") === "collapsed",
+  );
+  projectRef.current = projectId;
+  const project = data.project || data.projects.find((p) => p.id === projectId);
+  const selectedAsset =
+    data.assets.find((a) => a.id === assetId) ||
+    data.assets.find((a) => a.id === draft.assetId);
+  const versions = selectedAsset?.versions || [];
+  const candidate =
+    versions.find((v) => v.id === versionId) ||
+    versions.filter((v) => v.role === "candidate").at(-1);
+  const source = data.artifacts.find((a) => a.id === draft.source);
+  const activeJobs = data.jobs.filter((j) => activeStates.includes(j.status));
+  const filteredAssets = data.assets
+    .filter(
+      (a) =>
+        (!search ||
+          `${a.name} ${a.prompt} ${a.category}`
+            .toLowerCase()
+            .includes(search.toLowerCase())) &&
+        (category === "all" || (a.category || "Unsorted") === category) &&
+        (statusFilter === "all" || a.status === statusFilter) &&
+        (!favorites || a.favorite),
+    )
+    .sort((a, b) =>
+      sort === "name"
+        ? a.name.localeCompare(b.name)
+        : sort === "oldest"
+          ? a.updated_at.localeCompare(b.updated_at)
+          : b.updated_at.localeCompare(a.updated_at),
+    );
+  const categories = Array.from(
+    new Set(data.assets.map((a) => a.category || "Unsorted")),
+  );
+  function navigate(next: Page) {
+    location.hash = next.toLowerCase();
+    setPage(next);
+  }
+  async function reload(loadDraft = false) {
+    const id = projectId;
+    const result = await request<StudioData>(
+      `/api/studio?project_id=${encodeURIComponent(id)}`,
+    );
+    if (id !== projectRef.current) return;
+    setData(result);
+    if (loadDraft) {
+      const savedOnServer = {
+        ...initialDraft,
+        height: result.project?.target_height_m ?? null,
+        ...result.draft,
+      };
+      let restored = savedOnServer;
+      try {
+        const local = JSON.parse(
+          localStorage.getItem(`afs.draft.${id}`) || "null",
+        );
+        if (local?.pending && local.draft)
+          restored = { ...savedOnServer, ...local.draft };
+      } catch {
+        /* A damaged browser cache must not hide the persisted server draft. */
+      }
+      lastSavedDraft.current = {
+        projectId: id,
+        serialized: JSON.stringify(savedOnServer),
+      };
+      setDraft(restored);
+      setLoadedProject(id);
+      setAssetId("");
+      setVersionId("");
+    }
+  }
+  useEffect(() => {
+    const handler = () => setPage(route());
+    addEventListener("hashchange", handler);
+    return () => removeEventListener("hashchange", handler);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("afs.project", projectId);
+    setLoadedProject("");
+    setData((current) => ({ ...emptyData, projects: current.projects }));
+    setDraft(initialDraft);
+    setAssetId("");
+    setVersionId("");
+    setError("");
+    request<Project[]>("/api/projects")
+      .then((projects) => {
+        if (projectId !== projectRef.current) return;
+        if (!projects.some((p) => p.id === projectId)) {
+          setData({ ...emptyData, projects });
+          setProjectId(projects[0]?.id || "");
+          return;
+        }
+        reload(true).catch((e) => setError(String(e)));
+      })
+      .catch((e) => setError(String(e)));
+    if (!projectId) return;
+    const timer = setInterval(
+      () => reload().catch((e) => setError(String(e))),
+      5000,
+    );
+    return () => clearInterval(timer);
+  }, [projectId]);
+  useEffect(() => {
+    if (!modal) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) setModal(null);
+      if (event.key === "Tab") {
+        const elements = Array.from(
+          document.querySelectorAll<HTMLElement>(
+            ".studio-modal button:not(:disabled),.studio-modal input:not(:disabled),.studio-modal select:not(:disabled),.studio-modal textarea:not(:disabled),.studio-modal a[href]",
+          ),
+        ).filter((e) => e.getClientRects().length);
+        const first = elements[0],
+          last = elements.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => {
+      document.removeEventListener("keydown", handler);
+      previous?.focus();
+    };
+  }, [modal, busy]);
+  useEffect(() => {
+    request<{ engines: Engine[] }>("/api/engines")
+      .then((r) => setEngines(r.engines))
+      .catch((e) => setError(String(e)));
+  }, []);
+  useEffect(() => {
+    if (!projectId || loadedProject !== projectId) return;
+    const serialized = JSON.stringify(draft);
+    if (
+      lastSavedDraft.current.projectId === projectId &&
+      lastSavedDraft.current.serialized === serialized
+    ) {
+      setDraftStatus("Saved locally");
+      return;
+    }
+    localStorage.setItem(
+      `afs.draft.${projectId}`,
+      JSON.stringify({ draft, serialized, pending: true }),
+    );
+    setDraftStatus("Đang lưu…");
+    const timer = setTimeout(() => {
+      request(`/api/projects/${projectId}/draft`, { draft })
+        .then(() => {
+          lastSavedDraft.current = { projectId, serialized };
+          const local = JSON.parse(
+            localStorage.getItem(`afs.draft.${projectId}`) || "null",
+          );
+          if (local?.serialized === serialized)
+            localStorage.setItem(
+              `afs.draft.${projectId}`,
+              JSON.stringify({ ...local, pending: false }),
+            );
+          setDraftStatus("Đã lưu trên máy");
+        })
+        .catch((e) => {
+          setDraftStatus("Chưa lưu");
+          setError(String(e));
+        });
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [draft, loadedProject, projectId]);
+  useEffect(() => {
+    const load = () =>
+      request<typeof gpu>("/api/gpu")
+        .then(setGpu)
+        .catch(() => setGpu({ available: false }));
+    load();
+    const timer = setInterval(load, 10000);
+    return () => clearInterval(timer);
+  }, []);
+  const change = (values: Partial<Draft>) =>
+    setDraft((d) => ({ ...d, ...values }));
+  async function run(action: () => Promise<void>) {
+    if (submitting.current) return;
+    submitting.current = true;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await action();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+    }
+  }
+  async function ensureAsset() {
+    const existing = data.assets.find((a) => a.id === draft.assetId);
+    if (existing) {
+      await request(`/api/assets/${existing.id}`, {
+        name: draft.name.trim() || existing.name,
+        prompt: draft.prompt,
+        reference_ids: draft.source ? [draft.source] : [],
+        settings: draft,
+      });
+      return existing;
+    }
+    const created = await request<Asset>("/api/assets", {
+      project_id: projectId,
+      name: draft.name.trim() || "Untitled asset",
+      prompt: draft.prompt,
+      reference_ids: draft.source ? [draft.source] : [],
+      settings: draft,
+      category: "Unsorted",
+    });
+    change({ assetId: created.id });
+    setAssetId(created.id);
+    return created;
+  }
+  async function generate() {
+    await run(async () => {
+      if (!source) throw new Error("Chọn một ảnh thật trước khi tạo model.");
+      if (draft.mode === "Text")
+        throw new Error(
+          "Text-to-concept chưa được cài. Hãy chuyển sang Image để chạy engine local.",
+        );
+      const seeds = draft.seeds.split(",").map((s) => Number(s.trim()));
+      if (
+        !draft.seeds.trim() ||
+        seeds.length > 4 ||
+        new Set(seeds).size !== seeds.length ||
+        seeds.some((s) => !Number.isInteger(s) || s < 0 || s > 4294967295)
+      )
+        throw new Error("Dùng 1–4 seed nguyên khác nhau từ 0 đến 4294967295.");
+      const asset = await ensureAsset();
+      const body = {
+        asset_id: asset.id,
+        engine: draft.engine,
+        quality: draft.quality,
+        artifact_id: source.id,
+        prompt: draft.prompt,
+        seeds,
+        steps:
+          draft.engine === "auto" &&
+          !engines.some((e) => e.id === "trellis2_community" && e.installed)
+            ? 50
+            : draft.steps,
+        pipeline_type: draft.profile,
+        texture_size: draft.textureSize,
+        auto_blender: draft.autoBlender,
+        benchmark_height_m: draft.height,
+      };
+      const key = `afs.request.${projectId}`;
+      const previous = JSON.parse(localStorage.getItem(key) || "null");
+      const fingerprint = JSON.stringify(body);
+      const requestId =
+        previous?.fingerprint === fingerprint
+          ? previous.requestId
+          : crypto.randomUUID();
+      localStorage.setItem(key, JSON.stringify({ fingerprint, requestId }));
+      const result = await request<{ jobs: Job[] }>("/api/studio/generate", {
+        ...body,
+        request_id: requestId,
+      });
+      await reload();
+      setAssetId(asset.id);
+      setVersionId("");
+      setPreviewTab("Model");
+      setNotice(
+        `${result.jobs.length} job đã vào hàng đợi local. Bạn có thể rời trang; refresh không tạo thêm job.`,
+      );
+    });
+  }
+  async function upload(file?: File) {
+    if (!file) return;
+    await run(async () => {
+      if (!file.type.startsWith("image/"))
+        throw new Error("Chọn ảnh PNG, JPG hoặc WebP.");
+      const form = new FormData();
+      form.append("file", file);
+      const res = await apiFetch(
+        `/api/import/reference?project_id=${projectId}${draft.assetId ? `&asset_id=${draft.assetId}` : ""}`,
+        { method: "POST", body: form },
+      );
+      if (!res.ok) throw new Error(JSON.stringify((await res.json()).detail));
+      const item: Artifact = await res.json();
+      change({ source: item.id });
+      setPreviewTab("Concept");
+      await reload();
+    });
+  }
+  function newAsset(mode: Draft["mode"] = "Image") {
+    if (!projectId) {
+      editProject(false);
+      return;
+    }
+    setDraft({
+      ...initialDraft,
+      mode,
+      height: project?.target_height_m ?? null,
+    });
+    setAssetId("");
+    setVersionId("");
+    setPreviewTab("Model");
+    navigate("Create");
+  }
+  function openAsset(asset: Asset) {
+    setAssetId(asset.id);
+    setVersionId(asset.master_artifact_id || "");
+    setDraft({
+      ...initialDraft,
+      ...asset.settings,
+      assetId: asset.id,
+      name: asset.name,
+      prompt: asset.prompt || "",
+      source: asset.reference_ids[0] || "",
+    });
+    setPreviewTab("Model");
+    navigate("Create");
+  }
+  async function updateAsset(asset: Asset, fields: unknown) {
+    await run(async () => {
+      await request(`/api/assets/${asset.id}`, fields);
+      await reload();
+    });
+  }
+  function editProject(edit: boolean) {
+    setProjectForm(
+      edit && project
+        ? {
+            name: project.name,
+            description: project.description || "",
+            style: project.default_style || "",
+            materials: project.material_language || "",
+            palette: (project.palette || []).join(", "),
+            artBible: JSON.stringify(project.art_bible || {}, null, 2),
+            exportSettings: JSON.stringify(
+              project.export_settings || {},
+              null,
+              2,
+            ),
+            height: project.target_height_m ?? null,
+            units: project.units || "m",
+          }
+        : {
+            name: "",
+            description: "",
+            style: "",
+            materials: "",
+            palette: "",
+            artBible: "{}",
+            exportSettings: "{}",
+            height: null as number | null,
+            units: "m",
+          },
+    );
+    setModal(edit ? "edit-project" : "new-project");
+  }
+  async function saveProject() {
+    await run(async () => {
+      const body = {
+        name: projectForm.name.trim(),
+        description: projectForm.description,
+        default_style: projectForm.style,
+        material_language: projectForm.materials,
+        palette: projectForm.palette
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        art_bible: JSON.parse(projectForm.artBible),
+        export_settings: JSON.parse(projectForm.exportSettings),
+        target_height_m: projectForm.height,
+        units: projectForm.units,
+        cover_artifact_id:
+          modal === "edit-project" ? project?.cover_artifact_id || null : null,
+      };
+      const saved = await request<Project>(
+        modal === "edit-project"
+          ? `/api/projects/${projectId}`
+          : "/api/projects",
+        body,
+      );
+      setModal(null);
+      if (saved.id !== projectId) setProjectId(saved.id);
+      else await reload();
+      setNotice("Project đã lưu trên máy.");
+    });
+  }
+  async function exportAsset() {
+    await run(async () => {
+      if (!selectedAsset || !candidate)
+        throw new Error("Chọn version GLB thật để xuất.");
+      const exportBody = {
+        artifact_id: candidate.id,
+        preset: exportPreset,
+        format: exportFormat,
+      };
+      const fingerprint = JSON.stringify(exportBody);
+      const key = `afs.export.${selectedAsset.id}`;
+      const previous = JSON.parse(localStorage.getItem(key) || "null");
+      const requestId =
+        previous?.fingerprint === fingerprint
+          ? previous.requestId
+          : crypto.randomUUID();
+      localStorage.setItem(key, JSON.stringify({ fingerprint, requestId }));
+      const result = await request<{ files: JobFile[]; job?: Job }>(
+        `/api/assets/${selectedAsset.id}/export`,
+        {
+          ...exportBody,
+          request_id: requestId,
+        },
+      );
+      setExportFiles(result.files || []);
+      await reload();
+      if (result.job)
+        setNotice(
+          `Export đang xử lý · job ${result.job.id.slice(0, 8)}. Xem file sau khi hoàn tất trong Jobs.`,
+        );
+    });
+  }
+  function assetCard(asset: Asset) {
+    return (
+      <article className="asset-card" key={asset.id}>
+        <button
+          className="asset-visual"
+          onClick={() => openAsset(asset)}
+          aria-label={`Mở ${asset.name}`}
+        >
+          {asset.thumbnail_url ? (
+            <img
+              loading="lazy"
+              src={apiUrl(asset.thumbnail_url)}
+              alt={`${asset.name} reference image`}
+            />
+          ) : (
+            <div className="asset-placeholder">
+              <Icon name="Cube" size={44} />
+              <span>
+                {asset.versions.length
+                  ? "Có model · mở để xem 3D"
+                  : "Chưa có output"}
+              </span>
+            </div>
+          )}
+          {asset.thumbnail_url && (
+            <span className="reference-label">REFERENCE IMAGE</span>
+          )}
+          <State value={asset.versions.length ? asset.status : "Draft"} />
+        </button>
+        <div className="asset-card-info">
+          <button className="asset-name" onClick={() => openAsset(asset)}>
+            {asset.name}
+          </button>
+          <button
+            className={`icon-button favorite${asset.favorite ? " on" : ""}`}
+            aria-label={`${asset.favorite ? "Bỏ" : "Thêm"} yêu thích ${asset.name}`}
+            onClick={() => updateAsset(asset, { favorite: !asset.favorite })}
+          >
+            <Icon name="Star" size={16} />
+          </button>
+          <p>
+            {asset.category || "Unsorted"} <span>·</span>{" "}
+            {asset.versions.length} versions
+          </p>
+        </div>
+      </article>
+    );
+  }
+  return (
+    <div className={`studio${collapsed ? " sidebar-collapsed" : ""}`}>
+      <aside className="studio-sidebar">
+        <a href="#home" className="studio-brand">
+          <div className="brand-symbol">
+            <Icon name="Cube" size={25} />
+          </div>
+          <span>
+            Asset Forge<small>LOCAL STUDIO</small>
+          </span>
+        </a>
+        <div className="project-switch">
+          <label htmlFor="project-switcher">WORKSPACE</label>
+          <select
+            id="project-switcher"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          >
+            {data.projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+            {!data.projects.length && (
+              <option value={projectId}>{projectId || "No projects"}</option>
+            )}
+          </select>
+          <button className="project-new" onClick={() => editProject(false)}>
+            <Icon name="Create" size={13} /> New project
+          </button>
+        </div>
+        <nav aria-label="Studio navigation">
+          {pages.map((p) => (
+            <a
+              key={p}
+              href={`#${p.toLowerCase()}`}
+              className={page === p ? "current" : ""}
+              title={p}
+              aria-label={p}
+              aria-current={page === p ? "page" : undefined}
+            >
+              <Icon name={p} size={18} />
+              <span>{p}</span>
+              {p === "Jobs" && activeJobs.length > 0 && (
+                <span className="nav-count">{activeJobs.length}</span>
+              )}
+            </a>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <div>
+            <span className="live-dot" /> Local workspace
+          </div>
+          <small>Weights & assets stay on this PC</small>
+          <p>
+            {gpu?.available
+              ? gpu.name?.replace("NVIDIA GeForce ", "")
+              : "GPU status unavailable"}
+          </p>
+          {gpu?.available && (
+            <div className="gpu-meter">
+              <span
+                style={{
+                  width: `${Math.min(100, ((gpu.used_mib || 0) / (gpu.total_mib || 1)) * 100)}%`,
+                }}
+              />
+              <small>
+                {((gpu.used_mib || 0) / 1024).toFixed(1)} /{" "}
+                {((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM
+              </small>
+            </div>
+          )}
+          <span className="studio-version">ASSET FORGE / 0.2</span>
+        </div>
+      </aside>
+      <div className="studio-body">
+        <header className="studio-topbar">
+          <div className="breadcrumb">
+            <button
+              className="collapse-sidebar icon-button"
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              onClick={() => {
+                setCollapsed(!collapsed);
+                localStorage.setItem(
+                  "afs.sidebar",
+                  collapsed ? "expanded" : "collapsed",
+                );
+              }}
+            >
+              <Icon name="Compare" size={16} />
+            </button>
+            {project?.name || projectId}
+            <span>/</span>
+            <strong>{page}</strong>
+          </div>
+          <div className="topbar-meta">
+            <span className="local-chip">
+              <span className="live-dot" /> LOCAL
+            </span>
+            <button className="quiet-button" onClick={() => navigate("Jobs")}>
+              <Icon name="Jobs" size={15} />
+              {activeJobs.length
+                ? `${activeJobs.length} queued / running`
+                : "Queue idle"}
+            </button>
+          </div>
+        </header>
+        <main className={`studio-main page-${page.toLowerCase()}`}>
+          {error && (
+            <div role="alert" className="studio-message error">
+              {error}
+              <button aria-label="Đóng lỗi" onClick={() => setError("")}>
+                <Icon name="Close" size={16} />
+              </button>
+            </div>
+          )}
+          {notice && (
+            <div role="status" className="studio-message">
+              {notice}
+              <button aria-label="Đóng thông báo" onClick={() => setNotice("")}>
+                <Icon name="Close" size={16} />
+              </button>
+            </div>
+          )}
+          {page === "Home" && (
+            <>
+              <div className="page-heading">
+                <div>
+                  <div className="overline">YOUR LOCAL 3D WORKSPACE</div>
+                  <h1>Make something worth building.</h1>
+                  <p>
+                    Từ ý tưởng đến asset có thể kiểm chứng. Chất lượng bắt đầu
+                    từ một reference tốt.
+                  </p>
+                </div>
+                <button className="primary" onClick={() => newAsset()}>
+                  <Icon name="Create" size={17} /> Create asset
+                </button>
+              </div>
+              <div className="home-hero">
+                <div className="hero-copy">
+                  <span className="pill">IMAGE TO 3D · LOCAL INFERENCE</span>
+                  <h2>
+                    Your next world
+                    <br />
+                    starts with one asset.
+                  </h2>
+                  <p>
+                    Chọn ảnh concept, để engine local tạo các candidate, rồi
+                    kiểm tra geometry và vật liệu trong studio.
+                  </p>
+                  <div className="hero-actions">
+                    <button className="primary" onClick={() => newAsset()}>
+                      <Icon name="Image" size={17} /> Start with an image
+                      <Icon name="Arrow" size={16} />
+                    </button>
+                    <button
+                      className="secondary"
+                      onClick={() => navigate("Compare")}
+                    >
+                      Open quality lab
+                    </button>
+                  </div>
+                  <span className="hero-footnote">
+                    Multi-seed · Blender post-process · GLB / FBX
+                  </span>
+                </div>
+                <div className="hero-reference">
+                  {data.artifacts.find(
+                    (a) => a.id === project?.cover_artifact_id,
+                  )?.url ||
+                  data.artifacts.find((a) => a.role === "concept")?.url ? (
+                    <>
+                      <img
+                        src={apiUrl(
+                          (data.artifacts.find(
+                            (a) => a.id === project?.cover_artifact_id,
+                          ) ||
+                            data.artifacts.find((a) => a.role === "concept"))!
+                            .url,
+                        )}
+                        alt="Ảnh concept thật của project"
+                      />
+                      <span>PROJECT REFERENCE · IMAGE ONLY</span>
+                    </>
+                  ) : (
+                    <div className="hero-empty">
+                      <Icon name="Cube" size={100} />
+                      <span>Không gian cho ý tưởng của bạn</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="workspace-stats">
+                <div>
+                  <span>Project assets</span>
+                  <strong>{data.assets.length}</strong>
+                </div>
+                <div>
+                  <span>Candidate versions</span>
+                  <strong>
+                    {data.assets.reduce((n, a) => n + a.versions.length, 0)}
+                  </strong>
+                </div>
+                <div>
+                  <span>Human approved</span>
+                  <strong>
+                    {data.assets.filter((a) => a.status === "Approved").length}
+                  </strong>
+                </div>
+                <div>
+                  <span>Active jobs</span>
+                  <strong>{activeJobs.length}</strong>
+                </div>
+              </div>
+              <div className="collection-heading">
+                <h2>
+                  Recent assets <span>{project?.name}</span>
+                </h2>
+                <button
+                  className="text-button"
+                  onClick={() => navigate("Library")}
+                >
+                  View library <Icon name="Arrow" size={14} />
+                </button>
+              </div>
+              {data.assets.length ? (
+                <div className="asset-grid">
+                  {data.assets
+                    .slice()
+                    .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
+                    .slice(0, 4)
+                    .map(assetCard)}
+                </div>
+              ) : (
+                <div className="studio-empty">
+                  <Icon name="Library" size={36} />
+                  <h3>A library built from your work.</h3>
+                  <p>
+                    Nhập ảnh đầu tiên để bắt đầu. Chưa có asset nào trong
+                    project này.
+                  </p>
+                  <button className="secondary" onClick={() => newAsset()}>
+                    Create first asset
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+          {page === "Create" && (
+            <>
+              <div className="page-heading compact">
+                <div>
+                  <div className="overline">CREATE / IMAGE TO 3D</div>
+                  <h1>{selectedAsset?.name || "Create an asset"}</h1>
+                </div>
+                <span className="draft-indicator">{draftStatus}</span>
+              </div>
+              <div className="create-workspace">
+                <section className="create-controls">
+                  <div
+                    className="input-tabs"
+                    role="tablist"
+                    aria-label="Input mode"
+                  >
+                    {(["Text", "Image", "Text + Image"] as const).map(
+                      (mode) => (
+                        <button
+                          role="tab"
+                          aria-selected={draft.mode === mode}
+                          key={mode}
+                          onClick={() => change({ mode })}
+                        >
+                          {mode}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                  <label className="studio-field">
+                    Asset name
+                    <input
+                      value={draft.name}
+                      onChange={(e) => change({ name: e.target.value })}
+                      placeholder="e.g. Archer Tower"
+                      maxLength={160}
+                    />
+                  </label>
+                  {draft.mode !== "Image" && (
+                    <label className="studio-field">
+                      Describe your asset
+                      <textarea
+                        className="prompt-input"
+                        placeholder="Hình dáng, vật liệu, màu sắc, phong cách…"
+                        value={draft.prompt}
+                        onChange={(e) => change({ prompt: e.target.value })}
+                      />
+                      <small>
+                        Prompt được lưu cùng asset. Engine image-to-3D hiện chưa
+                        sử dụng text conditioning.
+                      </small>
+                    </label>
+                  )}
+                  {draft.mode === "Text" ? (
+                    <div className="capability-note">
+                      <Icon name="Image" size={22} />
+                      <h3>Text-to-concept chưa sẵn sàng</h3>
+                      <p>
+                        Chưa có engine text-to-image local đã được kiểm chứng.
+                        Bạn có thể lưu prompt rồi nhập một ảnh concept để tạo
+                        3D.
+                      </p>
+                      <button
+                        className="secondary"
+                        onClick={() => change({ mode: "Text + Image" })}
+                      >
+                        Use a reference image
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <label
+                        className={`dropzone${source ? " has-image" : ""}`}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          upload(e.dataTransfer.files[0]);
+                        }}
+                      >
+                        {source ? (
+                          <img
+                            src={apiUrl(source.url)}
+                            alt="Ảnh reference đang chọn"
+                          />
+                        ) : (
+                          <>
+                            <Icon name="Upload" size={28} />
+                            <strong>Drop your concept here</strong>
+                            <span>or click to browse · PNG, JPG, WebP</span>
+                          </>
+                        )}
+                        <input
+                          aria-label="Upload concept image"
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          disabled={busy}
+                          onChange={(e) => {
+                            upload(e.target.files?.[0]);
+                            e.target.value = "";
+                          }}
+                        />
+                        {source && (
+                          <span className="replace-image">Replace image</span>
+                        )}
+                      </label>
+                      <label className="studio-field">
+                        Or choose a project reference
+                        <select
+                          aria-label="Project reference"
+                          value={draft.source}
+                          onChange={(e) => change({ source: e.target.value })}
+                        >
+                          <option value="">Select image…</option>
+                          {data.artifacts
+                            .filter((a) =>
+                              ["concept", "reference"].includes(a.role),
+                            )
+                            .map((a) => (
+                              <option key={a.id} value={a.id}>
+                                {a.name}
+                                {a.metadata.has_transparency ? " · alpha" : ""}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                    </>
+                  )}
+                  <div
+                    className="studio-field"
+                    role="group"
+                    aria-label="Quality"
+                  >
+                    <span>Quality</span>
+                    <div className="quality-options">
+                      {(["Fast", "Balanced", "Maximum"] as const).map((q) => (
+                        <button
+                          key={q}
+                          className={draft.quality === q ? "selected" : ""}
+                          onClick={() =>
+                            change({
+                              quality: q,
+                              steps:
+                                draft.engine === "triposg"
+                                  ? 50
+                                  : q === "Fast"
+                                    ? 12
+                                    : q === "Balanced"
+                                      ? 24
+                                      : 32,
+                              profile: q === "Fast" ? "512" : "1024_cascade",
+                              textureSize: q === "Fast" ? 2048 : 4096,
+                            })
+                          }
+                        >
+                          {q}
+                          {q === "Maximum" && <small>Quality first</small>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <label className="studio-field">
+                    Engine
+                    <select
+                      aria-label="Engine"
+                      value={draft.engine}
+                      onChange={(e) =>
+                        change({
+                          engine: e.target.value,
+                          steps:
+                            e.target.value === "triposg"
+                              ? 50
+                              : draft.quality === "Fast"
+                                ? 12
+                                : draft.quality === "Balanced"
+                                  ? 24
+                                  : 32,
+                        })
+                      }
+                    >
+                      <option value="auto">
+                        Auto · best verified local fit
+                      </option>
+                      {engines
+                        .filter((e) =>
+                          ["trellis2_community", "triposg"].includes(e.id),
+                        )
+                        .map((e) => (
+                          <option
+                            key={e.id}
+                            value={e.id}
+                            disabled={!e.installed}
+                          >
+                            {e.id === "triposg"
+                              ? "TripoSG · geometry only"
+                              : "TRELLIS.2 · geometry + PBR"}
+                            {!e.installed && " · unavailable"}
+                          </option>
+                        ))}
+                    </select>
+                    <small>
+                      Chỉ engine đã tạo output thật mới xuất hiện ở đây.
+                    </small>
+                  </label>
+                  <details className="advanced">
+                    <summary>
+                      Advanced settings <span>Seeds, steps & processing</span>
+                    </summary>
+                    <label className="studio-field">
+                      Seeds · up to 4
+                      <input
+                        value={draft.seeds}
+                        onChange={(e) => change({ seeds: e.target.value })}
+                      />
+                    </label>
+                    <div className="field-pair">
+                      <label className="studio-field">
+                        Steps
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={draft.steps}
+                          onChange={(e) =>
+                            change({ steps: Number(e.target.value) })
+                          }
+                        />
+                      </label>
+                      <label className="studio-field">
+                        Texture atlas
+                        <select
+                          value={draft.textureSize}
+                          onChange={(e) =>
+                            change({ textureSize: Number(e.target.value) })
+                          }
+                        >
+                          <option value={2048}>2K</option>
+                          <option value={4096}>4K</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label className="studio-field">
+                      TRELLIS profile
+                      <select
+                        value={draft.profile}
+                        onChange={(e) => change({ profile: e.target.value })}
+                      >
+                        <option value="1024_cascade">1024 cascade</option>
+                        <option value="512">512</option>
+                      </select>
+                    </label>
+                    <label className="studio-field">
+                      Benchmark height (m)
+                      <input
+                        type="number"
+                        min=".01"
+                        max="1000"
+                        value={draft.height ?? ""}
+                        placeholder="Keep source scale"
+                        onChange={(e) =>
+                          change({
+                            height: e.target.value
+                              ? Number(e.target.value)
+                              : null,
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="check-field">
+                      <input
+                        type="checkbox"
+                        checked={draft.autoBlender}
+                        onChange={(e) =>
+                          change({ autoBlender: e.target.checked })
+                        }
+                      />{" "}
+                      Blender cleanup, LOD & benchmark views
+                    </label>
+                    <p>
+                      GPU queue chạy tuần tự. Offload do adapter quyết định theo
+                      engine; không đổi môi trường Python đang cài.
+                    </p>
+                  </details>
+                  <div className="generate-actions">
+                    <button
+                      className="primary generate-button"
+                      disabled={
+                        busy ||
+                        !source ||
+                        draft.mode === "Text" ||
+                        !data.capabilities.image_to_3d ||
+                        loadedProject !== projectId
+                      }
+                      onClick={generate}
+                    >
+                      <Icon name="Cube" size={18} />
+                      {busy ? "Đang xử lý…" : "Generate 3D"}
+                      <Icon name="Arrow" size={17} />
+                    </button>
+                    <button
+                      className="quiet-button"
+                      disabled={busy || !draft.name.trim()}
+                      onClick={() =>
+                        run(async () => {
+                          await ensureAsset();
+                          await reload();
+                          setNotice("Asset draft đã lưu vào Library.");
+                        })
+                      }
+                    >
+                      Save draft to library
+                    </button>
+                  </div>
+                  <p className="control-footnote">
+                    Local inference · ưu tiên chất lượng · mọi candidate cần
+                    human review
+                  </p>
+                </section>
+                <section className="create-preview">
+                  <div className="preview-tabs">
+                    <div>
+                      {["Model", "Concept"].map((tab) => (
+                        <button
+                          className={previewTab === tab ? "selected" : ""}
+                          onClick={() => setPreviewTab(tab)}
+                          key={tab}
+                        >
+                          {tab === "Model" ? (
+                            <Icon name="Cube" size={15} />
+                          ) : (
+                            <Icon name="Image" size={15} />
+                          )}{" "}
+                          {tab}
+                        </button>
+                      ))}
+                    </div>
+                    {candidate && (
+                      <State value={selectedAsset?.status || "Candidate"} />
+                    )}
+                  </div>
+                  <div className="preview-stage">
+                    {previewTab === "Concept" && source ? (
+                      <img
+                        className="concept-large"
+                        src={apiUrl(source.url)}
+                        alt="Ảnh concept thật, không phải output 3D"
+                      />
+                    ) : candidate ? (
+                      <CompareViewer
+                        right={apiUrl(candidate.url)}
+                        view={view}
+                        wireframe={material === "wireframe"}
+                        onError={setError}
+                        {...{
+                          single: true,
+                          mode: material,
+                          background,
+                          lighting: light,
+                        }}
+                      />
+                    ) : (
+                      <div className="preview-empty">
+                        <div className="empty-cube">
+                          <Icon name="Cube" size={64} />
+                        </div>
+                        <h2>Your asset takes shape here.</h2>
+                        <p>
+                          {activeJobs.some(
+                            (j) => j.payload.asset_id === selectedAsset?.id,
+                          )
+                            ? "Local engine đang xử lý. Output thật sẽ xuất hiện sau khi kiểm chứng."
+                            : "Nhập concept và tạo một candidate để xem model 3D."}
+                        </p>
+                        <span>Orbit · inspect · compare · refine</span>
+                      </div>
+                    )}
+                    <div className="preview-toolbar">
+                      <div className="segmented">
+                        {(
+                          ["textured", "clay", "wireframe", "normals"] as const
+                        ).map((m) => (
+                          <button
+                            key={m}
+                            className={material === m ? "selected" : ""}
+                            onClick={() => setMaterial(m)}
+                          >
+                            {m === "textured"
+                              ? "PBR"
+                              : m === "clay"
+                                ? "Clay"
+                                : m === "normals"
+                                  ? "Normals"
+                                  : "Wire"}
+                          </button>
+                        ))}
+                      </div>
+                      <select
+                        aria-label="View camera"
+                        value={view}
+                        onChange={(e) => setView(e.target.value)}
+                      >
+                        {[
+                          "three_quarter",
+                          "front",
+                          "side",
+                          "back",
+                          "top",
+                          "bottom",
+                          "gameplay",
+                        ].map((v) => (
+                          <option key={v} value={v}>
+                            {v.replaceAll("_", " ")}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        aria-label="Viewport background"
+                        value={background}
+                        onChange={(e) =>
+                          setBackground(
+                            e.target.value as "studio" | "dark" | "light",
+                          )
+                        }
+                      >
+                        <option value="studio">Studio</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                      </select>
+                      <select
+                        aria-label="Viewport lighting"
+                        value={light}
+                        onChange={(e) =>
+                          setLight(e.target.value as "studio" | "soft")
+                        }
+                      >
+                        <option value="studio">Studio light</option>
+                        <option value="soft">Soft light</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="result-panel">
+                    {selectedAsset ? (
+                      <>
+                        <div className="result-heading">
+                          <div>
+                            <h3>{selectedAsset.name}</h3>
+                            <p>
+                              {candidate
+                                ? `${candidate.metadata.triangles?.toLocaleString() || "—"} triangles · ${candidate.metadata.engine || "local asset"}`
+                                : "Draft · waiting for a generated model"}
+                            </p>
+                          </div>
+                          {versions.length > 0 && (
+                            <select
+                              aria-label="Candidate version"
+                              value={candidate?.id || ""}
+                              onChange={(e) => setVersionId(e.target.value)}
+                            >
+                              {versions
+                                .filter((v) => v.role === "candidate")
+                                .map((v, i) => (
+                                  <option value={v.id} key={v.id}>
+                                    Version {i + 1} · {v.name}
+                                    {selectedAsset.master_artifact_id === v.id
+                                      ? " · MASTER"
+                                      : ""}
+                                  </option>
+                                ))}
+                            </select>
+                          )}
+                        </div>
+                        <div className="result-actions">
+                          <button
+                            disabled={busy}
+                            onClick={() =>
+                              run(async () => {
+                                await ensureAsset();
+                                await reload();
+                                setNotice(
+                                  "Đã lưu asset và các version thật vào Library.",
+                                );
+                              })
+                            }
+                          >
+                            <Icon name="Library" size={15} />
+                            Save to library
+                          </button>
+                          <button
+                            disabled={!candidate || busy}
+                            onClick={() => {
+                              setReviewer("");
+                              setReviewNotes("");
+                              setModal("approve");
+                            }}
+                          >
+                            <Icon name="Check" size={15} />
+                            Approve master
+                          </button>
+                          <button
+                            disabled={busy}
+                            onClick={() => {
+                              change({
+                                seeds: draft.seeds
+                                  .split(",")
+                                  .map(
+                                    (s) => (Number(s.trim()) + 1) % 4294967296,
+                                  )
+                                  .join(", "),
+                              });
+                              setNotice(
+                                "Seed mới đã chuẩn bị. Nhấn Generate 3D để tạo variation.",
+                              );
+                            }}
+                          >
+                            Variations
+                          </button>
+                          <button
+                            disabled={!candidate || busy}
+                            title="Blender post-process + LOD; preserves source"
+                            onClick={() =>
+                              run(async () => {
+                                if (!candidate) return;
+                                const job = await request<Job>(
+                                  "/api/jobs/blender",
+                                  {
+                                    artifact_id: candidate.id,
+                                    render: true,
+                                    normalize: false,
+                                  },
+                                );
+                                await reload();
+                                setNotice(
+                                  `Blender job ${job.id.slice(0, 8)} queued. Source geometry is preserved; review the resulting LOD and renders in Jobs.`,
+                                );
+                              })
+                            }
+                          >
+                            Enhance in Blender
+                          </button>
+                          <button
+                            disabled={!candidate || busy}
+                            className="accent-outline"
+                            onClick={() => {
+                              setExportFiles([]);
+                              setModal("export");
+                            }}
+                          >
+                            <Icon name="Download" size={15} />
+                            Export
+                          </button>
+                        </div>
+                        {candidate && (
+                          <details className="asset-details advanced">
+                            <summary>Asset details & export history</summary>
+                            <label className="studio-field">
+                              Folder
+                              <input
+                                defaultValue={
+                                  selectedAsset.category || "Unsorted"
+                                }
+                                key={selectedAsset.id + selectedAsset.category}
+                                onBlur={(e) => {
+                                  if (
+                                    e.target.value.trim() &&
+                                    e.target.value.trim() !==
+                                      selectedAsset.category
+                                  )
+                                    updateAsset(selectedAsset, {
+                                      category: e.target.value.trim(),
+                                    });
+                                }}
+                                placeholder="Props / Buildings / Weapons"
+                              />
+                            </label>
+                            <label className="studio-field">
+                              Review status
+                              <select
+                                value={selectedAsset.status}
+                                onChange={(e) =>
+                                  updateAsset(selectedAsset, {
+                                    status: e.target.value,
+                                  })
+                                }
+                              >
+                                {!["Candidate", "Rejected", "Failed"].includes(
+                                  selectedAsset.status,
+                                ) && (
+                                  <option disabled value={selectedAsset.status}>
+                                    {selectedAsset.status}
+                                  </option>
+                                )}
+                                <option>Candidate</option>
+                                <option>Rejected</option>
+                                <option>Failed</option>
+                              </select>
+                            </label>
+                            {selectedAsset.exports.length ? (
+                              selectedAsset.exports.map((entry, index) => (
+                                <div className="asset-export" key={index}>
+                                  <span>
+                                    {String(entry.preset || "Export")} /{" "}
+                                    {String(entry.format || "GLB")}
+                                    <State
+                                      value={String(
+                                        entry.validation || "QUEUED",
+                                      )}
+                                    />
+                                  </span>
+                                  <div className="export-files">
+                                    {entry.files?.map((file) => (
+                                      <a
+                                        key={file.url}
+                                        href={apiUrl(file.url)}
+                                        download
+                                      >
+                                        {file.name}
+                                        <span>
+                                          {(file.bytes / 1048576).toFixed(1)} MB
+                                        </span>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p>No exports yet.</p>
+                            )}
+                          </details>
+                        )}
+                        {candidate && (
+                          <p className="result-disclaimer">
+                            Visual review và license còn độc lập. Chưa có bằng
+                            chứng tương đương Meshy 7.1; Unity import chưa được
+                            kiểm thử.
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <div className="preview-tip">
+                        <span className="live-dot" />
+                        <span>
+                          Models are generated locally. Nothing is uploaded to a
+                          cloud.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+          {page === "Library" && (
+            <>
+              <div className="page-heading">
+                <div>
+                  <div className="overline">PROJECT LIBRARY</div>
+                  <h1>Your assets, every iteration.</h1>
+                  <p>
+                    Reference, candidate và master được lưu riêng với lịch sử
+                    version.
+                  </p>
+                </div>
+                <button className="primary" onClick={() => newAsset()}>
+                  <Icon name="Create" size={17} />
+                  New asset
+                </button>
+              </div>
+              <div className="library-toolbar">
+                <label className="search-box">
+                  <Icon name="Search" size={17} />
+                  <input
+                    aria-label="Search assets"
+                    placeholder="Search assets…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </label>
+                <select
+                  aria-label="Asset folder"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="all">All folders</option>
+                  {categories.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+                <select
+                  aria-label="Asset status"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All statuses</option>
+                  {[
+                    "Candidate",
+                    "Approved",
+                    "Rejected",
+                    "Failed",
+                    "Game-ready",
+                  ].map((s) => (
+                    <option key={s}>{s}</option>
+                  ))}
+                </select>
+                <select
+                  aria-label="Sort assets"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                >
+                  <option value="recent">Recently updated</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="name">Name A?Z</option>
+                </select>
+                <button
+                  className={`secondary${favorites ? " selected" : ""}`}
+                  onClick={() => setFavorites(!favorites)}
+                >
+                  <Icon name="Star" size={15} />
+                  Favorites
+                </button>
+              </div>
+              <div className="collection-heading">
+                <span>{filteredAssets.length} assets</span>
+                <span className="muted">
+                  {project?.name} · local filesystem
+                </span>
+              </div>
+              {filteredAssets.length ? (
+                <div className="asset-grid library-grid">
+                  {filteredAssets.map(assetCard)}
+                </div>
+              ) : (
+                <div className="studio-empty">
+                  <Icon name="Library" size={40} />
+                  <h3>
+                    {data.assets.length
+                      ? "No matching assets."
+                      : "Your library is ready."}
+                  </h3>
+                  <p>
+                    {data.assets.length
+                      ? "Thử thay đổi từ khóa hoặc bộ lọc."
+                      : "Tạo asset đầu tiên hoặc lưu một draft từ Create."}
+                  </p>
+                  <button className="secondary" onClick={() => newAsset()}>
+                    Create asset
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+          {page === "Jobs" && (
+            <JobHistory
+              jobs={data.jobs}
+              onRefresh={reload}
+              onError={setError}
+              busy={busy}
+              run={run}
+            />
+          )}
+          {page === "Compare" && (
+            <div className="quality-lab">
+              <QualityLab
+                key={projectId}
+                projectId={projectId}
+                projectName={project?.name}
+              />
+            </div>
+          )}
+          {page === "Settings" && (
+            <>
+              <div className="page-heading">
+                <div>
+                  <div className="overline">LOCAL STUDIO SETTINGS</div>
+                  <h1>A workspace that stays yours.</h1>
+                  <p>
+                    Mỗi game có Art Bible và cấu hình riêng; engines chạy bằng
+                    môi trường độc lập.
+                  </p>
+                </div>
+              </div>
+              <div className="settings-grid">
+                <section className="settings-panel">
+                  <div className="panel-heading">
+                    <Icon name="Library" />
+                    <h2>Project</h2>
+                    <button
+                      className="text-button"
+                      onClick={() => editProject(true)}
+                    >
+                      Edit project
+                    </button>
+                  </div>
+                  <h3>{project?.name}</h3>
+                  <p>{project?.description || "Chưa có mô tả project."}</p>
+                  <dl>
+                    <div>
+                      <dt>Default style</dt>
+                      <dd>{project?.default_style || "Chưa đặt"}</dd>
+                    </div>
+                    <div>
+                      <dt>Material language</dt>
+                      <dd>{project?.material_language || "Chưa đặt"}</dd>
+                    </div>
+                    <div>
+                      <dt>Units / reference height</dt>
+                      <dd>
+                        {project?.units || "m"} /{" "}
+                        {project?.target_height_m
+                          ? `${project.target_height_m} m`
+                          : "Source scale"}
+                      </dd>
+                    </div>
+                  </dl>
+                  <div className="palette">
+                    {project?.palette?.map((color) => (
+                      <span
+                        key={color}
+                        style={{
+                          background: /^#[0-9a-f]{3,8}$/i.test(color)
+                            ? color
+                            : undefined,
+                        }}
+                        title={color}
+                      >
+                        {!color.startsWith("#") && color}
+                      </span>
+                    ))}
+                  </div>
+                  <details className="advanced">
+                    <summary>Art Bible & export settings</summary>
+                    <pre>
+                      {JSON.stringify(
+                        {
+                          art_bible: project?.art_bible || {},
+                          export_settings: project?.export_settings || {},
+                        },
+                        null,
+                        2,
+                      )}
+                    </pre>
+                  </details>
+                  <label className="studio-field">
+                    Project cover
+                    <select
+                      value={project?.cover_artifact_id || ""}
+                      onChange={(e) =>
+                        run(async () => {
+                          await request(`/api/projects/${projectId}`, {
+                            ...project,
+                            cover_artifact_id: e.target.value || null,
+                          });
+                          await reload();
+                        })
+                      }
+                    >
+                      <option value="">Default concept</option>
+                      {data.artifacts
+                        .filter((a) =>
+                          ["concept", "reference"].includes(a.role),
+                        )
+                        .map((a) => (
+                          <option value={a.id} key={a.id}>
+                            {a.name}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <button
+                    className="danger-button"
+                    onClick={() => {
+                      setModalName("");
+                      setModal("archive-project");
+                    }}
+                  >
+                    Archive project
+                  </button>
+                </section>
+                <section className="settings-panel">
+                  <div className="panel-heading">
+                    <Icon name="Settings" />
+                    <h2>Local capabilities</h2>
+                  </div>
+                  <dl>
+                    <div>
+                      <dt>Image → 3D</dt>
+                      <dd>
+                        {data.capabilities.image_to_3d
+                          ? "Available locally"
+                          : "Unavailable"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Text → concept</dt>
+                      <dd>
+                        {data.capabilities.text_to_concept
+                          ? "Available"
+                          : "Not installed"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Text conditioning</dt>
+                      <dd>
+                        {data.capabilities.text_conditioning
+                          ? "Available"
+                          : "Not supported"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>GPU queue</dt>
+                      <dd>Sequential · one engine at a time</dd>
+                    </div>
+                  </dl>
+                  <p>
+                    Không trả phí theo lượt, không tự tải weights. License
+                    model/dependency và chất lượng thương mại vẫn cần duyệt
+                    riêng.
+                  </p>
+                  <button
+                    className="secondary"
+                    onClick={() =>
+                      run(async () => {
+                        setEnvironment(await request("/api/environment"));
+                      })
+                    }
+                  >
+                    Inspect environment
+                  </button>
+                  {environment !== null && (
+                    <pre>{JSON.stringify(environment, null, 2)}</pre>
+                  )}
+                </section>
+                <section className="settings-panel engine-settings">
+                  <div className="panel-heading">
+                    <Icon name="Cube" />
+                    <h2>Engine inventory</h2>
+                  </div>
+                  {engines.map((e) => (
+                    <div className="engine-setting" key={e.id}>
+                      <div>
+                        <h3>{e.id}</h3>
+                        <p>{e.blocker || "Chưa có ghi chú."}</p>
+                      </div>
+                      <State
+                        value={
+                          e.inference === "PASS"
+                            ? "Real output verified"
+                            : "Not tested"
+                        }
+                      />
+                      <span className="muted">
+                        {e.installed ? "Installed" : "Unavailable"}
+                      </span>
+                    </div>
+                  ))}
+                </section>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+      {modal && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setModal(null);
+          }}
+        >
+          <section
+            className="studio-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <div className="modal-heading">
+              <h2 id="modal-title">
+                {modal === "new-project"
+                  ? "Create project"
+                  : modal === "edit-project"
+                    ? "Project settings"
+                    : modal === "approve"
+                      ? "Approve a master version"
+                      : modal === "export"
+                        ? "Export asset"
+                        : "Archive project"}
+              </h2>
+              <button
+                className="icon-button"
+                disabled={busy}
+                aria-label="Close dialog"
+                onClick={() => setModal(null)}
+              >
+                <Icon name="Close" />
+              </button>
+            </div>
+            {(modal === "new-project" || modal === "edit-project") && (
+              <>
+                <label className="studio-field">
+                  Project name
+                  <input
+                    autoFocus
+                    value={projectForm.name}
+                    onChange={(e) =>
+                      setProjectForm({ ...projectForm, name: e.target.value })
+                    }
+                  />
+                </label>
+                <label className="studio-field">
+                  Description
+                  <textarea
+                    value={projectForm.description}
+                    onChange={(e) =>
+                      setProjectForm({
+                        ...projectForm,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <div className="field-pair">
+                  <label className="studio-field">
+                    Default style
+                    <input
+                      value={projectForm.style}
+                      onChange={(e) =>
+                        setProjectForm({
+                          ...projectForm,
+                          style: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label className="studio-field">
+                    Reference height (m)
+                    <input
+                      type="number"
+                      min=".01"
+                      max="1000"
+                      value={projectForm.height ?? ""}
+                      placeholder="Keep source scale"
+                      onChange={(e) =>
+                        setProjectForm({
+                          ...projectForm,
+                          height: e.target.value
+                            ? Number(e.target.value)
+                            : null,
+                        })
+                      }
+                    />
+                  </label>
+                </div>
+                <label className="studio-field">
+                  Project units
+                  <select
+                    value={projectForm.units}
+                    onChange={(e) =>
+                      setProjectForm({ ...projectForm, units: e.target.value })
+                    }
+                  >
+                    <option value="m">Meters</option>
+                    <option value="cm">Centimeters</option>
+                  </select>
+                </label>
+                <label className="studio-field">
+                  Material language
+                  <input
+                    value={projectForm.materials}
+                    onChange={(e) =>
+                      setProjectForm({
+                        ...projectForm,
+                        materials: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label className="studio-field">
+                  Palette · comma-separated
+                  <input
+                    value={projectForm.palette}
+                    onChange={(e) =>
+                      setProjectForm({
+                        ...projectForm,
+                        palette: e.target.value,
+                      })
+                    }
+                    placeholder="#4d6580, #cabd9e, #4de1ee"
+                  />
+                </label>
+                <details className="advanced">
+                  <summary>Art Bible / export settings JSON</summary>
+                  <label className="studio-field">
+                    Art Bible
+                    <textarea
+                      className="code-input"
+                      value={projectForm.artBible}
+                      onChange={(e) =>
+                        setProjectForm({
+                          ...projectForm,
+                          artBible: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label className="studio-field">
+                    Export settings
+                    <textarea
+                      className="code-input"
+                      value={projectForm.exportSettings}
+                      onChange={(e) =>
+                        setProjectForm({
+                          ...projectForm,
+                          exportSettings: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                </details>
+                <button
+                  className="primary"
+                  disabled={busy || !projectForm.name.trim()}
+                  onClick={saveProject}
+                >
+                  Save project
+                </button>
+              </>
+            )}
+            {modal === "archive-project" && (
+              <>
+                <p>
+                  Project sẽ được archive. Nhập tên{" "}
+                  <strong>{project?.name}</strong> để xác nhận.
+                </p>
+                <label className="studio-field">
+                  Project name
+                  <input
+                    value={modalName}
+                    onChange={(e) => setModalName(e.target.value)}
+                  />
+                </label>
+                <button
+                  className="danger-button"
+                  disabled={busy || modalName !== project?.name}
+                  onClick={() =>
+                    run(async () => {
+                      await request(`/api/projects/${projectId}/delete`, {
+                        confirm_name: modalName,
+                      });
+                      const fallback = data.projects.find(
+                        (p) => p.id !== projectId,
+                      );
+                      setModal(null);
+                      if (fallback) setProjectId(fallback.id);
+                      else {
+                        setData(emptyData);
+                        setProjectId("");
+                        setNotice(
+                          "Project đã archive. Tạo một project mới để tiếp tục.",
+                        );
+                      }
+                    })
+                  }
+                >
+                  Archive project
+                </button>
+              </>
+            )}
+            {modal === "approve" && (
+              <>
+                <p>
+                  Chọn version này làm master của{" "}
+                  <strong>{selectedAsset?.name}</strong>. Master cũ vẫn nằm
+                  trong version history. Đây là duyệt visual của bạn, chưa chứng
+                  minh Meshy parity hoặc game-ready.
+                </p>
+                <label className="studio-field">
+                  Reviewer
+                  <input
+                    autoFocus
+                    value={reviewer}
+                    onChange={(e) => setReviewer(e.target.value)}
+                  />
+                </label>
+                <label className="studio-field">
+                  Review notes
+                  <textarea
+                    value={reviewNotes}
+                    onChange={(e) => setReviewNotes(e.target.value)}
+                    placeholder="Geometry, texture, rear view, defects…"
+                  />
+                </label>
+                <button
+                  className="primary"
+                  disabled={busy || !reviewer.trim() || !candidate}
+                  onClick={() =>
+                    run(async () => {
+                      await request(
+                        `/api/assets/${selectedAsset!.id}/approve`,
+                        {
+                          artifact_id: candidate!.id,
+                          reviewer,
+                          notes: reviewNotes,
+                        },
+                      );
+                      await reload();
+                      setModal(null);
+                      setNotice("Đã lưu human approval và master version.");
+                    })
+                  }
+                >
+                  Approve this master
+                </button>
+              </>
+            )}
+            {modal === "export" && (
+              <>
+                <p>
+                  Xuất từ version thật đang chọn. Preset Unity tạo file và LOD
+                  bằng Blender; khả năng import trong Unity chưa được kiểm thử.
+                </p>
+                <label className="studio-field">
+                  Export preset
+                  <select
+                    value={exportPreset}
+                    onChange={(e) => setExportPreset(e.target.value)}
+                  >
+                    {["Master", "Unity Mobile", "Unity PC"].map((p) => (
+                      <option key={p}>{p}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="studio-field">
+                  Format
+                  <select
+                    value={exportFormat}
+                    onChange={(e) => setExportFormat(e.target.value)}
+                  >
+                    <option value="glb">GLB · embedded materials</option>
+                    <option value="fbx">FBX · textures / LOD</option>
+                  </select>
+                </label>
+                <button
+                  className="primary"
+                  disabled={busy}
+                  onClick={exportAsset}
+                >
+                  <Icon name="Download" size={17} />
+                  Prepare export
+                </button>
+                {exportFiles.length > 0 && (
+                  <div className="export-files">
+                    {exportFiles.map((f) => (
+                      <a key={f.name} href={apiUrl(f.url)} download>
+                        {f.name}
+                        <span>{(f.bytes / 1048576).toFixed(1)} MB</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+            {error && (
+              <p className="error-text" role="alert">
+                {error}
+              </p>
+            )}
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function JobHistory({
+  jobs,
+  onRefresh,
+  onError,
+  busy,
+  run,
+}: {
+  jobs: Job[];
+  onRefresh: () => Promise<void>;
+  onError: (s: string) => void;
+  busy: boolean;
+  run: (f: () => Promise<void>) => Promise<void>;
+}) {
+  const [filter, setFilter] = useState("all"),
+    [selected, setSelected] = useState(""),
+    [files, setFiles] = useState<JobFile[]>([]);
+  const filtered = jobs.filter(
+    (j) =>
+      filter === "all" ||
+      (filter === "active"
+        ? activeStates.includes(j.status)
+        : filter === "review"
+          ? j.status === "REVIEW_REQUIRED"
+          : ["FAILED", "CANCELLED", "BLOCKED"].includes(j.status)),
+  );
+  async function inspect(id: string) {
+    setSelected(id);
+    const result = await request<JobFile[]>(`/api/jobs/${id}/files`);
+    setFiles(result);
+  }
+  useEffect(() => {
+    if (!selected) return;
+    const timer = setInterval(
+      () => inspect(selected).catch((e) => onError(String(e))),
+      5000,
+    );
+    return () => clearInterval(timer);
+  }, [selected]);
+  return (
+    <>
+      <div className="page-heading">
+        <div>
+          <div className="overline">LOCAL PROCESSING QUEUE</div>
+          <h1>Every run. Every result.</h1>
+          <p>
+            Job được lưu bền vững. Refresh hoặc chuyển trang không chạy lại
+            inference.
+          </p>
+        </div>
+        <span className="queue-status">
+          <span className="live-dot" />
+          {jobs.filter((j) => activeStates.includes(j.status)).length} active ·
+          sequential GPU queue
+        </span>
+      </div>
+      <div className="jobs-filter segmented">
+        {[
+          ["all", "All jobs"],
+          ["active", "Active"],
+          ["review", "Needs review"],
+          ["issues", "Issues"],
+        ].map(([value, title]) => (
+          <button
+            key={value}
+            className={filter === value ? "selected" : ""}
+            onClick={() => setFilter(value)}
+          >
+            {title}
+            <span>
+              {
+                jobs.filter(
+                  (j) =>
+                    value === "all" ||
+                    (value === "active"
+                      ? activeStates.includes(j.status)
+                      : value === "review"
+                        ? j.status === "REVIEW_REQUIRED"
+                        : ["FAILED", "CANCELLED", "BLOCKED"].includes(
+                            j.status,
+                          )),
+                ).length
+              }
+            </span>
+          </button>
+        ))}
+      </div>
+      {filtered.length ? (
+        <div className="studio-job-list">
+          {filtered.map((job) => (
+            <article
+              key={job.id}
+              className={`studio-job${job.id === selected ? " selected" : ""}`}
+            >
+              <button
+                className="job-main"
+                onClick={() => inspect(job.id).catch((e) => onError(String(e)))}
+              >
+                <div className="job-icon">
+                  <Icon name={job.payload.engine ? "Cube" : "Jobs"} />
+                </div>
+                <div>
+                  <strong>
+                    {job.payload.engine || job.kind || "Local pipeline"}{" "}
+                    <span className="mono">{job.id.slice(0, 8)}</span>
+                  </strong>
+                  <p>
+                    {new Date(job.created_at).toLocaleString("vi-VN")}
+                    {job.payload.seed !== undefined &&
+                      ` · seed ${job.payload.seed}`}
+                  </p>
+                </div>
+                <State value={job.status} />
+              </button>
+              <div className="job-actions">
+                {activeStates.includes(job.status) ? (
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      run(async () => {
+                        await request(`/api/jobs/${job.id}/cancel`, {});
+                        await onRefresh();
+                      })
+                    }
+                  >
+                    Cancel
+                  </button>
+                ) : ["FAILED", "CANCELLED", "BLOCKED"].includes(job.status) ? (
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      run(async () => {
+                        await request(`/api/jobs/${job.id}/retry`, {});
+                        await onRefresh();
+                      })
+                    }
+                  >
+                    Retry
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      inspect(job.id).catch((e) => onError(String(e)))
+                    }
+                  >
+                    View outputs
+                  </button>
+                )}
+              </div>
+              {activeStates.includes(job.status) && (
+                <div className="job-stage">
+                  <span>
+                    {job.progress?.stage || job.status}
+                    {typeof job.progress?.percent === "number"
+                      ? ` / ${job.progress.percent.toFixed(0)}% current stage`
+                      : ""}
+                  </span>
+                  {typeof job.progress?.percent === "number" && (
+                    <div className="job-progress">
+                      <span
+                        style={{
+                          width: `${Math.max(0, Math.min(100, job.progress.percent))}%`,
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {job.error && <p className="job-error">{job.error}</p>}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="studio-empty">
+          <Icon name="Jobs" size={40} />
+          <h3>
+            {jobs.length ? "No jobs in this view." : "The queue is quiet."}
+          </h3>
+          <p>Local AI và Blender jobs sẽ xuất hiện tại đây.</p>
+        </div>
+      )}
+      {selected && (
+        <section className="job-output-panel">
+          <div className="panel-heading">
+            <h2>Run outputs</h2>
+            <span className="mono">{selected.slice(0, 10)}</span>
+          </div>
+          {files.length ? (
+            <>
+              <div className="artifact-links">
+                {files
+                  .filter((f) => !f.name.endsWith(".png"))
+                  .map((f) => (
+                    <a
+                      key={f.name}
+                      href={apiUrl(f.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {f.name}
+                      <small>{(f.bytes / 1024).toFixed(0)} KiB</small>
+                    </a>
+                  ))}
+              </div>
+              <div className="render-grid">
+                {files
+                  .filter(
+                    (f) =>
+                      f.name.endsWith(".png") && !f.name.includes("_asset"),
+                  )
+                  .map((f) => (
+                    <figure key={f.name}>
+                      <a href={apiUrl(f.url)} target="_blank" rel="noreferrer">
+                        <img
+                          loading="lazy"
+                          src={apiUrl(f.url)}
+                          alt={`Actual output ${f.name}`}
+                        />
+                      </a>
+                      <figcaption>{f.name}</figcaption>
+                    </figure>
+                  ))}
+              </div>
+            </>
+          ) : (
+            <p>
+              Job chưa có file output. Trạng thái và lỗi được giữ lại trong
+              history.
+            </p>
+          )}
+        </section>
+      )}
+    </>
+  );
+}
