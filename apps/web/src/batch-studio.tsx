@@ -40,6 +40,7 @@ type ManifestItem = {
   preferred_engine: string;
   candidates: number;
   target_outputs: string[];
+  started?:boolean;
   selected: boolean;
   confirmed: boolean;
   priority: number;
@@ -57,8 +58,8 @@ type ManifestItem = {
   config_warning?: string;
 };
 type LocalModels = {available:boolean;models:{name:string;digest?:string;bytes?:number}[];reason?:string;execution?:string};
-type Workflow = {mode:'auto'|'assisted'|'expert';checkpoints:{concept:boolean;candidate:boolean;export:boolean};retry_limit:number;disk_reserve_gb:number;max_active_assets:number;auto_resume:boolean};
-const defaultWorkflow:Workflow={mode:'auto',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false};
+type Workflow = {mode:'auto'|'assisted'|'expert';checkpoints:{concept:boolean;candidate:boolean;export:boolean};retry_limit:number;disk_reserve_gb:number;max_active_assets:number;auto_resume:boolean;review_policy:'auto'|'review_flagged'|'manual_approval'};
+const defaultWorkflow:Workflow={mode:'auto',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto'};
 type Mode = "Fast Batch" | "Quality Batch" | "Maximum Quality Batch";
 type Batch = {
   id: string;
@@ -110,6 +111,7 @@ type Props = {
   artifacts: Reference[];
   onOpenAsset?: (id: string) => void;
   onRefresh?: () => Promise<void>;
+  onSubmitted?: (id:string) => void;
 };
 const modes: Mode[] = ["Fast Batch", "Quality Batch", "Maximum Quality Batch"];
 const dimensionsValid = (
@@ -192,6 +194,7 @@ export function BatchStudio({
   artifacts,
   onOpenAsset,
   onRefresh,
+  onSubmitted,
 }: Props) {
   const [batches, setBatches] = useState<Batch[]>([]),
     [batch, setBatch] = useState<Batch | null>(null),
@@ -461,6 +464,7 @@ export function BatchStudio({
       await call(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic });
       await refresh(batch.id);
       await onRefresh?.();
+      onSubmitted?.(batch.id);
       setNotice(
         automatic ? 'Đã bắt đầu automatic production cho các asset được chọn. Concept được chọn kỹ thuật tự động; output lưu Needs Review, không phải artistic approval.' : 'Đã tiếp tục workflow manual. Concept và thông số cần người dùng duyệt.',
       );
@@ -470,7 +474,7 @@ export function BatchStudio({
     if (!batch) return;
     await execute(async()=>{
       await call(`/api/batches/${batch.id}/run-all`,{});
-      await refresh(batch.id);await onRefresh?.();
+      await refresh(batch.id);await onRefresh?.();onSubmitted?.(batch.id);
       setNotice(`Đã bắt đầu automatic production cho toàn bộ ${batch.items.length} asset, gồm Future. Quality Lock giữ nguyên; output cần review sau khi tạo.`);
     });
   }
@@ -632,7 +636,7 @@ export function BatchStudio({
       {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
       <div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate All starts production when you choose.'}</p></div>
       <details className="advanced batch-workflow-options"><summary>Advanced · workflow checkpoints and recovery</summary>{workflow.mode==='assisted' && <div className="batch-checkpoint-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint} className="check-field"><input type="checkbox" disabled={busy} checked={workflow.checkpoints[checkpoint]} onChange={event=>updateWorkflow({checkpoints:{...workflow.checkpoints,[checkpoint]:event.target.checked}})}/>Review {checkpoint==='candidate'?'3D candidate':checkpoint==='export'?'before export':'concept'}</label>)}</div>}<div className="batch-edit-pair"><label className="studio-field">Retry limit<input type="number" min="0" max="3" disabled={busy} value={workflow.retry_limit} onChange={event=>updateWorkflow({retry_limit:Number(event.target.value)})}/></label><label className="studio-field">Disk reserve (GB)<input type="number" min="1" disabled={busy} value={workflow.disk_reserve_gb} onChange={event=>updateWorkflow({disk_reserve_gb:Number(event.target.value)})}/></label></div><label className="studio-field">After reopening<Select aria-label="Batch recovery policy" value={workflow.auto_resume ? "auto" : "manual"} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({auto_resume:event.target.value==="auto"})}><option value="manual">Wait for manual Resume</option><option value="auto">Auto-resume after reopening</option></Select><small>Automatic GPU restart requires this explicit opt-in. Completed outputs and exports remain available in either mode.</small></label><p>One logical batch, up to {workflow.max_active_assets} active assets. Only one heavy GPU task runs at a time. Pause finishes the current stage before stopping; recovery reuses completed checkpoints.</p></details>
-      <div className="batch-intake">
+      <details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration ? original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">
         <section className="batch-brief">
           <div className="batch-panel-title">
             <Glyph kind="list" />
@@ -779,6 +783,7 @@ export function BatchStudio({
           </p>
         </section>
       </div>
+      </details>
       {batch && (
         <>
           <section className="batch-manifest" ref={manifestRef} tabIndex={-1} aria-label="Batch asset manifest">
@@ -793,8 +798,9 @@ export function BatchStudio({
               </div>
             </div>
               <BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/>
+              <div className="batch-submission-summary" aria-label="Batch submission summary"><strong>{batch.items.length} assets ? {batch.items.filter(i=>i.source_status==='FUTURE').length} FUTURE included</strong><span>{mode} ? {workflow.review_policy==='manual_approval'?'Manual export approval':workflow.review_policy==='review_flagged'?'Export after QA; review exceptions':'Automatic export after QA'} ? No per-asset confirmation in Auto</span><span>GLB destination and formats are shown in Export Settings. GPU work starts only when you submit.</span></div>
               <div className="batch-run-actions batch-production-actions">
-                <button className="primary batch-generate-all" disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={runAll}><Glyph kind="play"/>Generate All ({batch.items.length})</button>
+                <button className="primary batch-generate-all" disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={()=>batch.items.some(i=>i.started)?onSubmitted?.(batch.id):runAll()}><Glyph kind="play"/>{batch.items.some(i=>i.started)?'Open Production':`Generate All (${batch.items.length})`}</button>
                 <button
                   className="secondary"
                   disabled={busy}

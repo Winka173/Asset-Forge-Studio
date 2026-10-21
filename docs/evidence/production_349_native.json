@@ -1,0 +1,20 @@
+{
+  "status": "PASS_NATIVE_349_ADMISSION_NO_GPU",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-admission-native\\2026-10-21T17-07-31-437Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T170457Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual349_generateall_navigates_production_persisted_group_37future_virtual_list_zero_gpu_global_paused",
+      "passed": true
+    },
+    {
+      "name": "single_and_349_share_persistent_global_queue_native_restart_no_gpu",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "project_id": "d177acc52ea94eaabc4e7d10dfce504d",
+  "batch_id": "a9259ec8a82d4e1bb6c11ddf9fb2fca6",
+  "single_id": "86d51109d528406997a22c36954c8733",
+  "asset_id": "3a3ea2a33acb4260bf2d2669f0c28098"
+}

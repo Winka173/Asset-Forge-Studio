@@ -1,5 +1,13 @@
 # Windows desktop development and operation
 
+## Current unified Stable 0.6.0
+
+The user authorized merging the reviewed expansion into main. The unified product is Asset Forge Studio (`com.assetforgestudio.desktop`); main is canonical. This supersedes historical separation instructions below. Keep earlier Stable/Expansion distributions and their libraries as rollback copies. Use `delivery_location` and `executable` in `docs/evidence/desktop_build.json` for the exact newly tested build; `latest` can remain an older running copy. Keep the adjacent `afs-backend.exe`. AI environments, weights and Blender remain external dependencies. Production/Library revisions retain stable asset identity; technical Auto delivery is independent of artistic approval. Restart defaults to manual Resume.
+
+The native Production tests include ending the authenticated SSE stream before graceful backend shutdown, so closing the Production screen cannot keep the backend waiting indefinitely for its own WebView connection.
+
+## Historical release records
+
 Current automation releases are Stable **0.3.6** and Expansion **0.5.0**. Stable portable EXE: `dist/windows/stable/0.3.6/Asset Forge Studio.exe`. Expansion tested portable EXE: `dist/windows/expansion/0.5.0/20261021T150828Z/Asset Forge Studio Expansion.exe`. Use the `public_delivery_location` when present, otherwise `delivery_location` in the corresponding `docs/evidence/automation_*_build.json` report for the exact tested EXE directory. When any edition is running, publishing preserves it and writes a separate version directory; `latest` can therefore remain an older open build. Keep each EXE beside its own `afs-backend.exe`.
 
 ## Separate PC and Expansion distributions (2026-10-21)

@@ -258,6 +258,12 @@ def export_download(identifier:str,name:str):
 
 
 @router.get('/studio')
+def studio_view(project_id: str = ''):
+    from .statuses import refresh_all
+    refresh_all()
+    return studio(project_id)
+
+
 def studio(project_id: str = ''):
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER

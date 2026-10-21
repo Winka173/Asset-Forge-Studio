@@ -28,6 +28,7 @@ class Workflow(BaseModel):
     disk_reserve_gb:float=Field(default=10,ge=1,le=1000)
     max_active_assets:int=Field(default=2,ge=1,le=4)
     auto_resume:bool=False
+    review_policy:Literal['auto','review_flagged','manual_approval']='auto'
 
 
 @router.get('/projects/{project_id}')
@@ -56,7 +57,13 @@ def resolve_specs(item,project,snapshot):
     if len(blocks)==1:
         for key in ('target_width_m','target_depth_m','target_height_m'):
             if item.get(key) is None and blocks[0].get(key) is not None:item[key]=blocks[0][key]
-    category=item.get('category') or ('Building' if source.startswith(('BLD_','WALL_','FUT_SHRINE','FUT_WALL')) or re.search(r'\b(tower|castle|house|gate|shrine)\b',item['name'],re.I) else 'Environment' if source.startswith(('BIO_','FUT_ENV')) else 'Boss' if source.startswith('BOSS_') else 'Character' if source.startswith(('GEN_','UNIT_','ENM_')) else 'Prop')
+    for label,key in (('width','target_width_m'),('height','target_height_m'),('depth','target_depth_m')):
+        match=re.search(r'\b'+label+r'\s*(?:(?:is|of|to)\s+|[:=]\s*)?(\d+(?:\.\d+)?)\s*(cm|m)\b',text,re.I)
+        if match and (item.get(key) is None or provenance.get(key,{}).get('kind') in ('inherited','inferred','defaulted')):
+            item[key]=float(match[1])*(.01 if match[2].lower()=='cm' else 1)
+            provenance[key]=dict(kind='explicit',source='Exact '+label+' expression in original prompt',value=item[key])
+    explicit_category=bool(item.get('category'))
+    category=item.get('category') or ('Building' if source.startswith(('BLD_','WALL_','FUT_SHRINE','FUT_WALL')) or re.search(r'\b(tower|castle|house|gate|shrine)\b',item['name']+' '+text,re.I) else 'Environment' if source.startswith(('BIO_','FUT_ENV')) else 'Boss' if source.startswith('BOSS_') else 'Character' if source.startswith(('GEN_','UNIT_','ENM_')) else 'Prop')
     item['category']=category
     defaults={'Building':(8,8,10),'Environment':(5,5,4),'Boss':(4,4,6),'Character':(1,1,2),'Prop':(2,2,2)}[category if category in ('Building','Environment','Boss','Character','Prop') else 'Prop']
     family=item.get('asset_family') or '_'.join(source.split('_')[:2])
@@ -76,6 +83,9 @@ def resolve_specs(item,project,snapshot):
             if suggestions and len(set(suggestions))==1:value,kind,origin=suggestions[0],'inferred','Validated local semantic suggestions; not artist approved'
             else:value,kind,origin=defaults[i],'defaulted','Conservative provisional '+category+' scale; gameplay dimensions unverified'
         item[key]=float(value);provenance[key]=dict(kind=kind,source=origin,value=float(value),provisional=True)
+    provenance.setdefault('category',dict(kind='explicit' if explicit_category else 'inferred',source='Manifest category' if explicit_category else 'Deterministic name / prompt / source-ID rule',value=category))
+    for key,value in (('units',project.get('units','m')),('palette',project.get('palette',[])),('material_language',project.get('material_language','')),('default_style',project.get('default_style',''))):
+        provenance.setdefault(key,dict(kind='inherited' if value else 'defaulted',source='Project Art Bible / settings' if value else 'Unspecified; no invented style requirement',value=value))
     item['spec_provenance']=provenance
     return item
 
@@ -101,6 +111,12 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False):
         for item in value['items']:
             if item['asset_id'] not in ids:continue
             resolve_specs(item,project,snapshot)
+            model=studio.asset(item['asset_id'])
+            model.setdefault('original_prompt',item['prompt']);model.setdefault('original_prompt_sha256',hashlib.sha256(model['original_prompt'].encode()).hexdigest())
+            if not item['prompt'].strip() and item['name'].strip() and not re.fullmatch(r'(?:untitled(?: asset)?|empty(?: entry)?|asset(?: \d+)?|unknown)',item['name'].strip(),re.I):
+                item['resolved_prompt']=item['name'].strip();item['spec_provenance']['generation_prompt']=dict(kind='inferred',source='Original asset name; no original prompt text was replaced',value=item['resolved_prompt'])
+            model['resolved_specification']=dict(generation_prompt=item.get('resolved_prompt') or item['prompt'],category=item.get('category'),dimensions={k:item[k] for k in ('target_width_m','target_depth_m','target_height_m')},provenance=item['spec_provenance'],quality=item['quality'],source_prompt_sha256=hashlib.sha256(item['prompt'].encode()).hexdigest(),project_style_snapshot=value['style_snapshot'],artistic_evaluation='not_available')
+            studio.save_asset(model)
             source=next((a for a in snapshot['artifacts'] if a['id'] in item['reference_ids'] and a['role'] in ('concept','reference')),None)
             pinned=item.get('automation',{}).get('engines') or plan_engines(item,source)
             if item.get('automation',{}).get('attempt',item['attempt'])!=item['attempt']:item.pop('automation',None)
@@ -170,11 +186,17 @@ def advance(identifier):
             auto=item.get('automation',{})
             if not item.get('started') or not auto.get('enabled') or item.get('skipped'):continue
             current=snapshot_item_state(value,item,all_jobs,artifacts)
+            if item.get('revision_id'):
+                from .revisions import update_execution
+                update_execution(item['asset_id'],item['revision_id'],dict(job_ids=[j['id'] for j in current]))
             running=[j for j in current if j['status'] not in jobs.TERMINAL]
             auto['checkpoints']={j['id']:dict(stage=j['payload']['kind'],state=j['status'],updated_at=j['updated_at']) for j in current}
             if running:
                 auto.update(status='running' if any(j['status']!='QUEUED' for j in running) else 'queued',stage=running[0].get('progress',{}).get('stage') or running[0]['payload']['kind']);continue
             if auto.get('status')=='exported':continue
+            from .production import global_paused
+            if item.get('production_paused') or global_paused():
+                auto['status']='paused';continue
             failures=[j for j in current if j['status'] in ('FAILED','BLOCKED','CANCELLED')]
             if failures:
                 failed=failures[0];error=failed.get('error') or '';depth=0;parent=failed
@@ -191,41 +213,52 @@ def advance(identifier):
                 if auto.get('status') not in ('failed','blocked','exported','needs_review'):auto['status']='paused'
                 continue
             if not delivery_ready and len(active_assets)>=settings['max_active_assets'] and item['asset_id'] not in active_assets:continue
-            if not item['prompt'].strip():auto.update(status='blocked',stage='Needs Input',error='Empty prompt');continue
+            if not (item.get('resolved_prompt') or item['prompt']).strip() and not item['reference_ids']:auto.update(status='blocked',stage='Needs Input',error='Empty prompt');continue
             if not auto.get('engines'):auto.update(status='blocked',stage='Needs Input',error='No compatible installed local 3D engine; configure Settings. No fallback/download.');continue
             dependencies=[next((i for i in value['items'] if d in (i['asset_id'],i.get('source_asset_id'),i['name'])),None) for d in item['dependencies']]
             if any(d is None for d in dependencies):auto.update(status='blocked',stage='Needs Input',error='Unknown dependency ID');continue
             if any(d.get('automation',{}).get('status') not in ('exported','needs_review') for d in dependencies):auto.update(status='queued',stage='Waiting for dependency');continue
             try:
-                prefix=f'{identifier}:{item["asset_id"]}:{item["attempt"]}'
-                source=next((a for a in artifacts if a['id']==auto.get('concept_selection',{}).get('artifact_id')),None)
-                if source is None:
-                    choices=[a for a in artifacts if a['role'] in ('concept','reference') and (a['id'] in item['reference_ids'] or a['role']=='concept' and a.get('asset_id')==item['asset_id'] and any(j['id']==a['metadata'].get('job_id') for j in current))]
-                    valid=[]
-                    for choice in choices:
-                        try:
-                            path=store.safe_path(choice['relative_path'])
-                            if store.digest(path)!=choice['sha256']:continue
-                            measured=inspect_image(path);valid.append((measured['width']*measured['height'],measured['laplacian_variance_proxy'],choice,measured))
-                        except (OSError,ValueError):continue
-                    if not valid:
-                        if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
-                        studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item['prompt'],quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
-                        active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
-                    _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
-                    selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
-                    auto['concept_selection']=selection
-                    batch.save(batch.stored(value))  # hash-bound selection must exist before Single gate checks it
-                if settings['mode']=='assisted' and settings['checkpoints']['concept']:
-                    model=studio.asset(item['asset_id'])
-                    if not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in model.get('concept_approvals',[])):auto.update(status='blocked',stage='Review concept',error='Assisted concept checkpoint');continue
-                inference=[j for j in current if j['payload']['kind']=='inference']
-                if not inference:
-                    batch.save(batch.stored(value))
-                    for engine in auto['engines']:
-                        studio.generate(studio.Generate(asset_id=item['asset_id'],artifact_id=source['id'],request_id=prefix+':'+engine,engine=engine,quality=item['quality'],prompt=item['prompt'],seeds=item.get('seeds') or [42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m'],batch_id=identifier,batch_attempt=item['attempt'],quality_lock=item['quality_lock']))
-                    active_assets.add(item['asset_id']);auto.update(status='queued',stage='image-to-3D');continue
-                for job in inference:jobs.ensure_blender(job)
+                from .revisions import execution_context,update_execution
+                revision=execution_context(item)
+                processing=bool(item.get('processing_source') or revision and revision['plan']['method']=='blender_transform')
+                if processing:
+                    if not any(j['payload']['kind']=='blender' for j in current):
+                        processing_source=item.get('processing_source') or dict(artifact_id=revision['parent_artifact_id'],normalize=True)
+                        jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
+                            project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'] if revision else None,
+                            effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay']))
+                        active_assets.add(item['asset_id']);auto.update(status='queued',stage='Blender revision');continue
+                else:
+                    prefix=f'{identifier}:{item["asset_id"]}:{item["attempt"]}'
+                    source=next((a for a in artifacts if a['id']==auto.get('concept_selection',{}).get('artifact_id')),None)
+                    if source is None:
+                        choices=[a for a in artifacts if a['role'] in ('concept','reference') and (a['id'] in item['reference_ids'] or a['role']=='concept' and a.get('asset_id')==item['asset_id'] and any(j['id']==a['metadata'].get('job_id') for j in current))]
+                        valid=[]
+                        for choice in choices:
+                            try:
+                                path=store.safe_path(choice['relative_path'])
+                                if store.digest(path)!=choice['sha256']:continue
+                                measured=inspect_image(path);valid.append((measured['width']*measured['height'],measured['laplacian_variance_proxy'],choice,measured))
+                            except (OSError,ValueError):continue
+                        if not valid:
+                            if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
+                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
+                            active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
+                        _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
+                        selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
+                        auto['concept_selection']=selection
+                        batch.save(batch.stored(value))  # hash-bound selection must exist before Single gate checks it
+                    if settings['mode']=='assisted' and settings['checkpoints']['concept']:
+                        model=studio.asset(item['asset_id'])
+                        if not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in model.get('concept_approvals',[])):auto.update(status='blocked',stage='Review concept',error='Assisted concept checkpoint');continue
+                    inference=[j for j in current if j['payload']['kind']=='inference']
+                    if not inference:
+                        batch.save(batch.stored(value))
+                        for engine in auto['engines']:
+                            studio.generate(studio.Generate(asset_id=item['asset_id'],artifact_id=source['id'],request_id=prefix+':'+engine,engine=engine,quality=item['quality'],prompt=item.get('resolved_prompt') or item['prompt'],seeds=item.get('seeds') or [42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m'],batch_id=identifier,batch_attempt=item['attempt'],quality_lock=item['quality_lock']))
+                        active_assets.add(item['asset_id']);auto.update(status='queued',stage='image-to-3D');continue
+                    for job in inference:jobs.ensure_blender(job)
                 processed=[a for a in artifacts if a.get('asset_id')==item['asset_id'] and a['metadata'].get('stage')=='blender_processed' and any(j['id']==a['metadata'].get('job_id') for j in current)]
                 required=len(auto['engines'])*item['candidates']
                 if len(processed)<required:
@@ -246,14 +279,33 @@ def advance(identifier):
                     winner=next(r for r in ranking if r['artifact_id']==master)
                 if settings['mode']=='assisted' and settings['checkpoints']['export'] and not auto.get('export_authorized'):
                     auto.update(status='blocked',stage='Review before export',error='Assisted export checkpoint');continue
-                exported=export_asset(value['project_id'],item['asset_id'],artifact_id=winner['artifact_id'],settings=value['automation']['export_settings'])
-                auto.update(status='exported',stage='Needs Artistic Review',export=exported,completed_at=store.now());auto.pop('error',None)
+                from .statuses import policy,approved
                 model=studio.asset(item['asset_id'])
-                if not model.get('master_artifact_id'):model.update(status='Needs Review')
+                if policy(model,settings)=='manual_approval' and not approved(model,winner['artifact_id']):
+                    auto.update(status='blocked',stage='Manual approval before export',error='Manual Approval policy: approve this candidate to publish. Other assets continue.');continue
+                export_settings=copy.deepcopy(value['automation']['export_settings'])
+                staged=bool(revision and revision.get('previous_delivery_ids') and not revision.get('auto_replace'))
+                if staged:
+                    from .export_profiles import revision_output_directory
+                    export_settings['output_directory']=revision_output_directory()
+                exported=export_asset(value['project_id'],item['asset_id'],artifact_id=winner['artifact_id'],settings=export_settings)
+                if revision:
+                    exported.update(delivery_scope='staged' if staged else 'game',revision_id=revision['id'])
+                    with store.connect() as db:db.execute('UPDATE selective_exports SET payload=? WHERE id=?',(json.dumps(exported),exported['id']))
+                    update_execution(item['asset_id'],revision['id'],dict(state='staged' if staged else 'published',artifact_id=winner['artifact_id'],artifact_sha256=winner['sha256'],job_ids=[j['id'] for j in current],export_id=exported['id'],qa_status='passed',completed_at=store.now()))
+                auto.update(status='exported',stage='Completed',export=exported,completed_at=store.now());auto.pop('error',None)
+                model=studio.asset(item['asset_id'])
+                if not model.get('master_artifact_id'):model.update(status='Completed',art_review_status='not_reviewed')
+                if not staged:
+                    model['published_artifact_id']=winner['artifact_id'];model.setdefault('publication_history',[]).append(dict(artifact_id=winner['artifact_id'],export_id=exported['id'],at=store.now(),action='automatic_delivery',sha256=winner['sha256']))
                 model.setdefault('settings',{})['automatic_selection']=winner;studio.save_asset(model)
             except Exception as exc:
                 auto.update(status='blocked' if isinstance(exc,HTTPException) else 'failed',stage=auto.get('stage','production'),error=str(exc.detail if isinstance(exc,HTTPException) else exc))
         active_running=any(j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and j['status']!='QUEUED' for j in all_jobs)
+        for revision_item in value['items']:
+            if revision_item.get('revision_id') and revision_item.get('automation',{}).get('status')!='exported':
+                from .revisions import update_execution
+                update_execution(revision_item['asset_id'],revision_item['revision_id'],dict(state=revision_item['automation'].get('status','queued'),stage=revision_item['automation'].get('stage')))
         value['automation']['pause_state']=('pausing' if active_running else 'paused') if value['paused'] else 'running'
         batch.save(batch.stored(value))
     return batch.detail(value)

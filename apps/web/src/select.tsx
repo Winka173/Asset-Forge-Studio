@@ -140,6 +140,6 @@ export function Select({ children, className = "", ...props }: SelectHTMLAttribu
         {choice.group && choice.group !== choices[i - 1]?.group && <div className="afs-select-group">{choice.group}</div>}
         <div id={`${listId}-${i}`} role="option" aria-selected={choice.value === selected?.value} aria-disabled={choice.disabled || undefined} data-index={i} className={`afs-select-option${active === i ? " is-active" : ""}`} onMouseMove={() => !choice.disabled && setActive(i)} onPointerDown={event => event.preventDefault()} onClick={() => choose(i)}><span>{choice.label}</span>{choice.value === selected?.value && <span className="afs-select-check" aria-hidden="true">✓</span>}</div>
       </div>)}
-    </div>, document.body)}
+    </div>, document.fullscreenElement || document.body)}
   </span>;
 }

@@ -997,3 +997,5 @@
     gap: 14px;
   }
 }
+
+.batch-source-options{margin:20px 0}.batch-source-options>summary{font-size:13px;cursor:pointer;padding:14px 0}.batch-submission-summary{display:flex;flex-direction:column;gap:10px;padding:18px 0;font-size:12px;line-height:1.6}.batch-submission-summary span{color:#abb3a5}

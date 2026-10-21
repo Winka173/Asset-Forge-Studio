@@ -1,0 +1,44 @@
+{
+  "status": "PASS_FINAL_NATIVE_PRODUCTION_RELAUNCH",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-relaunch\\2026-10-21T17-08-55-929Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.6.0\\20261021T170457Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "three_panel_non_overlapping_actual_windows_layout_and_virtualized349",
+      "passed": true,
+      "boxes": [
+        {
+          "x": 242,
+          "y": 201.04762268066406,
+          "width": 280,
+          "height": 694.0952758789062,
+          "right": 522
+        },
+        {
+          "x": 534,
+          "y": 201.04762268066406,
+          "width": 476.952392578125,
+          "height": 694.0952758789062,
+          "right": 1010.952392578125
+        },
+        {
+          "x": 1022.952392578125,
+          "y": 201.04762268066406,
+          "width": 310,
+          "height": 694.0952758789062,
+          "right": 1332.952392578125
+        }
+      ]
+    },
+    {
+      "name": "real_archer_pbr_preview_manual_selection_disables_follow_reexport_without_ai_collapsible_panels",
+      "passed": true
+    },
+    {
+      "name": "production_selection_real_glb_relaunch_no_duplicate_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "inference": "NOT_RUN; existing real GPU artifacts only"
+}

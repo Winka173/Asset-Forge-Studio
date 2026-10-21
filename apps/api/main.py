@@ -22,6 +22,7 @@ from . import jobs
 
 @asynccontextmanager
 async def lifespan(app):
+    app.state.shutting_down=False
     jobs.worker.start()
     try:
         yield
@@ -29,7 +30,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.5.0", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.6.0", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -78,8 +79,8 @@ class Shutdown(BaseModel):cancel_active:bool=False
 
 def shutdown_jobs():
     # Queued stages of safely paused batches remain durable when closing the app.
-    with store.connect() as db:paused={r['id'] for r in db.execute('SELECT id,payload FROM batches') if json.loads(r['payload']).get('paused')}
-    return [j for j in jobs.listing() if j['status'] not in jobs.TERMINAL and not (j['status']=='QUEUED' and j['payload'].get('batch_id') in paused)]
+    from .production import eligible
+    return [j for j in jobs.listing() if j['status'] not in jobs.TERMINAL and not (j['status']=='QUEUED' and not eligible(j['payload']))]
 
 
 @app.post('/api/desktop/shutdown')
@@ -92,6 +93,8 @@ def desktop_shutdown(body:Shutdown):
     for job in active:
         try:jobs.transition(job['id'],'CANCELLED','User requested cancel-and-exit from desktop')
         except ValueError:pass
+    # End long-lived UI streams before Uvicorn waits for graceful HTTP drain.
+    app.state.shutting_down=True
     threading.Timer(.3,callback).start()
     return dict(status='SHUTTING_DOWN',cancelled_jobs=len(active))
 
@@ -327,6 +330,15 @@ from .universal import router as universal_router
 app.include_router(universal_router)
 from .world import router as world_router
 app.include_router(world_router)
+
+from .production import router as production_router
+app.include_router(production_router)
+from .statuses import router as status_router
+app.include_router(status_router)
+from .revisions import router as revision_router
+app.include_router(revision_router)
+from .library import router as library_router
+app.include_router(library_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():

@@ -324,7 +324,10 @@ def control(identifier:str,body:Control):
         if body.action not in ['pause','resume','cancel']:raise HTTPException(400,'Action không hợp lệ')
         if value.get('automation'):
             value['automation']['pause_reason']='User paused at stage boundary' if body.action=='pause' else 'User cancelled pending work' if body.action=='cancel' else None
-        value['paused']=body.action!='resume';save(value)
+        value['paused']=body.action!='resume'
+        if body.action=='cancel':value['production_cancelled']=True
+        elif body.action=='resume':value['production_cancelled']=False
+        save(value)
         if body.action=='cancel':
             for job in jobs.listing():
                 if job['payload'].get('batch_id')==identifier and job['status'] not in jobs.TERMINAL:

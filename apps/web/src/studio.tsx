@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
+import {LibraryStudio} from "./library";
+import { ProductionWorkspace } from "./production";
 import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
@@ -11,7 +13,7 @@ import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
-type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
+type Page = "Home" | "Create" | "Library" | "Jobs" | "Production" | "Compare" | "Settings";
 type Artifact = {
   id: string;
   name: string;
@@ -140,6 +142,7 @@ const emptyData: StudioData = {
 const pages: Page[] = [
   "Home",
   "Create",
+  "Production",
   "Library",
   "Jobs",
   "Compare",
@@ -156,6 +159,7 @@ const icons: Record<string, string> = {
   Home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
   Create: "M12 3v18M3 12h18",
   Library: "M3 5h7l2 3h9v12H3Z",
+  Production: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
   Jobs: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
   Compare: "M12 3v18M3 6h6v12H3ZM15 6h6v12h-6Z",
   Settings:
@@ -217,7 +221,7 @@ async function request<T>(url: string, body?: unknown): Promise<T> {
 }
 function route(): Page {
   const value = location.hash.slice(1).split("/")[0];
-  return pages.find((p) => p.toLowerCase() === value.toLowerCase()) || "Home";
+  return pages.find((p) => p.toLowerCase() === (value||localStorage.getItem("afs.lastPage")||"Home").toLowerCase()) || "Home";
 }
 
 export function Studio() {
@@ -227,6 +231,8 @@ export function Studio() {
       localStorage.getItem("afs.project") || "",
     );
   const [projectsReady, setProjectsReady] = useState(false);
+  const [globalQueue,setGlobalQueue]=useState<{running:number;queued:number;paused:boolean}|null>(null);
+  useEffect(()=>{let alive=true;const load=()=>request<{running:number;queued:number;paused:boolean}>('/api/production/status').then(v=>{if(alive)setGlobalQueue(v);}).catch(()=>{if(alive)setGlobalQueue(null);});load();const timer=setInterval(load,4000);return()=>{alive=false;clearInterval(timer);};},[]);
   const [data, setData] = useState<StudioData>(emptyData),
     [engines, setEngines] = useState<Engine[]>([]),
     [draft, setDraft] = useState<Draft>(initialDraft);
@@ -235,7 +241,7 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
-  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false});
+  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
   async function changeWorkflow(fields:Partial<typeof workflow>){const next={...workflow,...fields};setWorkflow(next);try{await request(`/api/automation/projects/${projectId}`,next);}catch(e){setError(String(e));}}
@@ -336,6 +342,7 @@ export function Studio() {
   function navigate(next: Page) {
     location.hash = next.toLowerCase();
     setPage(next);
+    localStorage.setItem("afs.lastPage",next);
   }
   async function reload(loadDraft = false) {
     const id = projectId;
@@ -395,7 +402,7 @@ export function Studio() {
     }
   }
   useEffect(() => {
-    const handler = () => setPage(route());
+    const handler = () => {setPage(route());localStorage.setItem("afs.lastPage",route());};
     addEventListener("hashchange", handler);
     return () => removeEventListener("hashchange", handler);
   }, []);
@@ -569,6 +576,7 @@ export function Studio() {
     location.hash = `create/${created.id}`;
     return created;
   }
+  function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   async function generate() {
     await run(async () => {
       if(workflow.mode!=='expert'){
@@ -581,6 +589,7 @@ export function Studio() {
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
         await reload();setAssetId(model.id);setVersionId('');setPreviewTab('Model');
+        openProduction(result.batch_id,model.id);
         setNotice(`${workflow.mode==='auto'?'Automatic':'Assisted'} local pipeline queued (${result.batch_id.slice(0,8)}). Progress and exports remain available after refresh.`);
         return;
       }
@@ -592,7 +601,7 @@ export function Studio() {
         const key=`afs.concept.request.${projectId}`,serialized=JSON.stringify(body),previous=JSON.parse(localStorage.getItem(key)||'null');
         const id=previous?.serialized===serialized?previous.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({serialized,id}));
         const job=await request<Job>('/api/studio/concept',{...body,request_id:id});
-        change({assetId:model.id,source:'',conceptJobId:job.id});setPreviewTab('Concept');await reload();
+        change({assetId:model.id,source:'',conceptJobId:job.id});setPreviewTab('Concept');await reload();localStorage.setItem('afs.production.selection','job/'+job.id);navigate('Production');
         setNotice('Đang tạo concept bằng SDXL local. Bạn cần duyệt ảnh trước khi dựng 3D.');return;
       }
       if(sourceNeedsApproval)throw new Error('Duyệt concept trước khi tạo 3D.');
@@ -635,6 +644,7 @@ export function Studio() {
         request_id: requestId,
       });
       await reload();
+      if(result.jobs[0]){localStorage.setItem("afs.production.selection","job/"+result.jobs[0].id);navigate("Production");}
       setAssetId(asset.id);
       setVersionId("");
       setPreviewTab("Model");
@@ -891,7 +901,7 @@ export function Studio() {
           </button>
         </div>
         <nav aria-label="Studio navigation">
-          {pages.map((p) => (
+          {pages.filter(p=>!['Jobs','Compare','Settings'].includes(p)).map((p) => (
             <a
               key={p}
               href={`#${p.toLowerCase()}`}
@@ -903,13 +913,15 @@ export function Studio() {
               onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:undefined}
             >
               <Icon name={p} size={18} />
-              <span>{p}</span>
+              <span>{p==='Home'?'Projects':p==='Jobs'?'Diagnostics':p}</span>
               {p === "Jobs" && activeJobs.length > 0 && (
                 <span className="nav-count">{activeJobs.length}</span>
               )}
             </a>
           ))}
         </nav>
+        <div className="production-secondary-label">TOOLS &amp; SETTINGS</div>
+        <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} aria-current={page===p?'page':undefined}><Icon name={p} size={18}/><span>{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
         <div className="sidebar-bottom">
           <div>
             <span className="live-dot" /> Local workspace
@@ -960,16 +972,14 @@ export function Studio() {
             <span className="local-chip">
               <span className="live-dot" /> LOCAL
             </span>
-            <button className="quiet-button" onClick={() => navigate("Jobs")}>
+            <button className="quiet-button" onClick={() => navigate("Production")}>
               <Icon name="Jobs" size={15} />
-              {activeJobs.length
-                ? `${activeJobs.length} queued / running`
-                : "Queue idle"}
+              {globalQueue ? `${globalQueue.running} active ? ${globalQueue.queued} queued${globalQueue.paused?' ? paused':''}` : 'Queue status unavailable'}
             </button>
           </div>
         </header>
         <main className={`studio-main page-${page.toLowerCase()}`}>
-          {!projectId && page !== "Settings" && (projectsReady ? <section className="onboarding-workspace" aria-label="Create your first game project">
+          {!projectId && page !== "Settings" && page !== "Production" && (projectsReady ? <section className="onboarding-workspace" aria-label="Create your first game project">
             <div className="onboarding-symbol"><Icon name="Cube" size={36}/></div>
             <div className="overline">YOUR STUDIO. YOUR WORLDS.</div>
             <h1>Start with your first game.</h1>
@@ -984,7 +994,7 @@ export function Studio() {
             <button role="tab" disabled={loadedProject!==projectId} aria-selected={creationMode==='world'} onClick={()=>{setCreationMode('world');setAssetId('');change({assetId:''});location.hash='create';}}>Map / World</button>
           </div>}
           {projectId && page==='Create' && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
-          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
+          {projectId && page==='Create' && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error && (
             <div role="alert" className="studio-message error">
               {error}
@@ -1794,105 +1804,11 @@ export function Studio() {
               </div>
             </>
           )}
-          {projectId && page === "Library" && (
-            <>
-              <div className="page-heading">
-                <div>
-                  <div className="overline">PROJECT LIBRARY</div>
-                  <h1>Your assets, every iteration.</h1>
-                  <p>
-                    Reference, candidate và master được lưu riêng với lịch sử
-                    version.
-                  </p>
-                </div>
-                <button className="primary" onClick={() => newAsset()}>
-                  <Icon name="Create" size={17} />
-                  New asset
-                </button>
-              </div>
-              <div className="library-toolbar">
-                <label className="search-box">
-                  <Icon name="Search" size={17} />
-                  <input
-                    aria-label="Search assets"
-                    placeholder="Search assets…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </label>
-                <Select
-                  aria-label="Asset folder"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="all">All folders</option>
-                  {categories.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </Select>
-                <Select
-                  aria-label="Asset status"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">All statuses</option>
-                  {[
-                    "Candidate",
-                    "Approved",
-                    "Rejected",
-                    "Failed",
-                    "Game-ready",
-                  ].map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </Select>
-                <Select
-                  aria-label="Sort assets"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                >
-                  <option value="recent">Recently updated</option>
-                  <option value="oldest">Oldest first</option>
-                  <option value="name">Name A?Z</option>
-                </Select>
-                <button
-                  className={`secondary${favorites ? " selected" : ""}`}
-                  onClick={() => setFavorites(!favorites)}
-                >
-                  <Icon name="Star" size={15} />
-                  Favorites
-                </button>
-              </div>
-              <div className="collection-heading">
-                <span>{filteredAssets.length} assets</span>
-                <span className="muted">
-                  {project?.name} · local filesystem
-                </span>
-              </div>
-              {filteredAssets.length ? (
-                <div className="asset-grid library-grid">
-                  {filteredAssets.map(assetCard)}
-                </div>
-              ) : (
-                <div className="studio-empty">
-                  <Icon name="Library" size={40} />
-                  <h3>
-                    {data.assets.length
-                      ? "No matching assets."
-                      : "Your library is ready."}
-                  </h3>
-                  <p>
-                    {data.assets.length
-                      ? "Thử thay đổi từ khóa hoặc bộ lọc."
-                      : "Tạo asset đầu tiên hoặc lưu một draft từ Create."}
-                  </p>
-                  <button className="secondary" onClick={() => newAsset()}>
-                    Create asset
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+          {projectId && page === "Library" && <LibraryStudio key={projectId} projectId={projectId} projectName={project?.name||projectId} onOpenAsset={id=>{const a=data.assets.find(a=>a.id===id);if(a)openAsset(a);}} onCreate={()=>newAsset()} onProduction={async(id,asset)=>{if(id){openProduction(id,asset);return;}const response=await request<{groups:{id:string;items:{id:string}[]}[];standalone:{id:string;asset_id?:string}[]}>('/api/production');const group=response.groups.find(g=>g.items.some(i=>i.id===asset));if(group)openProduction(group.id,asset);else{const job=response.standalone.find(j=>j.asset_id===asset);if(job)localStorage.setItem('afs.production.selection','job/'+job.id);navigate('Production');}}}/>}
+          {page === "Production" && <ProductionWorkspace onAdd={()=>newAsset("Text")} onLibrary={(pid,id)=>{if(pid&&pid!==projectId)setProjectId(pid);if(id)localStorage.setItem(`afs.library.open.${pid||projectId}`,id);navigate("Library");}} onReview={(pid,id)=>{
+            if(pid!==projectId){setProjectId(pid);location.hash=`create/${id}`;setPage("Create");}
+            else {const a=data.assets.find(v=>v.id===id);if(a)openAsset(a);else request<StudioData>(`/api/studio?project_id=${pid}`).then(d=>{setData(d);const found=d.assets.find(v=>v.id===id);if(found)openAsset(found);});}
+          }}/> }
           {projectId && page === "Jobs" && (
             <JobHistory
               jobs={data.jobs}

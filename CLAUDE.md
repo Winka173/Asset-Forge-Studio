@@ -1,5 +1,9 @@
 # Asset Forge Studio development contract
 
+## Current release authority (user instruction, 2026-10-21)
+
+The user explicitly authorized merging the reviewed expansion into main and making the newest unified application Stable. This supersedes the earlier branch/distribution separation below. Main is canonical; preserve previous PC/Expansion distributions as rollback copies. Unified product: Asset Forge Studio, com.assetforgestudio.desktop, version 0.6.0. Commit and push completed verified features to main after the native completion loop. Automate noncritical enrichment and technical delivery; only ask for essential unresolved input, new authorization, or an otherwise unapproved replacement of a delivered game version.
+
 ## Automation-first production (V3, user instruction)
 
 Automatic by default; manual only when requested. Single and Batch expose Auto, Assisted checkpoints and Expert controls. Auto import analyzes losslessly without starting GPU work; only explicit Generate starts production. Generate All includes descriptive FUTURE tags. Missing ordinary scale metadata receives editable values with explicit/inherited/inferred/defaulted provenance, never invented gameplay contracts.
@@ -33,3 +37,13 @@ Read `docs/IMPLEMENTATION_PLAN.md`, `docs/UX_REDESIGN.md`, current progress and 
 ## Universal Expansion V2 Reviewed
 
 `doc/Asset_Forge_Studio_Universal_Expansion_Master_Prompt_V2_Reviewed.md` supersedes the earlier Universal specification. Audit and validate the existing Single/Batch baseline first. Implement shared typed manifests/capability routing and the first genuine Unity validation slice before opening other generators. Keep unsupported types Planned/Experimental/Unavailable, local-only inference, one shared heavy GPU slot, scoped optional MCP, explicit license/commercial gates, opt-in heavyweight installs and no production game writes. Maintain `docs/UNIVERSAL_EXPANSION.md` with tested/untested phase checklists. Each completed feature still requires a fresh Windows build, real native smoke and commit/push on this feature branch.
+
+
+## Production workspace
+
+Production is the shared operational route after any successful Single/Batch generation submission. Keep Create for fresh inputs, and keep legacy diagnostics under secondary navigation. Read model: `apps/api/production.py`; workspace: `apps/web/src/production.tsx`. Authoritative state remains the existing SQLite jobs/batches/exports. Never start GPU work from reading a workspace or importing a manifest. Keep scoped pause, cancelled-group exclusion from Resume All, immutable generation quality, SSE authentication and viewer resource disposal. Native acceptance uses `desktop/verify-production.mjs`; do not execute all 349 GPU assets during development. See `docs/PRODUCTION_WORKSPACE.md`.
+
+
+## Unified Stable and automation status / revisions
+
+User authorized expansion merge into main; latest product ships under Stable identity, preserving old distributions as rollback. Production, Library and Create share one SQLite job graph and scheduler. Persist independent status dimensions through `statuses.py`; never use Under Review as an Auto export gate. Review policies are Auto / Review Flagged / Manual Approval, with explicit artifact-scoped human decisions. Original prompt/source is immutable; resolved specs carry provenance. Revision defaults to staged output when a delivery exists; only explicit publication / Auto Replace may update game manifest. Do not invent direct mesh-editing capability. Reuse shared worker, existing Blender and atomic export validation. Safe cleanup is limited to resized thumbnail caches. See `docs/ASSET_MANAGEMENT_WORKFLOW.md`.

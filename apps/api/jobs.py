@@ -61,11 +61,13 @@ def listing():
 def transition(identifier, target, error=None):
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE')
-        row = db.execute('SELECT status FROM jobs WHERE id=?', (identifier,)).fetchone()
+        row = db.execute('SELECT status,payload FROM jobs WHERE id=?', (identifier,)).fetchone()
         if not row: raise KeyError(identifier)
         if target not in TRANSITIONS.get(row['status'], set()):
             raise ValueError(f'Invalid job transition {row["status"]} -> {target}')
-        db.execute('UPDATE jobs SET status=?,updated_at=?,error=? WHERE id=?', (target, store.now(), error, identifier))
+        payload=json.loads(row['payload']);stamp=store.now()
+        payload.setdefault('stage_events',[]).append(dict(state=target,at=stamp,error=error))
+        db.execute('UPDATE jobs SET status=?,updated_at=?,error=?,payload=? WHERE id=?', (target, stamp, error, json.dumps(payload), identifier))
 
 
 def enqueue(payload, db=None):
@@ -205,6 +207,8 @@ class Worker:
                             for row in rows:
                                 job=decode(row)
                                 if job['id'] in self.active:continue
+                                from .production import eligible,scheduling_score
+                                if not eligible(job['payload']):continue
                                 priority=job['payload'].get('priority',0);batch_id=job['payload'].get('batch_id')
                                 if batch_id:
                                     parent=db.execute('SELECT payload FROM batches WHERE id=?',(batch_id,)).fetchone()
@@ -215,7 +219,7 @@ class Worker:
                                 readiness,reason=dependency_readiness(job)
                                 if readiness=='blocked':transition(job['id'],'BLOCKED',reason);continue
                                 if readiness=='waiting':continue
-                                candidates.append((priority,job))
+                                candidates.append((scheduling_score(job,priority),job))
                         counts={kind:sum(v[1]==kind for v in self.active.values()) for kind in ['gpu','cpu']}
                         for _,job in sorted(candidates,key=lambda x:-x[0]):
                             kind=resource_class(job['payload']);limit=1 if kind=='gpu' else max(1,min(4,int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))
@@ -234,12 +238,15 @@ class Worker:
     def managed(self,job,kind):
         try:
             with resource_slot(kind):
-                if self.stop.is_set() or get(job['id'])['status']!='QUEUED':return
+                from .production import eligible
+                fresh=get(job['id'])
+                if self.stop.is_set() or fresh['status']!='QUEUED' or not eligible(fresh['payload']):return
                 if job['payload'].get('batch_id'):
                     from . import batch
                     with batch.LOCK:
                         parent=batch.batch(job['payload']['batch_id'])
-                        if parent['paused']:return
+                        from .production import eligible
+                        if not eligible(job['payload']):return
                         transition(job['id'],'RUNNING')
                 started=time.monotonic();started_at=store.now();samples=[];finished=threading.Event()
                 def monitor():

@@ -78,7 +78,7 @@ def _index_entry(result,manifest,root):
     return dict(asset_id=result['asset_id'],source_asset_id=result['source_asset_id'],name=manifest['name'],category=manifest['category'],export_version=result['id'],created_at=result['created_at'],
                 glb=(Path(result['export_directory'])/manifest['glb']).relative_to(root).as_posix() if manifest['glb'] else None,
                 dimensions_xyz_m=manifest['dimensions_xyz_m'],bounds_xyz_m=manifest['bounds_xyz_m'],units=manifest['units'],orientation=manifest['orientation'],
-                sha256=next((f['sha256'] for f in result['files'] if f['name']==manifest['glb']),None),qa_status='Technically validated; Needs Artistic Review',provenance=manifest.get('generation_provenance',dict(source_artifact_id=manifest['source_artifact_id'])))
+                sha256=next((f['sha256'] for f in result['files'] if f['name']==manifest['glb']),None),qa_status='passed',art_review_status=manifest.get('art_review_status','not_reviewed'),provenance=manifest.get('generation_provenance',dict(source_artifact_id=manifest['source_artifact_id'])))
 
 
 def generation_provenance(record,value):
@@ -234,13 +234,24 @@ def asset_capabilities(asset_id: str, artifact_id: str | None = None):
     return dict(artifact_id=record['id'], available={key:bool(files) for key,files in available_sources(value,record,path).items()}, qa=qa)
 
 
-def export_asset(project_id, asset_id, artifact_id=None, settings=None):
+def revision_output_directory():
+    # Application-owned staging root is not a user-selected export directory.
+    target=store.DATA/'revision-previews'
+    target.mkdir(parents=True,exist_ok=True)
+    return str(target)
+
+
+def export_asset(project_id, asset_id, artifact_id=None, settings=None, allow_publish=False):
     from .studio import asset, project
     value = asset(asset_id)
     if value['project_id'] != project_id:raise HTTPException(409, 'Asset belongs to another project.')
     project_value = project(project_id)
     settings = _settings(settings if settings is not None else resolve_project_settings(project_id))
     record,path,qa = _source(value,artifact_id)
+    revision=next((r for r in value.get('revisions',[]) if r.get('artifact_id')==record['id']),None)
+    staged=bool(revision and revision.get('previous_delivery_ids') and not revision.get('auto_replace') and value.get('published_artifact_id')!=record['id'] and not allow_publish)
+    if staged:settings['output_directory']=revision_output_directory()
+
     sources = available_sources(value,record,path)
     requested = [key for key in sources if settings.get(key)]
     missing = [key for key in requested if not sources[key]]
@@ -250,7 +261,11 @@ def export_asset(project_id, asset_id, artifact_id=None, settings=None):
     stem = _slug(source_id) + '--' + hashlib.sha256(value['id'].encode()).hexdigest()[:10]
     selected = sorted([(source, stem + suffix) for kind in requested for source,suffix in sources[kind]],key=lambda pair:pair[1])
     if len({name.casefold() for _,name in selected}) != len(selected):raise HTTPException(409,'Source components have colliding output names.')
-    fingerprint = json.dumps(dict(delivery_schema='1.1',asset_id=asset_id,settings=settings,files=[(name,store.digest(source)) for source,name in selected]),sort_keys=True)
+    from .statuses import approved,policy
+    from .automation import project_workflow
+    if policy(value,project_workflow(project_id))=='manual_approval' and not approved(value,record['id']):raise HTTPException(409,'Manual Approval policy: explicitly approve the selected candidate before export.')
+    review_state='approved' if approved(value,record['id']) else 'not_reviewed'
+    fingerprint = json.dumps(dict(delivery_schema='1.2',art_review_status=review_state,asset_id=asset_id,settings=settings,files=[(name,store.digest(source)) for source,name in selected]),sort_keys=True)
     identifier = uuid.uuid5(uuid.NAMESPACE_URL,'afs-selective-export:' + fingerprint).hex
     base = Path(settings['output_directory']) if settings.get('output_directory') else store.DATA / 'exports'
     folder = base / _slug(project_id) / 'selective' / _slug(asset_id) / identifier
@@ -274,7 +289,7 @@ def export_asset(project_id, asset_id, artifact_id=None, settings=None):
                 temporary.replace(target)
             files.append(dict(name=name,bytes=target.stat().st_size,sha256=store.digest(target),kind=target.suffix.lstrip('.')))
         created=store.now();doc=glb_document(path)
-        manifest=dict(schema_version='1.1',generation_provenance=generation_provenance(record,value),export_version=identifier,created_at=created,project_id=project_id,project_name=project_value['name'],asset_id=value['id'],source_asset_id=source_id,
+        manifest=dict(schema_version='1.2',qa_status='passed',art_review_status=review_state,generation_provenance=generation_provenance(record,value),export_version=identifier,created_at=created,project_id=project_id,project_name=project_value['name'],asset_id=value['id'],source_asset_id=source_id,
                       name=value['name'],category=value.get('category'),source_artifact_id=record['id'],glb=next((f['name'] for f in files if f['name']==stem+'.glb'),None),
                       bounds_xyz_m=qa['bounds_xyz_m'],dimensions_xyz_m=qa['dimensions_xyz_m'],units='m',orientation='glTF Y-up',source_scale_approved=False,
                       lods=[f['name'] for f in files if re.search(r'_LOD[1-3]\.glb$',f['name'])],materials=qa['materials'],embedded_images=qa['images'],
@@ -307,7 +322,7 @@ def export_asset(project_id, asset_id, artifact_id=None, settings=None):
                     for item in files:archive.write(folder/item['name'],item['name'])
                 temporary.replace(target)
             files.append(dict(name=target.name,bytes=target.stat().st_size,sha256=store.digest(target),kind='zip'))
-        result=dict(id=identifier,status='COMPLETED',asset_id=asset_id,project_id=project_id,source_asset_id=source_id,artifact_id=record['id'],settings=settings,created_at=created,
+        result=dict(id=identifier,status='COMPLETED',delivery_scope='staged' if staged else 'game',asset_id=asset_id,project_id=project_id,source_asset_id=source_id,artifact_id=record['id'],settings=settings,created_at=created,
                     export_directory=str(folder),output_root=str(base.resolve()),filename=stem+'.glb' if settings['glb'] else files[0]['name'],files=[f|dict(url=f'/api/export-profiles/exports/{identifier}/files/{f["name"]}') for f in files],qa=qa)
         publish_index(result,manifest)
         with store.connect() as db:db.execute('INSERT INTO selective_exports VALUES (?,?,?)',(identifier,asset_id,json.dumps(result)))

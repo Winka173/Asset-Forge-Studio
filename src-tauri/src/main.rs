@@ -23,7 +23,7 @@ type Shared = Arc<Mutex<Backend>>;
 static CLOSING: AtomicBool = AtomicBool::new(false);
 static ALLOW_EXIT: AtomicBool = AtomicBool::new(false);
 
-fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap()).join("AssetForgeStudioExpansion"))}
+fn settings_root() -> PathBuf {std::env::var_os("AFS_DESKTOP_CONFIG_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap()).join("AssetForgeStudio"))}
 fn save_config(root: &Path, config: &Config) -> Result<(),String> {fs::create_dir_all(root).map_err(|e|e.to_string())?; fs::write(root.join("desktop-config.json"),serde_json::to_vec_pretty(config).unwrap()).map_err(|e|e.to_string())}
 fn load_config(root: &Path) -> Config {
     if let Ok(bytes)=fs::read(root.join("desktop-config.json")) {if let Ok(config)=serde_json::from_slice(&bytes) {return config;}}
@@ -102,8 +102,9 @@ fn main(){
     if let Some(profile)=std::env::var_os("AFS_DESKTOP_CONFIG_DIR").filter(|v|!v.is_empty()) {
         use std::hash::{Hash,Hasher};
         let mut hash=std::collections::hash_map::DefaultHasher::new();
-        PathBuf::from(profile).to_string_lossy().to_lowercase().hash(&mut hash);
+        PathBuf::from(&profile).to_string_lossy().to_lowercase().hash(&mut hash);
         context.config_mut().identifier=format!("{}.profile{:x}",context.config().identifier,hash.finish());
+        for window in &mut context.config_mut().app.windows {window.data_directory=Some(PathBuf::from(&profile).join("WebView2"));}
     }
     let root=settings_root();let config=load_config(&root);let state:Shared=Arc::new(Mutex::new(Backend{config,root,phase:"STARTING".into(),message:"Preparing your local workspace…".into(),token:String::new(),port:0,child:None,job:None}));
     let close_state=state.clone();

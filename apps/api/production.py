@@ -1,0 +1,234 @@
+"""Production read model and scoped controls over the existing durable queue."""
+import json
+import asyncio
+import hashlib
+from datetime import datetime,timezone
+from pathlib import Path
+from typing import Literal
+from fastapi import APIRouter,HTTPException,Request
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel,Field
+from . import store,jobs,batch,studio
+router=APIRouter(prefix='/api/production')
+
+
+def global_paused():
+    with store.connect() as db:
+        row=db.execute('SELECT payload FROM drafts WHERE project_id=?',('__afs_production__',)).fetchone()
+    return bool(row and json.loads(row['payload']).get('paused'))
+
+
+def eligible(payload):
+    if global_paused() or payload.get('production_paused'):return False
+    if payload.get('batch_id'):
+        value=batch.batch(payload['batch_id']);item=next((i for i in value['items'] if i['asset_id']==payload.get('asset_id')),None)
+        return bool(not value['paused'] and item and not item.get('production_paused') and not item.get('skipped'))
+    return True
+
+
+def scheduling_score(job,priority):
+    # Aging is unbounded: a long-waiting Normal task eventually outranks new Next work.
+    age=max(0,(datetime.now(timezone.utc)-datetime.fromisoformat(job['created_at'])).total_seconds())
+    return priority+age/60
+
+
+def batches():
+    with store.connect() as db:return [json.loads(r['payload']) for r in db.execute('SELECT payload FROM batches ORDER BY rowid DESC')]
+
+
+def job_summary(j):
+    return {k:j.get(k) for k in ('id','status','created_at','updated_at','progress','error')}|dict(kind=j['payload']['kind'],engine=j['payload'].get('engine'),seed=j['payload'].get('seed'),asset_id=j['payload'].get('asset_id'),project_id=j['payload'].get('project_id'),priority=j['payload'].get('priority',0),paused=j['payload'].get('production_paused',False))
+
+
+def item_summary(i,group,all_jobs,all_paused=False):
+    related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id']]
+    auto=i.get('automation',{});status=auto.get('status') or ('running' if any(j['status'] not in jobs.TERMINAL for j in related) else 'draft')
+    active=any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related)
+    paused=group['paused'] or i.get('production_paused') or all_paused
+    if (group.get('production_cancelled') or i.get('skipped')) and status not in ('exported','completed'):status='cancelled'
+    if paused and i.get('started') and status!='cancelled' and status not in ('exported','completed','failed','blocked'):status='pausing' if active else 'paused'
+    return dict(id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=auto.get('stage'),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
+
+
+@router.get('')
+def overview():
+    from .statuses import refresh_all,FIELDS
+    models=refresh_all()
+    all_jobs=jobs.listing();groups=[];all_paused=global_paused()
+    with store.connect() as db:projects={r['id']:json.loads(r['payload'])['name'] for r in db.execute('SELECT id,payload FROM projects')}
+    for value in batches():
+        if value.get('revision_of'):continue
+        # Imported drafts are shown only after explicit generation admission.
+        if not any(i.get('started') for i in value['items']) and not any(j['payload'].get('batch_id')==value['id'] for j in all_jobs):continue
+        items=[item_summary(i,value,all_jobs,all_paused) for i in value['items']]
+        for i in items:
+            model=models.get(i['id'],{})
+            i.update({k:model.get(k) for k in FIELDS})
+            i['attention_reasons']=model.get('attention_reasons',[])
+            i['stage']=model.get('stage_status',i['stage']) if model.get('production_status')=='completed' else i['stage']
+            i['status']=model.get('production_status',i['status'])
+            i['needs_review']=model.get('art_review_status')=='not_reviewed' and model.get('production_status')=='completed'
+        counts={s:sum(i['status']==s for i in items) for s in ('running','generating','processing','validating','exporting','queued','paused','pausing','exported','completed','needs_attention','failed','blocked','draft')}
+        counts['completed']=sum(i['status'] in ('completed','exported') for i in items)
+        counts['running']=sum(i['status'] in ('generating','processing','validating','exporting') for i in items)
+        counts['exported']=sum(i.get('export_status')=='exported' for i in items)
+        counts['blocked']=sum(i.get('stage_status')=='blocked' for i in items)
+        counts['needs_attention']=sum(bool(i.get('attention_required')) for i in items)
+        counts['needs_review']=sum(i.get('needs_review',False) for i in items)
+        groups.append(dict(id=value['id'],name=value['name'],project_id=value['project_id'],project_name=projects.get(value['project_id'],value['project_id']),kind='single' if len(items)==1 else 'batch',paused=value['paused'],created_at=value['created_at'],started_at=value.get('automation',{}).get('started_at'),counts=counts,items=items))
+    loose=[job_summary(j) for j in all_jobs if not j['payload'].get('batch_id')]
+    return dict(groups=groups,standalone=loose,paused=all_paused,gpu_concurrency=1,updated_at=store.now())
+
+
+def artifact_info(a):return {k:a.get(k) for k in ('id','name','role','url','sha256','metadata','created_at')}
+
+
+@router.get('/assets/{asset_id}')
+def detail(asset_id:str):
+    from .statuses import refresh_all,FIELDS
+    model=refresh_all().get(asset_id) or studio.asset(asset_id)
+    with store.connect() as db:artifacts=[store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE asset_id=?',(asset_id,))]
+    for reference_id in model.get('reference_ids',[]):
+        if not any(a['id']==reference_id for a in artifacts):
+            try:
+                a=store.get_artifact(reference_id)
+                if a.get('project_id')==model['project_id']:artifacts.append(a)
+            except KeyError:pass
+    related=[j for j in jobs.listing() if j['payload'].get('asset_id')==asset_id];stages=[]
+    for j in reversed(related):
+        folder=store.DATA/'jobs'/j['id'];resources=folder/'resources.json';metrics=json.loads(resources.read_text()) if resources.exists() else {}
+        logs=folder/'worker.log';tail=''
+        if logs.exists():
+            with logs.open('rb') as stream:stream.seek(max(0,logs.stat().st_size-16000));tail=stream.read().decode('utf-8',errors='replace')
+        report=folder/'output/report.json';qa=json.loads(report.read_text()) if report.exists() else None
+        stages.append(job_summary(j)|dict(events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender')} if qa else None)))
+    from .export_profiles import export_history
+    return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
+
+
+class Control(BaseModel):
+    action:Literal['pause','resume','cancel','retry_failed','skip_failed','regenerate','prioritize','skip']
+    scope:Literal['all','batch','asset','job']
+    group_id:str|None=None
+    asset_id:str|None=None
+    job_id:str|None=None
+    priority:Literal['next','normal','batch_order']='normal'
+
+
+@router.post('/control')
+def control(body:Control):
+    with batch.LOCK:
+        if body.scope=='all':
+            if body.action not in ('pause','resume'):raise HTTPException(400,'Pause All / Resume All only; cancel requires an explicit asset or batch')
+            with store.connect() as db:db.execute('INSERT OR REPLACE INTO drafts VALUES (?,?)',('__afs_production__',json.dumps(dict(paused=body.action=='pause',updated_at=store.now()))))
+            # Resume All intentionally releases explicit per-group/per-asset pauses too.
+            if body.action=='resume':
+                for group in batches():
+                    if group.get('production_cancelled'):continue
+                    for item in group['items']:item['production_paused']=False
+                    batch.save(group)
+                    if any(i.get('started') for i in group['items']):batch.control(group['id'],batch.Control(action='resume'))
+                with store.connect() as db:
+                    for row in db.execute("SELECT id,payload FROM jobs WHERE status='QUEUED'").fetchall():
+                        p=json.loads(row['payload']);p.pop('production_paused',None);db.execute('UPDATE jobs SET payload=? WHERE id=?',(json.dumps(p),row['id']))
+        elif body.scope in ('batch','asset'):
+            if not body.group_id:raise HTTPException(400,'Select a group')
+            value=batch.batch(body.group_id)
+            if body.scope=='batch':
+                result=batch.control(body.group_id,batch.Control(action=body.action))
+                for child in batches():
+                    if child.get('revision_of')==body.group_id:batch.control(child['id'],batch.Control(action=body.action))
+                return result
+            if body.asset_id:
+                model=studio.asset(body.asset_id)
+                revision=next((r for r in reversed(model.get('revisions',[])) if r.get('group_id')),None)
+                if revision and revision.get('state') not in ('published','staged','cancelled'):
+                    body=body.model_copy(update={'group_id':revision['group_id']});value=batch.batch(body.group_id)
+            item=next((i for i in value['items'] if i['asset_id']==body.asset_id),None)
+            if not item:raise HTTPException(404,'Asset is outside the selected batch')
+            if body.action in ('pause','resume'):
+                item['production_paused']=body.action=='pause';batch.save(value)
+            elif body.action=='prioritize':
+                item['priority']={'next':100,'normal':0,'batch_order':-10}[body.priority];batch.save(value)
+            elif body.action=='cancel':
+                item['skipped']=True;item['production_paused']=True;item.setdefault('automation',{})['status']='cancelled';batch.save(value)
+                for j in jobs.listing():
+                    if j['payload'].get('batch_id')==body.group_id and j['payload'].get('asset_id')==body.asset_id and j['status'] not in jobs.TERMINAL:jobs.transition(j['id'],'CANCELLED','Cancelled by user')
+            else:return batch.item_action(body.group_id,body.asset_id,batch.Control(action='retry' if body.action=='retry_failed' else body.action))
+        else:
+            if not body.job_id:raise HTTPException(400,'Select a job')
+            j=jobs.get(body.job_id)
+            if body.action=='cancel' and j['status'] not in jobs.TERMINAL:jobs.transition(j['id'],'CANCELLED','Cancelled by user')
+            elif body.action=='retry_failed':
+                if j['status'] not in ('FAILED','BLOCKED','CANCELLED'):raise HTTPException(409,'Only failed or interrupted stages can be retried. Use Regenerate for a new version.')
+                jobs.retry(j['id'])
+            elif body.action in ('pause','resume','prioritize'):
+                with store.connect() as db:
+                    db.execute('BEGIN IMMEDIATE')
+                    p=json.loads(db.execute('SELECT payload FROM jobs WHERE id=?',(j['id'],)).fetchone()['payload'])
+                    if body.action=='prioritize':p['priority']={'next':100,'normal':0,'batch_order':-10}[body.priority]
+                    else:p['production_paused']=body.action=='pause'
+                    db.execute('UPDATE jobs SET payload=?,updated_at=? WHERE id=?',(json.dumps(p),store.now(),j['id']))
+            else:raise HTTPException(400,'Unsupported job action')
+    return dict(ok=True,paused=global_paused())
+
+
+@router.get('/events')
+async def events(request:Request):
+    async def stream():
+        previous=None
+        while not getattr(request.app.state,'shutting_down',False) and not await request.is_disconnected():
+            with store.connect() as db:
+                changes=[tuple(r) for r in db.execute('SELECT id,status,updated_at FROM jobs')]
+                changes += [tuple(r) for r in db.execute("SELECT id,json_extract(payload,'$.updated_at') FROM batches")]
+                row=db.execute("SELECT payload FROM drafts WHERE project_id='__afs_production__'").fetchone()
+                changes.append(tuple(row) if row else ())
+            revision=hashlib.sha256(json.dumps(changes).encode()).hexdigest()
+            if revision!=previous:
+                previous=revision
+                yield 'event: queue\ndata: '+json.dumps(dict(revision=revision))+'\n\n'
+            else:yield ': heartbeat\n\n'
+            await asyncio.sleep(2)
+    return StreamingResponse(stream(),media_type='text/event-stream',headers={'Cache-Control':'no-cache','X-Accel-Buffering':'no'})
+
+
+@router.get('/status')
+def global_status():
+    with store.connect() as db:counts={r['status']:r['n'] for r in db.execute('SELECT status,COUNT(*) AS n FROM jobs GROUP BY status')}
+    return dict(running=sum(counts.get(s,0) for s in ('RUNNING','GENERATED','POSTPROCESSING','VALIDATING')),queued=counts.get('QUEUED',0),paused=global_paused())
+
+class ResolveInput(BaseModel):
+    group_id:str
+    asset_ids:list[str]=Field(min_length=1,max_length=1000)
+    prompt:str|None=Field(default=None,max_length=100000)
+    engine:Literal['auto','trellis2_community','triposg']|None=None
+
+
+@router.post('/resolve-input')
+def resolve_input(body:ResolveInput):
+    """Explicit corrections for blocked assets; independent failures do not block the group."""
+    from . import automation
+    from .statuses import refresh_all
+    if body.prompt is None and body.engine is None:raise HTTPException(400,'Enter missing input or select an engine')
+    if body.prompt is not None and not body.prompt.strip():raise HTTPException(400,'Enter the essential asset description')
+    completed=[];errors=[]
+    with batch.LOCK:
+        value=batch.batch(body.group_id);ids={i['asset_id'] for i in value['items']}
+        if set(body.asset_ids)-ids:raise HTTPException(400,'Selection contains assets from another group')
+        models=refresh_all()
+        for asset_id in dict.fromkeys(body.asset_ids):
+            try:
+                model=models[asset_id]
+                if not model.get('attention_required'):raise HTTPException(409,'This asset does not need correction. Use Refine for a new revision.')
+                if model.get('export_status')=='exported':raise HTTPException(409,'An exported version already exists. Use Refine to preserve game delivery.')
+                changes={}
+                if body.prompt is not None:changes['prompt']=body.prompt
+                if body.engine is not None:changes['preferred_engine']=body.engine
+                batch.edit(body.group_id,asset_id,changes)
+                latest=batch.batch(body.group_id);item=next(i for i in latest['items'] if i['asset_id']==asset_id)
+                item.pop('resolved_prompt',None);item.setdefault('input_resolution_history',[]).append(dict(at=store.now(),changes=changes,original_prompt_sha256=model.get('original_prompt_sha256')))
+                item.pop('automation',None);item['skipped']=False;batch.save(latest)
+                automation.start(body.group_id,[asset_id],workflow=latest.get('automation',{}).get('settings'))
+                completed.append(asset_id)
+            except HTTPException as exc:errors.append(dict(asset_id=asset_id,error=exc.detail))
+    return dict(completed=completed,errors=errors)
