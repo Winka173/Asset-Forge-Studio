@@ -1,0 +1,47 @@
+{
+  "scope": "Actual Unity Editor GPU captures, editable package, cold reopen and clean-project import; no humanoid animation or artistic acceptance",
+  "elements": [
+    {
+      "element": "fire",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "d88e4f0ac555444a90fc5f23af27fed5",
+      "report": ".local\\fx-real\\20261021T180150Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    },
+    {
+      "element": "ice",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "921dbbb42a09448d88e59e1b86a351e0",
+      "report": ".local\\fx-real\\20261021T180309Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    },
+    {
+      "element": "lightning",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "9f8435552d384700a6f3abdc85c05b37",
+      "report": ".local\\fx-real\\20261021T180336Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    },
+    {
+      "element": "wind",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "dee1559882ec4583b68872a2cd4b522b",
+      "report": ".local\\fx-real\\20261021T180405Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    },
+    {
+      "element": "earth",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "08c5661aef00443f879ed94c8aa7e9cc",
+      "report": ".local\\fx-real\\20261021T180433Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    },
+    {
+      "element": "poison",
+      "status": "PASS_REAL_UNITY_FX",
+      "job_id": "124c58db4d224624bffdde61ab7b61be",
+      "report": ".local\\fx-real\\20261021T180503Z\\report.json",
+      "native_status": "PASS_EDITOR_VALIDATION"
+    }
+  ]
+}

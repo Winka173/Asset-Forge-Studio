@@ -64,6 +64,8 @@ def refresh_all():
     for identifier,model in models.items():
         pair=grouped.get(identifier);g,i=pair if pair else ({},{})
         related=[j for j in all_jobs if j['payload'].get('asset_id')==identifier and (not pair or j['payload'].get('batch_id')==g['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0))]
+        if model.get('asset_type')=='vfx' and model.get('settings',{}).get('current_fx_recipe_id'):
+            related=[j for j in related if j['payload'].get('artifact_id')==model['settings']['current_fx_recipe_id']]
         retried={j['payload'].get('retry_of') for j in related};related=[j for j in related if j['id'] not in retried]
         # Revision jobs retain the stable identity and are included in the same status projection.
         revisions=model.get('revisions',[])
@@ -81,7 +83,7 @@ def refresh_all():
         if auto.get('status')=='exported' or (valid_exports and not revisions):production='completed'
         elif i.get('started') or queued:production='queued'
         elif mine:production='needs_attention';reasons.append(dict(kind='technical',message='Existing candidate has no completed validated delivery. Run Enhance / Export to finish.'))
-        paused=g.get('paused') or i.get('production_paused') or all_paused
+        paused=g.get('paused') or i.get('production_paused') or model.get('production_paused') or any(j['payload'].get('production_paused') for j in queued) or all_paused
         if queued and paused:production='paused';stage='paused'
         if active:
             job=active[0];kind=job['payload']['kind'];stage='running'
@@ -95,6 +97,13 @@ def refresh_all():
             production='failed' if auto['status']=='failed' else 'needs_attention';stage='blocked';reasons.append(dict(kind='manual_approval' if 'Review' in auto.get('stage','') or 'approval' in auto.get('stage','').lower() else 'input_or_dependency',message=auto.get('error') or auto.get('stage')))
         if (i.get('skipped') or g.get('production_cancelled')) and production!='completed':production='cancelled';stage='skipped'
         if production=='completed':stage='completed';qa='passed';reasons=[]
+        if model.get('asset_type')=='vfx' and not active and not queued and not failed:
+            native=next((j for j in related if j['payload']['kind']=='fx_unity' and j['status']=='REVIEW_REQUIRED'),None)
+            if native:
+                report=store.DATA/'jobs'/native['id']/'manifest.json'
+                if report.is_file() and json.loads(report.read_text()).get('status')=='PASS_EDITOR_VALIDATION':
+                    production='completed';stage='completed';qa='passed';reasons=[]
+                    export='prepared'  # Native package exists in Library; no game-facing GLB publication is implied.
         fields=dict(production_status=production,stage_status=stage,qa_status=qa,export_status=export,art_review_status=art,attention_required=bool(reasons) or production in ('failed','needs_attention'),attention_reasons=reasons,art_review_artifact_id=current_id,published_artifact_id=model.get('published_artifact_id') or (delivery['artifact_id'] if delivery else None))
         if any(model.get(k)!=v for k,v in fields.items()):
             model.setdefault('status_events',[]).append(dict(at=store.now(),previous={k:model.get(k) for k in FIELDS},current={k:fields[k] for k in FIELDS}))

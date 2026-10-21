@@ -309,7 +309,7 @@ class Worker:
             if payload['kind'] == 'inference':
                 self.inference(job, artifact, source, folder)
                 return
-            if payload['kind'] in ['unity_import','world_unity']:
+            if payload['kind'] in ['unity_import','world_unity','fx_unity']:
                 self.unity_import(job,artifact,folder)
                 return
             from scripts.audit import audit
@@ -369,6 +369,8 @@ class Worker:
         from engines import unity_editor
         if job['payload']['kind']=='world_unity':
             from engines import world_editor as unity_editor
+        elif job['payload']['kind']=='fx_unity':
+            from engines import fx_editor as unity_editor
         from engines.plugin_sdk import Plugin,Operation
         plugin=Plugin('unity_editor',{Operation.prepare:unity_editor.prepare,Operation.validate:unity_editor.validate})
         payload=job['payload'];identifier=job['id'];process=None;samples=[];started=time.monotonic()
@@ -403,7 +405,7 @@ class Worker:
             report=plugin.invoke(Operation.validate,payload,folder)
             (folder/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
             metadata=dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,engine='unity',version=unity_editor.VERSION,
-                stage='engine_imported',asset_type='map_environment' if payload['kind']=='world_unity' else 'static_3d',license=artifact['metadata'].get('license','UNKNOWN'),commercial='NOT_CLEARED',human_quality_approval='NOT_GIVEN')
+                stage='engine_imported',asset_type='vfx' if payload['kind']=='fx_unity' else 'map_environment' if payload['kind']=='world_unity' else 'static_3d',license=artifact['metadata'].get('license','UNKNOWN'),commercial='NOT_CLEARED',human_quality_approval='NOT_GIVEN')
             outputs=getattr(unity_editor,'OUTPUT_ARTIFACTS',[('AFS_Asset.unitypackage','engine_package'),('AFS_Editor_Importer.zip','editor_package'),('unity_report.json','qa_report'),('unity_reopen_report.json','qa_report')])
             for name,role in outputs:
                 store.add_artifact(folder/'output'/name,role,name,metadata)

@@ -15,7 +15,7 @@ def build():
     def source_signature():
         included = []
         for folder in source_roots:
-            included.extend(p for p in (ROOT / folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix in {'.py', '.json', '.txt', '.patch', '.js', '.css', '.html', '.cs', '.asmdef'})
+            included.extend(p for p in (ROOT / folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix in {'.py', '.json', '.txt', '.patch', '.js', '.css', '.html', '.cs', '.asmdef', '.shader', '.hlsl'})
         included += [ROOT / 'desktop/backend_entry.py', Path(__file__), ROOT / 'benchmarks/archer_tower_t3/benchmark.json']
         digest = hashlib.sha256()
         for path in sorted(included): digest.update(path.relative_to(ROOT).as_posix().encode()); digest.update(path.read_bytes())

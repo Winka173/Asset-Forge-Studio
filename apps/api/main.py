@@ -30,7 +30,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.6.1", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.7.1", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -298,7 +298,7 @@ def job_files(identifier: str):
     except KeyError: raise HTTPException(404, 'Unknown job')
     folder = store.DATA / 'jobs' / identifier
     paths=folder.rglob('*')
-    if job['payload']['kind'] in ['unity_import','world_unity']:
+    if job['payload']['kind'] in ['unity_import','world_unity','fx_unity']:
         paths=[p for p in folder.iterdir() if p.is_file()]+[p for relative in ['output','editor_project/Assets/AFS','editor_project/Packages/com.assetforge.editor'] for p in (folder/relative).rglob('*') if p.is_file()]
     return [{'name': p.relative_to(folder).as_posix(), 'bytes': p.stat().st_size,
              'url': f'/api/jobs/{identifier}/files/{p.relative_to(folder).as_posix()}'}
@@ -341,6 +341,8 @@ from .library import router as library_router
 app.include_router(library_router)
 from .fidelity import router as fidelity_router
 app.include_router(fidelity_router)
+from .fx import router as fx_router
+app.include_router(fx_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():
