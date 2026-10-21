@@ -1,0 +1,10 @@
+{
+  "name": "Rigged Simple",
+  "creator": "Cesium, donated for glTF testing",
+  "source": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/RiggedSimple/glTF-Binary/RiggedSimple.glb",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "readme": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/RiggedSimple/README.md",
+  "sha256": "3a79dabb67bb0cd598a18d08b954d9d357c27c30672f82ef5d3f4e7fe6ca3401",
+  "scope": "Technical animation/skin viewer test, not generated character quality, retarget or humanoid rig proof"
+}

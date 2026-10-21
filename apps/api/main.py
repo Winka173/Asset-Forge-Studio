@@ -30,7 +30,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.1", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.2", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)

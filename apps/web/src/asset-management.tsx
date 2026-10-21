@@ -3,7 +3,7 @@ import {apiFetch} from './api';
 import {Select} from './select';
 import './asset-management.css';
 import {RequirementsPanel} from './requirements-panel';
-export type ManagedArtifact={id:string;name:string;role:string;url:string;sha256?:string;metadata:{stage?:string;triangles?:number;dimensions_xyz_m?:number[];materials?:unknown[];images?:unknown[];[k:string]:unknown}};
+export type ManagedArtifact={id:string;name:string;role:string;url:string;sha256?:string;metadata:{stage?:string;triangles?:number;dimensions_xyz_m?:number[];materials?:unknown[];images?:unknown[]|number;[k:string]:unknown}};
 export type Revision={id:string;number:number;prompt:string;state:string;artifact_id?:string;parent_artifact_id:string;created_at:string;quality:string;plan:{method:string;explanation:string};effective_specification?:unknown;job_ids:string[]};
 export type ManagedAsset={id:string;project_id:string;name:string;prompt:string;original_prompt?:string;production_status?:string;stage_status?:string;qa_status?:string;export_status?:string;art_review_status?:string;attention_required?:boolean;attention_reasons?:{kind:string;message:string}[];review_policy?:string;resolved_specification?:unknown;revisions?:Revision[];published_artifact_id?:string;master_artifact_id?:string};
 export async function managementCall<T=unknown>(url:string,body?:unknown):Promise<T>{const r=await apiFetch(url,body===undefined?undefined:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json();throw Error(typeof e.detail==='string'?e.detail:`Request failed (${r.status})`);}return r.json();}

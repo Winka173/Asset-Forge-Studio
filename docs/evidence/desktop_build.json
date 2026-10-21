@@ -1,39 +1,26 @@
 ﻿{
-    "version":  "0.8.1",
-    "timestamp_utc":  "20261021T190404Z",
-    "git_commit":  "9b08f06c5e96784bd14d1672d34e84ec598b8e75",
+    "version":  "0.8.2",
+    "timestamp_utc":  "20261021T192235Z",
+    "git_commit":  "ed2bb50f491879b7fcfa5df0f075e1f094338a7c",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/automation.py",
                           " M apps/api/main.py",
-                          " M apps/api/manifest.py",
-                          " M apps/api/studio.py",
                           " M apps/web/src/asset-management.tsx",
-                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/creative-system.css",
                           " M apps/web/src/library.tsx",
-                          " M apps/web/src/main.tsx",
-                          " M apps/web/src/production.tsx",
-                          " M apps/web/src/select.tsx",
-                          " M apps/web/src/studio.tsx",
-                          " M desktop/smoke.mjs",
-                          " M desktop/verify-fidelity-revision.mjs",
-                          " M desktop/verify-management.mjs",
-                          " M desktop/verify-workspace.mjs",
-                          " M docs/evidence/desktop_build.json",
-                          " M docs/evidence/desktop_smoke.json",
+                          " M apps/web/src/select-help.ts",
+                          " M apps/web/src/viewer.tsx",
+                          " M docs/CREATIVE_WORKFLOW_ACCEPTANCE.md",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_studio.py",
-                          "?? apps/web/src/creative-system.css",
-                          "?? apps/web/src/error-notice.tsx",
-                          "?? apps/web/src/select-help.ts",
-                          "?? desktop/set_version.py",
-                          "?? desktop/verify-select-help.mjs",
-                          "?? docs/CREATIVE_WORKFLOW_ACCEPTANCE.md"
+                          "?? apps/web/src/motion-preview.tsx",
+                          "?? desktop/motion-checks.mjs",
+                          "?? desktop/verify-motion-native.mjs",
+                          "?? desktop/verify-motion-preview.mjs"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -42,7 +29,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T190404Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T192235Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -53,13 +40,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "e0ae0ee2046cfd4e2a2b1745d10c1c0ac7bec3a4f12f1f3f79f21ffc15bdb6ad",
-                            "afs-backend.exe":  "06d5398a03285e49eb65f60161ff2d78f8dd9c0125f6f22bb9c1d770ffccb9ab",
-                            "Asset Forge Studio_0.8.1_x64-setup.exe":  "7b23101c228f1a09a46a377acac746e2d35d1fab64bef9e706e307c7ac63be50"
+                            "Asset Forge Studio.exe":  "4659e397f221ec7abf64142a5e365952043f9a66768531dd0c7943328194daf5",
+                            "Asset Forge Studio_0.8.2_x64-setup.exe":  "e7c171fa4059a0a6347f30ae0c6eb20509a55e9249bc825455bc52da036d55cd",
+                            "afs-backend.exe":  "8a5727e6c1ca534b6a9a16e688bb53414e6a0577c77ba97cfe3d35c24cf3fadf"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T19-06-01-068Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T19-24-22-731Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.1_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.8.2_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

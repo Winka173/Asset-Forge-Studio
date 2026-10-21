@@ -1,6 +1,10 @@
 /** Plain-language explanations. No unsupported capability is implied by an option. */
 export function selectHelp(label:string,value:string,text:string):{purpose:string;option?:string} {
  const name=label.toLowerCase();
+ if(/playback speed/.test(name))return {purpose:'Change preview speed without editing the saved animation clip.',option:`Play at ${value} times the source timeline speed.`};
+ if(/animation clip/.test(name))return {purpose:'Choose an animation clip that is actually stored in this model. This previews the clip; it does not retarget it to another character.'};
+ if(/rig bone/.test(name))return {purpose:'Choose an existing joint to inspect its hierarchy or test a preview rotation. This does not generate or attach a rig.'};
+
  if(/project.switcher|game.project/.test(name))return {purpose:'Choose the game you are working on. Each game keeps its own assets, Art Bible and export settings.'};
  if(/result count|candidate/.test(name)&&/^\d+$/.test(value))return {purpose:'Choose how many results to try. More results take longer; heavy GPU tasks still share one queue.',option:`Try ${value} seed${value==='1'?'':'s'} and keep previous source outputs.`};
  if(/engine/.test(name)&&!/change|resolve/.test(name))return {purpose:'Choose a locally installed tool that can produce this output. Auto uses the available supported route.',option:value==='auto'?'Let AFS select an installed compatible engine. Artistic quality is not guaranteed.':value==='triposg'?'Build geometry locally. This route does not generate PBR textures.':value==='trellis2_community'?'Build geometry and materials using the installed community TRELLIS.2 route.':undefined};

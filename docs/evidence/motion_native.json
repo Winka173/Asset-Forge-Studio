@@ -1,0 +1,21 @@
+{
+  "status": "PASS_REAL_NATIVE_GLTF_ANIMATION_SKELETON_POSE_AND_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\motion-native\\2026-10-21T19-25-21-600Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "real_clip_play_pause_scrub_nonloop_skeleton_canvas_pixels_pose_and_unchanged_source",
+      "passed": true,
+      "clips": 1,
+      "bones": 2
+    },
+    {
+      "name": "native_restart_restores_real_skinned_model_without_inference_or_duplicates",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual packaged Windows GLB animation/skin viewer on licensed Khronos/Cesium sample. Not automatic rigging, character generation or retarget proof",
+  "asset_id": "ee2d5e019f264fecbd2ec7de78528acb",
+  "source_sha256": "3a79dabb67bb0cd598a18d08b954d9d357c27c30672f82ef5d3f4e7fe6ca3401"
+}

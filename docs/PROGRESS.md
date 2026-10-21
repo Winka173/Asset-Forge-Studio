@@ -1,3 +1,11 @@
+# Preview update - 2026-10-22 (Asia/Saigon)
+
+Windows 0.8.2 passed the 65-test backend suite, packaged native GLB/export/restart smoke, and real licensed GLB animation/rig viewer acceptance. Actual clip playback, scrub, non-loop stop, speed selection, skeleton canvas pixels, joint pose changes and unchanged source hashes were checked; the model reloads after closing and reopening Windows. Static models retain their existing viewer and do not show nonfunctional motion controls. Technical fixture: Khronos/Cesium Rigged Simple, CC BY 4.0; it is not an AI-generated character, automatic rigging or retarget quality proof. Source and license: evidence/motion_fixture_license.json; native result: evidence/motion_native.json.
+
+The next approved UX slices remain command search, resume/continue work, saved filters/scroll, reversible archive, continuous review and grouped notifications. General text-to-map/VFX, multi-result routes for these types, research integration and actual auto-rig/retarget still require independent implementation and real-output acceptance.
+
+---
+
 # Current implementation - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.1 passed 65 backend tests, the packaged native smoke, and affected-feature acceptance on main. Create supports 1-5 result seeds; Preview/Refine/History, compact Batch, explanatory searchable selects and the graphite/amber spacing pass are implemented. The native legacy-seed/deep-link test confirms a saved model opens the correct workflow and Refine does not start generation. The latest user priorities are a genuinely empty personal Library, one stable asset item with nested stages/versions, and a shorter stepped Create flow with consistent spacing. Test runs live under .local with independent desktop configurations; no sample project is seeded into production.

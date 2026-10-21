@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import {MotionModel,MotionPreview} from "./motion-preview";
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as T from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function CompareViewer({ left, right, conceptUrl, view, wireframe, onError, single = false, mode = 'textured', background = 'studio', lighting = 'studio' }: {left?: string; right?: string; conceptUrl?: string; view: string; wireframe: boolean; onError: (s: string) => void; single?: boolean; mode?: 'textured'|'clay'|'wireframe'|'normals'; background?: 'studio'|'dark'|'light'; lighting?: 'studio'|'soft'}) {
   const host = useRef<HTMLDivElement>(null);
-  const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[]} | null>(null);
+  const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[];fit:()=>void} | null>(null);
+  const motion=useRef<MotionModel[]>([]);
   const [loaded, setLoaded] = useState(0);
   const [textures, setTextures] = useState(0);
   const [loadFailed,setLoadFailed]=useState(false);
@@ -26,22 +28,25 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     const scenes = single ? [new T.Scene()] : [new T.Scene(), new T.Scene()];
     let disposed = false;
     const models: T.Object3D[] = [];
+    motion.current=[];
+    const fit=()=>{if(!models.length)return;models.forEach(root=>{root.updateMatrixWorld(true);root.traverse(child=>{if(child instanceof T.SkinnedMesh){child.skeleton.update();child.computeBoundingBox();child.computeBoundingSphere();}});});const box=new T.Box3();models.forEach(m=>box.union(new T.Box3().setFromObject(m)));const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),dir=camera.position.clone().sub(controls.target).normalize();const panel=div.querySelector('.motion-controls')?.getBoundingClientRect().height||0;const aspect=(div.clientWidth/scenes.length)/Math.max(1,div.clientHeight-panel);const distance=Math.max(size.y,size.x/aspect,size.z/aspect)*.7/Math.tan(T.MathUtils.degToRad(camera.fov/2));scenes.forEach(scene=>scene.traverse(child=>{if(child.userData.afsPreviewGrid)child.position.y=box.min.y;if(child.userData.afsScaleMarker)child.position.set(box.min.x-1,box.min.y+.9,0);}));controls.target.copy(center);camera.position.copy(center).addScaledVector(dir,Math.max(distance,.1));controls.update();div.dataset.fit=JSON.stringify({center:center.toArray(),size:size.toArray(),camera:camera.position.toArray(),panel,height:div.clientHeight,aspect,distance,canvas:{top:renderer.domElement.getBoundingClientRect().top,height:renderer.domElement.getBoundingClientRect().height,width:renderer.domElement.width,bufferHeight:renderer.domElement.height},host:div.getBoundingClientRect().top,pixelRatio:renderer.getPixelRatio()});};
     setLoaded(0);
     setTextures(0);
     setLoadFailed(false);
     scenes.forEach(scene => {
       scene.background = new T.Color('#202733');
-      const grid = new T.GridHelper(30, 30, '#46566c', '#2c3849');
+      const grid = new T.GridHelper(30, 30, '#46566c', '#2c3849');grid.userData.afsPreviewGrid=true;
       scene.add(grid, new T.HemisphereLight(0xffffff, 0x606070, 2));
       const key = new T.DirectionalLight(0xffffff, 3);
       key.position.set(6, 14, 8); scene.add(key);
       const fill = new T.DirectionalLight(0xdbe6ff, 1);
       fill.position.set(-7, 9, 2); scene.add(fill);
       const marker = new T.Mesh(new T.BoxGeometry(0.4, 1.8, 0.4), new T.MeshStandardMaterial({color: '#b9bfcb', roughness: 0.8}));
-      marker.position.set(-4, 0.9, 0); scene.add(marker);
+      marker.userData.afsScaleMarker=true;marker.position.set(-4, 0.9, 0); scene.add(marker);
     });
     function disposeObject(object: T.Object3D) {
-      object.traverse(child => { if (child instanceof T.Mesh) {
+      object.traverse(child => { if (child instanceof T.Mesh||child instanceof T.LineSegments) {
+        if(child instanceof T.SkinnedMesh)child.skeleton.dispose();
         child.geometry.dispose();
         const original = child.userData.afsOriginalMaterial;
         const materials = Array.isArray(original || child.material) ? (original || child.material) : [original || child.material];
@@ -61,7 +66,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
           materials.forEach(material=>{if(material instanceof T.MeshStandardMaterial && material.map?.image?.width>0)textureCount++;});
         }});
         setTextures(value=>value+textureCount);
-        scenes[i].add(result.scene); models.push(result.scene); setLoaded(v => v + 1);
+        scenes[i].add(result.scene);motion.current[i]=new MotionModel(result.scene,result.animations,scenes[i]);models.push(result.scene); setLoaded(v => v + 1);
         const box = new T.Box3(); models.forEach(m => box.union(new T.Box3().setFromObject(m)));
         const center = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3());
         const dir = camera.position.clone().sub(controls.target).normalize();
@@ -70,19 +75,22 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
         controls.target.copy(center); camera.position.copy(center).addScaledVector(dir, Math.max(distance, 0.1)); controls.update();
       }, undefined, err => { if (!disposed) {setLoadFailed(true);onError(`GLB viewer: ${String(err).replace(/([?&]afs_token=)[^&\s"']+/g,'$1[redacted]')}`);} });
     });
-    runtime.current = {camera, controls, scenes};
-    const observer = new ResizeObserver(() => { renderer.setSize(div.clientWidth, div.clientHeight, false); });
+    runtime.current = {camera, controls, scenes,fit};
+    let canvasWidth=0,canvasHeight=0;
+    const observer = new ResizeObserver(() => {canvasWidth=0;canvasHeight=0;});
     observer.observe(div);
     let frame = 0;
     function animate() {
       frame = requestAnimationFrame(animate); controls.update();
-      const w = div.clientWidth, h = div.clientHeight;
+      const panel=div.querySelector('.motion-controls')?.getBoundingClientRect().height||0;
+      const w = div.clientWidth, h = Math.max(1,div.clientHeight-panel);
+      if(canvasWidth!==w||canvasHeight!==h){renderer.setSize(w,h,false);renderer.domElement.style.height=h+'px';canvasWidth=w;canvasHeight=h;}
       camera.aspect = (w / scenes.length) / h; camera.updateProjectionMatrix();
       renderer.setScissorTest(true);
       scenes.forEach((scene, i) => { renderer.setViewport(i * w / scenes.length, 0, w / scenes.length, h); renderer.setScissor(i * w / scenes.length, 0, w / scenes.length, h); renderer.render(scene, camera); });
     }
     animate();
-    return () => { disposed = true; runtime.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose(); scenes.forEach(disposeObject); renderer.dispose(); renderer.domElement.remove(); };
+    return () => { disposed = true; runtime.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose();motion.current.forEach(m=>m.dispose());motion.current=[];scenes.forEach(disposeObject); renderer.dispose(); renderer.domElement.remove(); };
   }, [left, right, single]);
   useEffect(() => {
     const rt = runtime.current; if (!rt) return;
@@ -112,5 +120,6 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
       });
     });
   }, [background, lighting, loaded, single]);
-  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!loadFailed && loaded < (single ? Number(Boolean(right||left)) : Number(Boolean(left))+Number(Boolean(right))) && <span className="viewer-loading" role="status">Loading model and textures...</span>}{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
+  const motions=useMemo(()=>motion.current.filter(Boolean),[loaded,left,right,single]);
+  return <div className={`viewer${single ? ' viewer-single' : ''}${motions.some(m=>m.clips.length||m.bones.length)?' viewer-has-motion':''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!loadFailed && loaded < (single ? Number(Boolean(right||left)) : Number(Boolean(left))+Number(Boolean(right))) && <span className="viewer-loading" role="status">Loading model and textures...</span>}{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<MotionPreview models={motions} onFit={()=>runtime.current?.fit()}/><span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
 }
