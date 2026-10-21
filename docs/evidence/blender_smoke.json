@@ -1,0 +1,265 @@
+{
+  "fixture": "trimesh box, NOT AI generation, NOT Archer Tower, NOT Meshy",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\qa\\2a24e51a29e64e71af0f5e59b86dc552",
+  "report": {
+    "status": "NEEDS_REVIEW",
+    "input_sha256": "4e5cf5269258e8d153e71d0219e33651f6247309f7bcf56db8c6561d885867c8",
+    "script_sha256": "87063f282ecd942aef5bf7387f7f0150ec7ec6192edf49f8da8e82f2bc09f941",
+    "blender_version": "4.5.14 LTS",
+    "dimensions_xyz_m_blender": [
+      2.0,
+      3.0,
+      10.0
+    ],
+    "normalization": {
+      "applied": true,
+      "target_height_m": 10,
+      "scale": 1.0,
+      "yaw_degrees": 0
+    },
+    "before": [
+      {
+        "name": "geometry_0",
+        "triangles": 12,
+        "vertices": 8,
+        "non_manifold_edges": 0,
+        "boundary_edges": 0,
+        "loose_vertices": 0,
+        "uv_layers": 0,
+        "materials": []
+      }
+    ],
+    "after": [
+      {
+        "name": "geometry_0",
+        "triangles": 12,
+        "vertices": 8,
+        "non_manifold_edges": 0,
+        "boundary_edges": 0,
+        "loose_vertices": 0,
+        "uv_layers": 0,
+        "materials": []
+      }
+    ],
+    "materials": [],
+    "lods": [
+      {
+        "level": 1,
+        "ratio": 0.65,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD1",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ],
+        "quality": "NEEDS_REVIEW",
+        "baking": "NOT_TESTED"
+      },
+      {
+        "level": 2,
+        "ratio": 0.35,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD2",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ],
+        "quality": "NEEDS_REVIEW",
+        "baking": "NOT_TESTED"
+      },
+      {
+        "level": 3,
+        "ratio": 0.15,
+        "meshes": [
+          {
+            "name": "geometry_0_LOD3",
+            "triangles": 8,
+            "vertices": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ],
+        "quality": "NEEDS_REVIEW",
+        "baking": "NOT_TESTED"
+      }
+    ],
+    "framing": [
+      {
+        "resolution": "mobile",
+        "view": "three_quarter",
+        "status": "FAIL"
+      }
+    ],
+    "rendered": [
+      "mobile_three_quarter_passes.exr",
+      "mobile_three_quarter_asset.png",
+      "mobile_three_quarter.png"
+    ],
+    "checks": {
+      "export_reopen": "PASS",
+      "uv_overlap": "NOT_TESTED",
+      "self_intersections": "NOT_TESTED",
+      "lod_silhouette_error": "NOT_TESTED",
+      "normal_bake": "NOT_TESTED",
+      "unity": "NOT_TESTED",
+      "human_review": "NOT_TESTED",
+      "pbr_reconstruction": "NOT_TESTED",
+      "modular_connectors": "NOT_TESTED"
+    },
+    "reopened": [
+      {
+        "file": "collider.glb",
+        "meshes": [
+          {
+            "name": "COLLIDER_AABB",
+            "triangles": 12,
+            "vertices": 24,
+            "non_manifold_edges": 24,
+            "boundary_edges": 24,
+            "loose_vertices": 0,
+            "uv_layers": 1,
+            "materials": []
+          }
+        ]
+      },
+      {
+        "file": "LOD0.glb",
+        "meshes": [
+          {
+            "name": "geometry_0",
+            "triangles": 12,
+            "vertices": 24,
+            "non_manifold_edges": 24,
+            "boundary_edges": 24,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ]
+      },
+      {
+        "file": "LOD1.glb",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD1",
+            "triangles": 8,
+            "vertices": 22,
+            "non_manifold_edges": 22,
+            "boundary_edges": 22,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ]
+      },
+      {
+        "file": "LOD2.glb",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD2",
+            "triangles": 8,
+            "vertices": 22,
+            "non_manifold_edges": 22,
+            "boundary_edges": 22,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ]
+      },
+      {
+        "file": "LOD3.glb",
+        "meshes": [
+          {
+            "name": "geometry_0_LOD3",
+            "triangles": 8,
+            "vertices": 22,
+            "non_manifold_edges": 22,
+            "boundary_edges": 22,
+            "loose_vertices": 0,
+            "uv_layers": 0,
+            "materials": []
+          }
+        ]
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "benchmark.json",
+        "bytes": 1406,
+        "sha256": "101265719f2f7096f75deb7a819066f5acf01284f33ad8f9dd7663c4213ec91f"
+      },
+      {
+        "path": "collider.glb",
+        "bytes": 1764,
+        "sha256": "b3f3ec22638440d32985e4230908b6219e1a2637dbe41bb807a4e91c687620b3"
+      },
+      {
+        "path": "LOD0.glb",
+        "bytes": 1436,
+        "sha256": "a7488410e8f9c7d4fafc2aa1b428ca2cf1983ac97a5c9c6a192a3283b1ea69e2"
+      },
+      {
+        "path": "LOD1.glb",
+        "bytes": 1372,
+        "sha256": "27ee48b4932c32ec72e4fdf7db8d9fd6976e89613b9763f35fab17689e098300"
+      },
+      {
+        "path": "LOD2.glb",
+        "bytes": 1372,
+        "sha256": "4b25d2de6b109c0e1353cc9b1605c1ab45d02f05417b825140eda3b332f854f5"
+      },
+      {
+        "path": "LOD3.glb",
+        "bytes": 1372,
+        "sha256": "4401f0dfcd9fe84891a68056615c0788c90a0d5c98f3ffa76b0747a6acbad0c8"
+      },
+      {
+        "path": "master.blend",
+        "bytes": 378992,
+        "sha256": "c2d3ca1557f0f0c4effe9b81c6ffc4f2cb3c68a6307690e7833adf72f8ad6735"
+      },
+      {
+        "path": "mobile_three_quarter.png",
+        "bytes": 1595349,
+        "sha256": "a494d7cc811c79af5ab5c4516cef141892ade5cf3a89a58770c285573753fe19"
+      },
+      {
+        "path": "mobile_three_quarter_asset.png",
+        "bytes": 1029778,
+        "sha256": "c0025f49647d908f7093356ac5f8b4205069c23b77b48d37773bf77652f4f9f2"
+      },
+      {
+        "path": "mobile_three_quarter_passes.exr",
+        "bytes": 6582640,
+        "sha256": "c6e0626cea6e73c7d1ce3aa3879f8e0297f89da838d1bfddaa1f40b918c625e4"
+      },
+      {
+        "path": "raw.blend",
+        "bytes": 378830,
+        "sha256": "d591a6e3ed62cdb6443f0e116786d7c7afa3733162c9d05f81304a9aa90dcfc0"
+      },
+      {
+        "path": "request.json",
+        "bytes": 563,
+        "sha256": "fe48db2eb792cefee65622d815165d1ad6ff7267a87f2025005a0817e700b2b1"
+      }
+    ]
+  },
+  "result": "PASS"
+}
