@@ -1,16 +1,16 @@
 {
-  "version": "0.3.0",
-  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T110917Z\\Asset Forge Studio.exe",
-  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-10-21-982Z",
+  "version": "0.3.1",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T112920Z\\Asset Forge Studio.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z",
   "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
   "checks": [
     {
       "name": "native_window_and_packaged_backend",
       "passed": true,
       "page_url": "http://tauri.localhost/",
-      "native_pid": 81580,
-      "backend_pid": 75228,
-      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-10-21-982Z\\Library",
+      "native_pid": 79940,
+      "backend_pid": 85644,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z\\Library",
       "unauthorized_status": 401
     },
     {
@@ -21,8 +21,8 @@
     {
       "name": "real_glb_webview_and_library",
       "passed": true,
-      "asset_id": "054b32586236433484db540e67066166",
-      "artifact_id": "07de53aa55af4931b04aa25846238be1",
+      "asset_id": "483bc41a2fa74442bddbefcd45a2e1fb",
+      "artifact_id": "bf218fd4a5b64f8c976d9a13406f73fa",
       "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
       "triangles": 344475,
       "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
@@ -30,7 +30,7 @@
     {
       "name": "native_output_routing_and_immutable_manifest_v2",
       "passed": true,
-      "manifest_id": "5e426742d70d4ee3a3015b261733527c",
+      "manifest_id": "ad9c588ce57f495c8c529fd02b0042e3",
       "unexpected_generation_jobs": 0
     },
     {
@@ -41,7 +41,7 @@
     {
       "name": "native_batch_manifest_and_missing_specs_guard",
       "passed": true,
-      "batch_id": "ebbc29829a894725b2c2f1aeab28b673",
+      "batch_id": "e0b0791382174c46ad4a4e3b4e424bcb",
       "manifest_count": 14
     },
     {

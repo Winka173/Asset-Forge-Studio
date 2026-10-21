@@ -24,7 +24,7 @@ npm run desktop:clean
 
 Build prerequisites are Node, the backend `.venv`, MSVC C++/Windows SDK and Rust. This checkout uses an isolated Rust installation in `.local/desktop-tools`; production users do not need it. `desktop:build` runs TypeScript/production frontend, pytest, caches or rebuilds the PyInstaller sidecar, builds native EXE/NSIS, launches the candidate and automates its real WebView2 via CDP. Only successful build-and-smoke candidates replace `dist/windows/latest`; previous known-good files are retained in releases. Reports include the source commit and dirty worktree state because validation happens before committing changes.
 
-Every completed feature/fix requires this Windows build and native launch loop, followed by commit/push main. A passing browser test is insufficient. GPU inference results, native shell smoke and human artistic approval are reported independently.
+Every completed feature/fix requires this Windows build and native launch loop, followed by commit/push the authorized feature branch. A passing browser test is insufficient. GPU inference results, native shell smoke and human artistic approval are reported independently.
 
 Troubleshooting:
 

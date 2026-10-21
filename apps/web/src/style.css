@@ -3987,3 +3987,5 @@ footer {
     font-size: 11px;
   }
 }
+
+.viewer-loading {position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:2;padding:9px 14px;border-radius:8px;background:rgba(16,20,22,.9);color:#d9e4d1;font-size:13px;pointer-events:none;}

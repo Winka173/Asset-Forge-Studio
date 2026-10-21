@@ -28,7 +28,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.3.0", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.3.1", lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
 ALLOWED_ORIGINS = {"http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:5173", "http://localhost:5173"}
 local_port = os.environ.get('AFS_PORT', '8765')
@@ -273,12 +273,15 @@ def retry_job(identifier: str):
 
 @app.get('/api/jobs/{identifier}/files')
 def job_files(identifier: str):
-    try: jobs.get(identifier)
+    try: job=jobs.get(identifier)
     except KeyError: raise HTTPException(404, 'Unknown job')
     folder = store.DATA / 'jobs' / identifier
+    paths=folder.rglob('*')
+    if job['payload']['kind']=='unity_import':
+        paths=[p for p in folder.iterdir() if p.is_file()]+[p for relative in ['output','editor_project/Assets/AFS','editor_project/Packages/com.assetforge.editor'] for p in (folder/relative).rglob('*') if p.is_file()]
     return [{'name': p.relative_to(folder).as_posix(), 'bytes': p.stat().st_size,
              'url': f'/api/jobs/{identifier}/files/{p.relative_to(folder).as_posix()}'}
-            for p in folder.rglob('*') if p.is_file()]
+            for p in paths if p.is_file()]
 
 
 @app.get('/api/jobs/{identifier}/files/{name:path}')

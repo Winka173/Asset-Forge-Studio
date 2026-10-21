@@ -4,6 +4,7 @@ import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
 import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
+import { UnityImportPanel } from "./unity-panel";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Compare" | "Settings";
@@ -901,7 +902,7 @@ export function Studio() {
               </small>
             </div>
           )}
-          <span className="studio-version">ASSET FORGE / 0.2</span>
+          <span className="studio-version">ASSET FORGE / LOCAL</span>
         </div>
       </aside>
       <div className="studio-body">
@@ -1634,6 +1635,7 @@ export function Studio() {
                             Export
                           </button>
                         </div>
+                        {candidate&&selectedAsset&&<UnityImportPanel assetId={selectedAsset.id} artifactId={candidate.id} stage={String(candidate.metadata.stage||'')} jobs={data.jobs} onRefresh={reload}/>}
                         {versions.length > 1 && (
                           <CandidateGallery
                             versions={versions}
@@ -1725,8 +1727,7 @@ export function Studio() {
                         {candidate && (
                           <p className="result-disclaimer">
                             Visual review và license còn độc lập. Chưa có bằng
-                            chứng tương đương Meshy 7.1; Unity import chưa được
-                            kiểm thử.
+                            chứng tương đương Meshy 7.1. {data.jobs.some(j=>j.payload.kind==='unity_import'&&j.payload.artifact_id===candidate.id&&j.status==='REVIEW_REQUIRED')?'Unity import đã qua kiểm tra Editor; hiệu năng và mỹ thuật vẫn cần duyệt.':'Unity import của phiên bản này chưa được kiểm thử.'}
                           </p>
                         )}
                       </>

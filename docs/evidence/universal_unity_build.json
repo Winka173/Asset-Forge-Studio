@@ -1,0 +1,58 @@
+﻿{
+    "version":  "0.3.1",
+    "timestamp_utc":  "20261021T112920Z",
+    "git_commit":  "71b5500ff3f44abe8b6981b101bcdc5e6dcd59c3",
+    "git_branch":  "feature/universal-expansion-v2-reviewed",
+    "git_dirty":  true,
+    "changed_files":  [
+                          " M apps/api/capabilities.py",
+                          " M apps/api/jobs.py",
+                          " M apps/api/main.py",
+                          " M apps/api/universal.py",
+                          " M apps/web/src/studio.tsx",
+                          " M apps/web/src/style.css",
+                          " M apps/web/src/viewer.tsx",
+                          " M desktop/build_backend.py",
+                          " M docs/evidence/desktop_build.json",
+                          " M docs/evidence/desktop_smoke.json",
+                          " M package-lock.json",
+                          " M package.json",
+                          " M src-tauri/Cargo.lock",
+                          " M src-tauri/Cargo.toml",
+                          " M src-tauri/tauri.conf.json",
+                          " M tests/test_universal.py",
+                          "?? apps/web/src/unity-panel.tsx",
+                          "?? desktop/verify-unity.mjs",
+                          "?? docs/evidence/universal_unity_back.png",
+                          "?? docs/evidence/universal_unity_desktop.png",
+                          "?? docs/evidence/universal_unity_native.json",
+                          "?? docs/evidence/universal_unity_three_quarter.png",
+                          "?? engines/unity_editor.py",
+                          "?? integrations/"
+                      ],
+    "changed_features":  [
+                             "Tauri Windows shell and bundled API",
+                             "Hybrid shared scheduler and Batch Studio",
+                             "Immutable quality configuration and local SDXL concept approval"
+                         ],
+    "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
+    "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T112920Z",
+    "tests":  [
+                  "Frontend TypeScript and production build PASS",
+                  "Actual backend pytest suite PASS",
+                  "New Windows executable launch, scoped native IPC, API auth, real GLB viewer, persistence/relaunch, clean shutdown PASS"
+              ],
+    "known_issues":  [
+                         "Unsigned local build; clean-machine installation not yet verified",
+                         "Editor/browser tests do not establish mobile performance or Meshy visual parity"
+                     ],
+    "artifact_sha256":  {
+                            "Asset Forge Studio.exe":  "73d70af556508fd33755ca7243def66e1bb7f2470c1a56274a3ecea8253b0eb3",
+                            "afs-backend.exe":  "e7450e95a0708d9c4e4a3dac01f0bdf288bcb0f867633eb547cc8adf48066025",
+                            "Asset Forge Studio_0.3.1_x64-setup.exe":  "62596008866b67b91d5049e96b1126bc3c1f19ecd638ad82ec74ddf4c7fd5abd"
+                        },
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z\\smoke-report.json",
+    "executable":  "Asset Forge Studio.exe",
+    "installer":  "Asset Forge Studio_0.3.1_x64-setup.exe"
+}

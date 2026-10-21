@@ -115,7 +115,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    return 'cpu' if payload['kind']=='blender' and not payload.get('use_gpu',False) else 'gpu'
+    return 'cpu' if payload['kind'] in ['blender','unity_import'] and not payload.get('use_gpu',False) else 'gpu'
 
 
 def dependency_readiness(job):
@@ -272,6 +272,9 @@ class Worker:
             if payload['kind'] == 'inference':
                 self.inference(job, artifact, source, folder)
                 return
+            if payload['kind'] == 'unity_import':
+                self.unity_import(job,artifact,folder)
+                return
             from scripts.audit import audit
             blender = audit()['blender_path']
             if not blender: raise ValueError('Blender executable not found; set AFS_BLENDER')
@@ -321,6 +324,42 @@ class Worker:
                 with log.open('rb') as stream:stream.seek(max(0,log.stat().st_size-12000));tail=stream.read().decode('utf-8',errors='replace').lower()
                 if 'out of memory' in tail or 'memory guard' in tail:message='OOM/BLOCKED: '+message+'; settings preserved, no automatic downgrade'
             if current not in TERMINAL: transition(identifier, 'BLOCKED' if message.startswith('OOM/') else 'FAILED', message)
+
+    def unity_import(self,job,artifact,folder):
+        from engines import unity_editor
+        from engines.plugin_sdk import Plugin,Operation
+        plugin=Plugin('unity_editor',{Operation.prepare:unity_editor.prepare,Operation.validate:unity_editor.validate})
+        payload=job['payload'];identifier=job['id'];process=None;samples=[];started=time.monotonic()
+        commands=plugin.invoke(Operation.prepare,payload,artifact,folder)
+        transition(identifier,'POSTPROCESSING')
+        try:
+            with (folder/'worker.log').open('w',encoding='utf-8') as log:
+                for command,stage in commands:
+                    log.write('STAGE '+stage+'\n');log.flush()
+                    process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
+                    (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='unity_import',stage=stage)))
+                    while process.poll() is None:
+                        if get(identifier)['status']=='CANCELLED' or self.stop.is_set():
+                            kill_tree(process)
+                            if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Desktop stopped; native import checkpoint retained, retry uses a new immutable project')
+                            return
+                        if payload.get('use_gpu'):
+                            gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+                            samples.append(dict(seconds=time.monotonic()-started,all_gpu_memory_mib_power_w_utilization_percent=gpu.stdout.strip()))
+                        self.stop.wait(.5)
+                    if process.returncode:raise RuntimeError(f'Unity stage {stage} exited {process.returncode}; inspect unity.log/unity_reopen.log')
+            transition(identifier,'VALIDATING')
+            report=plugin.invoke(Operation.validate,payload,folder)
+            (folder/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+            metadata=dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,engine='unity',version=unity_editor.VERSION,
+                stage='engine_imported',license=artifact['metadata'].get('license','UNKNOWN'),commercial='NOT_CLEARED',human_quality_approval='NOT_GIVEN')
+            for name,role in [('AFS_Asset.unitypackage','engine_package'),('AFS_Editor_Importer.zip','editor_package'),('unity_report.json','qa_report'),('unity_reopen_report.json','qa_report')]:
+                store.add_artifact(folder/'output'/name,role,name,metadata)
+            for path in (folder/'output').glob('*.png'):store.add_artifact(path,'preview',path.name,metadata)
+            transition(identifier,'REVIEW_REQUIRED')
+        finally:
+            if process and process.poll() is None:kill_tree(process)
+            (folder/'gpu_samples.json').write_text(json.dumps(samples,indent=2),encoding='utf-8')
 
     def concept(self, job, folder):
         from engines.concept_adapter import CONCEPT_ADAPTER

@@ -85,3 +85,18 @@ def test_persistent_dependency_admission_does_not_change_config(client):
     state,reason=jobs.dependency_readiness(child)
     assert state=='blocked' and parent['id'] in reason
     assert jobs.get(child['id'])['payload']==payload
+
+
+def test_native_unity_requires_real_processed_inputs_and_scoped_rights(client):
+    asset=client.post('/api/assets',json=dict(project_id='runavelle',name='Unprocessed input')).json()
+    mesh=trimesh.creation.box().export(file_type='glb')
+    ref=client.post('/api/import/candidate',params=dict(asset_id=asset['id']),files=dict(file=('qa.glb',mesh))).json()
+    url=f'/api/platform/assets/{asset["id"]}/unity-import';body=dict(artifact_id=ref['id'],request_id='native-negative-test',render_gpu=True)
+    result=client.post(url,json=body)
+    assert result.status_code==409 and 'processed LOD0' in result.json()['detail']
+    assert client.post(url,json=body|dict(commercial=True)).status_code==409
+    assert client.post(url,json=body|dict(profile='unverified-URP')).status_code==422
+    assert jobs.listing()==[]
+    assert jobs.resource_class(dict(kind='unity_import',use_gpu=True))=='gpu'
+    assert jobs.resource_class(dict(kind='unity_import',use_gpu=False))=='cpu'
+    assert jobs.resource_class(dict(kind='blender',use_gpu=True))=='gpu'

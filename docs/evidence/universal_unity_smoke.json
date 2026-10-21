@@ -1,0 +1,58 @@
+{
+  "version": "0.3.1",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261021T112920Z\\Asset Forge Studio.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z",
+  "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
+  "checks": [
+    {
+      "name": "native_window_and_packaged_backend",
+      "passed": true,
+      "page_url": "http://tauri.localhost/",
+      "native_pid": 79940,
+      "backend_pid": 85644,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-21T11-30-23-488Z\\Library",
+      "unauthorized_status": 401
+    },
+    {
+      "name": "single_instance_backend",
+      "passed": true,
+      "duplicate_exit_code": 0
+    },
+    {
+      "name": "real_glb_webview_and_library",
+      "passed": true,
+      "asset_id": "483bc41a2fa74442bddbefcd45a2e1fb",
+      "artifact_id": "bf218fd4a5b64f8c976d9a13406f73fa",
+      "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
+      "triangles": 344475,
+      "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
+    },
+    {
+      "name": "native_output_routing_and_immutable_manifest_v2",
+      "passed": true,
+      "manifest_id": "ad9c588ce57f495c8c529fd02b0042e3",
+      "unexpected_generation_jobs": 0
+    },
+    {
+      "name": "native_runtime_settings_panel",
+      "passed": true,
+      "native_dialog_interaction": "MANUAL_NOT_AUTOMATED"
+    },
+    {
+      "name": "native_batch_manifest_and_missing_specs_guard",
+      "passed": true,
+      "batch_id": "e0b0791382174c46ad4a4e3b4e424bcb",
+      "manifest_count": 14
+    },
+    {
+      "name": "graceful_close_owned_backend_exited",
+      "passed": true
+    },
+    {
+      "name": "native_relaunch_persistence_and_token_rotation",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "status": "PASS"
+}

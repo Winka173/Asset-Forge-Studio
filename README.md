@@ -6,7 +6,7 @@ Quality-first local 3D workbench cho RTX 5070 Ti 16 GB / RAM 64 GB. Kế hoạch
 
 Build: `npm run desktop:build`. Open `dist/windows/latest/Asset Forge Studio.exe` with the adjacent `afs-backend.exe`, or use the generated NSIS installer. The native app automatically starts its packaged local backend. AI environments, weights and Blender remain external; no paid API or cloud inference is used. See [Windows setup, build and troubleshooting](docs/WINDOWS_DESKTOP.md) and [Batch / Quality Lock](docs/BATCH_PIPELINE.md).
 
-Every completed feature requires tests, a production Windows build, actual EXE launch/smoke, then commit/push main. Browser mode below remains available for debugging. The latest evidence reports distinguish native smoke, real inference and human quality approval.
+Every completed feature requires tests, a production Windows build, actual EXE launch/smoke, then commit/push the authorized feature branch. Browser mode below remains available for debugging. The latest evidence reports distinguish native smoke, real inference and human quality approval.
 
 ## Chạy trên Windows
 

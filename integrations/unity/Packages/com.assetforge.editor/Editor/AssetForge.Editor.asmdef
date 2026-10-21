@@ -1,0 +1,7 @@
+{
+  "name": "AssetForge.Editor",
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": true
+}

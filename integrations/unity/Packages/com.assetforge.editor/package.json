@@ -1,0 +1,7 @@
+{
+  "name": "com.assetforge.editor",
+  "version": "0.1.0",
+  "displayName": "Asset Forge Studio Editor Importer",
+  "description": "Isolated static PBR asset import, native prefab/scene packaging and validation",
+  "unity": "6000.0"
+}

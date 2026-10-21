@@ -8,6 +8,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
   const runtime = useRef<{camera: T.PerspectiveCamera; controls: OrbitControls; scenes: T.Scene[]} | null>(null);
   const [loaded, setLoaded] = useState(0);
   const [textures, setTextures] = useState(0);
+  const [loadFailed,setLoadFailed]=useState(false);
   useEffect(() => {
     const div = host.current!;
     let renderer: T.WebGLRenderer;
@@ -27,6 +28,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     const models: T.Object3D[] = [];
     setLoaded(0);
     setTextures(0);
+    setLoadFailed(false);
     scenes.forEach(scene => {
       scene.background = new T.Color('#202733');
       const grid = new T.GridHelper(30, 30, '#46566c', '#2c3849');
@@ -66,7 +68,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
         const aspect = (div.clientWidth / scenes.length) / div.clientHeight;
         const distance = Math.max(size.y, size.x / aspect, size.z / aspect) * 0.65 / Math.tan(T.MathUtils.degToRad(camera.fov / 2));
         controls.target.copy(center); camera.position.copy(center).addScaledVector(dir, Math.max(distance, 0.1)); controls.update();
-      }, undefined, err => { if (!disposed) onError(`GLB viewer: ${String(err).replace(/([?&]afs_token=)[^&\s"']+/g,'$1[redacted]')}`); });
+      }, undefined, err => { if (!disposed) {setLoadFailed(true);onError(`GLB viewer: ${String(err).replace(/([?&]afs_token=)[^&\s"']+/g,'$1[redacted]')}`);} });
     });
     runtime.current = {camera, controls, scenes};
     const observer = new ResizeObserver(() => { renderer.setSize(div.clientWidth, div.clientHeight, false); });
@@ -110,5 +112,5 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
       });
     });
   }, [background, lighting, loaded, single]);
-  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
+  return <div className={`viewer${single ? ' viewer-single' : ''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!loadFailed && loaded < (single ? Number(Boolean(right||left)) : Number(Boolean(left))+Number(Boolean(right))) && <span className="viewer-loading" role="status">Loading model and textures...</span>}{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
 }

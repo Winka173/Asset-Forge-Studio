@@ -1,0 +1,374 @@
+{
+  "status": "PASS_REAL_NATIVE_UNITY_SLICE",
+  "branch": "feature/universal-expansion-v2-reviewed",
+  "scope": "Real packaged native UI and isolated Unity 6000.4.8f1 Built-in import/reopen/GPU/package; no production game changes",
+  "checks": [
+    {
+      "name": "native_ui_import_shared_gpu_lock_idempotency_and_refresh",
+      "passed": true
+    },
+    {
+      "name": "actual_serialized_prefab_scene_lods_materials_collider_and_cold_reopen",
+      "passed": true
+    },
+    {
+      "name": "actual_package_http_range_and_unchanged_source_hash",
+      "passed": true
+    },
+    {
+      "name": "native_relaunch_restores_import_job_and_actual_previews_without_duplicate_work",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "meshy_parity": "NOT_TESTED",
+  "human_quality_approval": "NOT_GIVEN",
+  "version": "0.3.1",
+  "job_id": "fdf4ac71b6014dc2960e6d13bb461c10",
+  "job_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-inference\\2026-10-21T10-34-52-194Z\\Library\\jobs\\fdf4ac71b6014dc2960e6d13bb461c10",
+  "native_report": {
+    "status": "PASS_EDITOR_VALIDATION",
+    "engine": "unity",
+    "version": "6000.4.8f1",
+    "render_pipeline": "Built-in",
+    "reports": [
+      {
+        "unity_version": "6000.4.8f1",
+        "mode": "render",
+        "graphics_device": "NVIDIA GeForce RTX 5070 Ti",
+        "graphics_api": "Direct3D11",
+        "platform": "WindowsEditor",
+        "effective_config_hash": "4323e8b45be7e4e497b2aedb0ac07a26362156ab37dc6aaf2aa7dbfe7fdc6a20",
+        "render_pipeline": "Built-in",
+        "importer_version": "0.1.0",
+        "mobile_device_performance": "NOT_TESTED",
+        "geometry_quality": "NEEDS_HUMAN_REVIEW",
+        "mesh_quality_parity": "NOT_TESTED",
+        "lods": [
+          {
+            "level": 0,
+            "source": "Assets/AFS/Input/LOD0.fbx",
+            "triangles": 988080,
+            "vertices": 704311,
+            "matches_blender_triangles": true,
+            "meshes": [
+              {
+                "name": "geometry_0",
+                "triangles": 988080,
+                "vertices": 704311,
+                "submeshes": 1,
+                "normal_count": 704311,
+                "uv0_count": 704311
+              }
+            ]
+          },
+          {
+            "level": 1,
+            "source": "Assets/AFS/Input/LOD1.fbx",
+            "triangles": 642252,
+            "vertices": 519796,
+            "matches_blender_triangles": true,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD1",
+                "triangles": 642252,
+                "vertices": 519796,
+                "submeshes": 1,
+                "normal_count": 519796,
+                "uv0_count": 519796
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "source": "Assets/AFS/Input/LOD2.fbx",
+            "triangles": 345828,
+            "vertices": 347198,
+            "matches_blender_triangles": true,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD2",
+                "triangles": 345828,
+                "vertices": 347198,
+                "submeshes": 1,
+                "normal_count": 347198,
+                "uv0_count": 347198
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "source": "Assets/AFS/Input/LOD3.fbx",
+            "triangles": 148212,
+            "vertices": 176382,
+            "matches_blender_triangles": true,
+            "meshes": [
+              {
+                "name": "geometry_0_LOD3",
+                "triangles": 148212,
+                "vertices": 176382,
+                "submeshes": 1,
+                "normal_count": 176382,
+                "uv0_count": 176382
+              }
+            ]
+          }
+        ],
+        "automatic_fbx_materials": [
+          {
+            "origin": "automatic FBX importer / LOD0",
+            "name": "Material_0",
+            "shader": "Standard",
+            "textures": [
+              {
+                "property": "_MainTex",
+                "asset_path": "Assets/AFS/Input/textures/texture_000.png",
+                "width": 2048,
+                "height": 2048,
+                "srgb": true
+              }
+            ],
+            "keywords": []
+          },
+          {
+            "origin": "automatic FBX importer / LOD1",
+            "name": "Material_0",
+            "shader": "Standard",
+            "textures": [
+              {
+                "property": "_MainTex",
+                "asset_path": "Assets/AFS/Input/textures/texture_000.png",
+                "width": 2048,
+                "height": 2048,
+                "srgb": true
+              }
+            ],
+            "keywords": []
+          },
+          {
+            "origin": "automatic FBX importer / LOD2",
+            "name": "Material_0",
+            "shader": "Standard",
+            "textures": [
+              {
+                "property": "_MainTex",
+                "asset_path": "Assets/AFS/Input/textures/texture_000.png",
+                "width": 2048,
+                "height": 2048,
+                "srgb": true
+              }
+            ],
+            "keywords": []
+          },
+          {
+            "origin": "automatic FBX importer / LOD3",
+            "name": "Material_0",
+            "shader": "Standard",
+            "textures": [
+              {
+                "property": "_MainTex",
+                "asset_path": "Assets/AFS/Input/textures/texture_000.png",
+                "width": 2048,
+                "height": 2048,
+                "srgb": true
+              }
+            ],
+            "keywords": []
+          }
+        ],
+        "assigned_material": {
+          "origin": "explicit glTF MR -> Unity Standard packing; not generated PBR",
+          "name": "AFS_Standard",
+          "shader": "Standard",
+          "textures": [
+            {
+              "property": "_MainTex",
+              "asset_path": "Assets/AFS/Input/textures/texture_000.png",
+              "width": 4096,
+              "height": 4096,
+              "srgb": true
+            },
+            {
+              "property": "_MetallicGlossMap",
+              "asset_path": "Assets/AFS/Input/textures/Unity_MetallicSmoothness.png",
+              "width": 4096,
+              "height": 4096,
+              "srgb": false
+            }
+          ],
+          "keywords": [
+            "_METALLICGLOSSMAP"
+          ]
+        },
+        "material_mapping": {
+          "base_color": "source texture_000.png, sRGB",
+          "metallic": "source texture_001 B -> Unity R, linear",
+          "smoothness": "1 - source texture_001 G -> Unity A, linear",
+          "normal": "SOURCE_ABSENT_NOT_GENERATED",
+          "ao": "SOURCE_ABSENT_NOT_GENERATED",
+          "emission": "DISABLED_NO_SOURCE_EMISSION_MAP"
+        },
+        "bounds_m": {
+          "center": [
+            -1.955777e-08,
+            5,
+            4.109461e-08
+          ],
+          "size": [
+            4.581321,
+            10,
+            4.375493
+          ],
+          "expected_height": 10
+        },
+        "lod_group": {
+          "levels": 4,
+          "screen_relative_transitions": [
+            0.6,
+            0.3,
+            0.12,
+            0.03
+          ],
+          "device_performance": "NOT_TESTED"
+        },
+        "collision": "BoxCollider from actual LOD0 bounds; not a concave mesh collider",
+        "prefab_path": "Assets/AFS/Output/AFS_Validated.prefab",
+        "scene_path": "Assets/AFS/Output/AFS_Validation.unity",
+        "render_status": "ACTUAL_UNITY_CAMERA_RENDER",
+        "renders": [
+          {
+            "file": "unity_gameplay_1280x720.png",
+            "width": 1280,
+            "height": 720,
+            "forced_lod": 2,
+            "triangles": 345828,
+            "camera_position_m": [
+              14.43376,
+              19.43376,
+              -14.43376
+            ],
+            "target_m": [
+              -1.955777e-08,
+              5,
+              4.109461e-08
+            ],
+            "orthographic_vertical_half_size_m": 6.75
+          },
+          {
+            "file": "unity_three_quarter_2560x1440.png",
+            "width": 2560,
+            "height": 1440,
+            "forced_lod": 0,
+            "triangles": 988080,
+            "camera_position_m": [
+              16.66667,
+              13.33333,
+              -16.66667
+            ],
+            "target_m": [
+              -1.955777e-08,
+              5,
+              4.109461e-08
+            ],
+            "orthographic_vertical_half_size_m": 6.75
+          },
+          {
+            "file": "unity_back_2560x1440.png",
+            "width": 2560,
+            "height": 1440,
+            "forced_lod": 0,
+            "triangles": 988080,
+            "camera_position_m": [
+              -1.955777e-08,
+              8.708511,
+              24.72341
+            ],
+            "target_m": [
+              -1.955777e-08,
+              5,
+              4.109461e-08
+            ],
+            "orthographic_vertical_half_size_m": 6.75
+          }
+        ],
+        "render_limitations": "Editor camera render, built-in pipeline; not player build, device FPS, or matched Meshy comparison",
+        "native_package": "AFS_Asset.unitypackage",
+        "failures": [],
+        "warnings": [],
+        "checks_passed": true
+      },
+      {
+        "checks_passed": true,
+        "failures": [],
+        "unity_version": "6000.4.8f1",
+        "effective_config_hash": "4323e8b45be7e4e497b2aedb0ac07a26362156ab37dc6aaf2aa7dbfe7fdc6a20",
+        "scope": "Separate Editor process reopened native serialized prefab/scene/material/LOD/collision"
+      }
+    ],
+    "native_files": [
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Standard.mat",
+        "sha256": "75428e96f384fd7746fc65dcb49e3c5b87594f5611575c84bdd303bd55915f57",
+        "bytes": 2333
+      },
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Standard.mat.meta",
+        "sha256": "86a4e049596ca72b01416361a326daea9b4bad9df039bb04039bbff6d834ba71",
+        "bytes": 188
+      },
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Validated.prefab",
+        "sha256": "f7cf747c4b5044aa3fd71901849fd7e706c5aad80e2b4dbc2537480890323d4e",
+        "bytes": 15435
+      },
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Validated.prefab.meta",
+        "sha256": "cc372ea41c41e5febb38d0b53329fbe01661acad990d7ed256251184e655167c",
+        "bytes": 154
+      },
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Validation.unity",
+        "sha256": "4ba880622761d36e75b950ef1096cafc9ee5737d71b8eea92ded167749144d08",
+        "bytes": 35758
+      },
+      {
+        "path": "jobs/fdf4ac71b6014dc2960e6d13bb461c10/editor_project/Assets/AFS/Output/AFS_Validation.unity.meta",
+        "sha256": "6a4aad4e614e092146d68922a5df3d069f292bebc11d47f02c6f6afffdc3ec2a",
+        "bytes": 155
+      }
+    ],
+    "effective_config_hash": "4323e8b45be7e4e497b2aedb0ac07a26362156ab37dc6aaf2aa7dbfe7fdc6a20",
+    "mesh_quality_parity": "NOT_TESTED",
+    "human_quality_approval": "NOT_GIVEN",
+    "game_ready": false
+  },
+  "resources": {
+    "resource": "gpu",
+    "started_at": "2026-10-21T11:32:28.532168+00:00",
+    "finished_at": "2026-10-21T11:32:56.164585+00:00",
+    "duration_seconds": 27.625,
+    "ram_peak_used_bytes": 32556199936,
+    "worker_tree_peak_rss_bytes": 2776068096
+  },
+  "package": {
+    "bytes": 227184764,
+    "sha256": "9172a4b898df1ebb617e9b2902ac96906f6b17bc03e0354b6f2db1d0ef31abed",
+    "verified_native_paths": [
+      "Assets/AFS/Output/AFS_Validated.prefab",
+      "Assets/AFS/Output",
+      "Assets/AFS/Input/LOD2.fbx",
+      "Assets/AFS/Input/LOD1.fbx",
+      "Assets/AFS/Input/textures",
+      "Assets/AFS/Input/textures/texture_001.png",
+      "Assets/AFS/Input/LOD3.fbx",
+      "Assets/AFS/Input/textures/texture_000.png",
+      "Assets/AFS/Output/AFS_Validation.unity",
+      "Assets/AFS/Input",
+      "Assets/AFS/Output/AFS_Standard.mat",
+      "Assets/AFS/Input/textures/Unity_MetallicSmoothness.png",
+      "Assets/AFS",
+      "Assets/AFS/Input/LOD0.fbx"
+    ]
+  },
+  "sampled_device_peak_mib": 5072.0
+}

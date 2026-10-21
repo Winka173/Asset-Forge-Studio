@@ -2,6 +2,8 @@
 import json
 import platform
 import uuid
+from typing import Literal
+from pydantic import BaseModel,Field
 from fastapi import APIRouter, HTTPException
 from . import store,studio,jobs
 from .asset_contract import AssetManifest,ArtifactFile,Provenance
@@ -19,6 +21,43 @@ def capabilities():return registry()
 def preview(body:RouteRequest):return route(body)
 
 
+@router.get('/integrations')
+def integrations():
+    from engines.unity_editor import probe
+    return dict(unity=probe(),unreal=dict(installed=False,status='unavailable',reason='No configured/tested Unreal Editor; no native Unreal assets are generated'),
+                mcp=dict(required_for_runtime=False,connection_status='Agent-side MCP connection is separate; AFS does not assume it is connected'))
+
+
+class UnityImport(BaseModel):
+    artifact_id: str
+    request_id: str=Field(min_length=8,max_length=100)
+    render_gpu: bool=True
+    profile: Literal['6000.4.8f1:Built-in']='6000.4.8f1:Built-in'
+    commercial: bool=False
+
+
+@router.post('/assets/{identifier}/unity-import',status_code=201)
+def unity_import(identifier:str,body:UnityImport):
+    from engines.unity_editor import effective_config
+    from engines.quality import fingerprint
+    value=studio.asset(identifier);record=studio.scoped_artifact(body.artifact_id,value['project_id'],identifier)
+    project=studio.project(value['project_id']);profile=project.get('engine_profiles',{}).get('unity',{})
+    if profile and (profile.get('version','6000.4.8f1')!='6000.4.8f1' or profile.get('render_pipeline','Built-in')!='Built-in'):raise HTTPException(409,'Project target is not the tested Unity 6000.4.8f1 / Built-in profile')
+    if body.commercial:raise HTTPException(409,'Commercial import preset blocked pending full source/model/reference license clearance')
+    try:config=effective_config(record,body.render_gpu)
+    except (ValueError,KeyError,OSError) as exc:raise HTTPException(409,str(exc))
+    request_hash=fingerprint(dict(asset_id=identifier,**body.model_dump()))
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE');previous=studio.cached(db,body.request_id,request_hash)
+        if previous:return previous
+        payload=dict(kind='unity_import',engine='unity_editor',project_id=value['project_id'],asset_id=identifier,artifact_id=record['id'],use_gpu=body.render_gpu,
+            effective_config=config,effective_config_hash=fingerprint(config),depends_on=[record['metadata']['job_id']],timeout_seconds=900,
+            purpose='technical_engine_import_evaluation',target_game_project=None)
+        queued=jobs.enqueue(payload,db=db)
+        db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_hash,json.dumps(queued)))
+    return queued
+
+
 def file_ref(record,verify=False):
     path=store.safe_path(record['relative_path'])
     if not path.is_file():raise HTTPException(409,'Manifest input/output file is missing: '+record['id'])
@@ -27,6 +66,7 @@ def file_ref(record,verify=False):
 
 
 def manifest(identifier,verify=False):
+    from .main import app
     value=studio.asset(identifier);project=studio.project(value['project_id'])
     with store.connect() as db:
         records=[store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE project_id=? AND (asset_id=? OR role='golden') AND role!='manifest' ORDER BY created_at",(value['project_id'],identifier))]
@@ -45,7 +85,7 @@ def manifest(identifier,verify=False):
         deps=[d for d in payload.get('depends_on',[]) if d in job_ids]
         if payload.get('parent_job') in job_ids:deps.append(payload['parent_job'])
         ref=payload.get('artifact_id');input_hashes={ref:store.get_artifact(ref)['sha256']} if ref else {}
-        stages.append(Stage(id=job['id'],plugin=payload.get('engine') or ('blender_headless' if kind=='blender' else kind),
+        stages.append(Stage(id=job['id'],plugin=payload.get('engine') or ('blender_headless' if kind=='blender' else 'unity_editor' if kind=='unity_import' else kind),
             operation=Operation.import_test if kind=='unity_import' else Operation.postprocess if kind=='blender' else Operation.generate,
             resource=resource_class(payload),depends_on=list(dict.fromkeys(deps)),input_artifacts=[ref] if ref else [],input_hashes=input_hashes,
             expected_outputs=['png'] if kind=='concept' else ['unity_prefab','unity_scene','import_report'] if kind=='unity_import' else ['glb','fbx','lod','blend','previews'] if kind=='blender' else ['glb'],
@@ -68,7 +108,7 @@ def manifest(identifier,verify=False):
         golden_reference_ids=[r['id'] for r in records if r['role']=='golden'],effective_configs=configs,effective_config_hashes=hashes,graph=StageGraph(stages=stages),
         source_master=master,candidates=candidates,derivatives=derives,expected_outputs=['glb']+(['fbx','lod','blend','previews'] if any(j['payload']['kind']=='blender' for j in current) else []),
         actual_outputs=[files[r['id']] for r in records if r.get('asset_id')==identifier and r['role'] not in ['reference','concept']],licenses=provenance,
-        toolchain_versions=dict(python=platform.python_version(),desktop='0.3.0',manifest_sdk='2.0'),import_tests=imports,
+        toolchain_versions=dict(python=platform.python_version(),desktop=app.version,manifest_sdk='2.0'),import_tests=imports,
         previews=[files[r['id']] for r in records if r['role']=='preview'],approvals=value.get('approvals',[]),
         engine_metadata=dict(legacy_format_preserved=True,master_selection_is_not_production_artistic_approval=True,mesh_quality_parity='NOT_TESTED'))
 

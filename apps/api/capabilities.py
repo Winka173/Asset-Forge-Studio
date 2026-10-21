@@ -56,6 +56,12 @@ def registry():
         installed=bool(blender and Path(blender).is_file()),status='experimental' if blender else 'unavailable',dependency_health=dict(path=blender),
         license=Provenance(source_code='Blender GPL; asset rights are a separate question',model_weights='not used',commercial='review_required'),resource='cpu',
         tested_platforms=['Windows 11 / Blender 4.5.14'],constraints=['No fabricated missing PBR maps; preserve source master'],evidence=['docs/evidence/studio_exports.json']))
+    from engines.unity_editor import probe as unity_probe
+    unity=unity_probe()
+    values.append(Capability(id='unity_editor',label='Unity native import',asset_types=[AssetType.static_3d],inputs=['validated_fbx_lod4','basecolor','metallic_roughness'],outputs=unity['outputs'],
+        installed=unity['installed'],status='experimental' if unity['installed'] else 'unavailable',dependency_health=unity,
+        license=Provenance(source_code='AFS Editor importer',model_weights='not used',commercial='review_required',restrictions=['Unity Editor licensing and input rights are separate']),
+        resource='gpu',target_engine_support=['unity:6000.4.8f1:Built-in'],constraints=unity['constraints']))
     return dict(schema_version='1.0',providers=[v.model_dump(mode='json') for v in values],asset_types=[dict(id=t.value,label=LABELS[t],status='experimental' if t==AssetType.static_3d else 'planned',
         reason='Existing real Single/Batch pipeline; output/license gates still apply' if t==AssetType.static_3d else 'No complete validated generator/export/native-import slice yet') for t in AssetType],
         scheduler=dict(heavy_gpu_jobs=1,shared_by=['Single','Batch','GPU Blender','native GPU validation']),
@@ -82,7 +88,8 @@ def route(body:RouteRequest):
     caps=registry();gaps=[];warnings=[];stages=[]
     if body.asset_type!=AssetType.static_3d:
         gaps.append(f'{LABELS[body.asset_type]} has no validated output route yet; it will not be replaced by a preview or a mesh')
-    supported={'glb','fbx','geometry','basecolor','metallic_roughness','uv','lod','blend','previews'}
+    native=bool(set(body.desired_outputs)&{'unity_prefab','unity_scene','unitypackage'})
+    supported={'glb','fbx','geometry','basecolor','metallic_roughness','uv','lod','blend','previews','unity_prefab','unity_scene','unitypackage'}
     gaps.extend(f'Output contract not implemented: {o}' for o in body.desired_outputs if o not in supported)
     if any(r['role'] not in ['concept','reference'] for r in refs):gaps.append('Image-conditioned route requires image references')
     source=refs[0] if refs else None
@@ -95,7 +102,9 @@ def route(body:RouteRequest):
     if not provider or not provider['installed']:gaps.append('No compatible installed local 3D adapter; no fallback will run')
     if chosen=='triposg' and (uses_concept or not source or not source['metadata'].get('has_transparency')):gaps.append('TripoSG requires a reviewed alpha image; no implicit segmentation')
     if chosen=='triposg' and set(body.desired_outputs)&{'basecolor','metallic_roughness','uv'}:gaps.append('Shape-only engine cannot satisfy requested PBR/UV contract')
-    needs_blender=body.auto_blender or bool(set(body.desired_outputs)&{'fbx','lod','blend','previews'})
+    if chosen=='triposg' and native:gaps.append('This Unity PBR profile requires real basecolor/MR maps; shape-only native import profile is not validated')
+    if native and not next(p for p in caps['providers'] if p['id']=='unity_editor')['installed']:gaps.append('Pinned native Unity Editor/importer is missing')
+    needs_blender=native or body.auto_blender or bool(set(body.desired_outputs)&{'fbx','lod','blend','previews'})
     if needs_blender and not next(p for p in caps['providers'] if p['id']=='blender_headless')['installed']:gaps.append('Blender required by requested outputs is missing')
     if body.commercial:gaps.append('Commercial route blocked until source/model/input rights are explicitly reviewed; installed tools do not clear asset rights')
     if body.policy=='Auto Batch':gaps.append('Auto Batch requires an approved family policy bound to specific hashes; no blanket approval is configured')
@@ -115,7 +124,11 @@ def route(body:RouteRequest):
         add('geometry',chosen or 'missing',Operation.generate,'gpu',['glb'],previous,skip=None)
         previous=['geometry']
         if needs_blender:add('postprocess','blender_headless',Operation.postprocess,'cpu',['glb','fbx','lod','blend','previews'],previous);previous=['postprocess']
-        add('qa','mesh_qa',Operation.validate,'cpu',['qa_report'],previous);add('master_review','human',Operation.review,'human',['master_selection'],['qa'],True)
+        add('qa','mesh_qa',Operation.validate,'cpu',['qa_report'],previous);previous=['qa']
+        if native:
+            add('native_import','unity_editor',Operation.import_test,'gpu',['unity_prefab','unity_scene','unitypackage','import_report'],previous)
+            previous=['native_import'];warnings.append('Unity 6000.4.8f1 / Built-in, single-material 4K PBR profile; additional material/pipeline translations are blocked')
+        add('master_review','human',Operation.review,'human',['master_selection'],previous,True)
     graph=StageGraph(stages=stages)
     return dict(schema_version='1.0',status='blocked' if gaps else 'ready_for_review',requested=body.model_dump(mode='json'),selected_engine=chosen,
         graph=graph.model_dump(mode='json'),capability_gaps=gaps,warnings=warnings,dry_run=True,enqueued_jobs=0,

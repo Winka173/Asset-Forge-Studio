@@ -40,7 +40,7 @@ Official MCP source checks are recorded with HEAD, license and last-push timesta
 - [x] Foundation Windows 0.3.0 build/native smoke PASS, 27 backend tests; real native dry-run created no jobs and saved/downloaded a manifest with the imported GLB hash. See `evidence/universal_foundation_build.json` and `universal_foundation_smoke.json`.
 - [ ] Executable stage-by-stage Manual policies, hash-bound approved-family Auto Batch, configurable fan-out/retry/storage limits. These modes are not represented as working end-user features yet.
 - [ ] Local LLM planning adapter after a real installed model is available; structured fallback is already working.
-- [ ] Integrated Unity Editor import job, native package, saved/reopened prefab and scene, GPU proof and UI report.
+- [x] Integrated Unity Editor import job, native package, saved/reopened prefab and scene, GPU proof and UI report. Real packaged native UI submission, shared GPU lock, idempotent request/refresh, cold Editor reopen and desktop relaunch passed; see `evidence/universal_unity_native.json`. Tested profile: Unity 6000.4.8f1 / Built-in, four FBX LODs, one material and up to 4K basecolor/MR. Unsupported/missing material inputs and commercial presets are explicitly blocked.
 - [ ] Unreal native import test — blocked on missing configured Editor, not replaced with fake .uasset/.umap files.
 - [ ] World Plan and native Unity map vertical slice; then Unreal when available.
 - [ ] Rig/deformation/retarget slice and native clips.
