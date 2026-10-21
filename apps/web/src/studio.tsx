@@ -44,6 +44,7 @@ type Asset = {
   versions: Artifact[];
   exports: { files?: JobFile[]; [key: string]: unknown }[];
   thumbnail_url?: string;
+  thumbnail_kind?: "model_render" | "reference" | null;
   updated_at: string;
 };
 type Job = {
@@ -332,14 +333,36 @@ export function Studio() {
       } catch {
         /* A damaged browser cache must not hide the persisted server draft. */
       }
+      const routeAssetId =
+        route() === "Create" ? location.hash.split("/")[1] : undefined;
+      const routeAsset = result.assets.find(
+        (asset) => asset.id === routeAssetId,
+      );
+      if (routeAsset) {
+        const assetDraft = {
+          ...initialDraft,
+          height: result.project?.target_height_m ?? null,
+          ...routeAsset.settings,
+          assetId: routeAsset.id,
+          name: routeAsset.name,
+          prompt: routeAsset.prompt || "",
+          source: routeAsset.reference_ids[0] || "",
+        };
+        restored =
+          restored.assetId === routeAsset.id
+            ? { ...assetDraft, ...restored }
+            : assetDraft;
+      } else if (routeAssetId) {
+        history.replaceState(null, "", "#create");
+      }
       lastSavedDraft.current = {
         projectId: id,
         serialized: JSON.stringify(savedOnServer),
       };
       setDraft(restored);
       setLoadedProject(id);
-      setAssetId("");
-      setVersionId("");
+      setAssetId(routeAsset?.id || "");
+      setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
   useEffect(() => {
@@ -489,6 +512,7 @@ export function Studio() {
     });
     change({ assetId: created.id });
     setAssetId(created.id);
+    location.hash = `create/${created.id}`;
     return created;
   }
   async function generate() {
@@ -590,7 +614,8 @@ export function Studio() {
       source: asset.reference_ids[0] || "",
     });
     setPreviewTab("Model");
-    navigate("Create");
+    location.hash = `create/${asset.id}`;
+    setPage("Create");
   }
   async function updateAsset(asset: Asset, fields: unknown) {
     await run(async () => {
@@ -704,7 +729,7 @@ export function Studio() {
             <img
               loading="lazy"
               src={apiUrl(asset.thumbnail_url)}
-              alt={`${asset.name} reference image`}
+              alt={`${asset.name} ${asset.thumbnail_kind === "model_render" ? "model render" : "reference image"}`}
             />
           ) : (
             <div className="asset-placeholder">
@@ -717,7 +742,11 @@ export function Studio() {
             </div>
           )}
           {asset.thumbnail_url && (
-            <span className="reference-label">REFERENCE IMAGE</span>
+            <span className="reference-label">
+              {asset.thumbnail_kind === "model_render"
+                ? "MODEL RENDER"
+                : "REFERENCE IMAGE"}
+            </span>
           )}
           <State value={asset.versions.length ? asset.status : "Draft"} />
         </button>

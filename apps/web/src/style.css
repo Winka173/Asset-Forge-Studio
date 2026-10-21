@@ -3752,6 +3752,9 @@ footer {
 .studio .job-stage > span {
   overflow-wrap: anywhere;
 }
+.studio .create-preview .viewer:after {
+  display: none;
+}
 
 /* Keep production controls readable at common desktop pixel densities. */
 .studio .studio-field {
