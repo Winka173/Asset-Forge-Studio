@@ -1,0 +1,2264 @@
+{
+  "status": "TECHNICALLY_DELIVERED_ART_NOT_REVIEWED",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z",
+  "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+  "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+  "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+  "reference_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+  "scope": "One real high-detail neural route experiment, not an artistic/Meshy acceptance claim",
+  "automation": {
+    "status": "exported",
+    "stage": "Completed",
+    "checkpoints": {
+      "2e1289ba63a141e7b8b69f2aba302b3b": {
+        "stage": "model_visual_check",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:54:38.371433+00:00"
+      },
+      "f8e1db57f13749838fe23c825fad8563": {
+        "stage": "blender",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:53:05.695829+00:00"
+      },
+      "5eff3892f4154fe8a1091ce5d981cb4d": {
+        "stage": "inference",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:48:12.434107+00:00"
+      },
+      "aa0244c68b9842beb5826476844f500a": {
+        "stage": "concept_layout",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:32:50.252570+00:00"
+      },
+      "a26c9ecf305344dabfd9c89d51a93253": {
+        "stage": "concept",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:32:17.388247+00:00"
+      },
+      "588063dd28dc4b3ab4dfba224481a361": {
+        "stage": "concept_layout",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:31:05.041869+00:00"
+      },
+      "741843b10d6f4d7d97da61996b83d94a": {
+        "stage": "concept",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:30:13.002478+00:00"
+      },
+      "8d829ab04018401dad9eb194e0626175": {
+        "stage": "prompt_analysis",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T13:28:42.961198+00:00"
+      }
+    },
+    "engines": [
+      "trellis2_community"
+    ],
+    "enabled": true,
+    "attempt": 0,
+    "engine_policy": "Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score",
+    "human_approved": false,
+    "repair_plan": {
+      "schema_version": 1,
+      "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+      "asset_attempt": 0,
+      "root_cause": "CONCEPT_BACKGROUND_SCENE",
+      "stage": "concept",
+      "engine": "sdxl_local",
+      "action": "repair_concept",
+      "issues": [
+        "background_scene"
+      ],
+      "reason": "Cause-specific concept conditioning; geometry has not started",
+      "at": "2026-10-22T13:31:05.144004+00:00",
+      "budget": {
+        "allowed": true,
+        "reason": null,
+        "used": {
+          "attempts": 0,
+          "stage_attempts": 0,
+          "cause_attempts": 0,
+          "gpu_seconds": 85.68800000000192,
+          "cpu_seconds": 104.125,
+          "disk_bytes": 1716402
+        },
+        "limits": {
+          "max_attempts": 3,
+          "per_stage": 2,
+          "per_cause": 1,
+          "gpu_seconds": 7200.0,
+          "cpu_seconds": 7200.0,
+          "disk_gb": 16.0
+        },
+        "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+      },
+      "predicted_cost": {
+        "seconds": 85.68800000000192,
+        "resource": "gpu",
+        "disk_bytes": 1659970,
+        "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+      },
+      "instructions": [
+        "Photograph the isolated object against a uniform neutral studio sweep."
+      ],
+      "source_hashes": [
+        "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+      ],
+      "quality_preserved": true,
+      "validation": [
+        "Recheck the new image with the current suitability policy",
+        "Do not start 3D until the source is admitted"
+      ],
+      "executed_job_id": "a26c9ecf305344dabfd9c89d51a93253"
+    },
+    "concept_selection": {
+      "artifact_id": "735b47e9077a4f40a56fc0b87c8fce60",
+      "sha256": "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9",
+      "method": "Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback",
+      "measurements": {
+        "width": 1024,
+        "height": 1024,
+        "mode": "RGB",
+        "has_transparency": false,
+        "laplacian_variance_proxy": 327.4324951171875,
+        "approval": "NEEDS_REVIEW",
+        "multi_view_consistency": "NOT_TESTED",
+        "background": "unsegmented"
+      },
+      "artistic_approval": false
+    },
+    "visual_checks": [
+      {
+        "schema_version": 1,
+        "screening_policy": 1,
+        "requested_subject_present": "yes",
+        "observed_subject_en": "castle with multiple towers, brown roofs, and blue-tinted walls",
+        "severe_observed_defects": [],
+        "observations": [
+          "All images show a single, connected castle model from different angles.",
+          "The castle has multiple towers with conical roofs and flags.",
+          "The base includes a stone path and green grass.",
+          "The fourth image shows a different lighting and background, but the subject remains the same castle."
+        ],
+        "limitations": [
+          "No visible asset in the first image, but the subject is present.",
+          "The second image shows a different angle, but the subject is still the same castle.",
+          "The third image shows a different angle, but the subject is still the same castle.",
+          "The fourth image shows a different lighting and background, but the subject is still the same castle."
+        ],
+        "style_observations": [
+          "The style is consistent with the requested subject, but the materials and palette differ from the Art Bible.",
+          "The fourth image shows a different style, but the subject is still the same castle.",
+          "The fourth image shows a different lighting and background, but the subject is still the same castle.",
+          "The fourth image shows a different lighting and background, but the subject is still the same castle."
+        ],
+        "unknown": [
+          "The materials and palette in the images do not match the Art Bible.",
+          "The materials and palette in the images do not match the Art Bible.",
+          "The materials and palette in the images do not match the Art Bible.",
+          "The materials and palette in the images do not match the Art Bible."
+        ],
+        "decision": "continue",
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 92.40600000000268,
+        "execution": "local_cpu_only",
+        "artistic_approval": false,
+        "method": "Inferred severe visible defect screening; technical QA remains authoritative for file validity",
+        "source_artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+        "source_sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+        "renders": [
+          {
+            "view": "three_quarter",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_three_quarter_asset.png",
+            "sha256": "6a02af9b4161adf2951fc1b68d6a13446523af5a8799791fd06df6c767246e10"
+          },
+          {
+            "view": "back",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_back_asset.png",
+            "sha256": "2186271e582040b032d44e9aa7609ad0c2630e506e14e0abb5d6d1fb3a49aa22"
+          },
+          {
+            "view": "side",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_side_asset.png",
+            "sha256": "59f5bfcfc547ca1d35ad0cc29e149253e7f43aedbe8351628e5e0c6393e4a53d"
+          }
+        ]
+      }
+    ],
+    "ranking": [
+      {
+        "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+        "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+        "technical_score": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "triangles": 983534
+      }
+    ],
+    "candidate_selection": {
+      "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+      "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+      "technical_score": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "triangles": 983534
+    },
+    "ranking_method": "Texture/UV/winding validity only; tie by stable artifact ID, no artistic score",
+    "export": {
+      "id": "e4d4c0ce824c5206ae0eba60d8abb24f",
+      "status": "COMPLETED",
+      "delivery_scope": "game",
+      "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+      "project_id": "5da19d59962f4067a5237dd32c5207a8",
+      "source_asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+      "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+      "settings": {
+        "preset": "glb_only",
+        "glb": true,
+        "manifest": true,
+        "zip": false,
+        "fbx": false,
+        "blend": false,
+        "textures": false,
+        "lods": false,
+        "high_poly": false,
+        "unity_package": false,
+        "unreal_package": false,
+        "output_directory": null
+      },
+      "created_at": "2026-10-22T13:54:46.110387+00:00",
+      "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports\\5da19d59962f4067a5237dd32c5207a8\\selective\\0d0a7c93481641d18cd268d444afe5ef\\e4d4c0ce824c5206ae0eba60d8abb24f",
+      "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports",
+      "filename": "0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb",
+      "files": [
+        {
+          "name": "0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb",
+          "bytes": 76118236,
+          "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+          "kind": "glb",
+          "url": "/api/export-profiles/exports/e4d4c0ce824c5206ae0eba60d8abb24f/files/0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb"
+        },
+        {
+          "name": "manifest.json",
+          "bytes": 4182,
+          "sha256": "cfe5bc275b7ef6484534c275cc8ffea64cc52fc66d7d2ade9ad554ac5bbb4785",
+          "kind": "manifest",
+          "url": "/api/export-profiles/exports/e4d4c0ce824c5206ae0eba60d8abb24f/files/manifest.json"
+        }
+      ],
+      "qa": {
+        "status": "NEEDS_REVIEW",
+        "triangles": 983534,
+        "mesh_instances": 1,
+        "dimensions_xyz_m": [
+          12.602402210235596,
+          10.0,
+          10.798958778381348
+        ],
+        "bounds_xyz_m": [
+          [
+            -6.301201096270233,
+            0.0,
+            -5.39947941689752
+          ],
+          [
+            6.301201113965362,
+            10.0,
+            5.399479361483827
+          ]
+        ],
+        "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+        "meshes": [
+          {
+            "node": "geometry_0",
+            "triangles": 983534,
+            "vertices": 729140,
+            "watertight": false,
+            "winding_consistent": true,
+            "watertight_after_position_weld_1e8": false,
+            "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+            "has_uv": true
+          }
+        ],
+        "materials": [
+          {
+            "name": "Material_0",
+            "base_color_texture": true,
+            "metallic_roughness_texture": true,
+            "normal_texture": false,
+            "ao_texture": false,
+            "emissive_texture": false,
+            "metallic_factor": 1,
+            "roughness_factor": 1
+          }
+        ],
+        "images": 2,
+        "checks": {
+          "container": "PASS",
+          "finite_nonempty_geometry": "PASS",
+          "external_resources": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "pbr_plausibility": "NOT_TESTED",
+          "dimensions_approved": "NOT_TESTED",
+          "unity_import": "NOT_TESTED",
+          "human_quality": "NOT_TESTED"
+        }
+      },
+      "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports\\5da19d59962f4067a5237dd32c5207a8\\manifest.json"
+    },
+    "completed_at": "2026-10-22T13:54:46.152921+00:00"
+  },
+  "jobs": [
+    {
+      "id": "2e1289ba63a141e7b8b69f2aba302b3b",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:53:05.815624+00:00",
+      "updated_at": "2026-10-22T13:54:38.371433+00:00",
+      "payload": {
+        "kind": "model_visual_check",
+        "engine": "qwen3_vl_local_cpu",
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+        "source_sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+        "renders": [
+          {
+            "view": "three_quarter",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_three_quarter_asset.png",
+            "sha256": "6a02af9b4161adf2951fc1b68d6a13446523af5a8799791fd06df6c767246e10"
+          },
+          {
+            "view": "back",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_back_asset.png",
+            "sha256": "2186271e582040b032d44e9aa7609ad0c2630e506e14e0abb5d6d1fb3a49aa22"
+          },
+          {
+            "view": "side",
+            "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_side_asset.png",
+            "sha256": "59f5bfcfc547ca1d35ad0cc29e149253e7f43aedbe8351628e5e0c6393e4a53d"
+          }
+        ],
+        "subject_en": "castle",
+        "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "screening_policy": 1,
+        "use_gpu": false,
+        "timeout_seconds": 900,
+        "priority": 0,
+        "evaluation_key": "4cc33f71863e552c2f4c5f5fdef6d4f43ae4f98a83405285c9e95feaf188b953",
+        "project_context": {
+          "default_style": "",
+          "materials": "",
+          "palette": [],
+          "art_bible": {
+            "materials": [
+              "ivory limestone",
+              "chestnut oak",
+              "midnight blue slate",
+              "aged bronze",
+              "navy gold cloth",
+              "cyan mana"
+            ],
+            "palette": {
+              "limestone": "#e4d7b5",
+              "oak": "#69442e",
+              "slate": "#263b59",
+              "bronze": "#99704a",
+              "banner": "#1b315f",
+              "mana": "#55e5ef"
+            },
+            "constraints": {
+              "dimensions_m": null,
+              "door_orientation": "NEEDS_REVIEW",
+              "balconies": 2,
+              "symmetry": "NEEDS_REVIEW"
+            }
+          }
+        },
+        "visual_reference": {
+          "artifact_id": "735b47e9077a4f40a56fc0b87c8fce60",
+          "sha256": "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9"
+        },
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:53:05.878129+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:54:38.357906+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:54:38.364917+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:54:38.371433+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "f8e1db57f13749838fe23c825fad8563",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:48:12.462183+00:00",
+      "updated_at": "2026-10-22T13:53:05.695829+00:00",
+      "payload": {
+        "kind": "blender",
+        "artifact_id": "6ff08ce3c41b4786a9ec646260ffa376",
+        "normalize": true,
+        "target_height_m": 10.0,
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "effective_config": {
+          "schema_version": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "engine_id": "trellis2_community",
+          "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+          "checkpoint": {
+            "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+            "files": {
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+            }
+          },
+          "input_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+          "reference_hashes": [
+            "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9"
+          ],
+          "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+          "resolution": 1024,
+          "inference_steps": 32,
+          "guidance": {
+            "sparse_structure_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.7,
+              "guidance_interval": [
+                0.6,
+                1.0
+              ],
+              "rescale_t": 5.0
+            },
+            "shape_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.5,
+              "guidance_interval": [
+                0.6,
+                1.0
+              ],
+              "rescale_t": 3.0
+            },
+            "tex_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 1.0,
+              "guidance_rescale": 0.0,
+              "guidance_interval": [
+                0.6,
+                0.9
+              ],
+              "rescale_t": 3.0
+            }
+          },
+          "seeds": [
+            43
+          ],
+          "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+          "geometry": {
+            "pipeline_type": "1024_cascade",
+            "octree_depth": null,
+            "decode_chunk_size": null,
+            "export_triangle_target": 1000000
+          },
+          "texture": {
+            "size": 4096,
+            "pbr": "native basecolor/metallic-roughness"
+          },
+          "blender": {
+            "enabled": true,
+            "profile": "existing_quality_pipeline_v1",
+            "height_m": 10.0,
+            "render_views": [
+              "front",
+              "three_quarter",
+              "side",
+              "back",
+              "top",
+              "gameplay"
+            ],
+            "render_resolutions": [
+              "mobile",
+              "pc1440"
+            ],
+            "bake": "not_requested"
+          },
+          "lod": {
+            "ratios": [
+              0.65,
+              0.35,
+              0.15
+            ]
+          },
+          "export": {
+            "formats": [
+              "glb",
+              "fbx"
+            ],
+            "preserve_master": true
+          },
+          "candidate_count": 1,
+          "qa": {
+            "mesh_validity": true,
+            "geometry_defects": true,
+            "dimensions": true,
+            "uv_texture_inventory": true,
+            "export_reopen": true,
+            "per_asset": true,
+            "human_concept_approval": true,
+            "human_master_approval": true,
+            "visual_parity": "NOT_TESTED"
+          },
+          "seed": 43
+        },
+        "effective_config_hash": "8480e4d261efb13fd3ed16b64c2203bafa795c9a50654f8f035c0f4beee77961",
+        "export_fbx": false,
+        "render": true,
+        "resolutions": [
+          "mobile",
+          "pc1440"
+        ],
+        "views": [
+          "front",
+          "three_quarter",
+          "side",
+          "back",
+          "top",
+          "gameplay"
+        ],
+        "parent_job": "5eff3892f4154fe8a1091ce5d981cb4d",
+        "depends_on": [
+          "5eff3892f4154fe8a1091ce5d981cb4d"
+        ],
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:48:12.639390+00:00",
+            "error": null
+          },
+          {
+            "state": "POSTPROCESSING",
+            "at": "2026-10-22T13:48:12.694462+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:53:01.361585+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:53:05.695829+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "5eff3892f4154fe8a1091ce5d981cb4d",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:32:50.493941+00:00",
+      "updated_at": "2026-10-22T13:48:12.434107+00:00",
+      "payload": {
+        "kind": "inference",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "artifact_id": "735b47e9077a4f40a56fc0b87c8fce60",
+        "engine": "trellis2_community",
+        "prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "project_style_snapshot": {
+          "name": "Runavelle castle detailed AI quality",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {
+            "game_id": "runavelle",
+            "version": 1,
+            "units": "meter",
+            "palette": {
+              "limestone": "#e4d7b5",
+              "oak": "#69442e",
+              "slate": "#263b59",
+              "bronze": "#99704a",
+              "banner": "#1b315f",
+              "mana": "#55e5ef"
+            },
+            "materials": [
+              "ivory limestone",
+              "chestnut oak",
+              "midnight blue slate",
+              "aged bronze",
+              "navy gold cloth",
+              "cyan mana"
+            ],
+            "golden_references": [],
+            "camera": {
+              "approval": "NEEDS_REVIEW",
+              "projection": "orthographic"
+            },
+            "license_policy": "commercial_required",
+            "constraints": {
+              "dimensions_m": null,
+              "door_orientation": "NEEDS_REVIEW",
+              "balconies": 2,
+              "symmetry": "NEEDS_REVIEW"
+            }
+          },
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "5da19d59962f4067a5237dd32c5207a8"
+        },
+        "steps": 32,
+        "pipeline_type": "1024_cascade",
+        "texture_size": 4096,
+        "auto_blender": true,
+        "benchmark_height_m": 10.0,
+        "tournament_id": "ed8aba9548a648f0a6cf17311422dd0a",
+        "purpose": "evaluation_only",
+        "quality": "Maximum",
+        "prompt_conditioning": "NOT_SUPPORTED_RECORDED_ONLY",
+        "auto_selection": "prefer proven textured engine, not measured universal quality ranking",
+        "seed": 43,
+        "effective_config": {
+          "schema_version": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "engine_id": "trellis2_community",
+          "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+          "checkpoint": {
+            "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+            "files": {
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+              "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+            }
+          },
+          "input_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+          "reference_hashes": [
+            "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9"
+          ],
+          "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+          "resolution": 1024,
+          "inference_steps": 32,
+          "guidance": {
+            "sparse_structure_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.7,
+              "guidance_interval": [
+                0.6,
+                1.0
+              ],
+              "rescale_t": 5.0
+            },
+            "shape_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 7.5,
+              "guidance_rescale": 0.5,
+              "guidance_interval": [
+                0.6,
+                1.0
+              ],
+              "rescale_t": 3.0
+            },
+            "tex_slat_sampler": {
+              "steps": 32,
+              "guidance_strength": 1.0,
+              "guidance_rescale": 0.0,
+              "guidance_interval": [
+                0.6,
+                0.9
+              ],
+              "rescale_t": 3.0
+            }
+          },
+          "seeds": [
+            43
+          ],
+          "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+          "geometry": {
+            "pipeline_type": "1024_cascade",
+            "octree_depth": null,
+            "decode_chunk_size": null,
+            "export_triangle_target": 1000000
+          },
+          "texture": {
+            "size": 4096,
+            "pbr": "native basecolor/metallic-roughness"
+          },
+          "blender": {
+            "enabled": true,
+            "profile": "existing_quality_pipeline_v1",
+            "height_m": 10.0,
+            "render_views": [
+              "front",
+              "three_quarter",
+              "side",
+              "back",
+              "top",
+              "gameplay"
+            ],
+            "render_resolutions": [
+              "mobile",
+              "pc1440"
+            ],
+            "bake": "not_requested"
+          },
+          "lod": {
+            "ratios": [
+              0.65,
+              0.35,
+              0.15
+            ]
+          },
+          "export": {
+            "formats": [
+              "glb",
+              "fbx"
+            ],
+            "preserve_master": true
+          },
+          "candidate_count": 1,
+          "qa": {
+            "mesh_validity": true,
+            "geometry_defects": true,
+            "dimensions": true,
+            "uv_texture_inventory": true,
+            "export_reopen": true,
+            "per_asset": true,
+            "human_concept_approval": true,
+            "human_master_approval": true,
+            "visual_parity": "NOT_TESTED"
+          },
+          "seed": 43
+        },
+        "effective_config_hash": "8480e4d261efb13fd3ed16b64c2203bafa795c9a50654f8f035c0f4beee77961",
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:32:50.729303+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:48:10.686071+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:48:10.694088+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:48:12.434107+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "aa0244c68b9842beb5826476844f500a",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:32:17.439867+00:00",
+      "updated_at": "2026-10-22T13:32:50.252570+00:00",
+      "payload": {
+        "kind": "concept_layout",
+        "engine": "qwen3_vl_local_cpu",
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "artifact_id": "735b47e9077a4f40a56fc0b87c8fce60",
+        "source_sha256": "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9",
+        "subject_en": "castle",
+        "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "screening_policy": 3,
+        "use_gpu": false,
+        "timeout_seconds": 900,
+        "priority": 0,
+        "evaluation_key": "76a5251d297dc951efcffea0a75d982fa2e0aabab2c74c4b4f89ab998d104c36",
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:32:17.530569+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:32:50.233526+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:32:50.243033+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:32:50.252570+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "a26c9ecf305344dabfd9c89d51a93253",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:31:05.190707+00:00",
+      "updated_at": "2026-10-22T13:32:17.388247+00:00",
+      "payload": {
+        "kind": "concept",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "name": "Castle / detailed AI route concept",
+        "prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "user_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "37eb306603284617a742dd4145647a5b",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        },
+        "project_style_snapshot": {
+          "name": "Runavelle castle detailed AI quality",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {
+            "game_id": "runavelle",
+            "version": 1,
+            "units": "meter",
+            "palette": {
+              "limestone": "#e4d7b5",
+              "oak": "#69442e",
+              "slate": "#263b59",
+              "bronze": "#99704a",
+              "banner": "#1b315f",
+              "mana": "#55e5ef"
+            },
+            "materials": [
+              "ivory limestone",
+              "chestnut oak",
+              "midnight blue slate",
+              "aged bronze",
+              "navy gold cloth",
+              "cyan mana"
+            ],
+            "golden_references": [],
+            "camera": {
+              "approval": "NEEDS_REVIEW",
+              "projection": "orthographic"
+            },
+            "license_policy": "commercial_required",
+            "constraints": {
+              "dimensions_m": null,
+              "door_orientation": "NEEDS_REVIEW",
+              "balconies": 2,
+              "symmetry": "NEEDS_REVIEW"
+            }
+          },
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "5da19d59962f4067a5237dd32c5207a8"
+        },
+        "seed": 43,
+        "steps": 50,
+        "size": 1024,
+        "effective_config": {
+          "schema_version": 1,
+          "stage": "concept",
+          "engine_id": "sdxl_local",
+          "engine_version": "SDXL base 1.0 / cached revision 46216598",
+          "checkpoint": {
+            "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+            "files": {
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+            }
+          },
+          "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "reference_hashes": [
+            "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+          ],
+          "resolution": 1024,
+          "inference_steps": 50,
+          "guidance": 7,
+          "seed": 43,
+          "precision": "fp16 with upstream VAE float32 upcast",
+          "geometry": null,
+          "texture": null,
+          "blender": null,
+          "lod": null,
+          "export": {
+            "format": "png"
+          },
+          "candidate_count": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+          "qa": {
+            "image_validity": true,
+            "human_concept_approval": true,
+            "automatic_3d_generation": false
+          },
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "composition_policy": 3,
+          "reference_direction": {
+            "method": "measured_palette_only",
+            "references": [
+              {
+                "artifact_id": "37eb306603284617a742dd4145647a5b",
+                "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                "palette": [
+                  {
+                    "rgb": [
+                      87,
+                      80,
+                      83
+                    ],
+                    "pixels": 902,
+                    "label": "brown"
+                  },
+                  {
+                    "rgb": [
+                      66,
+                      56,
+                      58
+                    ],
+                    "pixels": 846,
+                    "label": "charcoal"
+                  },
+                  {
+                    "rgb": [
+                      124,
+                      112,
+                      100
+                    ],
+                    "pixels": 760,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      161,
+                      146,
+                      124
+                    ],
+                    "pixels": 520,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      198,
+                      190,
+                      160
+                    ],
+                    "pixels": 415,
+                    "label": "ivory"
+                  }
+                ]
+              }
+            ],
+            "bilingual_noun_hints": [],
+            "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+          }
+        },
+        "effective_config_hash": "441cdf0710fdd3092eb565402a7b4e7f15b01db9c8ae314b28a42845e98740e5",
+        "quality_repair": {
+          "schema_version": 1,
+          "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+          "asset_attempt": 0,
+          "root_cause": "CONCEPT_BACKGROUND_SCENE",
+          "stage": "concept",
+          "engine": "sdxl_local",
+          "action": "repair_concept",
+          "issues": [
+            "background_scene"
+          ],
+          "reason": "Cause-specific concept conditioning; geometry has not started",
+          "at": "2026-10-22T13:31:05.144004+00:00",
+          "budget": {
+            "allowed": true,
+            "reason": null,
+            "used": {
+              "attempts": 0,
+              "stage_attempts": 0,
+              "cause_attempts": 0,
+              "gpu_seconds": 85.68800000000192,
+              "cpu_seconds": 104.125,
+              "disk_bytes": 1716402
+            },
+            "limits": {
+              "max_attempts": 3,
+              "per_stage": 2,
+              "per_cause": 1,
+              "gpu_seconds": 7200.0,
+              "cpu_seconds": 7200.0,
+              "disk_gb": 16.0
+            },
+            "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+          },
+          "predicted_cost": {
+            "seconds": 85.68800000000192,
+            "resource": "gpu",
+            "disk_bytes": 1659970,
+            "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+          },
+          "instructions": [
+            "Photograph the isolated object against a uniform neutral studio sweep."
+          ],
+          "source_hashes": [
+            "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+          ],
+          "quality_preserved": true,
+          "validation": [
+            "Recheck the new image with the current suitability policy",
+            "Do not start 3D until the source is admitted"
+          ]
+        },
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:31:05.346182+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:32:17.328712+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:32:17.336758+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:32:17.388247+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "588063dd28dc4b3ab4dfba224481a361",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:30:13.065018+00:00",
+      "updated_at": "2026-10-22T13:31:05.041869+00:00",
+      "payload": {
+        "kind": "concept_layout",
+        "engine": "qwen3_vl_local_cpu",
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "artifact_id": "32e82936281f43d3b784af2a51b5196e",
+        "source_sha256": "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f",
+        "subject_en": "castle",
+        "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "screening_policy": 3,
+        "use_gpu": false,
+        "timeout_seconds": 900,
+        "priority": 0,
+        "evaluation_key": "88479e1c16ffdbb785c27a0dd107b759e9e128287eed24350f1efb179d198e2d",
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:30:26.481594+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:31:05.024284+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:31:05.032342+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:31:05.041869+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "741843b10d6f4d7d97da61996b83d94a",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:28:47.261259+00:00",
+      "updated_at": "2026-10-22T13:30:13.002478+00:00",
+      "payload": {
+        "kind": "concept",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "name": "Castle / detailed AI route concept",
+        "prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "user_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "37eb306603284617a742dd4145647a5b",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        },
+        "project_style_snapshot": {
+          "name": "Runavelle castle detailed AI quality",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {
+            "game_id": "runavelle",
+            "version": 1,
+            "units": "meter",
+            "palette": {
+              "limestone": "#e4d7b5",
+              "oak": "#69442e",
+              "slate": "#263b59",
+              "bronze": "#99704a",
+              "banner": "#1b315f",
+              "mana": "#55e5ef"
+            },
+            "materials": [
+              "ivory limestone",
+              "chestnut oak",
+              "midnight blue slate",
+              "aged bronze",
+              "navy gold cloth",
+              "cyan mana"
+            ],
+            "golden_references": [],
+            "camera": {
+              "approval": "NEEDS_REVIEW",
+              "projection": "orthographic"
+            },
+            "license_policy": "commercial_required",
+            "constraints": {
+              "dimensions_m": null,
+              "door_orientation": "NEEDS_REVIEW",
+              "balconies": 2,
+              "symmetry": "NEEDS_REVIEW"
+            }
+          },
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "5da19d59962f4067a5237dd32c5207a8"
+        },
+        "seed": 42,
+        "steps": 50,
+        "size": 1024,
+        "effective_config": {
+          "schema_version": 1,
+          "stage": "concept",
+          "engine_id": "sdxl_local",
+          "engine_version": "SDXL base 1.0 / cached revision 46216598",
+          "checkpoint": {
+            "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+            "files": {
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+            }
+          },
+          "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "reference_hashes": [
+            "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+          ],
+          "resolution": 1024,
+          "inference_steps": 50,
+          "guidance": 7,
+          "seed": 42,
+          "precision": "fp16 with upstream VAE float32 upcast",
+          "geometry": null,
+          "texture": null,
+          "blender": null,
+          "lod": null,
+          "export": {
+            "format": "png"
+          },
+          "candidate_count": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+          "qa": {
+            "image_validity": true,
+            "human_concept_approval": true,
+            "automatic_3d_generation": false
+          },
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "composition_policy": 3,
+          "reference_direction": {
+            "method": "measured_palette_only",
+            "references": [
+              {
+                "artifact_id": "37eb306603284617a742dd4145647a5b",
+                "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                "palette": [
+                  {
+                    "rgb": [
+                      87,
+                      80,
+                      83
+                    ],
+                    "pixels": 902,
+                    "label": "brown"
+                  },
+                  {
+                    "rgb": [
+                      66,
+                      56,
+                      58
+                    ],
+                    "pixels": 846,
+                    "label": "charcoal"
+                  },
+                  {
+                    "rgb": [
+                      124,
+                      112,
+                      100
+                    ],
+                    "pixels": 760,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      161,
+                      146,
+                      124
+                    ],
+                    "pixels": 520,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      198,
+                      190,
+                      160
+                    ],
+                    "pixels": 415,
+                    "label": "ivory"
+                  }
+                ]
+              }
+            ],
+            "bilingual_noun_hints": [],
+            "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+          }
+        },
+        "effective_config_hash": "fad7dfa9d43769e27fd77f983072efbcc807693db3239f12befc9b84bdf65c31",
+        "quality_repair": null,
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:28:47.328989+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:30:12.924288+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:30:12.933816+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:30:13.002478+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "8d829ab04018401dad9eb194e0626175",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T13:27:37.387941+00:00",
+      "updated_at": "2026-10-22T13:28:42.961198+00:00",
+      "payload": {
+        "kind": "prompt_analysis",
+        "engine": "qwen3_vl_local_cpu",
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+        "batch_attempt": 0,
+        "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "source_prompt_sha256": "c903ef07c19965f1dad9ef56bfb44362d92a1358a3a36039ae3c14caecec40d8",
+        "reference_ids": [
+          "37eb306603284617a742dd4145647a5b"
+        ],
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "reference_usage": "auto",
+        "project_style_snapshot": {
+          "name": "Runavelle castle detailed AI quality",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {
+            "game_id": "runavelle",
+            "version": 1,
+            "units": "meter",
+            "palette": {
+              "limestone": "#e4d7b5",
+              "oak": "#69442e",
+              "slate": "#263b59",
+              "bronze": "#99704a",
+              "banner": "#1b315f",
+              "mana": "#55e5ef"
+            },
+            "materials": [
+              "ivory limestone",
+              "chestnut oak",
+              "midnight blue slate",
+              "aged bronze",
+              "navy gold cloth",
+              "cyan mana"
+            ],
+            "golden_references": [],
+            "camera": {
+              "approval": "NEEDS_REVIEW",
+              "projection": "orthographic"
+            },
+            "license_policy": "commercial_required",
+            "constraints": {
+              "dimensions_m": null,
+              "door_orientation": "NEEDS_REVIEW",
+              "balconies": 2,
+              "symmetry": "NEEDS_REVIEW"
+            }
+          },
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "5da19d59962f4067a5237dd32c5207a8"
+        },
+        "use_gpu": false,
+        "timeout_seconds": 1800,
+        "priority": 0,
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T13:27:37.422352+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T13:28:42.947642+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T13:28:42.953647+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T13:28:42.961198+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    }
+  ],
+  "seconds": 1628.9219999999987,
+  "item": {
+    "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+    "source_asset_id": "",
+    "source_status": "",
+    "source_line_start": null,
+    "source_line_end": null,
+    "source_char_start": null,
+    "source_char_end": null,
+    "source_sha256": "",
+    "semantic_metadata": {},
+    "name": "Castle / detailed AI route",
+    "category": "Building",
+    "prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+    "style_constraints": {},
+    "target_width_m": 8.0,
+    "target_depth_m": 8.0,
+    "target_height_m": 10.0,
+    "expected_materials": [],
+    "reference_ids": [],
+    "dependencies": [],
+    "asset_family": "",
+    "quality": "Maximum",
+    "preferred_engine": "auto",
+    "candidates": 1,
+    "target_outputs": [
+      "glb"
+    ],
+    "selected": true,
+    "confirmed": false,
+    "priority": 0,
+    "skipped": false,
+    "attempt": 0,
+    "started": true,
+    "version": 1,
+    "quality_lock": true,
+    "seeds": [
+      43
+    ],
+    "intent_reference_usage": "auto",
+    "intent_reference_scope": "semantic",
+    "spec_provenance": {
+      "target_width_m": {
+        "kind": "defaulted",
+        "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+        "value": 8.0,
+        "provisional": true
+      },
+      "target_depth_m": {
+        "kind": "defaulted",
+        "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+        "value": 8.0,
+        "provisional": true
+      },
+      "target_height_m": {
+        "kind": "defaulted",
+        "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+        "value": 10.0,
+        "provisional": true
+      },
+      "category": {
+        "kind": "inferred",
+        "source": "Deterministic name / prompt / source-ID rule",
+        "value": "Building"
+      },
+      "units": {
+        "kind": "inherited",
+        "source": "Project Art Bible / settings",
+        "value": "m"
+      },
+      "palette": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": []
+      },
+      "material_language": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": ""
+      },
+      "default_style": {
+        "kind": "defaulted",
+        "source": "Unspecified; no invented style requirement",
+        "value": ""
+      }
+    },
+    "planner_version": 1,
+    "interpret_prompt": true,
+    "intent_reference_ids": [
+      "37eb306603284617a742dd4145647a5b"
+    ],
+    "automation": {
+      "status": "exported",
+      "stage": "Completed",
+      "checkpoints": {
+        "2e1289ba63a141e7b8b69f2aba302b3b": {
+          "stage": "model_visual_check",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:54:38.371433+00:00"
+        },
+        "f8e1db57f13749838fe23c825fad8563": {
+          "stage": "blender",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:53:05.695829+00:00"
+        },
+        "5eff3892f4154fe8a1091ce5d981cb4d": {
+          "stage": "inference",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:48:12.434107+00:00"
+        },
+        "aa0244c68b9842beb5826476844f500a": {
+          "stage": "concept_layout",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:32:50.252570+00:00"
+        },
+        "a26c9ecf305344dabfd9c89d51a93253": {
+          "stage": "concept",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:32:17.388247+00:00"
+        },
+        "588063dd28dc4b3ab4dfba224481a361": {
+          "stage": "concept_layout",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:31:05.041869+00:00"
+        },
+        "741843b10d6f4d7d97da61996b83d94a": {
+          "stage": "concept",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:30:13.002478+00:00"
+        },
+        "8d829ab04018401dad9eb194e0626175": {
+          "stage": "prompt_analysis",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T13:28:42.961198+00:00"
+        }
+      },
+      "engines": [
+        "trellis2_community"
+      ],
+      "enabled": true,
+      "attempt": 0,
+      "engine_policy": "Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score",
+      "human_approved": false,
+      "repair_plan": {
+        "schema_version": 1,
+        "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+        "asset_attempt": 0,
+        "root_cause": "CONCEPT_BACKGROUND_SCENE",
+        "stage": "concept",
+        "engine": "sdxl_local",
+        "action": "repair_concept",
+        "issues": [
+          "background_scene"
+        ],
+        "reason": "Cause-specific concept conditioning; geometry has not started",
+        "at": "2026-10-22T13:31:05.144004+00:00",
+        "budget": {
+          "allowed": true,
+          "reason": null,
+          "used": {
+            "attempts": 0,
+            "stage_attempts": 0,
+            "cause_attempts": 0,
+            "gpu_seconds": 85.68800000000192,
+            "cpu_seconds": 104.125,
+            "disk_bytes": 1716402
+          },
+          "limits": {
+            "max_attempts": 3,
+            "per_stage": 2,
+            "per_cause": 1,
+            "gpu_seconds": 7200.0,
+            "cpu_seconds": 7200.0,
+            "disk_gb": 16.0
+          },
+          "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+        },
+        "predicted_cost": {
+          "seconds": 85.68800000000192,
+          "resource": "gpu",
+          "disk_bytes": 1659970,
+          "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+        },
+        "instructions": [
+          "Photograph the isolated object against a uniform neutral studio sweep."
+        ],
+        "source_hashes": [
+          "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+        ],
+        "quality_preserved": true,
+        "validation": [
+          "Recheck the new image with the current suitability policy",
+          "Do not start 3D until the source is admitted"
+        ],
+        "executed_job_id": "a26c9ecf305344dabfd9c89d51a93253"
+      },
+      "concept_selection": {
+        "artifact_id": "735b47e9077a4f40a56fc0b87c8fce60",
+        "sha256": "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9",
+        "method": "Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback",
+        "measurements": {
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "has_transparency": false,
+          "laplacian_variance_proxy": 327.4324951171875,
+          "approval": "NEEDS_REVIEW",
+          "multi_view_consistency": "NOT_TESTED",
+          "background": "unsegmented"
+        },
+        "artistic_approval": false
+      },
+      "visual_checks": [
+        {
+          "schema_version": 1,
+          "screening_policy": 1,
+          "requested_subject_present": "yes",
+          "observed_subject_en": "castle with multiple towers, brown roofs, and blue-tinted walls",
+          "severe_observed_defects": [],
+          "observations": [
+            "All images show a single, connected castle model from different angles.",
+            "The castle has multiple towers with conical roofs and flags.",
+            "The base includes a stone path and green grass.",
+            "The fourth image shows a different lighting and background, but the subject remains the same castle."
+          ],
+          "limitations": [
+            "No visible asset in the first image, but the subject is present.",
+            "The second image shows a different angle, but the subject is still the same castle.",
+            "The third image shows a different angle, but the subject is still the same castle.",
+            "The fourth image shows a different lighting and background, but the subject is still the same castle."
+          ],
+          "style_observations": [
+            "The style is consistent with the requested subject, but the materials and palette differ from the Art Bible.",
+            "The fourth image shows a different style, but the subject is still the same castle.",
+            "The fourth image shows a different lighting and background, but the subject is still the same castle.",
+            "The fourth image shows a different lighting and background, but the subject is still the same castle."
+          ],
+          "unknown": [
+            "The materials and palette in the images do not match the Art Bible.",
+            "The materials and palette in the images do not match the Art Bible.",
+            "The materials and palette in the images do not match the Art Bible.",
+            "The materials and palette in the images do not match the Art Bible."
+          ],
+          "decision": "continue",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "duration_seconds": 92.40600000000268,
+          "execution": "local_cpu_only",
+          "artistic_approval": false,
+          "method": "Inferred severe visible defect screening; technical QA remains authoritative for file validity",
+          "source_artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+          "source_sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+          "renders": [
+            {
+              "view": "three_quarter",
+              "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_three_quarter_asset.png",
+              "sha256": "6a02af9b4161adf2951fc1b68d6a13446523af5a8799791fd06df6c767246e10"
+            },
+            {
+              "view": "back",
+              "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_back_asset.png",
+              "sha256": "2186271e582040b032d44e9aa7609ad0c2630e506e14e0abb5d6d1fb3a49aa22"
+            },
+            {
+              "view": "side",
+              "relative_path": "jobs/f8e1db57f13749838fe23c825fad8563/output/mobile_side_asset.png",
+              "sha256": "59f5bfcfc547ca1d35ad0cc29e149253e7f43aedbe8351628e5e0c6393e4a53d"
+            }
+          ]
+        }
+      ],
+      "ranking": [
+        {
+          "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+          "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+          "technical_score": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "triangles": 983534
+        }
+      ],
+      "candidate_selection": {
+        "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+        "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+        "technical_score": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "triangles": 983534
+      },
+      "ranking_method": "Texture/UV/winding validity only; tie by stable artifact ID, no artistic score",
+      "export": {
+        "id": "e4d4c0ce824c5206ae0eba60d8abb24f",
+        "status": "COMPLETED",
+        "delivery_scope": "game",
+        "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "project_id": "5da19d59962f4067a5237dd32c5207a8",
+        "source_asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+        "artifact_id": "7b994f5292594e7ea967aac2ce47c321",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": null
+        },
+        "created_at": "2026-10-22T13:54:46.110387+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports\\5da19d59962f4067a5237dd32c5207a8\\selective\\0d0a7c93481641d18cd268d444afe5ef\\e4d4c0ce824c5206ae0eba60d8abb24f",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports",
+        "filename": "0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb",
+        "files": [
+          {
+            "name": "0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb",
+            "bytes": 76118236,
+            "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/e4d4c0ce824c5206ae0eba60d8abb24f/files/0d0a7c93481641d18cd268d444afe5ef--1bd7908498.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4182,
+            "sha256": "cfe5bc275b7ef6484534c275cc8ffea64cc52fc66d7d2ade9ad554ac5bbb4785",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/e4d4c0ce824c5206ae0eba60d8abb24f/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 983534,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            12.602402210235596,
+            10.0,
+            10.798958778381348
+          ],
+          "bounds_xyz_m": [
+            [
+              -6.301201096270233,
+              0.0,
+              -5.39947941689752
+            ],
+            [
+              6.301201113965362,
+              10.0,
+              5.399479361483827
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 983534,
+              "vertices": 729140,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\exports\\5da19d59962f4067a5237dd32c5207a8\\manifest.json"
+      },
+      "completed_at": "2026-10-22T13:54:46.152921+00:00"
+    },
+    "prompt_interpretation": {
+      "schema_version": 4,
+      "status": "interpreted",
+      "model": "qwen3-vl:4b-instruct-q4_K_M",
+      "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+      "execution": "local_cpu_only",
+      "source_prompt_sha256": "c903ef07c19965f1dad9ef56bfb44362d92a1358a3a36039ae3c14caecec40d8",
+      "references": [
+        {
+          "artifact_id": "37eb306603284617a742dd4145647a5b",
+          "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        }
+      ],
+      "chunks": [
+        {
+          "start": 0,
+          "end": 51,
+          "sha256": "c903ef07c19965f1dad9ef56bfb44362d92a1358a3a36039ae3c14caecec40d8",
+          "interpretation": {
+            "translated_prompt_en": "create for me 1 castle, style similar to this image ref",
+            "requested_subject_en": "castle",
+            "reference_role": "style",
+            "reference_description_en": "",
+            "style_traits": [
+              "blue roof shingles",
+              "beige stone walls",
+              "brown wooden beams",
+              "gray gargoyle statues",
+              "blue glowing torches",
+              "metallic accents",
+              "cartoonish 3D style"
+            ],
+            "appearance": {
+              "colors": [
+                "blue",
+                "brown",
+                "beige",
+                "gray"
+              ],
+              "materials": [
+                "stone",
+                "wood",
+                "metal",
+                "shingles"
+              ],
+              "surface_treatment": "smooth and painted surfaces with subtle texture",
+              "rendering_aesthetic": "cartoonish 3D rendering with soft lighting and clear outlines"
+            },
+            "warnings": []
+          },
+          "generation_plan": {
+            "description_en": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. Inferred ordinary details include: rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. No surrounding scenery, panels, or poster layouts are included.",
+            "inferred_ordinary_details": [
+              "rounded turret bases",
+              "stone pathways leading to the main gate",
+              "small battlements along the walls",
+              "arched entryways with wooden doors",
+              "a flagpole atop the central tower",
+              "multiple rooflines with shingled sections",
+              "metal reinforcements on gateways and tower doors",
+              "wooden window frames with painted trim"
+            ]
+          },
+          "eval_count": 197,
+          "total_duration_ns": 39569919000,
+          "planning_duration_ns": 25771057400
+        }
+      ],
+      "reference_role": "style",
+      "generation_prompt_en": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. Inferred ordinary details include: rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. No surrounding scenery, panels, or poster layouts are included.\ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines",
+      "duration_seconds": 65.5,
+      "provenance": "inferred_local_vision_language_model",
+      "artistic_approval": false,
+      "qa_status": "not_run"
+    },
+    "style_reference_ids": [
+      "37eb306603284617a742dd4145647a5b"
+    ],
+    "asset_generation_spec": {
+      "schema_version": 1,
+      "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+      "project_id": "5da19d59962f4067a5237dd32c5207a8",
+      "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+      "original_prompt_sha256": "c903ef07c19965f1dad9ef56bfb44362d92a1358a3a36039ae3c14caecec40d8",
+      "reference_hashes": [
+        {
+          "artifact_id": "37eb306603284617a742dd4145647a5b",
+          "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        }
+      ],
+      "subject": "castle",
+      "category": "architecture",
+      "reference_role": "style",
+      "route": "image_to_3d",
+      "rationale": [
+        "Prioritize detailed AI geometry and native textured output; simple parametric blockout is never an automatic quality substitute.",
+        "Preserve explicit shape/engine constraints; a new subject needs its own detailed concept rather than reconstructing the style reference."
+      ],
+      "limitations": [
+        "Text-to-3D quality depends on the concept and neural reconstruction. Technical QA does not certify visual fidelity.",
+        "Image-to-3D cannot guarantee an exact count of architectural parts; unresolved structural requirements remain unverified, not silently passed."
+      ],
+      "requirements": [
+        {
+          "id": "subject",
+          "value": "castle",
+          "provenance": "explicit",
+          "source": "Original request / inferred translation",
+          "hard_gate": true
+        },
+        {
+          "id": "target_width_m",
+          "value": 8.0,
+          "provenance": "defaulted",
+          "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+          "hard_gate": false
+        },
+        {
+          "id": "target_depth_m",
+          "value": 8.0,
+          "provenance": "defaulted",
+          "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+          "hard_gate": false
+        },
+        {
+          "id": "target_height_m",
+          "value": 10.0,
+          "provenance": "defaulted",
+          "source": "Conservative provisional Building scale; gameplay dimensions unverified",
+          "hard_gate": false
+        }
+      ],
+      "bounds_m": [
+        8.0,
+        8.0,
+        10.0
+      ],
+      "material_colors": {
+        "stone": "#e4d7b5",
+        "wood": "#69442e",
+        "roof": "#263b59",
+        "metal": "#99704a"
+      },
+      "quality": "Maximum",
+      "source_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+      "fallback": "No automatic engine/quality substitution. Retain outputs and report unsupported mandatory constraints."
+    },
+    "repair_history": [
+      {
+        "schema_version": 1,
+        "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+        "asset_attempt": 0,
+        "root_cause": "CONCEPT_BACKGROUND_SCENE",
+        "stage": "concept",
+        "engine": "sdxl_local",
+        "action": "repair_concept",
+        "issues": [
+          "background_scene"
+        ],
+        "reason": "Cause-specific concept conditioning; geometry has not started",
+        "at": "2026-10-22T13:31:05.144004+00:00",
+        "budget": {
+          "allowed": true,
+          "reason": null,
+          "used": {
+            "attempts": 0,
+            "stage_attempts": 0,
+            "cause_attempts": 0,
+            "gpu_seconds": 85.68800000000192,
+            "cpu_seconds": 104.125,
+            "disk_bytes": 1716402
+          },
+          "limits": {
+            "max_attempts": 3,
+            "per_stage": 2,
+            "per_cause": 1,
+            "gpu_seconds": 7200.0,
+            "cpu_seconds": 7200.0,
+            "disk_gb": 16.0
+          },
+          "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+        },
+        "predicted_cost": {
+          "seconds": 85.68800000000192,
+          "resource": "gpu",
+          "disk_bytes": 1659970,
+          "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+        },
+        "instructions": [
+          "Photograph the isolated object against a uniform neutral studio sweep."
+        ],
+        "source_hashes": [
+          "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+        ],
+        "quality_preserved": true,
+        "validation": [
+          "Recheck the new image with the current suitability policy",
+          "Do not start 3D until the source is admitted"
+        ],
+        "executed_job_id": "a26c9ecf305344dabfd9c89d51a93253"
+      }
+    ]
+  }
+}

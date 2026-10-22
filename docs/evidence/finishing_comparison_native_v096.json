@@ -1,0 +1,173 @@
+{
+  "status": "PASS_NATIVE_REAL_FINISHING_AB",
+  "version": "0.9.6",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\finishing-comparison-native\\2026-10-22T14-08-24-905Z",
+  "files": {
+    "golden": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\native-checkpoint-real\\20261022T124320Z\\Library\\jobs\\770b27a74afa439998bc51e9dd320c70\\output\\raw.glb",
+    "candidate": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\projection-finishing\\20261022T135129Z\\output\\raw.glb"
+  },
+  "hashes": {
+    "golden": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+    "candidate": "2b8f4a134eea543590634bbe36a9f021caae296402bb6409fe1e97739b81711e"
+  },
+  "errors": [],
+  "checks": [
+    {
+      "name": "real_reference_and_candidate_same_camera_textured_no_false_meshy_label_no_inference_sources_preserved",
+      "passed": true
+    }
+  ],
+  "scope": "Retained native tower, unchanged original output and experimental projected finishing; actual shared-camera viewer, not Meshy or artistic approval.",
+  "artifacts": {
+    "golden": {
+      "id": "7fc1b368f5cc433a9093ccbe11f61ea5",
+      "role": "golden",
+      "name": "Tower-baseline-original-finishing.glb",
+      "relative_path": "projects/44e71b19819d4c1d911c87e252a54920/assets/references/versions/af1b87862ca0463e990cbb3ae1e39879/source.glb",
+      "sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+      "created_at": "2026-10-22T14:08:30.006416+00:00",
+      "metadata": {
+        "status": "NEEDS_REVIEW",
+        "triangles": 984536,
+        "mesh_instances": 1,
+        "dimensions_xyz_m": [
+          0.4725825637578964,
+          1.0028677582740784,
+          0.41227859258651733
+        ],
+        "bounds_xyz_m": [
+          [
+            -0.23621153831481934,
+            -0.5015204548835754,
+            -0.20722630620002747
+          ],
+          [
+            0.2363710254430771,
+            0.5013473033905029,
+            0.20505228638648987
+          ]
+        ],
+        "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+        "meshes": [
+          {
+            "node": "geometry_0",
+            "triangles": 984536,
+            "vertices": 696941,
+            "watertight": false,
+            "winding_consistent": true,
+            "watertight_after_position_weld_1e8": false,
+            "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+            "has_uv": true
+          }
+        ],
+        "materials": [
+          {
+            "name": "unnamed",
+            "base_color_texture": true,
+            "metallic_roughness_texture": true,
+            "normal_texture": false,
+            "ao_texture": false,
+            "emissive_texture": false,
+            "metallic_factor": 1,
+            "roughness_factor": 1
+          }
+        ],
+        "images": 2,
+        "checks": {
+          "container": "PASS",
+          "finite_nonempty_geometry": "PASS",
+          "external_resources": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "pbr_plausibility": "NOT_TESTED",
+          "dimensions_approved": "NOT_TESTED",
+          "unity_import": "NOT_TESTED",
+          "human_quality": "NOT_TESTED"
+        },
+        "source_filename": "Tower-baseline-original-finishing.glb",
+        "origin": "user_import",
+        "license": "NEEDS_REVIEW",
+        "project_id": "44e71b19819d4c1d911c87e252a54920",
+        "asset_id": null
+      },
+      "project_id": "44e71b19819d4c1d911c87e252a54920",
+      "asset_id": null,
+      "url": "/api/artifacts/7fc1b368f5cc433a9093ccbe11f61ea5/file"
+    },
+    "candidate": {
+      "id": "f5ebbd284bb14fd1bbecb28915c1951d",
+      "role": "candidate",
+      "name": "Tower-experimental-projected-finishing.glb",
+      "relative_path": "projects/44e71b19819d4c1d911c87e252a54920/assets/references/versions/73a6751a077f4d238767008dbe7ac2fe/source.glb",
+      "sha256": "2b8f4a134eea543590634bbe36a9f021caae296402bb6409fe1e97739b81711e",
+      "created_at": "2026-10-22T14:08:32.186709+00:00",
+      "metadata": {
+        "status": "NEEDS_REVIEW",
+        "triangles": 961690,
+        "mesh_instances": 1,
+        "dimensions_xyz_m": [
+          0.4686884582042694,
+          0.9997352063655853,
+          0.40846413373947144
+        ],
+        "bounds_xyz_m": [
+          [
+            -0.234266459941864,
+            -0.499861478805542,
+            -0.20535048842430115
+          ],
+          [
+            0.2344219982624054,
+            0.49987372756004333,
+            0.2031136453151703
+          ]
+        ],
+        "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+        "meshes": [
+          {
+            "node": "geometry_0",
+            "triangles": 961690,
+            "vertices": 829367,
+            "watertight": false,
+            "winding_consistent": true,
+            "watertight_after_position_weld_1e8": false,
+            "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+            "has_uv": true
+          }
+        ],
+        "materials": [
+          {
+            "name": "unnamed",
+            "base_color_texture": true,
+            "metallic_roughness_texture": true,
+            "normal_texture": false,
+            "ao_texture": false,
+            "emissive_texture": false,
+            "metallic_factor": 1,
+            "roughness_factor": 1
+          }
+        ],
+        "images": 2,
+        "checks": {
+          "container": "PASS",
+          "finite_nonempty_geometry": "PASS",
+          "external_resources": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "pbr_plausibility": "NOT_TESTED",
+          "dimensions_approved": "NOT_TESTED",
+          "unity_import": "NOT_TESTED",
+          "human_quality": "NOT_TESTED"
+        },
+        "source_filename": "Tower-experimental-projected-finishing.glb",
+        "origin": "user_import",
+        "license": "NEEDS_REVIEW",
+        "project_id": "44e71b19819d4c1d911c87e252a54920",
+        "asset_id": null
+      },
+      "project_id": "44e71b19819d4c1d911c87e252a54920",
+      "asset_id": null,
+      "url": "/api/artifacts/f5ebbd284bb14fd1bbecb28915c1951d/file"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿// Actual retained model and measured metadata in the packaged Library/Production.
+// Actual retained model and measured metadata in the packaged Library/Production.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';
 const root=path.resolve(import.meta.dirname,'..'),source=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/lod_quality_real_v095.json'),'utf8'));
@@ -25,4 +25,3 @@ try{
  report.checks.push({name:'actual_library_and_production_LOD_measurements_match_real_report_and_survive_refresh_no_jobs',passed:true,asset_id:source.asset_id,artifact_id:source.artifact.id,levels:source.lods.map(l=>({level:l.level,measurement:l.surface_error}))});report.status='PASS_NATIVE_MEASURED_LOD_EVIDENCE';
 }catch(error){report.status='FAILED';report.error=String(error);if(page)await page.screenshot({path:path.join(run,'failure.png')}).catch(()=>{});process.exitCode=1;}
 finally{closing=true;if(page)await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close')).catch(()=>{});if(child)for(let n=0;n<180&&child.exitCode===null;n++)await sleep(200);if(browser)await browser.close().catch(()=>{});fs.writeFileSync(path.join(run,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,run,error:report.error}));}
-

@@ -206,8 +206,8 @@ export function QualityLab({
         </a>
         <div className="workspace">
           <small>ART BIBLE</small>
-          <strong>Runavelle</strong>
-          <span>ARCHER_TOWER_T3</span>
+          <strong>{projectName || 'Project'}</strong>
+          <span>MODEL REVIEW</span>
         </div>
         <nav aria-label="Workbench">
           <a className="active" href="#compare">
@@ -248,7 +248,7 @@ export function QualityLab({
             <h1>
               {projectName || "Project"} <span>Quality Lab</span>
             </h1>
-            <p>Concept → local AI → Blender → GLB → đối chiếu Meshy 7.1</p>
+            <p>Concept → local AI → Blender → GLB → reference comparison</p>
           </div>
           <span className="badge">{status.gate_a}</span>
         </header>
@@ -320,7 +320,7 @@ export function QualityLab({
                   {i
                     ? "LOCAL CANDIDATE"
                     : golden
-                      ? "MESHY 7.1 / GOLDEN"
+                      ? "REFERENCE / BASELINE MODEL"
                       : "CONCEPT / IMAGE ONLY"}
                 </strong>
                 <Select
@@ -391,7 +391,7 @@ export function QualityLab({
                 <img
                   className="concept"
                   src={apiUrl(concept.url)}
-                  alt="Archer Tower concept do người dùng cung cấp"
+                  alt="Project concept reference supplied by the user"
                 />
                 <p className="muted">
                   {concept.metadata.width} × {concept.metadata.height} ·
@@ -409,12 +409,12 @@ export function QualityLab({
           <section id="review">
             <div className="eyebrow">HUMAN REVIEW REQUIRED</div>
             <h2>
-              {golden ? "How far from Meshy?" : "Đánh giá độ bám concept"}
+              {golden ? "Compare with the selected reference" : "Đánh giá độ bám concept"}
             </h2>
             {!golden && (
               <p>
-                Thiếu golden GLB: so sánh 3D Meshy BLOCKED. Đánh giá ảnh concept
-                không chứng minh mặt sau hoặc tương đương Meshy.
+                A 3D comparison needs the actual reference GLB. A concept image
+                cannot verify backside geometry, PBR fidelity or equivalence to Meshy.
               </p>
             )}
             <p>
