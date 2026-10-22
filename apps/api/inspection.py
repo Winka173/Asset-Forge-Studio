@@ -41,9 +41,10 @@ def glb_document(path):
 
 
 def inspect_glb(path):
+    from .surface_diagnostics import measure,summarize
     doc = glb_document(path)
     scene = trimesh.load(path, file_type="glb", force="scene", process=False)
-    rows, all_bounds = [], []
+    rows, all_bounds, surface_rows = [], [], {}
     for node in scene.graph.nodes_geometry:
         transform, key = scene.graph[node]
         mesh = scene.geometry[key]
@@ -52,6 +53,8 @@ def inspect_glb(path):
         vertices = trimesh.transform_points(mesh.vertices, transform)
         if not np.isfinite(vertices).all():
             raise ValueError("Mesh contains NaN/Inf coordinates")
+        if key not in surface_rows:surface_rows[key]=measure(mesh)|dict(geometry=key)
+        if not surface_rows[key]['finite_vertex_normals']:raise ValueError('Mesh contains NaN/Inf vertex normals')
         all_bounds.extend([vertices.min(axis=0), vertices.max(axis=0)])
         welded = mesh.copy()
         welded.merge_vertices(merge_tex=True, merge_norm=True, digits_vertex=8)
@@ -82,6 +85,7 @@ def inspect_glb(path):
             "bounds_xyz_m": [bounds.min(axis=0).tolist(), bounds.max(axis=0).tolist()],
             "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
             "meshes": rows, "materials": materials, "images": len(doc.get("images", [])),
+            "surface_diagnostics":summarize(list(surface_rows.values())),
             "checks": {"container": "PASS", "finite_nonempty_geometry": "PASS",
                        "external_resources": "PASS", "uv_overlap": "NOT_TESTED",
                        "self_intersections": "NOT_TESTED", "pbr_plausibility": "NOT_TESTED",

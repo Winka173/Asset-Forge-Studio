@@ -1,0 +1,152 @@
+{
+  "baseline": {
+    "path": ".local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+    "triangles": 983534,
+    "images": 2,
+    "materials": [
+      {
+        "name": "unnamed",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": false,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1.0,
+        "roughness_factor": 1.0
+      }
+    ],
+    "surface_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+      "geometry_count": 1,
+      "totals": {
+        "triangles": 983534,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 1
+      },
+      "faces_opposing_mean_vertex_normal": 2042,
+      "all_vertex_normals_finite": true,
+      "meshes": [
+        {
+          "triangles": 983534,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 1,
+          "triangle_quality_p01": 0.21079936233813087,
+          "faces_opposing_mean_vertex_normal": 2042,
+          "finite_vertex_normals": true,
+          "vertex_normals_source": "loaded GLB normals",
+          "surface_area_source_units_squared": 9.088614628709019,
+          "bounding_diagonal_source_units": 1.5428097088194621,
+          "geometry": "geometry_0"
+        }
+      ],
+      "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+      "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+      "limitations": [
+        "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+        "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+        "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+      ]
+    }
+  },
+  "full_projection": {
+    "path": ".local\\castle-projection-finishing\\20261022T143421Z\\output\\raw.glb",
+    "triangles": 990883,
+    "images": 2,
+    "materials": [
+      {
+        "name": "unnamed",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": false,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1.0,
+        "roughness_factor": 1.0
+      }
+    ],
+    "surface_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+      "geometry_count": 1,
+      "totals": {
+        "triangles": 990883,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 113
+      },
+      "faces_opposing_mean_vertex_normal": 6046,
+      "all_vertex_normals_finite": true,
+      "meshes": [
+        {
+          "triangles": 990883,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 113,
+          "triangle_quality_p01": 0.167490865835006,
+          "faces_opposing_mean_vertex_normal": 6046,
+          "finite_vertex_normals": true,
+          "vertex_normals_source": "loaded GLB normals",
+          "surface_area_source_units_squared": 9.851721155759742,
+          "bounding_diagonal_source_units": 1.5362786280827203,
+          "geometry": "geometry_0"
+        }
+      ],
+      "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+      "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+      "limitations": [
+        "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+        "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+        "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+      ]
+    }
+  },
+  "half_projection": {
+    "path": ".local\\finishing-research\\20261022T144306163467Z\\output\\raw.glb",
+    "triangles": 949944,
+    "images": 2,
+    "materials": [
+      {
+        "name": "unnamed",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": false,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1.0,
+        "roughness_factor": 1.0
+      }
+    ],
+    "surface_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+      "geometry_count": 1,
+      "totals": {
+        "triangles": 949944,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 7
+      },
+      "faces_opposing_mean_vertex_normal": 3062,
+      "all_vertex_normals_finite": true,
+      "meshes": [
+        {
+          "triangles": 949944,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 7,
+          "triangle_quality_p01": 0.2115414669596477,
+          "faces_opposing_mean_vertex_normal": 3062,
+          "finite_vertex_normals": true,
+          "vertex_normals_source": "loaded GLB normals",
+          "surface_area_source_units_squared": 9.43138028803612,
+          "bounding_diagonal_source_units": 1.5393025393394844,
+          "geometry": "geometry_0"
+        }
+      ],
+      "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+      "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+      "limitations": [
+        "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+        "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+        "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+      ]
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import {ToastNotice} from './workspace-feedback';
+import {SurfaceDiagnostics} from './surface-diagnostics';
 import { Select } from "./select";
 import { apiFetch, apiUrl } from "./api";
 import { useEffect, useState } from "react";
@@ -167,6 +168,7 @@ export function QualityLab({
     return item ? (
       <>
         <h3>{item.name}</h3>
+        <SurfaceDiagnostics metadata={item.metadata}/>
         <div className="facts">
           <span>
             {item.metadata.triangles?.toLocaleString()}

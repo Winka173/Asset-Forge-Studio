@@ -1,5 +1,7 @@
 # Known issues
 
+- Native remesh projection 1.0 improved sampled geometry distance for tower/castle but worsened visible castle artifacts and thin/opposed-normal observations. Projection 0.5 still worsens those counts. Neither is a production/default improvement. Current GLB surface diagnostics expose measurements but do not prove the absence of holes/intersections/UV problems or artistic quality. Source-preserving repair/bake/texture quality remains work in progress.
+
 - LOD surface measurements are sampled geometric evidence only. Thin features, silhouette and texture fidelity are not certified; no automatic artistic threshold is inferred. The research 4K normal/AO bake is not production enabled: UV overlap, ray coverage and visible improvement remain unverified. Master-to-LOD measurements do not establish native-field-to-GLB loss.
 - A real Unity Package Manager IPC startup failure was reproduced during 0.9.5 verification. One same-stage relaunch is allowed only for the observed disconnected/cancelled-resolution signature, retaining a hash-bound failed log. Compiler/license/content/OOM errors are not retried by this rule; original failed records remain failed.
 

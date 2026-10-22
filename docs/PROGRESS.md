@@ -1,3 +1,11 @@
+# Windows 0.9.8 - real surface/shading observations - 2026-10-22
+
+147 backend tests PASS (223.04 s), TypeScript/Vite, fresh Windows/generic native smoke, affected Library/Production/Compare native acceptance and source-cache verification PASS. Actual GLB inspection now records zero-area/thin triangles and face/vertex-normal disagreement by unique local mesh, with validator hash and explicit limits. Artifact-scoped collapsed panels show actual measurements without changing artistic approval/export policy or inventing old measurements. Nonfinite normals reject technical inspection. Retained-tower CPU Blender/reopen, visible model, card padding, both workspace reports, refresh/source hash and no AI jobs pass. Compare actual castle baseline/projected measurements match imported GLBs.
+
+Research found why lower surface error alone is insufficient: full castle projection reduces sampled native-to-GLB p95 from 0.150% to 0.084% but increases thin triangles 1→113 and opposed-normal faces 2042→6046, with visible speckled/kinked regions. Half projection still increases those observations to 7/3062. Both remain research-only; default remesh/texture/quality stays unchanged and source masters are preserved. Repro script uses isolated checkpoints and existing GPU/host RAM admission. No hole/intersection/art/Meshy certification is inferred. Evidence: surface_diagnostics_native_v098.json, castle_surface_comparison_native_v098.json and actual PNGs. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe.
+
+---
+
 # Windows 0.9.7 - host RAM-aware shared scheduler - 2026-10-22
 
 145 backend tests PASS (245.74 s), TypeScript/Vite, fresh Windows packaging/generic smoke and affected native acceptance PASS. Shared GPU/CPU stage admission now reserves estimated unrealized RAM across processes before loading models, keeps two GiB headroom, records measured RSS/private peaks and can raise future profile allowances. RAM-held work stays Queued with a visible reason and unchanged quality; cheaper unrelated work can be considered. Resource claims bind owner process/thread/job directory, and owned surviving GPU children hold new GPU admission. This is risk reduction, not a zero-OOM guarantee or control over arbitrary external apps.

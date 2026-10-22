@@ -1,19 +1,24 @@
 ﻿{
-    "version":  "0.9.7",
-    "timestamp_utc":  "20261022T142145Z",
-    "git_commit":  "1bb6ada8d122ed2cdf40c02681cc85a42a6f0162",
+    "version":  "0.9.8",
+    "timestamp_utc":  "20261022T144036Z",
+    "git_commit":  "c5a44d085b2487df9916521ec063564f423519ba",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/jobs.py",
+                          " M apps/api/inspection.py",
+                          " M apps/web/src/creative-system.css",
+                          " M apps/web/src/library.tsx",
+                          " M apps/web/src/production.tsx",
+                          " M apps/web/src/quality-lab.tsx",
+                          " M desktop/verify-finishing-comparison.mjs",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_engine_health.py",
-                          "?? apps/api/host_resources.py",
-                          "?? tests/test_host_resources.py"
+                          "?? apps/api/surface_diagnostics.py",
+                          "?? apps/web/src/surface-diagnostics.tsx",
+                          "?? tests/test_surface_diagnostics.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -22,7 +27,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T142145Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T144036Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -33,13 +38,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "afc82947ca221dd5cfd39cf5059cc7aa3c480eee9af892ad9759ace651b13d7b",
-                            "afs-backend.exe":  "8df2f1cf583fe3d15b78b13f91ead7e3942d404e749655f5bf68f45ed2fc0fcf",
-                            "Asset Forge Studio_0.9.7_x64-setup.exe":  "7d289f72adc882c6f823b0733801128a6d0062675ad32ede440aa0ee8c1c0102"
+                            "Asset Forge Studio.exe":  "7c3286b84d157272310e75e49bf054097763971bbb348db7a78d56ac2165f419",
+                            "Asset Forge Studio_0.9.8_x64-setup.exe":  "be67f0cff9891c2404b0276a0fb975ab4d83d07e2c3409541ed2d01c65511dca",
+                            "afs-backend.exe":  "98031b7b8a2dd4b50723b103ac6143e2a96800d02c9064b47225803324a361e9"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-27-27-719Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-45-39-275Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.9.7_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.9.8_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

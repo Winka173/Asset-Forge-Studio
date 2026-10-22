@@ -1,0 +1,53 @@
+{
+  "status": "MEASURED_NATIVE_TO_FINISHED_GLB",
+  "hashes": {
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw_master.npz": "c0a6af1ca42edaaaa6ea5daef5799d81e62212cd4d77efc711c7f7b736b57ad6",
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+    "C:/Users/Winka/Tools/trellis2/code/o-voxel/o_voxel/postprocess.py": "8ece9f739090beb71f1b818ea09b79547c1c9370fccf37ac354bed854e28377d"
+  },
+  "sources_preserved": true,
+  "native_bounds": [
+    [
+      -0.49999281764030457,
+      -0.4283740222454071,
+      -0.395430326461792
+    ],
+    [
+      0.49998265504837036,
+      0.4279894232749939,
+      0.39702463150024414
+    ]
+  ],
+  "measurement": {
+    "schema_version": 1,
+    "validator_sha256": "7e4267683e7a3df4934a296595536cbf719feef87e263b75490b90d56b2ce8b5",
+    "method": "Area-weighted triangle samples / exact BVH nearest surface at sampled points",
+    "samples_per_direction": 8192,
+    "seed": 43,
+    "master_triangles": 15730718,
+    "target_triangles": 983534,
+    "master_to_lod": {
+      "mean": 0.0019526022685312228,
+      "p95": 0.002092339179944247,
+      "sampled_max": 0.003941281232982874,
+      "rms": 0.0019564233727138963,
+      "normal_angle_mean_degrees": 88.24406427519341
+    },
+    "lod_to_master": {
+      "mean": 0.001995574963061131,
+      "p95": 0.0023017177358269692,
+      "sampled_max": 0.00312212435528636,
+      "rms": 0.0020019000641857436,
+      "normal_angle_mean_degrees": 89.27413892432145
+    },
+    "symmetric_p95_relative_diagonal": 0.0014978799858574227,
+    "symmetric_sampled_max_relative_diagonal": 0.0025648524081079206,
+    "coordinate_space": "Shared Blender world units; physical metres require calibrated source scale",
+    "limitations": [
+      "Sampled maximum is not the global Hausdorff maximum. Thin features can be missed.",
+      "Geometric face-normal deviation is not a texture/shader/artistic rating. No silhouette, UV or bake-coverage certification."
+    ]
+  },
+  "coordinate_basis": "Native TRELLIS Z-up; actual installed o_voxel conversion x,z,-y to GLB Y-up; Blender GLB importer restores Z-up. No independent normalization or registration.",
+  "limitations": "Geometry only, sampled surface error; not texture, thin-feature, artistic or Meshy certification."
+}

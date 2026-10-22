@@ -1,0 +1,50 @@
+{
+  "status": "PASS_NATIVE_REAL_SURFACE_DIAGNOSTICS",
+  "version": "0.9.8",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\surface-diagnostics-native\\2026-10-22T14-46-05-941Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "actual_processed_artifact_counts_library_production_padding_refresh_unchanged_source_no_AI",
+      "passed": true
+    }
+  ],
+  "scope": "Real CPU Blender on retained neural tower, actual source-bound surface measurements visible in Library/Production. No new AI, artistic score or simulated output.",
+  "project_id": "a0f899c5a05e4bfc81a3d382397dc0fa",
+  "asset_id": "0e6f4f53d00240d58f1314882d58d94b",
+  "job_id": "db6644846bc1409a908fac95443c2b65",
+  "artifact_id": "da0b28793c3d468d9b3b5e37aa582aef",
+  "measurement": {
+    "schema_version": 1,
+    "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+    "geometry_count": 1,
+    "totals": {
+      "triangles": 984536,
+      "zero_area_triangles": 0,
+      "very_thin_triangles": 3
+    },
+    "faces_opposing_mean_vertex_normal": 326,
+    "all_vertex_normals_finite": true,
+    "meshes": [
+      {
+        "triangles": 984536,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 3,
+        "triangle_quality_p01": 0.3020308273560675,
+        "faces_opposing_mean_vertex_normal": 326,
+        "finite_vertex_normals": true,
+        "vertex_normals_source": "loaded GLB normals",
+        "surface_area_source_units_squared": 3.8966482501988287,
+        "bounding_diagonal_source_units": 1.1828151411183325,
+        "geometry": "geometry_0"
+      }
+    ],
+    "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+    "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+    "limitations": [
+      "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+      "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+      "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+    ]
+  }
+}
