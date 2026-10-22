@@ -1,0 +1,29 @@
+{
+  "version": "0.9.15",
+  "full_build_suite": {
+    "passed": 185,
+    "seconds": 222.63
+  },
+  "targeted_pbr_suite": {
+    "passed": 21,
+    "seconds": 3.74,
+    "command": ".venv/Scripts/python.exe -m pytest tests/test_pbr_preservation.py -q",
+    "note": "Includes the added higher-precision PNG scope regression. Overlaps the full suite; counts must not be summed."
+  },
+  "native_status": "PASS_NATIVE_PBR_PRESERVATION",
+  "expected_validator_sha256": "de5186fa472e9c183cfdc70c6e89b2a22a9ae976c7c2277d1d6c43d14dae97da",
+  "source_files_sha256": {
+    "apps/api/jobs.py": "f4733177dd7c86edd1ecbc12d33b3975ea1f634c251a87abcd6311553d9cfdf8",
+    "apps/api/pbr_preservation.py": "5d6c078732fc0420d88112f05a065f798008662be1f94439b18242b9cb0339a3",
+    "apps/api/production.py": "1dee23e7ca5f8cb8a937adecc0ba5e27a96a50491a23fb2d61936c427a3e84f0",
+    "tests/test_pbr_preservation.py": "7d8869d666ee1de5dee28499a75a83357fd1bc1aeb67cce5856a401f20256bf4",
+    "desktop/verify-pbr-preservation.mjs": "99b06cf001ddf1db70d2294effa4a8e7be6583d05e03fc6a0ce2df6fe2a4c990"
+  },
+  "backend_build": {
+    "source_sha256": "33b444279b7f619913751ffb1242f6f7e784266eea239d838c251d2cde1db6c0",
+    "file_sha256": "4711249444ff6002491e5ca1cb49ef73dc681d62503b5d7d405dcfc96051647b",
+    "bytes": 40403129,
+    "build_type": "Bundled Python API; external AI environments/weights and Blender required"
+  },
+  "scope": "Actual encoded GLB/PNG unit mutations, real Blender fault injection, two retained neural sources processed anew in the final packaged backend, actual delivered viewer and restart. No new 3D inference or artistic certification."
+}

@@ -405,10 +405,21 @@ class Worker:
             if report['input_sha256'] != artifact['sha256'] or report['checks']['export_reopen'] != 'PASS':
                 raise ValueError('Invalid pipeline output provenance or reopen check')
             inspections = {f'LOD{i}.glb': inspect_glb(folder / f'output/LOD{i}.glb') for i in range(4)}
+            from .pbr_preservation import compare as compare_pbr
+            preservation = compare_pbr(source, folder / 'output/LOD0.glb', intentional_material_edit=bool(payload.get('material_edit')))
+            preservation_path = folder / 'output/pbr_preservation.json'
+            temporary = preservation_path.with_suffix('.json.part')
+            temporary.write_text(json.dumps(preservation, indent=2), encoding='utf-8')
+            temporary.replace(preservation_path)
+            if preservation.get('source_sha256') != artifact['sha256']:
+                raise ValueError('Immutable source changed during Blender processing')
+            if preservation['status'] == 'Fail':
+                raise ValueError(preservation['reason'] + '; retained source/output and pbr_preservation.json available; no export')
+            inspections['LOD0.glb']['pbr_preservation'] = preservation
             report['duration_seconds_including_blender'] = time.monotonic() - started
             # Keep pipeline report immutable; store orchestration metadata in separate manifest.
             manifest = {'job_id': identifier, 'source_artifact_id': artifact['id'], 'source_sha256': artifact['sha256'],
-                        'duration_seconds': report['duration_seconds_including_blender'], 'checks': report['checks'],
+                        'duration_seconds': report['duration_seconds_including_blender'], 'checks': report['checks'] | {'core_pbr_preservation': preservation['status']},
                         'framing': report['framing'], 'unity': 'NOT_TESTED', 'quality': 'NEEDS_REVIEW', 'glb_inspections': inspections}
             (folder / 'manifest.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
             if get(identifier)['status'] == 'CANCELLED': return

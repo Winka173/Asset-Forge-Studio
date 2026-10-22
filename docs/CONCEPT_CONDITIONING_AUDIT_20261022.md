@@ -59,3 +59,10 @@ The source includes production/export and review instructions alongside visual r
 4. A future planner can separate inherited requirements, explicit user overrides and inferred ordinary details in a structured, validated contract. Do not silently remove user exclusions or translate workflow instructions into visible geometry. The current numeric-token comparison is useful but cannot prove semantic preservation of all materials/exclusions.
 
 The complete decoded-window/per-asset-token measurements are retained in [the evidence JSON](evidence/concept_conditioning_token_audit_v0912.json), and the exact reproduction helper is retained as [a text snapshot](evidence/concept_conditioning_token_audit_runner.txt). The original working copies live under `.local/audit_concept_conditioning.py` and `.local/concept_conditioning_audit.json`. The helper loads only cached CLIP tokenizers in the isolated SDXL environment and does not load model weights.
+
+
+## Actual controlled pooling experiment, 2026-10-23 local
+
+Ran the retained accepted castle prompt/negative, seed 43, Maximum 50 steps/1024 and cached SDXL weights twice in isolated copied workers. Current mean pooling exactly reproduced the retained input concept byte-for-byte (SHA-256 a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9). First-chunk pooling changed architecture and left more room above the flags at this seed; both still had warm roofs, so inherited midnight-blue slate fidelity is unresolved. All six token windows remain encoded. No quality improvement, general framing guarantee or 3D acceptance follows from one image pair, and neither product worker nor quality config changed.
+
+Measured wall time mean 53.55 s / first 32.95 s, sampled whole GPU peak 9030 / 9138 MiB; both Torch allocated 5,602,789,888 B and reserved 7,845,445,632 B. Order/cache and concurrent host work confound a speed comparison; no throughput claim. One heavy GPU lock plus host-RAM admission used, no downloads or installed-source edits. Evidence: evidence/castle_sdxl_pooling_research.json, actual mean/first PNGs and reproducible runner.

@@ -1,0 +1,1063 @@
+{
+  "status": "GENERATED_BOTH_REQUIRES_COMPARISON",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\sdxl-pooling-research\\20261022T174119Z",
+  "source_hashes": {
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\a26c9ecf305344dabfd9c89d51a93253\\request.json": "51332efcf2c69cc5bc53343f3ab5bd289997bbf06939a4ed7626983852130625",
+    "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\engines\\sdxl_worker.py": "e611eac070afe77209b433057371ee93329a9855adbc2c276042df068cce7998"
+  },
+  "variants": [
+    {
+      "mode": "mean",
+      "status": "GENERATED_REQUIRES_VISUAL_REVIEW",
+      "worker_sha256": "ee503cec6c1b6e0d4f936f33086dbb72a931383b30c521721e6b5f64997a3eb4",
+      "samples": [
+        {
+          "seconds": 0.06300000000192085,
+          "gpu_used_mib": 3000.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 11.0,
+          "available_RAM_bytes": 28729495552,
+          "worker_tree_rss_bytes": 25088000
+        },
+        {
+          "seconds": 2.125,
+          "gpu_used_mib": 2991.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 10.0,
+          "available_RAM_bytes": 28496781312,
+          "worker_tree_rss_bytes": 230219776
+        },
+        {
+          "seconds": 4.171999999998661,
+          "gpu_used_mib": 2988.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 28229632000,
+          "worker_tree_rss_bytes": 457879552
+        },
+        {
+          "seconds": 6.234000000004016,
+          "gpu_used_mib": 2991.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 12.0,
+          "available_RAM_bytes": 28150435840,
+          "worker_tree_rss_bytes": 515702784
+        },
+        {
+          "seconds": 8.281000000002678,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 8.0,
+          "available_RAM_bytes": 28093247488,
+          "worker_tree_rss_bytes": 576061440
+        },
+        {
+          "seconds": 10.328000000001339,
+          "gpu_used_mib": 2985.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 27977879552,
+          "worker_tree_rss_bytes": 630210560
+        },
+        {
+          "seconds": 12.39100000000326,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 8.0,
+          "available_RAM_bytes": 27976433664,
+          "worker_tree_rss_bytes": 631377920
+        },
+        {
+          "seconds": 14.453000000001339,
+          "gpu_used_mib": 2985.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 13.0,
+          "available_RAM_bytes": 27872186368,
+          "worker_tree_rss_bytes": 631664640
+        },
+        {
+          "seconds": 16.51600000000326,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 27808210944,
+          "worker_tree_rss_bytes": 631885824
+        },
+        {
+          "seconds": 18.56300000000192,
+          "gpu_used_mib": 2985.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 28084072448,
+          "worker_tree_rss_bytes": 632745984
+        },
+        {
+          "seconds": 20.625,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 27969224704,
+          "worker_tree_rss_bytes": 633106432
+        },
+        {
+          "seconds": 22.68800000000192,
+          "gpu_used_mib": 2985.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 8.0,
+          "available_RAM_bytes": 27761659904,
+          "worker_tree_rss_bytes": 633184256
+        },
+        {
+          "seconds": 24.75,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 10.0,
+          "available_RAM_bytes": 27734396928,
+          "worker_tree_rss_bytes": 662200320
+        },
+        {
+          "seconds": 26.79699999999866,
+          "gpu_used_mib": 2985.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 8.0,
+          "available_RAM_bytes": 27694415872,
+          "worker_tree_rss_bytes": 687067136
+        },
+        {
+          "seconds": 28.875,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 27624108032,
+          "worker_tree_rss_bytes": 687067136
+        },
+        {
+          "seconds": 30.92199999999866,
+          "gpu_used_mib": 2994.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 8.0,
+          "available_RAM_bytes": 27303059456,
+          "worker_tree_rss_bytes": 1296125952
+        },
+        {
+          "seconds": 32.984000000004016,
+          "gpu_used_mib": 4719.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 20.0,
+          "available_RAM_bytes": 26502074368,
+          "worker_tree_rss_bytes": 2089537536
+        },
+        {
+          "seconds": 35.03100000000268,
+          "gpu_used_mib": 6960.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 11.0,
+          "available_RAM_bytes": 21491597312,
+          "worker_tree_rss_bytes": 6775541760
+        },
+        {
+          "seconds": 37.0940000000046,
+          "gpu_used_mib": 9030.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 4.0,
+          "available_RAM_bytes": 24559341568,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 39.17199999999866,
+          "gpu_used_mib": 9030.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24366534656,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 41.2190000000046,
+          "gpu_used_mib": 9030.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24478031872,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 43.28100000000268,
+          "gpu_used_mib": 9028.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24466653184,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 45.32800000000134,
+          "gpu_used_mib": 9025.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24609550336,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 47.375,
+          "gpu_used_mib": 9026.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24558977024,
+          "worker_tree_rss_bytes": 3489779712
+        },
+        {
+          "seconds": 49.45300000000134,
+          "gpu_used_mib": 9027.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 11.0,
+          "available_RAM_bytes": 22019358720,
+          "worker_tree_rss_bytes": 5810307072
+        },
+        {
+          "seconds": 51.51600000000326,
+          "gpu_used_mib": 3302.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 3.0,
+          "available_RAM_bytes": 22285103104,
+          "worker_tree_rss_bytes": 5533532160
+        }
+      ],
+      "admission": {
+        "schema_version": 1,
+        "allowed": true,
+        "reason": null,
+        "reason_code": null,
+        "at": "2026-10-22T17:41:19.064400+00:00",
+        "checked_at_epoch": 1792690879.0644,
+        "available_bytes": 28742668288,
+        "unrealized_reserved_bytes": 0,
+        "usable_bytes": 28742668288,
+        "headroom_bytes": 2147483648,
+        "allowance": {
+          "profile_key": "host-memory:v1:ba3d83e512fe619ed5e044450acd08039fc297ac8be528ebac24ef6b4e345a0e",
+          "profile": {
+            "kind": "concept",
+            "engine": "sdxl_local",
+            "checkpoint": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+            "quality": "Maximum",
+            "pipeline_type": null,
+            "precision": "fp16 with upstream VAE float32 upcast",
+            "texture_size": null,
+            "finishing_only": false,
+            "use_gpu": false
+          },
+          "bytes": 12884901888,
+          "planning_floor_gib": 12,
+          "observed": null,
+          "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+        },
+        "active_claims": [],
+        "quality_settings_changed": false
+      },
+      "generation": {
+        "status": "GENERATED_NEEDS_REVIEW",
+        "engine": "sdxl_local",
+        "request": {
+          "kind": "concept",
+          "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+          "batch_attempt": 0,
+          "project_id": "5da19d59962f4067a5237dd32c5207a8",
+          "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+          "name": "Castle / detailed AI route concept",
+          "prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "user_prompt": "t\u1ea1o cho t\u00f4i 1 l\u00e2u \u0111\u00e0i, style gi\u1ed1ng h\u00ecnh \u1ea3nh ref n\u00e0y",
+          "reference_direction": {
+            "method": "measured_palette_only",
+            "references": [
+              {
+                "artifact_id": "37eb306603284617a742dd4145647a5b",
+                "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                "palette": [
+                  {
+                    "rgb": [
+                      87,
+                      80,
+                      83
+                    ],
+                    "pixels": 902,
+                    "label": "brown"
+                  },
+                  {
+                    "rgb": [
+                      66,
+                      56,
+                      58
+                    ],
+                    "pixels": 846,
+                    "label": "charcoal"
+                  },
+                  {
+                    "rgb": [
+                      124,
+                      112,
+                      100
+                    ],
+                    "pixels": 760,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      161,
+                      146,
+                      124
+                    ],
+                    "pixels": 520,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      198,
+                      190,
+                      160
+                    ],
+                    "pixels": 415,
+                    "label": "ivory"
+                  }
+                ]
+              }
+            ],
+            "bilingual_noun_hints": [],
+            "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+          },
+          "project_style_snapshot": {
+            "name": "Runavelle castle detailed AI quality",
+            "description": "",
+            "cover_artifact_id": null,
+            "art_bible": {
+              "game_id": "runavelle",
+              "version": 1,
+              "units": "meter",
+              "palette": {
+                "limestone": "#e4d7b5",
+                "oak": "#69442e",
+                "slate": "#263b59",
+                "bronze": "#99704a",
+                "banner": "#1b315f",
+                "mana": "#55e5ef"
+              },
+              "materials": [
+                "ivory limestone",
+                "chestnut oak",
+                "midnight blue slate",
+                "aged bronze",
+                "navy gold cloth",
+                "cyan mana"
+              ],
+              "golden_references": [],
+              "camera": {
+                "approval": "NEEDS_REVIEW",
+                "projection": "orthographic"
+              },
+              "license_policy": "commercial_required",
+              "constraints": {
+                "dimensions_m": null,
+                "door_orientation": "NEEDS_REVIEW",
+                "balconies": 2,
+                "symmetry": "NEEDS_REVIEW"
+              }
+            },
+            "palette": [],
+            "material_language": "",
+            "default_style": "",
+            "units": "m",
+            "target_height_m": null,
+            "export_settings": {},
+            "target_engines": [],
+            "engine_profiles": {},
+            "id": "5da19d59962f4067a5237dd32c5207a8"
+          },
+          "seed": 43,
+          "steps": 50,
+          "size": 1024,
+          "effective_config": {
+            "schema_version": 1,
+            "stage": "concept",
+            "engine_id": "sdxl_local",
+            "engine_version": "SDXL base 1.0 / cached revision 46216598",
+            "checkpoint": {
+              "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+              "files": {
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+              }
+            },
+            "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+            "reference_hashes": [
+              "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+            ],
+            "resolution": 1024,
+            "inference_steps": 50,
+            "guidance": 7,
+            "seed": 43,
+            "precision": "fp16 with upstream VAE float32 upcast",
+            "geometry": null,
+            "texture": null,
+            "blender": null,
+            "lod": null,
+            "export": {
+              "format": "png"
+            },
+            "candidate_count": 1,
+            "quality": "Maximum",
+            "quality_lock": true,
+            "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+            "qa": {
+              "image_validity": true,
+              "human_concept_approval": true,
+              "automatic_3d_generation": false
+            },
+            "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+            "composition_policy": 3,
+            "reference_direction": {
+              "method": "measured_palette_only",
+              "references": [
+                {
+                  "artifact_id": "37eb306603284617a742dd4145647a5b",
+                  "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                  "palette": [
+                    {
+                      "rgb": [
+                        87,
+                        80,
+                        83
+                      ],
+                      "pixels": 902,
+                      "label": "brown"
+                    },
+                    {
+                      "rgb": [
+                        66,
+                        56,
+                        58
+                      ],
+                      "pixels": 846,
+                      "label": "charcoal"
+                    },
+                    {
+                      "rgb": [
+                        124,
+                        112,
+                        100
+                      ],
+                      "pixels": 760,
+                      "label": "gray"
+                    },
+                    {
+                      "rgb": [
+                        161,
+                        146,
+                        124
+                      ],
+                      "pixels": 520,
+                      "label": "gray"
+                    },
+                    {
+                      "rgb": [
+                        198,
+                        190,
+                        160
+                      ],
+                      "pixels": 415,
+                      "label": "ivory"
+                    }
+                  ]
+                }
+              ],
+              "bilingual_noun_hints": [],
+              "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+            }
+          },
+          "effective_config_hash": "441cdf0710fdd3092eb565402a7b4e7f15b01db9c8ae314b28a42845e98740e5",
+          "quality_repair": {
+            "schema_version": 1,
+            "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+            "asset_attempt": 0,
+            "root_cause": "CONCEPT_BACKGROUND_SCENE",
+            "stage": "concept",
+            "engine": "sdxl_local",
+            "action": "repair_concept",
+            "issues": [
+              "background_scene"
+            ],
+            "reason": "Cause-specific concept conditioning; geometry has not started",
+            "at": "2026-10-22T13:31:05.144004+00:00",
+            "budget": {
+              "allowed": true,
+              "reason": null,
+              "used": {
+                "attempts": 0,
+                "stage_attempts": 0,
+                "cause_attempts": 0,
+                "gpu_seconds": 85.68800000000192,
+                "cpu_seconds": 104.125,
+                "disk_bytes": 1716402
+              },
+              "limits": {
+                "max_attempts": 3,
+                "per_stage": 2,
+                "per_cause": 1,
+                "gpu_seconds": 7200.0,
+                "cpu_seconds": 7200.0,
+                "disk_gb": 16.0
+              },
+              "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+            },
+            "predicted_cost": {
+              "seconds": 85.68800000000192,
+              "resource": "gpu",
+              "disk_bytes": 1659970,
+              "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+            },
+            "instructions": [
+              "Photograph the isolated object against a uniform neutral studio sweep."
+            ],
+            "source_hashes": [
+              "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+            ],
+            "quality_preserved": true,
+            "validation": [
+              "Recheck the new image with the current suitability policy",
+              "Do not start 3D until the source is admitted"
+            ]
+          },
+          "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\sdxl-pooling-research\\20261022T174119Z\\mean",
+          "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\a26c9ecf305344dabfd9c89d51a93253\\request.json",
+          "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b",
+          "research_delta": {
+            "pooling": "mean",
+            "quality_default_changed": false
+          }
+        },
+        "script_sha256": "ee503cec6c1b6e0d4f936f33086dbb72a931383b30c521721e6b5f64997a3eb4",
+        "network": "OFFLINE",
+        "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+        "purpose": "concept_preview_requires_user_approval",
+        "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+        "weight_sha256": {
+          "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+          "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+          "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+          "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+          "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+        },
+        "prompt_encoding": {
+          "chunks": 6,
+          "tokens_not_truncated": true,
+          "pooled": "mean across CLIP-2 chunks",
+          "experimental_long_prompt": true
+        },
+        "output_sha256": "a0600ce07ec93d26e7ba0dbfee89a7701b6756d99a355ac6a569f5007270c8b9",
+        "peak_allocated_bytes": 5602789888,
+        "peak_reserved_bytes": 7845445632,
+        "torch": "2.11.0+cu128",
+        "gpu": "NVIDIA GeForce RTX 5070 Ti",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "duration_seconds": 50.9690000000046
+      },
+      "seconds": 53.54699999999866
+    },
+    {
+      "mode": "first",
+      "status": "GENERATED_REQUIRES_VISUAL_REVIEW",
+      "worker_sha256": "6d3d178f1f55d59f9504f364f0af2bd2fdbb525e7b62ee047a4c8786e8af6808",
+      "samples": [
+        {
+          "seconds": 0.04700000000593718,
+          "gpu_used_mib": 2995.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 4.0,
+          "available_RAM_bytes": 28159635456,
+          "worker_tree_rss_bytes": 26288128
+        },
+        {
+          "seconds": 2.1090000000040163,
+          "gpu_used_mib": 2995.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 3.0,
+          "available_RAM_bytes": 27772170240,
+          "worker_tree_rss_bytes": 548773888
+        },
+        {
+          "seconds": 4.1560000000026776,
+          "gpu_used_mib": 2995.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 3.0,
+          "available_RAM_bytes": 27426373632,
+          "worker_tree_rss_bytes": 641875968
+        },
+        {
+          "seconds": 6.203000000001339,
+          "gpu_used_mib": 2998.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 5.0,
+          "available_RAM_bytes": 27281543168,
+          "worker_tree_rss_bytes": 687362048
+        },
+        {
+          "seconds": 8.26600000000326,
+          "gpu_used_mib": 2983.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 9.0,
+          "available_RAM_bytes": 27279593472,
+          "worker_tree_rss_bytes": 687370240
+        },
+        {
+          "seconds": 10.328000000001339,
+          "gpu_used_mib": 3045.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 3.0,
+          "available_RAM_bytes": 26731110400,
+          "worker_tree_rss_bytes": 1083588608
+        },
+        {
+          "seconds": 12.39100000000326,
+          "gpu_used_mib": 4770.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 22.0,
+          "available_RAM_bytes": 25490415616,
+          "worker_tree_rss_bytes": 2249879552
+        },
+        {
+          "seconds": 14.453000000001339,
+          "gpu_used_mib": 6634.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 10.0,
+          "available_RAM_bytes": 21307478016,
+          "worker_tree_rss_bytes": 6370889728
+        },
+        {
+          "seconds": 16.51600000000326,
+          "gpu_used_mib": 9018.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 5.0,
+          "available_RAM_bytes": 24141398016,
+          "worker_tree_rss_bytes": 3407134720
+        },
+        {
+          "seconds": 18.57800000000134,
+          "gpu_used_mib": 9136.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24029167616,
+          "worker_tree_rss_bytes": 3467198464
+        },
+        {
+          "seconds": 20.64100000000326,
+          "gpu_used_mib": 9136.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24120451072,
+          "worker_tree_rss_bytes": 3467198464
+        },
+        {
+          "seconds": 22.687000000005355,
+          "gpu_used_mib": 9138.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24086843392,
+          "worker_tree_rss_bytes": 3467198464
+        },
+        {
+          "seconds": 24.734000000004016,
+          "gpu_used_mib": 9138.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24095469568,
+          "worker_tree_rss_bytes": 3467198464
+        },
+        {
+          "seconds": 26.797000000005937,
+          "gpu_used_mib": 9133.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 99.0,
+          "available_RAM_bytes": 24078159872,
+          "worker_tree_rss_bytes": 3467198464
+        },
+        {
+          "seconds": 28.8440000000046,
+          "gpu_used_mib": 9133.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 17.0,
+          "available_RAM_bytes": 20326699008,
+          "worker_tree_rss_bytes": 7313866752
+        },
+        {
+          "seconds": 30.937000000005355,
+          "gpu_used_mib": 3411.0,
+          "gpu_total_mib": 16303.0,
+          "gpu_utilization_percent": 3.0,
+          "available_RAM_bytes": 20314714112,
+          "worker_tree_rss_bytes": 7069683712
+        }
+      ],
+      "admission": {
+        "schema_version": 1,
+        "allowed": true,
+        "reason": null,
+        "reason_code": null,
+        "at": "2026-10-22T17:42:12.610151+00:00",
+        "checked_at_epoch": 1792690932.610152,
+        "available_bytes": 28165754880,
+        "unrealized_reserved_bytes": 0,
+        "usable_bytes": 28165754880,
+        "headroom_bytes": 2147483648,
+        "allowance": {
+          "profile_key": "host-memory:v1:ba3d83e512fe619ed5e044450acd08039fc297ac8be528ebac24ef6b4e345a0e",
+          "profile": {
+            "kind": "concept",
+            "engine": "sdxl_local",
+            "checkpoint": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+            "quality": "Maximum",
+            "pipeline_type": null,
+            "precision": "fp16 with upstream VAE float32 upcast",
+            "texture_size": null,
+            "finishing_only": false,
+            "use_gpu": false
+          },
+          "bytes": 12884901888,
+          "planning_floor_gib": 12,
+          "observed": null,
+          "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+        },
+        "active_claims": [],
+        "quality_settings_changed": false
+      },
+      "generation": {
+        "status": "GENERATED_NEEDS_REVIEW",
+        "engine": "sdxl_local",
+        "request": {
+          "kind": "concept",
+          "batch_id": "c108b4859bbe46f5b8e6a1c28125cfb2",
+          "batch_attempt": 0,
+          "project_id": "5da19d59962f4067a5237dd32c5207a8",
+          "asset_id": "0d0a7c93481641d18cd268d444afe5ef",
+          "name": "Castle / detailed AI route concept",
+          "prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "user_prompt": "t\u1ea1o cho t\u00f4i 1 l\u00e2u \u0111\u00e0i, style gi\u1ed1ng h\u00ecnh \u1ea3nh ref n\u00e0y",
+          "reference_direction": {
+            "method": "measured_palette_only",
+            "references": [
+              {
+                "artifact_id": "37eb306603284617a742dd4145647a5b",
+                "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                "palette": [
+                  {
+                    "rgb": [
+                      87,
+                      80,
+                      83
+                    ],
+                    "pixels": 902,
+                    "label": "brown"
+                  },
+                  {
+                    "rgb": [
+                      66,
+                      56,
+                      58
+                    ],
+                    "pixels": 846,
+                    "label": "charcoal"
+                  },
+                  {
+                    "rgb": [
+                      124,
+                      112,
+                      100
+                    ],
+                    "pixels": 760,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      161,
+                      146,
+                      124
+                    ],
+                    "pixels": 520,
+                    "label": "gray"
+                  },
+                  {
+                    "rgb": [
+                      198,
+                      190,
+                      160
+                    ],
+                    "pixels": 415,
+                    "label": "ivory"
+                  }
+                ]
+              }
+            ],
+            "bilingual_noun_hints": [],
+            "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+          },
+          "project_style_snapshot": {
+            "name": "Runavelle castle detailed AI quality",
+            "description": "",
+            "cover_artifact_id": null,
+            "art_bible": {
+              "game_id": "runavelle",
+              "version": 1,
+              "units": "meter",
+              "palette": {
+                "limestone": "#e4d7b5",
+                "oak": "#69442e",
+                "slate": "#263b59",
+                "bronze": "#99704a",
+                "banner": "#1b315f",
+                "mana": "#55e5ef"
+              },
+              "materials": [
+                "ivory limestone",
+                "chestnut oak",
+                "midnight blue slate",
+                "aged bronze",
+                "navy gold cloth",
+                "cyan mana"
+              ],
+              "golden_references": [],
+              "camera": {
+                "approval": "NEEDS_REVIEW",
+                "projection": "orthographic"
+              },
+              "license_policy": "commercial_required",
+              "constraints": {
+                "dimensions_m": null,
+                "door_orientation": "NEEDS_REVIEW",
+                "balconies": 2,
+                "symmetry": "NEEDS_REVIEW"
+              }
+            },
+            "palette": [],
+            "material_language": "",
+            "default_style": "",
+            "units": "m",
+            "target_height_m": null,
+            "export_settings": {},
+            "target_engines": [],
+            "engine_profiles": {},
+            "id": "5da19d59962f4067a5237dd32c5207a8"
+          },
+          "seed": 43,
+          "steps": 50,
+          "size": 1024,
+          "effective_config": {
+            "schema_version": 1,
+            "stage": "concept",
+            "engine_id": "sdxl_local",
+            "engine_version": "SDXL base 1.0 / cached revision 46216598",
+            "checkpoint": {
+              "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+              "files": {
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+                "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+              }
+            },
+            "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. \ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+            "reference_hashes": [
+              "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+            ],
+            "resolution": 1024,
+            "inference_steps": 50,
+            "guidance": 7,
+            "seed": 43,
+            "precision": "fp16 with upstream VAE float32 upcast",
+            "geometry": null,
+            "texture": null,
+            "blender": null,
+            "lod": null,
+            "export": {
+              "format": "png"
+            },
+            "candidate_count": 1,
+            "quality": "Maximum",
+            "quality_lock": true,
+            "project_style_hash": "32312f3044957272f3266f44324400e3f32e3490be33cb0b7a9370cf86b8b9de",
+            "qa": {
+              "image_validity": true,
+              "human_concept_approval": true,
+              "automatic_3d_generation": false
+            },
+            "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+            "composition_policy": 3,
+            "reference_direction": {
+              "method": "measured_palette_only",
+              "references": [
+                {
+                  "artifact_id": "37eb306603284617a742dd4145647a5b",
+                  "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+                  "palette": [
+                    {
+                      "rgb": [
+                        87,
+                        80,
+                        83
+                      ],
+                      "pixels": 902,
+                      "label": "brown"
+                    },
+                    {
+                      "rgb": [
+                        66,
+                        56,
+                        58
+                      ],
+                      "pixels": 846,
+                      "label": "charcoal"
+                    },
+                    {
+                      "rgb": [
+                        124,
+                        112,
+                        100
+                      ],
+                      "pixels": 760,
+                      "label": "gray"
+                    },
+                    {
+                      "rgb": [
+                        161,
+                        146,
+                        124
+                      ],
+                      "pixels": 520,
+                      "label": "gray"
+                    },
+                    {
+                      "rgb": [
+                        198,
+                        190,
+                        160
+                      ],
+                      "pixels": 415,
+                      "label": "ivory"
+                    }
+                  ]
+                }
+              ],
+              "bilingual_noun_hints": [],
+              "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+            }
+          },
+          "effective_config_hash": "441cdf0710fdd3092eb565402a7b4e7f15b01db9c8ae314b28a42845e98740e5",
+          "quality_repair": {
+            "schema_version": 1,
+            "id": "concept-repair:e00656548e38bdae24c0648a824544d8b03ebc9dda572f429e7d9c406927830a",
+            "asset_attempt": 0,
+            "root_cause": "CONCEPT_BACKGROUND_SCENE",
+            "stage": "concept",
+            "engine": "sdxl_local",
+            "action": "repair_concept",
+            "issues": [
+              "background_scene"
+            ],
+            "reason": "Cause-specific concept conditioning; geometry has not started",
+            "at": "2026-10-22T13:31:05.144004+00:00",
+            "budget": {
+              "allowed": true,
+              "reason": null,
+              "used": {
+                "attempts": 0,
+                "stage_attempts": 0,
+                "cause_attempts": 0,
+                "gpu_seconds": 85.68800000000192,
+                "cpu_seconds": 104.125,
+                "disk_bytes": 1716402
+              },
+              "limits": {
+                "max_attempts": 3,
+                "per_stage": 2,
+                "per_cause": 1,
+                "gpu_seconds": 7200.0,
+                "cpu_seconds": 7200.0,
+                "disk_gb": 16.0
+              },
+              "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+            },
+            "predicted_cost": {
+              "seconds": 85.68800000000192,
+              "resource": "gpu",
+              "disk_bytes": 1659970,
+              "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+            },
+            "instructions": [
+              "Photograph the isolated object against a uniform neutral studio sweep."
+            ],
+            "source_hashes": [
+              "88f34f0be77e9218f048f3b8c00c9d808f71b07411a69b20f075b1eb9de2bf1f"
+            ],
+            "quality_preserved": true,
+            "validation": [
+              "Recheck the new image with the current suitability policy",
+              "Do not start 3D until the source is admitted"
+            ]
+          },
+          "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\sdxl-pooling-research\\20261022T174119Z\\first",
+          "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\a26c9ecf305344dabfd9c89d51a93253\\request.json",
+          "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b",
+          "research_delta": {
+            "pooling": "first",
+            "quality_default_changed": false
+          }
+        },
+        "script_sha256": "6d3d178f1f55d59f9504f364f0af2bd2fdbb525e7b62ee047a4c8786e8af6808",
+        "network": "OFFLINE",
+        "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+        "purpose": "concept_preview_requires_user_approval",
+        "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+        "weight_sha256": {
+          "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+          "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+          "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+          "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+          "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+        },
+        "prompt_encoding": {
+          "chunks": 6,
+          "tokens_not_truncated": true,
+          "pooled": "experimental first CLIP-2 chunk",
+          "experimental_long_prompt": true
+        },
+        "output_sha256": "ecb4b8b40080b87aaba34e4ed27e1f58baf06a42284357e5505689d987437697",
+        "peak_allocated_bytes": 5602789888,
+        "peak_reserved_bytes": 7845445632,
+        "torch": "2.11.0+cu128",
+        "gpu": "NVIDIA GeForce RTX 5070 Ti",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "duration_seconds": 29.875
+      },
+      "seconds": 32.95300000000134
+    }
+  ],
+  "scope": "Same retained castle prompt/negative/seed/50steps/1024/weights. Only experimental CLIP2 pooling changes. No product default/config/worker/install/source edits, concept approval, new 3D or quality parity claim.",
+  "sources_preserved": true,
+  "assessment": {
+    "adopted": false,
+    "baseline_reproduced_byte_exact": true,
+    "observed": "Baseline exactly reproduces the retained castle concept. First-chunk pooling changes architecture and gives more clear space above the flags in this one seed. Both concepts still have warm roofs rather than the inherited midnight-blue slate. No reliable overall style/quality improvement is established. Preserve current encoding/config behavior.",
+    "limits": [
+      "One prompt/seed/model only",
+      "No 3D generated from the alternative",
+      "No automatic judge or artistic approval",
+      "Timing order/cache/other host work confound throughput comparison"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+﻿"""Controlled local SDXL pooling research. No production encoding/default edits."""
+import os,sys,json,time,subprocess
+from pathlib import Path
+from datetime import datetime,timezone
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT));os.environ['AFS_DATA']=str(ROOT/'.local')
+from apps.api import store,jobs,host_resources
+import psutil
+RUN=ROOT/'.local/sdxl-pooling-research'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ');RUN.mkdir(parents=True)
+source=ROOT/'.local/castle-quality-route/20261022T132736Z/Library/jobs/a26c9ecf305344dabfd9c89d51a93253/request.json'
+worker_source=ROOT/'engines/sdxl_worker.py'; original=worker_source.read_text('utf-8');req=json.loads(source.read_text('utf-8'))
+source_hashes={str(p):store.digest(p) for p in (source,worker_source)}
+report=dict(status='RUNNING_RESEARCH_ONLY',run=str(RUN),source_hashes=source_hashes,variants=[],scope='Same retained castle prompt/negative/seed/50steps/1024/weights. Only experimental CLIP2 pooling changes. No product default/config/worker/install/source edits, concept approval, new 3D or quality parity claim.')
+try:
+ for mode in ('mean','first'):
+  text=original
+  if mode=='first':
+   anchor='torch.stack(pooled).mean(0) if pooled else None';assert text.count(anchor)==1
+   text=text.replace(anchor,'pooled[0] if pooled else None').replace("pooled='mean across CLIP-2 chunks'","pooled='experimental first CLIP-2 chunk'")
+  worker=ROOT/'.local'/('sdxl-pool-'+mode+'-'+RUN.name+'.py');worker.write_text(text,'utf-8')
+  entry=dict(mode=mode,status='RUNNING',worker_sha256=store.digest(worker),samples=[]);report['variants'].append(entry)
+  folder=store.DATA/'jobs'/('sdxl-pooling-research-'+RUN.name+'-'+mode);folder.mkdir(parents=True)
+  request=dict(req,output=str(RUN/mode),research_delta=dict(pooling=mode,quality_default_changed=False));path=folder/'request.json';path.write_text(json.dumps(request,indent=2),'utf-8')
+  job=dict(id=folder.name,payload=dict(kind='concept',engine='sdxl_local',effective_config=req.get('effective_config')))
+  process=None;started=time.monotonic()
+  try:
+   with jobs.resource_slot('gpu'),host_resources.reserve(job,'gpu') as admission,(RUN/(mode+'.log')).open('w',encoding='utf-8') as log:
+    entry['admission']=admission
+    if not admission['allowed']:raise RuntimeError(admission['reason'])
+    process=subprocess.Popen([str(Path.home()/'Tools/sdxl/venv/Scripts/python.exe'),'-B','-u',str(worker),'--request',str(path)],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+    (folder/'process.json').write_text(json.dumps(dict(pid=process.pid)),'utf-8')
+    while process.poll() is None:
+     gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,memory.total,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+     vals=[float(v.strip()) for v in gpu.stdout.strip().split(',')];row=dict(seconds=time.monotonic()-started,gpu_used_mib=vals[0],gpu_total_mib=vals[1],gpu_utilization_percent=vals[2],available_RAM_bytes=psutil.virtual_memory().available)
+     try:
+      tree=[psutil.Process(process.pid),*psutil.Process(process.pid).children(recursive=True)];row['worker_tree_rss_bytes']=sum(p.memory_info().rss for p in tree)
+     except psutil.Error:pass
+     entry['samples'].append(row)
+     if time.monotonic()-started>900:raise TimeoutError('Research timeout; no quality downgrade')
+     time.sleep(2)
+    if process.returncode:raise RuntimeError('Actual local SDXL failed; see research log')
+   entry['generation']=json.loads((RUN/mode/'generation.json').read_text('utf-8'));assert entry['generation']['status']=='GENERATED_NEEDS_REVIEW';entry['status']='GENERATED_REQUIRES_VISUAL_REVIEW'
+  finally:
+   if process and process.poll() is None:jobs.kill_tree(process)
+   entry['seconds']=time.monotonic()-started
+ assert all(store.digest(Path(p))==h for p,h in source_hashes.items());report['sources_preserved']=True;report['status']='GENERATED_BOTH_REQUIRES_COMPARISON'
+except Exception as exc:
+ report.update(status='FAILED_OR_RESOURCE_BLOCKED',error=str(exc));raise
+finally:
+ (RUN/'report.json').write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(dict(status=report['status'],run=str(RUN))),flush=True)
