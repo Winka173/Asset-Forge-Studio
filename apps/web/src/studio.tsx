@@ -1,3 +1,4 @@
+import {VideoStudio} from './video-studio';
 import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
@@ -235,7 +236,7 @@ function normalizeDraft(value:Draft):Draft {const seeds:unknown=value.seeds;retu
 export function Studio() {
   useStartupToolDetection();
   const interfacePreferences=useInterfacePreferences();
-  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'>('single');
+  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'|'video'>('single');
   const [createStep,setCreateStep]=useState(0);
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
@@ -252,7 +253,7 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
-  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
+  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx','video'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
   useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
   const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
@@ -411,7 +412,7 @@ export function Studio() {
       setDraft(normalizeDraft(restored));
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
-      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':'single');setCreateStep(['map_environment','vfx'].includes(routeAsset.asset_type||'')?1:2);}
+      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':routeAsset.asset_type==='cinematic'?'video':'single');setCreateStep(['map_environment','vfx','cinematic'].includes(routeAsset.asset_type||'')?1:2);}
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -590,7 +591,7 @@ export function Studio() {
     location.hash = `create/${created.id}`;
     return created;
   }
-  function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
+  function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx','cinematic'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   async function generate() {
@@ -715,8 +716,8 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
-    setCreateStep(asset.asset_type==='map_environment'||asset.asset_type==='vfx'?1:2);
-    setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':'single');
+    setCreateStep(['map_environment','vfx','cinematic'].includes(asset.asset_type||'')?1:2);
+    setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':asset.asset_type==='cinematic'?'video':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
     setDraft(normalizeDraft({
@@ -1009,10 +1010,11 @@ export function Studio() {
             <small>AI chạy local. Các file export được sắp theo project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
-            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
+            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
             <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
-            {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Preview',tone:'purple'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
+            {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Preview',tone:'purple'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
           </section>}
+          {projectId && page==='Create' && createStep>0 && creationMode==='video' && <VideoStudio key={`${projectId}:${selectedAsset?.asset_type==='cinematic'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='cinematic'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='fx' && <FxStudio key={`${projectId}:${selectedAsset?.asset_type==='vfx'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='vfx'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}

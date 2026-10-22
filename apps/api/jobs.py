@@ -54,6 +54,9 @@ def listing():
                 progress.update(stage=matches[-1][1].strip(), percent=int(matches[-1][2]))
             stages = [line.removeprefix('STAGE ').strip() for line in lines if line.startswith('STAGE ')]
             if stages: progress.update(stage=stages[-1], percent=None)
+            frames=re.findall(r'AFS_FRAME (\d+)/(\d+)',tail)
+            if frames and 'STAGE encode' not in tail:
+                done,total=map(int,frames[-1]);progress.update(stage=f'Blender frames {done}/{total}',percent=100*done/total if total else None)
         value['progress'] = progress
     return values
 
@@ -133,7 +136,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('batch_semantics','animation_retime'):return 'cpu'
+    if payload['kind'] in ('batch_semantics','animation_retime','cinematic_render'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -309,6 +312,9 @@ class Worker:
             if payload['kind']=='animation_retime':
                 self.animation_retime(job,artifact,source,folder)
                 return
+            if payload['kind']=='cinematic_render':
+                self.cinematic_render(job,artifact,folder)
+                return
             if payload['kind'] == 'inference':
                 self.inference(job, artifact, source, folder)
                 return
@@ -394,6 +400,53 @@ class Worker:
         inspection=inspect_glb(output/'Animation.glb')
         (output/'report.json').write_text(json.dumps(dict(status='PASS_DEFORMATION_RETIME',checks=dict(export_reopen='PASS',deformation_retime='PASS'),animation=record,deformation=report,artifacts=[dict(path='Animation.glb',sha256=store.digest(output/'Animation.glb'))]),indent=2),encoding='utf-8')
         store.add_artifact(output/'Animation.glb','candidate','Animation / '+record['after']['name'],inspection|dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,stage='animation_processed',engine='blender_animation',animation=record,animation_qa=report,license=artifact['metadata'].get('license','NEEDS_REVIEW')))
+        transition(identifier,'REVIEW_REQUIRED')
+
+    def cinematic_render(self,job,artifact,folder):
+        from engines import cinematic
+        import shutil
+        identifier=job['id'];payload=job['payload'];command,request=cinematic.prepare(payload,artifact,folder)
+        def run(command,stage):
+            with (folder/'worker.log').open('a',encoding='utf-8') as log:
+                log.write('STAGE '+stage+'\n');log.flush()
+                process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
+                (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='cinematic_render',stage=stage)))
+                while process.poll() is None:
+                    if self.stop.is_set() or get(identifier)['status']=='CANCELLED':
+                        kill_tree(process)
+                        if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Stopped at render checkpoint; Retry reuses checked frames from the immutable scene')
+                        return False
+                    self.stop.wait(.2)
+                if process.returncode:raise ValueError(stage+' failed; inspect worker.log')
+                return True
+        transition(identifier,'POSTPROCESSING')
+        if not run(command,'Blender CPU shot rendering'):return
+        command,partial,frames=cinematic.encode(payload,folder,request)
+        if not run(command,'encode MP4'):return
+        transition(identifier,'VALIDATING');qa=cinematic.validate_video(payload,partial,request)
+        final=partial.with_name('cinematic.mp4');partial.replace(final);output=folder/'output'
+        report=qa|dict(scene_artifact_id=artifact['id'],scene_sha256=artifact['sha256'],source_hashes=payload['effective_config']['source_hashes'],frame_hashes=frames)
+        (output/'video_qa.json').write_text(json.dumps(report,indent=2))
+        delivery=store.DATA/'exports'/payload['project_id']/'cinematics'/payload['asset_id']/payload['effective_config_hash'];delivery.mkdir(parents=True,exist_ok=True)
+        target=delivery/'cinematic.mp4';checksum=store.digest(final)
+        if target.exists() and store.digest(target)!=checksum:raise ValueError('Existing delivery differs; no overwrite')
+        if not target.exists():
+            temporary=target.with_suffix('.mp4.part');shutil.copyfile(final,temporary)
+            if store.digest(temporary)!=checksum:raise ValueError('Delivery copy checksum mismatch')
+            temporary.replace(target)
+        manifest=dict(schema_version=1,asset_id=payload['asset_id'],project_id=payload['project_id'],scene_id=artifact['id'],scene_sha256=artifact['sha256'],source_hashes=payload['effective_config']['source_hashes'],video='cinematic.mp4',sha256=checksum,qa=qa,exported_at=store.now())
+        manifest_path=delivery/'manifest.json'
+        if not manifest_path.exists():
+            temporary=delivery/'manifest.json.part';temporary.write_text(json.dumps(manifest,indent=2),encoding='utf-8');temporary.replace(manifest_path)
+        metadata=dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,asset_type='cinematic',stage='video_validated',qa_status='passed',artistic_review='not_reviewed',duration_seconds=qa['duration_seconds'],fps=qa['fps'],resolution=qa['resolution'],delivery=str(target))
+        video=store.add_artifact(final,'cinematic_video','Cinematic MP4',metadata)
+        first=store.DATA/'cinematic-cache'/payload['effective_config_hash']/request['scene']['shots'][0]['id']/'000000.png'
+        preview=output/'cinematic_thumbnail.png';shutil.copyfile(first,preview);store.add_artifact(preview,'preview',preview.name,metadata)
+        store.add_artifact(output/'video_qa.json','qa_report','Cinematic technical QA',metadata)
+        store.add_artifact(output/'source.blend','cinematic_source','Editable cinematic scene.blend',metadata)
+        store.add_artifact(output/'scene.json','cinematic_source','Reproducible scene.json',metadata)
+        with store.connect() as db:
+            db.execute('BEGIN IMMEDIATE');model=json.loads(db.execute('SELECT payload FROM assets WHERE id=?',(payload['asset_id'],)).fetchone()['payload']);model.setdefault('published_video_id',video['id']);model.setdefault('video_deliveries',[]).append(dict(artifact_id=video['id'],scene_id=artifact['id'],sha256=checksum,path=str(target),at=store.now()));db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),model['id']))
         transition(identifier,'REVIEW_REQUIRED')
 
     def unity_import(self,job,artifact,folder):

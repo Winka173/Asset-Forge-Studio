@@ -1,3 +1,11 @@
+# Video Studio in progress - 2026-10-22 (Asia/Saigon)
+
+New authority: doc/Asset_Forge_Studio_Video_Studio_Cinematic_Director_V1.md, including Audio Director. Initial P0 work implements pinned multi-GLB scene composition, hierarchy/transforms/gizmos, immutable snapshots, explicit orbit/dolly storyboard, shared CPU Blender rendering, checked frame reuse, H.264/FFprobe/full decode, atomic per-version delivery and Library/Production preview. Backend acceptance rendered a real 8-second two-source fixture cinematic and reused all 96 frames on retry. Windows 0.8.13 passed all 89 tests, packaged smoke and affected native acceptance: two GLBs, transform undo/redo, immutable versions, paused queue/restart, actual 96-frame render, MP4 playback and Library reopening. Evidence: evidence/cinematic_native.json. See VIDEO_STUDIO.md.
+
+Remaining: modular environment assembly and real Aetherward cast/modules, exact prompt camera/time edits, per-shot invalidation, timeline/audio import/mixing/voices, verified AI video/audio adapters, richer render QA and stress recovery. No complete Video Studio, generated sanctuary, AI video, soundtrack or auto-rig claim is made. Existing 0.8.12 animation/3D features remain preserved.
+
+---
+
 # Unity animation work - 2026-10-22 (Asia/Saigon)
 
 Version 0.8.12 adds an explicit, limited existing-animation Unity profile in Library/Production. It reuses the shared CPU scheduler and imports a single untextured Generic skinned clip through Blender FBX, validates real deformation/metric scale/weights, cold-reopens Unity, and tests package import in a second empty project. The authoritative GLB is preserved and default GLB Only does not invoke Unity. Package availability is bound to the exact source version. All 87 backend tests, packaged Windows smoke and native paused-queue/restart/real-Unity/package/export/version-scope acceptance passed. See UNITY_ANIMATION.md and evidence/unity_animation_native.json.

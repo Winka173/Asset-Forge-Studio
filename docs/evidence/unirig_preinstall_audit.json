@@ -1,0 +1,33 @@
+{
+  "status": "AUDITED_NOT_INSTALLED",
+  "date": "2026-10-22",
+  "source": "https://github.com/VAST-AI-Research/UniRig",
+  "commit": "6793c6640ff01c8fb389f3993434124bb43d2933",
+  "code_license": "MIT at repository root",
+  "embedded_license_observation": {
+    "path": "src/model/michelangelo/LICENSE",
+    "license": "GPL-3.0; full dependency/distribution review still required"
+  },
+  "weights": {
+    "repository": "https://huggingface.co/VAST-AI/UniRig",
+    "model_card_license": "MIT",
+    "downloaded": false,
+    "model_card_release_description": "Stale description conflicts with current repository skin release; inspect exact files before selecting downloads"
+  },
+  "requirements": [
+    "Python 3.11",
+    "Torch >=2.3.1",
+    "flash_attn",
+    "spconv",
+    "torch_scatter",
+    "torch_cluster",
+    "bpy 4.2"
+  ],
+  "local": {
+    "WSL": "not installed",
+    "isolated_environment": "not created",
+    "VRAM_inference": "not measured",
+    "peak_RAM": "not measured"
+  },
+  "quality": "No auto-rig output has been generated or accepted"
+}

@@ -44,7 +44,7 @@ def sync():
             payload=json.loads(row['payload']);asset_id=payload.get('asset_id');project_id=payload.get('project_id')
             if not asset_id or not project_id:continue
             success=row['status']=='REVIEW_REQUIRED';kind=payload.get('kind','stage')
-            label={'concept':'Concept image','inference':'3D candidate','blender':'Blender processing and technical QA','animation_retime':'Animation retiming and deformation QA','world_unity':'Unity world build','fx_unity':'Unity effect build','unity_import':'Unity import'}.get(kind,kind)
+            label={'cinematic_render':'Cinematic render and MP4 validation','concept':'Concept image','inference':'3D candidate','blender':'Blender processing and technical QA','animation_retime':'Animation retiming and deformation QA','world_unity':'Unity world build','fx_unity':'Unity effect build','unity_import':'Unity import'}.get(kind,kind)
             message='Stage finished. Artistic review remains independent.' if success else (row['error'] or 'Open the pipeline to inspect the failed or blocked stage.')
             record('job:'+row['id']+':'+row['status']+':'+row['updated_at'],project_id,asset_id,'completed' if success else 'failed',label+(' completed' if success else ' needs attention'),message,row['updated_at'],target(asset_id,payload.get('batch_id')))
         db.execute('INSERT OR REPLACE INTO production_notification_cursor VALUES (?,?)',('jobs',stamp))

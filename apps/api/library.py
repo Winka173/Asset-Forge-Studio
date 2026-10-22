@@ -20,6 +20,10 @@ def data(project_id):
 
 def thumbnail_source(artifacts):
     for a in reversed(artifacts):
+        if a['role']=='preview' and a['name']=='cinematic_thumbnail.png':
+            path=store.safe_path(a['relative_path'])
+            if path.is_file():return path,'generated_video',a['sha256']
+    for a in reversed(artifacts):
         if a['role']=='preview' and a['metadata'].get('asset_type')=='vfx' and a['name']=='frame_003.png':
             path=store.safe_path(a['relative_path'])
             if path.is_file():return path,'generated_effect',a['sha256']
@@ -48,7 +52,7 @@ def listing(project_id:str,search:str='',category:str='',status:str='',qa:str=''
         if latest:
             p=store.safe_path(latest['relative_path']);size=p.stat().st_size if p.exists() else 0
         value={k:m.get(k) for k in ('id','project_id','asset_type','name','category','tags','favorite','updated_at','archived','master_artifact_id','published_artifact_id',*statuses.FIELDS)}
-        value.update(source_id=m.get('settings',{}).get('source_asset_id'),thumbnail_url=f'/api/library/assets/{m["id"]}/thumbnail' if kind else None,thumbnail_kind=kind,latest_artifact_id=latest['id'] if latest else None,triangles=latest['metadata'].get('triangles') if latest else None,bytes=size,version_count=max(1+len(m.get('revisions',[])),len(m.get('fx_recipe_versions',[])),sum(a['role']=='world_plan' for a in mine)),candidate_count=len(candidates),published=bool(m.get('published_artifact_id') or m.get('production_status')=='completed' and m.get('export_status')=='exported' and not m.get('revisions')))
+        value.update(source_id=m.get('settings',{}).get('source_asset_id'),thumbnail_url=f'/api/library/assets/{m["id"]}/thumbnail' if kind else None,thumbnail_kind=kind,latest_artifact_id=latest['id'] if latest else None,triangles=latest['metadata'].get('triangles') if latest else None,bytes=size,version_count=max(1+len(m.get('revisions',[])),len(m.get('fx_recipe_versions',[])),len(m.get('scene_versions',[])),sum(a['role']=='world_plan' for a in mine)),candidate_count=len(candidates),published=bool(m.get('published_artifact_id') or m.get('production_status')=='completed' and m.get('export_status')=='exported' and not m.get('revisions')))
         hay=' '.join([m['name'],m.get('settings',{}).get('source_asset_id',''),m.get('category',''),*m.get('tags',[])])
         if search and search.casefold() not in hay.casefold():continue
         if favorite and not m.get('favorite'):continue

@@ -117,6 +117,15 @@ def refresh_all():
                 if report.is_file() and json.loads(report.read_text()).get('status')=='PASS_EDITOR_VALIDATION':
                     production='completed';stage='completed';qa='passed';reasons=[]
                     export='prepared'  # Native package exists in Library; no game-facing GLB publication is implied.
+        if model.get('asset_type')=='cinematic':
+            scene_id=model.get('settings',{}).get('current_scene_id');current=[j for j in all_jobs if j['payload'].get('asset_id')==identifier and j['payload'].get('artifact_id')==scene_id]
+            latest=current[0] if current else None
+            production='draft';qa='not_run';export='not_exported';stage='pending';reasons=[]
+            if latest:
+                state=latest['status'];stage=latest.get('progress',{}).get('stage',state)
+                production='completed' if state=='REVIEW_REQUIRED' else 'failed' if state=='FAILED' else 'needs_attention' if state=='BLOCKED' else 'cancelled' if state=='CANCELLED' else 'paused' if state=='QUEUED' and (all_paused or latest['payload'].get('production_paused')) else 'queued' if state=='QUEUED' else 'validating' if state=='VALIDATING' else 'processing'
+                if state=='REVIEW_REQUIRED':qa='passed';export='exported'
+                if state in ('FAILED','BLOCKED'):reasons=[dict(kind='cinematic',message=latest.get('error') or 'Inspect cinematic job logs')]
         fields=dict(production_status=production,stage_status=stage,qa_status=qa,export_status=export,art_review_status=art,attention_required=bool(reasons) or production in ('failed','needs_attention'),attention_reasons=reasons,art_review_artifact_id=current_id,published_artifact_id=model.get('published_artifact_id') or (delivery['artifact_id'] if delivery else None))
         if any(model.get(k)!=v for k,v in fields.items()):
             model.setdefault('status_events',[]).append(dict(at=store.now(),previous={k:model.get(k) for k in FIELDS},current={k:fields[k] for k in FIELDS}))
