@@ -1,29 +1,29 @@
 ﻿{
-    "version":  "0.8.14",
-    "timestamp_utc":  "20261022T052735Z",
-    "git_commit":  "3dab2d8dec5df9cf71130fa14c7ec1c18f4d2215",
+    "version":  "0.8.15",
+    "timestamp_utc":  "20261022T061218Z",
+    "git_commit":  "c41c0adefe945dea6275e370d534162eed9fe9a5",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
+                          " M apps/api/cinematic.py",
                           " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/web/src/studio.tsx",
-                          " M docs/PROGRESS.md",
+                          " M apps/web/src/video-studio.css",
+                          " M apps/web/src/video-studio.tsx",
+                          " M docs/VIDEO_STUDIO.md",
                           " M docs/evidence/desktop_build.json",
                           " M docs/evidence/desktop_smoke.json",
                           " M engines/cinematic.py",
                           " M package-lock.json",
                           " M package.json",
+                          " M scripts/blender_cinematic.py",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? apps/api/updates.py",
-                          "?? apps/web/src/updates.css",
-                          "?? apps/web/src/updates.tsx",
-                          "?? desktop/verify-updates.mjs",
-                          "?? docs/UPDATES.md",
-                          "?? docs/evidence/updates_backend.json",
-                          "?? tests/test_updates.py"
+                          " M tests/test_cinematic.py",
+                          "?? apps/api/cinematic_edits.py",
+                          "?? apps/web/src/cinematic-refine.tsx",
+                          "?? desktop/verify-cinematic-edits.mjs"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -32,7 +32,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T052735Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T061218Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -43,14 +43,14 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "942ce0ba6c9ceb6be46c1ec556706b0e660712778d61741a4466a36aeae50cd5",
-                            "afs-backend.exe":  "9d4b62ed4e69cbd1418da4f4bcbf51df362acfb5078ee8941ce47d0cd1d96561",
-                            "Asset Forge Studio_0.8.14_x64-setup.exe":  "d01aef401739233c20af5430aa2dc4e2ca56616b458d3ac41503b1e3309b32d0"
+                            "Asset Forge Studio.exe":  "449444f73851e20dfd7433d5e91e63bf0eb43b9c0ac1be30e28b43fc9fc0f13d",
+                            "afs-backend.exe":  "806f7aefc38d01e13a8745c5df5c9bce7d5b601630c222da01e14d91017a3820",
+                            "Asset Forge Studio_0.8.15_x64-setup.exe":  "fd1e18141d09e84fc4eef4b78c338cad3bbecba33d875e8fbf57be33e465de5f"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T05-30-37-511Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T06-15-41-642Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.14_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.8.15_x64-setup.exe",
     "previous_latest_kept_running":  true,
-    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.14\\20261022T052735Z"
+    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.15\\20261022T061218Z"
 }

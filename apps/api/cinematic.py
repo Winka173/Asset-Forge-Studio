@@ -4,7 +4,7 @@ import math
 import uuid
 from typing import Literal
 from fastapi import APIRouter,HTTPException
-from pydantic import BaseModel,ConfigDict,Field,model_validator
+from pydantic import BaseModel,ConfigDict,Field,model_validator,model_serializer
 from . import store,studio,jobs
 from .inspection import inspect_glb
 from engines.quality import fingerprint
@@ -30,13 +30,24 @@ class Object(Strict):
 class Shot(Strict):
     id:str=Field(pattern=r'^[a-zA-Z0-9_-]{1,80}$')
     name:str=Field(min_length=1,max_length=120)
-    duration:float=Field(default=4,ge=.25,le=30)
+    duration:float=Field(default=4,gt=0,le=30)
     movement:Literal['orbit','dolly']='orbit'
     target_id:str|None=None
     distance:float=Field(default=12,gt=.01,le=10000)
     elevation:float=Field(default=25,ge=0,le=80)
     azimuth:float=Field(default=35,ge=-360,le=360)
     amount:float=Field(default=30,ge=-180,le=180)
+    source_start_frame:int=Field(default=0,ge=0,le=9000)
+    motion_duration:float|None=Field(default=None,gt=0,le=30)
+    look:Literal['inherit','violet_reveal']='inherit'
+    @model_serializer(mode='wrap')
+    def compatible(self,handler):
+        data=handler(self)
+        # Keep old snapshots/request fingerprints compatible when new fields are unused.
+        if self.source_start_frame==0:data.pop('source_start_frame',None)
+        if self.motion_duration is None:data.pop('motion_duration',None)
+        if self.look=='inherit':data.pop('look',None)
+        return data
 class Scene(Strict):
     schema_version:Literal[1]=1
     project_id:str
@@ -66,6 +77,9 @@ class Scene(Strict):
         if any(s.target_id and s.target_id not in ids for s in self.shots):raise ValueError('Shot target is missing')
         if self.width%2 or self.height%2:raise ValueError('H.264 output dimensions must be even')
         if sum(s.duration for s in self.shots)>300:raise ValueError('This initial render profile supports at most 300 seconds')
+        for shot in self.shots:
+            count=round(shot.duration*self.fps);motion=round((shot.motion_duration or shot.duration)*self.fps)
+            if count<1 or shot.source_start_frame+count>motion:raise ValueError('Clip frame range is outside its source camera motion; reset the trim before extending duration or changing FPS')
         return self
 
 def sources(scene):
@@ -93,13 +107,16 @@ class Save(Strict):
 
 @router.post('/scenes',status_code=201)
 def save(body:Save):
+    return save_snapshot(body)
+
+def save_snapshot(body,edit=None):
     scene=body.scene
     try:sources(scene)
     except (ValueError,KeyError,OSError) as exc:raise HTTPException(409,str(exc))
     if body.asset_id:
         model=studio.asset(body.asset_id)
         if model['project_id']!=scene.project_id or model.get('asset_type')!='cinematic':raise HTTPException(409,'Cinematic belongs to another game/type')
-    digest=fingerprint(body.model_dump());key='cinematic:'+body.request_id
+    digest=fingerprint(body.model_dump() if edit is None else dict(save=body.model_dump(),edit=edit));key='cinematic:'+body.request_id
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');cached=studio.cached(db,key,digest)
         if cached:return cached
@@ -109,6 +126,7 @@ def save(body:Save):
         identifier=uuid.uuid5(uuid.NAMESPACE_URL,key+digest).hex;path=store.safe_path(f'projects/{scene.project_id}/assets/{model["id"]}/scenes/{identifier}.json');path.parent.mkdir(parents=True,exist_ok=True)
         content=json.dumps(scene.model_dump(),ensure_ascii=False,indent=2).encode();temporary=path.with_suffix('.json.part');temporary.write_bytes(content);temporary.replace(path)
         sha=store.digest(path);metadata=dict(project_id=scene.project_id,asset_id=model['id'],schema_version=1,asset_type='cinematic',parent_id=body.base_scene_id,source_hashes={o.artifact_id:o.sha256 for o in scene.objects},prompt_interpretation='Explicit editable camera presets; original prompt preserved, no semantic AI interpretation')
+        if edit:metadata['revision']=edit
         db.execute('INSERT INTO artifacts (id,role,name,relative_path,sha256,created_at,metadata,project_id,asset_id) VALUES (?,?,?,?,?,?,?,?,?)',(identifier,'cinematic_scene',scene.name,path.relative_to(store.DATA).as_posix(),sha,store.now(),json.dumps(metadata),scene.project_id,model['id']))
         model.setdefault('settings',{})['current_scene_id']=identifier;model.setdefault('scene_versions',[]).append(identifier);model['updated_at']=store.now()
         db.execute('INSERT INTO assets VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload',(model['id'],scene.project_id,json.dumps(model)))
@@ -149,3 +167,25 @@ def render(body:Render):
         job=jobs.enqueue(dict(kind='cinematic_render',engine='blender_cinematic',project_id=scene.project_id,asset_id=record['asset_id'],artifact_id=record['id'],use_gpu=False,effective_config=config,effective_config_hash=fingerprint(config),timeout_seconds=86400),db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(key,digest,json.dumps(job)))
     return job
+
+class Refine(Strict):
+    scene_id:str
+    prompt:str=Field(min_length=1,max_length=4000)
+    request_id:str=Field(min_length=8,max_length=100)
+    base_scene_id:str
+
+@router.post('/refinements/plan')
+def refine_plan(body:Refine):
+    from .cinematic_edits import plan
+    try:record,scene=read_scene(body.scene_id);result=plan(scene,body.prompt)
+    except (ValueError,KeyError,OSError) as exc:raise HTTPException(422,str(exc))
+    return result
+
+@router.post('/refinements',status_code=201)
+def refine(body:Refine):
+    from .cinematic_edits import plan
+    try:record,scene=read_scene(body.scene_id);result=plan(scene,body.prompt)
+    except (ValueError,KeyError,OSError) as exc:raise HTTPException(422,str(exc))
+    edited=Scene.model_validate(result['scene'])
+    return save_snapshot(Save(scene=edited,asset_id=record['asset_id'],base_scene_id=body.base_scene_id,request_id=body.request_id),
+        edit=dict(source_scene_id=body.scene_id,prompt=body.prompt,operation=result['operation'],changes=result['changes'],method='Deterministic validated timeline edit; no LLM or AI inference'))

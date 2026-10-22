@@ -412,8 +412,24 @@ class Worker:
 
     def cinematic_render(self,job,artifact,folder):
         from engines import cinematic
-        import shutil
         identifier=job['id'];payload=job['payload'];command,request=cinematic.prepare(payload,artifact,folder)
+        # Revisions may share still-missing frames with an active parent render.
+        # Lease sorted cache keys across processes before writing their PNGs.
+        with contextlib.ExitStack() as leases:
+            for key in sorted({value['key'] for value in request['shot_caches'].values()}):
+                while True:
+                    if self.stop.is_set() or get(identifier)['status']=='CANCELLED':
+                        if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Server stopped waiting for frame cache; checked frames retained')
+                        return
+                    try:leases.enter_context(file_lock(store.DATA/'cinematic-frame-locks'/(key+'.lock')));break
+                    except OSError:
+                        (folder/'worker.log').write_text('STAGE Waiting for shared frame cache checkpoint\n',encoding='utf-8');self.stop.wait(.2)
+            self._cinematic_render(job,artifact,folder,command,request)
+
+    def _cinematic_render(self,job,artifact,folder,command,request):
+        from engines import cinematic
+        import shutil
+        identifier=job['id'];payload=job['payload']
         def run(command,stage):
             with (folder/'worker.log').open('a',encoding='utf-8') as log:
                 log.write('STAGE '+stage+'\n');log.flush()
@@ -444,11 +460,14 @@ class Worker:
             temporary.replace(target)
         manifest=dict(schema_version=1,asset_id=payload['asset_id'],project_id=payload['project_id'],scene_id=artifact['id'],scene_sha256=artifact['sha256'],source_hashes=payload['effective_config']['source_hashes'],video='cinematic.mp4',sha256=checksum,qa=qa,exported_at=store.now())
         manifest_path=delivery/'manifest.json'
+        if manifest_path.exists():
+            previous=json.loads(manifest_path.read_text(encoding='utf-8'))
+            if any(previous.get(key)!=value for key,value in manifest.items() if key!='exported_at'):raise ValueError('Existing cinematic delivery manifest differs; no overwrite')
         if not manifest_path.exists():
             temporary=delivery/'manifest.json.part';temporary.write_text(json.dumps(manifest,indent=2),encoding='utf-8');temporary.replace(manifest_path)
         metadata=dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,asset_type='cinematic',stage='video_validated',qa_status='passed',artistic_review='not_reviewed',duration_seconds=qa['duration_seconds'],fps=qa['fps'],resolution=qa['resolution'],delivery=str(target))
         video=store.add_artifact(final,'cinematic_video','Cinematic MP4',metadata)
-        first=store.DATA/'cinematic-cache'/payload['effective_config_hash']/request['scene']['shots'][0]['id']/'000000.png'
+        first=cinematic.frame_path(request,request['scene']['shots'][0])
         preview=output/'cinematic_thumbnail.png';shutil.copyfile(first,preview);store.add_artifact(preview,'preview',preview.name,metadata)
         store.add_artifact(output/'video_qa.json','qa_report','Cinematic technical QA',metadata)
         store.add_artifact(output/'source.blend','cinematic_source','Editable cinematic scene.blend',metadata)

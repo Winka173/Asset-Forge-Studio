@@ -5,3 +5,5 @@
 .studio .video-studio p,.studio .video-studio small{overflow-wrap:anywhere}
 @media(max-width:1400px){.studio .video-studio .cinematic-layout{grid-template-columns:200px minmax(280px,1fr)}.studio .video-studio .cinematic-layout>aside:last-child{grid-column:1/-1}}
 @media(max-width:760px){.studio .video-studio .cinematic-layout{display:flex;flex-direction:column}}
+
+.cinematic-refine{margin-top:28px;padding:24px;background:#2b303a;border-radius:14px}.cinematic-refine h3{margin:10px 0}.cinematic-refine-examples{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.cinematic-refine-examples button{padding:10px 14px!important;background:#394658}.cinematic-edit-plan{padding:18px;background:#344357;border-radius:10px;margin:18px 0}

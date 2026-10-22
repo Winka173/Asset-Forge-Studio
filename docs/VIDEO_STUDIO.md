@@ -23,8 +23,8 @@ existing Create workflow and one project-scoped Library, not a separate app.
   explicit. Audio is not represented as complete.
 - Verification: backend test creates a real 8-second/96-frame two-GLB cinematic
   using licensed Khronos fixtures and two camera movements; tests full decode,
-  atomic delivery hash and 96-frame reuse on actual retry. Final Windows UI and
-  packaging evidence must be recorded separately before shipping this slice.
+  atomic delivery hash and 96-frame reuse on actual retry. Windows 0.8.13 packaging and native UI acceptance passed; see
+  evidence/cinematic_native.json.
 
 ## Audit
 
@@ -37,7 +37,7 @@ not executed. Inputs are self-contained GLB candidates already validated by AFS.
 
 Blender 4.5.14 and local FFmpeg/FFprobe are installed. Media discovery currently
 uses environment overrides, PATH and the existing local TRELLIS installation's
-media binaries; packaging does not bundle those binaries or install a tool.
+media binaries, or the isolated FFmpeg installation validated through Settings ? Updates; packaging does not bundle these media binaries.
 GPU video/audio inference is not installed/verified by this slice. Render CPU
 work can overlap other jobs through existing resource limits and does not hold
 the heavy GPU slot. There is no mid-inference AI resume claim.
@@ -78,3 +78,28 @@ Earlier auto-rig audit continues separately: official UniRig source was checked
 out under `.local/research`, not installed into existing environments; WSL is
 absent. Native CUDA extension dependencies and embedded licenses still need
 review. No UniRig/SkinTokens weights have been downloaded or a rig claimed.
+
+
+## Exact-edit and frame-cache slice ? Windows 0.8.15 verified
+
+Added strict deterministic commands for camera zoom over an explicit interval,
+ripple removal by frame range and a scoped closer/lower/violet-rim reveal preset.
+Unknown commands fail without starting work; no general LLM interpretation,
+visibility guarantee, generated music/fog or artistic approval is implied.
+Edits create immutable scene snapshots linked to their source and parent; the
+original direction prompt, GLB hashes, transforms and quality remain unchanged.
+
+Each clip retains original camera-motion duration and source frame offset.
+Content-addressed motion caches exclude clip IDs, timeline order and trim windows,
+so cuts and unchanged portions reuse checked images without resetting animation.
+The editable shot controls and version selector remain available. Refinement has
+an optional dry preview, a single explicit Generate revision action, persistent
+request IDs and source-video comparison. Scene cuts can be frame-accurate; FPS
+changes preserve trim offsets in seconds but require a new quality render.
+
+Actual backend acceptance rendered 8 seconds from two licensed fixture GLBs:
+zoom at 3?5s rendered 24/reused 72 frames; removing 6?8s rendered zero/reused 72;
+reveal preset rendered 48/reused 48. MP4 frame counts, FPS, duration and full decode
+were validated; original frame/source/video hashes stayed unchanged. Fixture
+roles test target routing and are not generated Aetherward hero/boss/crystal.
+Windows 0.8.15 passed all 94 tests, packaging/native smoke and actual UI zoom/cut, MP4 playback, source comparison, preserved delivery hash and restart acceptance. See evidence/cinematic_edits_native.json. Cache leases prevent parallel writers from racing on the same PNGs; manifest changes are rejected without overwrite.
