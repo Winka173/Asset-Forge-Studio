@@ -2,6 +2,18 @@
 
 No human-accepted adaptive art benchmark has completed. Two new real technical delivery paths completed; sample counts and rejected/interrupted attempts remain visible.
 
+## Preserved tower baseline (2026-10-22)
+
+Recovered the actual 2026-10-21 seed-43 tower result from the retained data-reset backup. Read-only verification: `python scripts/verify_tower_preservation.py`. `../evidence/tower_quality_preservation.json` binds the source PNG, original generation receipt, raw GLB and un-decimated `raw_master.npz` by SHA-256. Historical request: TRELLIS.2 community model revision `af44b45f2e35a493886929c6d786e563ec68364d`, seed 43, 24 steps, 1024 cascade, 4096 texture output. The actual exported GLB has 984,215 triangles and two embedded images; retained native geometry has 6,702,958 triangles. Density is inventory, not an artistic quality score. The user's exact preferred historical seed is not independently confirmed.
+
+Reconstruction from a shape reference must retain the image-to-3D route. The authored castle profile is a separate limited structural workflow and must never replace source reconstruction or be described as equivalent neural art. Existing Maximum remains pinned at 32 steps/1024 cascade/4096 for TRELLIS.2; no speed-driven downgrade is authorized. No Meshy GLB or human-approved calibration set is available.
+
+Fresh replay: `python scripts/verify_tower_replay.py`, run `.local/tower-replay/20261022T103810Z`, completed real inference, Blender, export/reimport and selective GLB delivery in 376.58 s. Inference 173.09 s, peak Torch allocated 3,447,986,688 bytes/reserved 3,760,193,536 bytes (not whole-device VRAM). `python scripts/compare_tower_native_master.py --replay .local/tower-replay/20261022T103810Z` verified exact array equality for vertices, faces, sparse PBR attributes and coordinates against the preserved seed-43 native master. Evidence: `tower_replay_real.json`, `tower_native_master_comparison.json`. Delivered GLB has 984,911 triangles and two embedded images. Its hash differs from the old GLB: remeshing/UV export is not claimed bitwise deterministic. Exact native-field equality is stronger than a density proxy but does not independently certify raster texture baking or all finishing quality.
+
+The replay's direct legacy API request used no normalization height. Fixed metric benchmark renders consequently show the approximately 1 m tower small in a castle-sized camera frame. This is not an empty mesh; final bounds are measured and the interactive viewer fits them. Do not count these small benchmark renders as adequate visual art acceptance. Auto workflows still resolve their own explicit/provisional dimensions. Preserve fixed benchmark cameras instead of silently fitting competing models to different scales.
+
+Measured replay resources: `tower_replay_resources.json`: 318 whole-device nvidia-smi samples, peak 6,266 MiB, peak utilization 99%. Whole-machine RAM peak 48,617,463,808 bytes during inference, worker tree RSS peak 23,522,455,552 bytes. Blender whole-machine peak 30,382,047,232 bytes, worker tree RSS peak 5,026,295,808 bytes. These scopes include desktop/system memory where stated; do not compare them to exclusive CUDA allocated counters as the same metric. Packaged Windows 0.9.1 viewer acceptance passed with a full-size interactive tower preview, screenshot `tower_native_viewer.png`; no new inference was triggered by viewing.
+
 | New case (n=1 each) | End-to-end | Geometry stage | Blender | Delivered master | Interpretation |
 |---|---:|---:|---:|---|---|
 | TripoSG, supplied alpha castle, Maximum shape-only | 437.83 s | 65.61 s including worker/load | 352.83 s | 3,324,960 triangles; 265.08 MiB; 0 embedded images | Valid shape/export, not a textured-quality substitute |

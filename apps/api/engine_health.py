@@ -14,6 +14,17 @@ PREFIX='__afs_engine_health__:'
 ENVIRONMENT={'MODEL_DEPENDENCY_MISSING','CUDA_ABI_CONFLICT','CUDA_OOM','PROCESS_TIMEOUT'}
 
 
+class RouteWaiting(HTTPException):
+    def __init__(self,hold):
+        self.hold=hold
+        super().__init__(409,hold['reason'])
+
+
+def admit(payload):
+    hold=waiting(payload)
+    if hold:raise RouteWaiting(hold)
+
+
 def classify(message,log=''):
     text=(message+'\n'+log).lower()
     if any(s in text for s in ('out of memory','oom/','memory guard')):return 'CUDA_OOM','Release competing resources; retry the identical profile once, then validate environment before further work'

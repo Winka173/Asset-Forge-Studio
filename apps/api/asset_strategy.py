@@ -50,9 +50,10 @@ def plan(value,item):
     rationale=[];limitations=[];route='image_to_3d'
     # This first procedural profile has a deliberately narrow capability contract.
     # Shape references, explicit engines and unsupported exact forms always win.
-    incompatible=len(text)>350 or bool(re.search(r'photoreal|scan|exact(?:ly)?\s+(?:match|replica)|ruin|floating|dome|destroyed|moat|drawbridge|triangular|AI[- ]?(?:generated )?textur|chính xác như ảnh',text,re.I))
-    towers=re.search(r'\b(\d+)\s*(?:corner\s+)?(?:towers?|tháp)\b',text,re.I)
-    count=int(towers[1]) if towers else 4
+    incompatible=len(text)>350 or bool(re.search(r'photoreal|scan|exact(?:ly)?\s+(?:match|replica)|ruin|floating|dome|destroyed|moat|drawbridge|triangular|AI[- ]?(?:generated )?textur|chính xác như ảnh|(?:no|without) towers|không[^\n,.]{0,30}tháp|sci.fi|futuristic|ice castle|glass castle|(?:4k|8k|4096|8192)[^\n,.]{0,25}textur|textur[^\n,.]{0,25}(?:4k|8k|4096|8192)',text,re.I))
+    towers=re.search(r'\b(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|hai|ba|bốn|sáu)\s*(?:corner\s+)?(?:towers?|tháp)\b',text,re.I)
+    words=dict(zero=0,one=1,two=2,three=3,four=4,five=5,six=6,seven=7,eight=8,nine=9,ten=10,hai=2,ba=3,bốn=4,sáu=6)
+    count=(int(towers[1]) if towers[1].isdigit() else words[towers[1].lower()]) if towers else 4
     from .local_tools import executable
     if castle and role!='source' and item['preferred_engine']=='auto' and not incompatible and count==4 and executable('blender'):
         route='procedural_castle';rationale=['Whole-castle image inference failed structural identity in recent local tests.',
@@ -92,7 +93,7 @@ def admit(value,item,auto):
     if not item.get('planner_version'):return None  # Existing batches keep their old route.
     if not item.get('asset_generation_spec'):
         item['asset_generation_spec']=plan(value,item)
-        model=studio.asset(item['asset_id']);model.setdefault('resolved_specification',{})['asset_generation_spec']=item['asset_generation_spec'];studio.save_asset(model)
+        studio.patch_resolved_specification(item['asset_id'],dict(asset_generation_spec=item['asset_generation_spec']))
     spec=AssetGenerationSpec.model_validate(item['asset_generation_spec']).model_dump()
     if spec['original_prompt_sha256']!=hashlib.sha256(item['prompt'].encode()).hexdigest():raise ValueError('Immutable strategy source changed')
     if spec['route']=='procedural_castle':auto['engines']=['blender_procedural']

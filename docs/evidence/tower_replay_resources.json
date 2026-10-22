@@ -1,0 +1,35 @@
+{
+  "status": "MEASURED_REAL_TOWER_REPLAY",
+  "gpu": {
+    "scope": "Whole-device nvidia-smi samples, includes desktop and competing processes; not engine-exclusive",
+    "samples": 318,
+    "peak_memory_mib": 6266.0,
+    "peak_utilization_percent": 99.0,
+    "source": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\jobs\\d855b128b41e4a9bbe11fcb4d3fa0e07\\gpu_samples.json",
+    "source_sha256": "3732dea101de14ebc99b0ebab3e891b98f29d98e38c1b9a71ccd535d53a82846"
+  },
+  "stages": [
+    {
+      "job_id": "2fafedda43e54b5b9fcb4c353b3b0dd4",
+      "resource": "cpu",
+      "started_at": "2026-10-22T10:41:18.963020+00:00",
+      "finished_at": "2026-10-22T10:44:22.557040+00:00",
+      "duration_seconds": 183.59399999999732,
+      "ram_peak_used_bytes": 30382047232,
+      "worker_tree_peak_rss_bytes": 5026295808,
+      "sample_count": 354,
+      "receipt_sha256": "528e85dc89940faf3ff06f21437fb55d7f26c0ec947158bb8272986a4e31e90b"
+    },
+    {
+      "job_id": "d855b128b41e4a9bbe11fcb4d3fa0e07",
+      "resource": "gpu",
+      "started_at": "2026-10-22T10:38:22.086606+00:00",
+      "finished_at": "2026-10-22T10:41:18.943022+00:00",
+      "duration_seconds": 176.86000000000058,
+      "ram_peak_used_bytes": 48617463808,
+      "worker_tree_peak_rss_bytes": 23522455552,
+      "sample_count": 340,
+      "receipt_sha256": "f2bd512da0e5085ca8bb2c1c1591500a56085d5931d5e4e87fe5a3bbd9b8abaf"
+    }
+  ]
+}

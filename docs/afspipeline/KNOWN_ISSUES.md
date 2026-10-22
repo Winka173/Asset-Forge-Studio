@@ -9,9 +9,9 @@
 - SF3D gated access and Hunyuan setup unverified; do not install/reconfigure all environments.
 - Restricted named roof recoloring now has real Blender evidence. Shared/nonsemantic materials, rigged models, arbitrary prompt-based material/geometry editing and structural regeneration of the authored profile remain unsupported. No auto-rigging/new animation claim.
 - Meshy reference is an image only. No geometry/backside/PBR parity comparison possible.
-- 0.9.0 passed packaged native acceptance for the castle/refinement vertical slice. Batch reliability and broader routing are still being repaired.
+- 0.9.1 passed packaged native acceptance with physical component checks, explicit roof color QA, GLB-only children, stage-boundary restart and revision rollback. Broader routing/quality repair remain incomplete.
 - Candidate seeds for the authored profile vary procedural texture detail, not independently AI-designed castle geometry. Never present those as neural geometry candidates.
 - Auto image fallback retains the existing experimental textured TRELLIS.2 route; broad benchmark-based selection among Hunyuan/SF3D/TripoSG/textured engines is unfinished. No silent shape-only substitution for requested PBR.
 - Full QualityRepairPlanner budgets, general modular/hybrid routes, independent VLM calibration, the representative hero/boss benchmark and new target-game acceptance remain incomplete; do not mark all P0/P1/P2 complete.
 
-- Reproduced: two concept-blocked items can occupy max_active_assets and starve unrelated work. Engine-quarantined/paused queued stages also need explicit admission accounting. Repair is ongoing; do not claim full batch reliability yet.
+- Fixed in 0.9.1: terminal concept blockers and quarantined/paused queued stages no longer occupy the logical admission window. Regression tests use injected negative conditions with real SQLite/coordinator logic; this is not a 349-output endurance benchmark.

@@ -25,3 +25,27 @@ def test_empty_named_node_cannot_replace_required_geometry(tmp_path,monkeypatch,
     assert report['gates'][0]['outcome']=='PASS'  # Actual finite, nonempty GLB.
     assert not report['eligible']
     assert 'corner_tower_nw' in report['gates'][1]['evidence']['missing']
+
+
+def test_component_labels_cannot_hide_changed_geometry(tmp_path):
+    source=trimesh.Scene();source.add_geometry(trimesh.creation.box(),node_name='keep',geom_name='keep')
+    original=tmp_path/'original.glb';source.export(original)
+    altered=trimesh.Scene();altered.add_geometry(trimesh.creation.box(extents=[.3,1,1]),node_name='keep',geom_name='keep')
+    target=tmp_path/'altered.glb';altered.export(target)
+    checks=quality_evaluation.compare_component_geometry(original,target,{'keep'},1.,1e-5)
+    assert len(checks)==1 and not checks[0]['passed']
+    assert checks[0]['triangle_count_unchanged']
+    same=quality_evaluation.compare_component_geometry(original,original,{'keep'},1.,1e-5)
+    assert same[0]['passed'] and same[0]['max_vertex_distance_m']==0
+
+
+def test_explicit_roof_color_is_measured_from_embedded_material(tmp_path):
+    from PIL import Image
+    import numpy as np
+    from trimesh.visual.material import PBRMaterial
+    mesh=trimesh.creation.box()
+    mesh.visual=trimesh.visual.TextureVisuals(uv=np.zeros((len(mesh.vertices),2)),material=PBRMaterial(name='roof',baseColorTexture=Image.new('RGB',(8,8),(135,59,50))))
+    scene=trimesh.Scene();scene.add_geometry(mesh,node_name='keep_roof',geom_name='keep_roof')
+    target=tmp_path/'roof.glb';scene.export(target)
+    assert quality_evaluation.roof_color_check(target,'#873b32')['passed']
+    assert not quality_evaluation.roof_color_check(target,'#263b59')['passed']

@@ -380,6 +380,7 @@ def control(identifier:str,body:Control):
                 auto=item.get('automation',{})
                 affected=[j for j in failures if j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt'] and j['status'] in ('FAILED','BLOCKED','CANCELLED')]
                 if auto.get('status') in ('failed','blocked') or affected:
+                    auto.pop('retry_required',None)
                     if body.action=='skip_failed':item['skipped']=True;auto['status']='skipped'
                     else:
                         for job in affected:jobs.retry(job['id'])
@@ -412,12 +413,14 @@ def item_action(identifier:str,asset_id:str,body:Control):
         elif body.action=='skip':item['skipped']=True
         elif body.action=='regenerate':
             if any(j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['status'] not in jobs.TERMINAL for j in jobs.listing()):raise HTTPException(409,'Finish or cancel the active asset stages before regenerating. Existing checkpoints are preserved.')
-            item.update(attempt=item['attempt']+1,started=True,skipped=False)
+            item.update(attempt=item['attempt']+1,started=True,skipped=False,planner_version=1)
+            item.pop('asset_generation_spec',None)
             if item.get('automation'):
                 item['automation']=dict(enabled=True,engines=item['automation']['engines'],attempt=item['attempt'],status='queued',stage='pending',checkpoints={},human_approved=False)
             item.pop('last_error',None)
         elif body.action=='retry':
             item.pop('last_error',None)
+            item.get('automation',{}).pop('retry_required',None)
             failed=[j for j in jobs.listing() if j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['payload'].get('batch_attempt',0)==item['attempt'] and j['status'] in ['FAILED','BLOCKED','CANCELLED']]
             if failed:jobs.retry(failed[0]['id'])
         else:raise HTTPException(400,'Action không hợp lệ')

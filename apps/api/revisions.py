@@ -54,6 +54,7 @@ def revision_plan(asset_id,body):
     if store.digest(store.safe_path(parent['relative_path']))!=parent['sha256']:raise HTTPException(409,'Parent model changed; no revision was queued')
     from .local_tools import executable
     color_edit=re.fullmatch(r'\s*(?:(?:make|set|change|recolor)\s+)?(?:the\s+)?roof(?:\s+(?:material|color))?(?:\s+to)?\s+(navy|blue|red|green|#[0-9a-fA-F]{6})\s*[.!]?\s*',body.prompt,re.I)
+    if not color_edit:color_edit=re.fullmatch(r'\s*(?:đổi|làm)(?:\s+màu)?\s+mái(?:\s+(?:thành|sang|màu))?\s+(navy|xanh navy|xanh dương|đỏ|xanh lá|#[0-9a-fA-F]{6})\s*[.!]?\s*',body.prompt,re.I)
     if color_edit and body.method!='regenerate' and executable('blender'):
         from .inspection import glb_document
         doc=glb_document(store.safe_path(parent['relative_path']));roof=set();other=set()
@@ -62,7 +63,7 @@ def revision_plan(asset_id,body):
             slots={p['material'] for p in doc['meshes'][node['mesh']]['primitives'] if 'material' in p}
             (roof if node.get('name','').startswith('roof_') or node.get('name','').endswith('_roof') else other).update(slots)
         if roof and not roof&other and not doc.get('skins') and not doc.get('animations'):
-            color={'navy':'#263b59','blue':'#285a86','red':'#873b32','green':'#34634d'}.get(color_edit[1].lower(),color_edit[1])
+            color={'navy':'#263b59','blue':'#285a86','red':'#873b32','green':'#34634d','xanh navy':'#263b59','xanh dương':'#285a86','đỏ':'#873b32','xanh lá':'#34634d'}.get(color_edit[1].lower(),color_edit[1])
             names=[doc['materials'][i].get('name') for i in sorted(roof)]
             if all(names):return dict(method='blender_material',earliest_stage='materials',target_height_m=None,material_edit=dict(material_names=names,color_hex=color),
                 refinement_goal='Change only named roof basecolor; preserve geometry, topology, UV and other materials',
@@ -156,6 +157,9 @@ def create(asset_id:str,body:RevisionInput):
         if planned['method'] in ('blender_transform','blender_material') and source_spec.get('asset_generation_spec',{}).get('route')=='procedural_castle':
             row['asset_generation_spec']=copy.deepcopy(source_spec['asset_generation_spec']);row['structural_parent_spec_hash']=source_spec.get('structural_parent_spec_hash') or fingerprint(row['asset_generation_spec'])
             if planned['method']=='blender_transform':row['asset_generation_spec']['bounds_m']=[dims['target_width_m'],dims['target_depth_m'],dims['target_height_m']]
+            if planned['method']=='blender_material':
+                color=planned['material_edit']['color_hex'];row['asset_generation_spec']['material_colors']['roof']=color
+                row['asset_generation_spec']['requirements']=[r for r in row['asset_generation_spec']['requirements'] if r['id']!='roof_color']+[dict(id='roof_color',value=color,provenance='explicit',source=body.prompt,hard_gate=True)]
             source_spec['asset_generation_spec']=copy.deepcopy(row['asset_generation_spec']);source_spec['structural_parent_spec_hash']=row['structural_parent_spec_hash']
         row['automation']=dict(enabled=True,engines=engines,attempt=0,status='queued',stage='pending',checkpoints={},human_approved=False)
         workflow=automation.project_workflow(model['project_id']);workflow['mode']='auto'

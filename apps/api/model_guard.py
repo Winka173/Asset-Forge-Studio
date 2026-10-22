@@ -74,6 +74,6 @@ def filter_candidates(value,item,current,candidates,auto):
         # Uncalibrated visual judgments remain evidence flags. Technical and
         # deterministic structural gates, not a subjective score, control export.
         accepted.append(candidate)
-    model=studio.asset(item['asset_id']);model.setdefault('resolved_specification',{})['model_visual_checks']=reports;studio.save_asset(model)
+    studio.patch_resolved_specification(item['asset_id'],dict(model_visual_checks=reports))
     auto['visual_checks']=reports
     return accepted

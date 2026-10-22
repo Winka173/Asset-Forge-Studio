@@ -183,15 +183,27 @@ def _source(asset, artifact_id=None):
     if path.suffix.lower() != '.glb':raise HTTPException(422, 'Select an actual GLB candidate or master.')
     try:qa = inspect_glb(path)
     except Exception as error:raise HTTPException(409, f'GLB validation failed: {error}') from error
-    current=record;seen=set();assembly=False
+    current=record;seen=set();assembly=asset.get('resolved_specification',{}).get('asset_generation_spec',{}).get('route')=='procedural_castle'
     while current and current['id'] not in seen:
         seen.add(current['id']);assembly=assembly or current['metadata'].get('engine')=='blender_procedural'
         parent=current['metadata'].get('parent_id')
         try:current=store.get_artifact(parent) if parent else None
         except KeyError:current=None
     if assembly:
-        from .quality_evaluation import VERSION,validator_hash
-        gate=next((r for r in reversed(asset.get('quality_evaluations',[])) if r['artifact_id']==record['id'] and r['artifact_sha256']==record['sha256']),None)
+        import copy
+        from .quality_evaluation import VERSION,validator_hash,evaluate
+        from engines.quality import fingerprint
+        revision=next((r for r in asset.get('revisions',[]) if r.get('artifact_id')==record['id']),None)
+        effective=copy.deepcopy((revision or {}).get('effective_specification') or asset.get('resolved_specification') or {})
+        spec=effective.get('asset_generation_spec');parent_hash=effective.get('structural_parent_spec_hash')
+        plan=(revision or {}).get('plan',{})
+        if spec and plan.get('method')=='blender_material':
+            color=plan['material_edit']['color_hex'];spec['material_colors']['roof']=color
+            spec['requirements']=[r for r in spec['requirements'] if r['id']!='roof_color']+[dict(id='roof_color',value=color,provenance='explicit',source=revision['prompt'],hard_gate=True)]
+        gate=next((r for r in reversed(asset.get('quality_evaluations',[])) if r['artifact_id']==record['id'] and r['artifact_sha256']==record['sha256'] and r.get('spec_hash')==fingerprint(spec) and r.get('parent_spec_hash')==parent_hash),None)
+        if spec and (not gate or gate['schema_version']!=VERSION or gate.get('validator_sha256')!=validator_hash()):
+            try:gate=evaluate(dict(asset_id=asset['id'],asset_generation_spec=spec,structural_parent_spec_hash=parent_hash,automation=dict(visual_checks=effective.get('model_visual_checks',[]))),record)
+            except (ValueError,KeyError) as error:raise HTTPException(409,'Structural validation could not establish this source: '+str(error)) from error
         if not gate or not gate['eligible'] or gate['schema_version']!=VERSION or gate.get('validator_sha256')!=validator_hash():raise HTTPException(409,'This assembly has not passed the current required technical/structural gates. Retained source is available; no invalid delivery was published.')
     return record, path, qa
 

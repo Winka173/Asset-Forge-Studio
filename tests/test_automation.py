@@ -81,3 +81,88 @@ def test_batch_style_snapshot_survives_project_edit(client):
     concept=jobs.listing()[0]
     assert concept['payload']['project_style_snapshot']['default_style']=='Original navy and ivory'
     assert 'Future project style' not in concept['payload']['prompt']
+
+
+def test_blocked_concepts_do_not_starve_independent_asset(client,monkeypatch):
+    from apps.api import concept_guard
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Rejected A\n- Rejected B\n- Independent prop')).json()
+    def reject(value,item,current,choices,auto):
+        if item['name'].startswith('Rejected'):
+            auto.update(status='blocked',stage='concept QA',error='Injected negative outcome; no successful AI result mocked')
+            return None
+        return choices
+    monkeypatch.setattr(concept_guard,'filter_choices',reject)
+    automation.start(value['id'],workflow=automation.Workflow(prompt_interpretation=False).model_dump())
+    queued=jobs.listing()
+    assert len(queued)==1
+    assert queued[0]['payload']['asset_id']==value['items'][2]['asset_id']
+    assert queued[0]['payload']['kind']=='concept'
+    automation.advance(value['id']);assert len(jobs.listing())==1
+
+
+def test_engine_hold_does_not_admit_jobs_or_starve_other_route(client,monkeypatch):
+    from apps.api import engine_health
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Held A\n- Held B\n- Independent prop')).json()
+    held={i['asset_id'] for i in value['items'][:2]}
+    monkeypatch.setattr(engine_health,'waiting',lambda payload,job_id=None:dict(code='ENGINE_ROUTE_QUARANTINED',reason='Injected environment hold',health_key='fixture') if payload.get('asset_id') in held else None)
+    automation.start(value['id'],workflow=automation.Workflow(prompt_interpretation=False).model_dump())
+    for _ in range(3):automation.advance(value['id'])
+    assert len(jobs.listing())==1
+    assert jobs.listing()[0]['payload']['asset_id']==value['items'][2]['asset_id']
+    states=batch.batch(value['id'])['items']
+    assert all(i['automation']['status']=='queued' for i in states[:2])
+    # Existing quarantined queued stages also must not consume the window.
+    for i in states[:2]:jobs.enqueue(dict(kind='concept',asset_id=i['asset_id'],batch_id=value['id'],batch_attempt=0))
+    third=next(j for j in jobs.listing() if j['payload']['asset_id']==value['items'][2]['asset_id']);jobs.transition(third['id'],'CANCELLED')
+    current=batch.batch(value['id']);current['items'][2]['attempt']=1;batch.save(batch.stored(current))
+    automation.advance(value['id'])
+    assert len(jobs.listing())==4
+    fresh=[j for j in jobs.listing() if j['payload'].get('batch_attempt')==1]
+    assert len(fresh)==1 and fresh[0]['payload']['asset_id']==value['items'][2]['asset_id']
+
+
+def test_resolved_specification_merge_preserves_versions_and_review(client):
+    from apps.api import studio
+    model=studio.create_asset(studio.AssetInput(project_id='runavelle',name='Immutable',prompt='Original prompt'))
+    model.update(art_review_status='approved',publication_history=[dict(artifact_id='retained')],resolved_specification=dict(existing='kept'))
+    studio.save_asset(model)
+    studio.patch_resolved_specification(model['id'],dict(strategy='new metadata'))
+    updated=studio.asset(model['id'])
+    assert updated['prompt']=='Original prompt' and updated['art_review_status']=='approved'
+    assert updated['publication_history']==model['publication_history']
+    assert updated['resolved_specification']==dict(existing='kept',strategy='new metadata')
+
+
+def test_permanent_admission_error_waits_for_explicit_retry(client,monkeypatch):
+    from apps.api import studio
+    from fastapi import HTTPException
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Prop')).json()
+    calls=[]
+    def blocked(body):
+        calls.append(body.request_id)
+        raise HTTPException(409,'Injected configuration blocker, no generated output')
+    monkeypatch.setattr(studio,'concept',blocked)
+    automation.start(value['id'],workflow=automation.Workflow(prompt_interpretation=False).model_dump())
+    for _ in range(3):automation.advance(value['id'])
+    assert len(calls)==1 and not jobs.listing()
+    assert batch.batch(value['id'])['items'][0]['automation']['retry_required']
+    batch.item_action(value['id'],value['items'][0]['asset_id'],batch.Control(action='retry'))
+    assert len(calls)==2
+
+
+def test_explicit_regeneration_replans_legacy_attempt_without_mutating_history(client):
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Castle')).json()
+    legacy=value['items'][0];legacy.update(started=True,attempt=0)
+    legacy.pop('planner_version',None)
+    legacy['automation']=dict(enabled=True,engines=['trellis2_community'],attempt=0,status='blocked',stage='Old concept',checkpoints={})
+    batch.save(batch.stored(value))
+    old=jobs.enqueue(dict(kind='concept',project_id='runavelle',batch_id=value['id'],asset_id=legacy['asset_id'],batch_attempt=0))
+    jobs.transition(old['id'],'CANCELLED')
+    result=automation.start(value['id'],workflow=automation.Workflow(prompt_interpretation=False).model_dump())
+    assert not batch.batch(value['id'])['items'][0].get('planner_version')
+    batch.item_action(value['id'],legacy['asset_id'],batch.Control(action='regenerate'))
+    current=batch.batch(value['id'])['items'][0]
+    assert current['attempt']==1 and current['planner_version']==1
+    assert current['prompt']==legacy['prompt'] and current['asset_id']==legacy['asset_id']
+    assert current['asset_generation_spec']['route']=='procedural_castle'
+    assert jobs.get(old['id'])['status']=='CANCELLED'

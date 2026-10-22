@@ -16,6 +16,17 @@ def test_architecture_profile_respects_shape_engine_and_unsupported_constraints(
     assert asset_strategy.plan(value,dict(item,prompt='Create 1 floating ruined castle'))['route']=='image_to_3d'
     assert asset_strategy.plan(value,dict(item,prompt='Create 1 castle with 6 towers'))['route']=='image_to_3d'
     assert asset_strategy.plan(value,dict(item,prompt='Create 1 castle, photoreal exact replica'))['route']=='image_to_3d'
+    for prompt in ('Create a castle with three towers','Create a castle without towers','Create a castle with 8K AI textures'):
+        assert asset_strategy.plan(value,dict(item,prompt=prompt))['route']=='image_to_3d'
+    # Even a castle subject must retain source reconstruction, never substitute
+    # the simpler authored profile for a supplied image's geometry.
+    import io
+    from PIL import Image
+    from fastapi.testclient import TestClient
+    from apps.api.main import app
+    data=io.BytesIO();Image.new('RGBA',(16,16),(20,40,80,128)).save(data,format='PNG')
+    ref=TestClient(app).post('/api/import/reference',params=dict(project_id='runavelle'),files=dict(file=('source.png',data.getvalue()))).json()
+    assert asset_strategy.plan(value,dict(item,reference_ids=[ref['id']]))['route']=='image_to_3d'
     # Same resolver for Single and Batch; scheduling/priority never alters quality.
     single=resolve_procedural(spec,42);batch=resolve_procedural(dict(spec),42)
     assert fingerprint(single)==fingerprint(batch) and single['texture']['size']==2048

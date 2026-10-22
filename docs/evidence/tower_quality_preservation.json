@@ -1,0 +1,92 @@
+{
+  "status": "VERIFIED_PRESERVED_REAL_OUTPUT",
+  "source": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\fixtures\\ArcherTowerSource.png",
+  "source_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+  "raw_glb": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\data-reset-backups\\20261021T181054Z\\workspace-data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\raw.glb",
+  "raw_glb_sha256": "83aa7abe34e254561914ca5b2b8fdcf0adf5e28eea67301ccef688d287d59760",
+  "raw_master": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\data-reset-backups\\20261021T181054Z\\workspace-data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\raw_master.npz",
+  "raw_master_sha256": "88643d2d2c9f363b5b1650d690ebae93c49f9a1f58c54b73b6b9da57dea015a8",
+  "generation_receipt": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\data-reset-backups\\20261021T181054Z\\workspace-data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\generation.json",
+  "generation_receipt_sha256": "d79e86e2e8565b850f291e2256ccd297a202dafbc216c484b4206c052527fc98",
+  "original_request": {
+    "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\generation\\trellis2\\20261021T140717_42_c0d7b7\\output\\source_alpha.png",
+    "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output",
+    "engine_path": "C:\\Users\\Winka\\Tools\\trellis2\\code",
+    "purpose": "evaluation_only",
+    "seed": 43,
+    "pipeline_type": "1024_cascade",
+    "steps": 24,
+    "allow_existing_rmbg_evaluation": false,
+    "supplied_alpha_input": true,
+    "input_review": "NEEDS_REVIEW",
+    "texture_size": 4096,
+    "export_triangle_target": 1000000
+  },
+  "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+  "raw_native_triangles": 6702958,
+  "measured_glb": {
+    "status": "NEEDS_REVIEW",
+    "triangles": 984215,
+    "mesh_instances": 1,
+    "dimensions_xyz_m": [
+      0.47257424890995026,
+      1.0028677582740784,
+      0.41220130026340485
+    ],
+    "bounds_xyz_m": [
+      [
+        -0.2362113744020462,
+        -0.5015204548835754,
+        -0.20715099573135376
+      ],
+      [
+        0.23636287450790405,
+        0.5013473033905029,
+        0.2050503045320511
+      ]
+    ],
+    "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+    "meshes": [
+      {
+        "node": "geometry_0",
+        "triangles": 984215,
+        "vertices": 696922,
+        "watertight": false,
+        "winding_consistent": true,
+        "watertight_after_position_weld_1e8": false,
+        "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+        "has_uv": true
+      }
+    ],
+    "materials": [
+      {
+        "name": "unnamed",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": false,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1.0,
+        "roughness_factor": 1.0
+      }
+    ],
+    "images": 2,
+    "checks": {
+      "container": "PASS",
+      "finite_nonempty_geometry": "PASS",
+      "external_resources": "PASS",
+      "uv_overlap": "NOT_TESTED",
+      "self_intersections": "NOT_TESTED",
+      "pbr_plausibility": "NOT_TESTED",
+      "dimensions_approved": "NOT_TESTED",
+      "unity_import": "NOT_TESTED",
+      "human_quality": "NOT_TESTED"
+    }
+  },
+  "limitations": [
+    "Recovered original result, not a fresh inference benchmark.",
+    "User recalled a high-quality tower; exact preferred seed is not independently confirmed.",
+    "No artist approval or Meshy equivalence inferred from structural checks.",
+    "Original profile is seed 43, 24 steps, 1024 cascade, 4096 textures; do not confuse with current Maximum 32-step preset."
+  ]
+}

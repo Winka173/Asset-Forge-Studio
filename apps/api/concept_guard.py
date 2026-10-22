@@ -97,7 +97,7 @@ def filter_choices(value,item,current,choices,auto):
         else:rejected.append(result)
     rejected_ids={r['source_artifact_id'] for r in rejected}
     if rejected_ids:
-        model=studio.asset(item['asset_id']);spec=model.setdefault('resolved_specification',{});spec['concept_layout_checks']=rejected;studio.save_asset(model)
+        studio.patch_resolved_specification(item['asset_id'],dict(concept_layout_checks=rejected))
     if allowed or not rejected:return allowed
     count=len([j for j in current if j['payload']['kind']=='concept'])
     limit=min(2,value['automation']['settings'].get('retry_limit',1))

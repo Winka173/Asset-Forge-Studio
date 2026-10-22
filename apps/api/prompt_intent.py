@@ -81,8 +81,5 @@ def admit(value,item,current,auto):
     refs=item.get('intent_reference_ids',[])
     item['reference_ids']=refs if result['reference_role']=='source' else []
     item['style_reference_ids']=refs if result['reference_role']=='style' else []
-    model=studio.asset(item['asset_id']);spec=model.setdefault('resolved_specification',{})
-    spec['prompt_interpretation']=result
-    spec['generation_prompt_en']=result['generation_prompt_en']
-    studio.save_asset(model)
+    studio.patch_resolved_specification(item['asset_id'],dict(prompt_interpretation=result,generation_prompt_en=result['generation_prompt_en']))
     return False

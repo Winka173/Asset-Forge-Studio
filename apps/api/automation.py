@@ -138,7 +138,7 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
             if item['asset_id'] not in ids:continue
             resolve_specs(item,project,snapshot)
             model=studio.asset(item['asset_id'])
-            if not any(j['payload'].get('asset_id')==item['asset_id'] for j in snapshot['jobs']):item.setdefault('planner_version',1)
+            if not any(j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_id')==identifier and j['payload'].get('batch_attempt',0)==item['attempt'] for j in snapshot['jobs']):item.setdefault('planner_version',1)
             model.setdefault('original_prompt',item['prompt']);model.setdefault('original_prompt_sha256',hashlib.sha256(model['original_prompt'].encode()).hexdigest())
             if not item['prompt'].strip() and item['name'].strip() and not re.fullmatch(r'(?:untitled(?: asset)?|empty(?: entry)?|asset(?: \d+)?|unknown)',item['name'].strip(),re.I):
                 item['resolved_prompt']=item['name'].strip();item['spec_provenance']['generation_prompt']=dict(kind='inferred',source='Original asset name; no original prompt text was replaced',value=item['resolved_prompt'])
@@ -207,7 +207,10 @@ def advance(identifier):
         settings=value['automation']['settings'];snapshot=studio.studio(value['project_id']);all_jobs=snapshot['jobs'];artifacts=snapshot['artifacts']
         for job in all_jobs:
             if job['payload'].get('batch_id')==identifier and recover_checkpoint(job):job['status']='REVIEW_REQUIRED';job['error']=None
-        active_assets={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL}
+        from .production import eligible
+        from .engine_health import waiting,RouteWaiting
+        active_assets={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and
+            (j['status']!='QUEUED' or eligible(j['payload']) and not waiting(j['payload'],j['id']))}
         reserve=settings['disk_reserve_gb']*1024**3
         roots={store.DATA,store.WORKSPACE}
         destination=value['automation']['export_settings'].get('output_directory')
@@ -227,6 +230,7 @@ def advance(identifier):
             if running:
                 auto.update(status='running' if any(j['status']!='QUEUED' for j in running) else 'queued',stage=running[0].get('progress',{}).get('stage') or running[0]['payload']['kind']);continue
             if auto.get('status')=='exported':continue
+            if auto.get('retry_required'):continue  # Permanent delivery/config errors wait for explicit Retry.
             from .production import global_paused
             if item.get('production_paused') or global_paused():
                 auto['status']='paused';continue
@@ -269,6 +273,7 @@ def advance(identifier):
                         processing_source=item.get('processing_source') or dict(artifact_id=revision['parent_artifact_id'],normalize=True)
                         jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=False if revision and revision['plan']['method']=='blender_material' else processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
                             material_edit=revision['plan'].get('material_edit') if revision else None,
+                            export_fbx=bool(value['automation']['export_settings'].get('fbx')),
                             project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'] if revision else None,
                             effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay']))
                         active_assets.add(item['asset_id']);auto.update(status='queued',stage='Blender revision');continue
@@ -285,7 +290,9 @@ def advance(identifier):
                         choices=[a for a in artifacts if a['role'] in ('concept','reference') and (a['id'] in item['reference_ids'] or a['role']=='concept' and a.get('asset_id')==item['asset_id'] and any(j['id']==a['metadata'].get('job_id') for j in current))]
                         from .concept_guard import filter_choices
                         choices=filter_choices(value,item,current,choices,auto)
-                        if choices is None:active_assets.add(item['asset_id']);continue
+                        if choices is None:
+                            if auto.get('status') not in ('blocked','failed','cancelled'):active_assets.add(item['asset_id'])
+                            continue
                         valid=[]
                         for choice in choices:
                             try:
@@ -359,8 +366,10 @@ def advance(identifier):
                 if not staged:
                     model['published_artifact_id']=winner['artifact_id'];model.setdefault('publication_history',[]).append(dict(artifact_id=winner['artifact_id'],export_id=exported['id'],at=store.now(),action='automatic_delivery',sha256=winner['sha256']))
                 model.setdefault('settings',{})['automatic_selection']=winner;studio.save_asset(model)
+            except RouteWaiting as exc:
+                auto.update(status='queued',stage=exc.hold['reason'],waiting_engine_key=exc.hold['health_key']);auto.pop('error',None)
             except Exception as exc:
-                auto.update(status='blocked' if isinstance(exc,HTTPException) else 'failed',stage=auto.get('stage','production'),error=str(exc.detail if isinstance(exc,HTTPException) else exc))
+                auto.update(status='blocked' if isinstance(exc,HTTPException) else 'failed',stage=auto.get('stage','production'),error=str(exc.detail if isinstance(exc,HTTPException) else exc),retry_required=True)
         active_running=any(j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and j['status']!='QUEUED' for j in all_jobs)
         for revision_item in value['items']:
             if revision_item.get('revision_id') and revision_item.get('automation',{}).get('status')!='exported':
@@ -441,9 +450,6 @@ def single(body:Single):
         reference=studio.scoped_artifact(body.reference_id,model['project_id'])
         if reference['role'] not in ('concept','reference'):raise HTTPException(400,'A reference image is required')
     if effective_usage=='palette_style' and (not body.reference_id or not model['prompt'].strip()):raise HTTPException(422,'Style reference needs a subject prompt and an image')
-    if effective_usage=='palette_style':
-        from engines.concept_adapter import CONCEPT_ADAPTER
-        if not CONCEPT_ADAPTER.installed:raise HTTPException(409,'Creating a new subject from reference colors requires local SDXL. The image will not be silently reconstructed instead.')
     if model.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'This asset type requires its implemented dedicated pipeline')
     with batch.LOCK:
         with store.connect() as db:

@@ -1,0 +1,67 @@
+{
+  "status": "PASS_EXACT_NATIVE_MASTER_REPLAY",
+  "original": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\data-reset-backups\\20261021T181054Z\\workspace-data\\generation\\trellis2\\20261021T141104_43_d17ec2\\output\\raw_master.npz",
+  "replay": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\jobs\\d855b128b41e4a9bbe11fcb4d3fa0e07\\output\\raw_master.npz",
+  "checks": [
+    {
+      "field": "vertices",
+      "original_shape": [
+        3288364,
+        3
+      ],
+      "replay_shape": [
+        3288364,
+        3
+      ],
+      "array_equal": true,
+      "original_sha256": "e6edbc0b88995c36c7ef2be9d41bbfaa0d91d98667e3759cacc39f888dd6c619",
+      "replay_sha256": "e6edbc0b88995c36c7ef2be9d41bbfaa0d91d98667e3759cacc39f888dd6c619"
+    },
+    {
+      "field": "faces",
+      "original_shape": [
+        6702958,
+        3
+      ],
+      "replay_shape": [
+        6702958,
+        3
+      ],
+      "array_equal": true,
+      "original_sha256": "dedf617091979d7e615fe11e5785d6d9a3f9d5a86eb384fc2958cfbe1adb79e5",
+      "replay_sha256": "dedf617091979d7e615fe11e5785d6d9a3f9d5a86eb384fc2958cfbe1adb79e5"
+    },
+    {
+      "field": "attrs",
+      "original_shape": [
+        3288364,
+        6
+      ],
+      "replay_shape": [
+        3288364,
+        6
+      ],
+      "array_equal": true,
+      "original_sha256": "8e0096a6b5a5186735b7f8fa42be593d3481ddc120eee78baeef2706da0ce0e4",
+      "replay_sha256": "8e0096a6b5a5186735b7f8fa42be593d3481ddc120eee78baeef2706da0ce0e4"
+    },
+    {
+      "field": "coords",
+      "original_shape": [
+        3288364,
+        3
+      ],
+      "replay_shape": [
+        3288364,
+        3
+      ],
+      "array_equal": true,
+      "original_sha256": "03fbf735f48e6c6092bb4e231ff4ed4d49f6f1809b26f3f5338476d0969420d3",
+      "replay_sha256": "03fbf735f48e6c6092bb4e231ff4ed4d49f6f1809b26f3f5338476d0969420d3"
+    }
+  ],
+  "limitations": [
+    "Exact native geometry and sparse PBR field equality, not a generic art/Meshy quality score.",
+    "GLB remeshing, UV packing, raster textures and finishing are separate outputs and need their own checks."
+  ]
+}

@@ -14,6 +14,9 @@ def submit(value,item,spec):
         with store.connect() as db:
             db.execute('BEGIN IMMEDIATE');previous=studio.cached(db,key,fingerprint(config))
             if previous:continue
+            from .engine_health import admit
+            admit(dict(kind='procedural_geometry',effective_config=config))
+            admit(dict(kind='blender',effective_config=config))
             result=jobs.enqueue(dict(kind='procedural_geometry',engine='blender_procedural',project_id=value['project_id'],asset_id=item['asset_id'],batch_id=value['id'],batch_attempt=item['attempt'],
                 spec=spec,spec_sha256=fingerprint(spec),seed=seed,auto_blender=True,effective_config=config,effective_config_hash=fingerprint(config),
                 use_gpu=False,timeout_seconds=900,priority=item.get('priority',0)),db=db)

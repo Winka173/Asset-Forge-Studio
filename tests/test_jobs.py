@@ -26,6 +26,18 @@ def test_lock_prevents_concurrent_workers(database):
                 pytest.fail('Second worker acquired a held lock')
 
 
+@pytest.mark.parametrize('fbx',[False,True])
+def test_blender_child_respects_optional_export_profile(database,fbx):
+    parent=jobs.enqueue(dict(kind='inference',auto_blender=True,project_id='runavelle',asset_id='fixture',batch_id='export-fixture'))
+    with store.connect() as db:db.execute('INSERT INTO batches (id,project_id,payload) VALUES (?,?,?)',('export-fixture','runavelle',json.dumps(dict(automation=dict(export_settings=dict(fbx=fbx))))))
+    folder=database/'jobs'/parent['id'];folder.mkdir(parents=True)
+    (folder/'manifest.json').write_text(json.dumps(dict(candidate_artifact='fixture-only-no-model-claim')))
+    parent['status']='REVIEW_REQUIRED'  # Admission fixture, no execution or success fabricated.
+    child=jobs.ensure_blender(parent)
+    assert child['payload']['export_fbx'] is fbx
+    assert jobs.ensure_blender(parent) is None
+
+
 def test_transitions_cancel_retry_and_recovery(database):
     first = jobs.enqueue({'kind': 'blender', 'artifact_id': 'missing'})
     with pytest.raises(ValueError): jobs.transition(first['id'], 'REVIEW_REQUIRED')

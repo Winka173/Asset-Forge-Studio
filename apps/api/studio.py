@@ -45,6 +45,16 @@ def save_asset(value):
     return value
 
 
+def patch_resolved_specification(identifier,changes):
+    """Never replace concurrent review/version/publication fields from an old snapshot."""
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE');row=db.execute('SELECT payload FROM assets WHERE id=?',(identifier,)).fetchone()
+        if not row:raise HTTPException(404,'Asset not found')
+        value=json.loads(row['payload']);value.setdefault('resolved_specification',{}).update(changes);value['updated_at']=store.now()
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(value),identifier))
+    return value
+
+
 def scoped_artifact(identifier, project_id, asset_id=None):
     try: record = store.get_artifact(identifier)
     except KeyError: raise HTTPException(404, 'Không tìm thấy file')
@@ -339,6 +349,8 @@ def concept(body: ConceptInput):
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
         if previous:return previous
+        from .engine_health import admit
+        admit(dict(kind='concept',asset_id=value['id'],effective_config=effective))
         result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
             prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,
             steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective)),db=db)
@@ -414,7 +426,7 @@ def generate(body: Generate):
     if source['metadata'].get('requires_concept_approval') and not automatic_selection and not any(a['artifact_id']==source['id'] and a['sha256']==source['sha256'] for a in value.get('concept_approvals',[])):
         raise HTTPException(409,'Cần duyệt concept thật trước khi tạo 3D')
     if len(set(body.seeds)) != len(body.seeds) or any(not 0 <= s < 2**32 for s in body.seeds):
-        raise HTTPException(400, 'Cần 1–4 seed nguyên không trùng trong 0..4294967295')
+        raise HTTPException(400, 'Cần 1–5 seed nguyên không trùng trong 0..4294967295')
     engine = body.engine
     if engine == 'auto':
         engine = next((e for e in ('trellis2_community', 'triposg') if ADAPTERS[e].installed and
@@ -440,6 +452,9 @@ def generate(body: Generate):
         previous = cached(db, body.request_id, request_digest(body))
         if previous: return previous
         queued=[]
+        from .engine_health import admit
+        admit(payload|dict(effective_config=effective))
+        if body.auto_blender:admit(dict(kind='blender',effective_config=effective))
         for seed in body.seeds:
             per_job=effective | dict(seed=seed)
             queued.append(jobs.enqueue(payload | dict(seed=seed,effective_config=per_job,effective_config_hash=fingerprint(per_job)),db=db))

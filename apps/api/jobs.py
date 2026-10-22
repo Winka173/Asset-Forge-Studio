@@ -106,10 +106,16 @@ def ensure_blender(job):
         if any(j['payload'].get('parent_job')==job['id'] for j in existing):return
         manifest=json.loads((store.DATA/'jobs'/job['id']/'manifest.json').read_text(encoding='utf-8'))
         height=payload.get('benchmark_height_m')
+        export_fbx=True  # Legacy/manual stage contracts stay intact.
+        if payload.get('batch_id'):
+            row=db.execute('SELECT payload FROM batches WHERE id=?',(payload['batch_id'],)).fetchone()
+            if row:
+                export=json.loads(row['payload']).get('automation',{}).get('export_settings')
+                if export is not None:export_fbx=bool(export.get('fbx'))
         return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,
             batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
             effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),
-            render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
+            export_fbx=export_fbx,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
 
 
 def retry(identifier):
