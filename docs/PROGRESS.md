@@ -1,3 +1,9 @@
+# Model/tool update work - 2026-10-22 (Asia/Saigon)
+
+Settings now compares upstream model revisions, engine source commits and installed tool versions. Portable media installation uses the shared CPU queue, SHA-256-pinned side-by-side files, actual H.264 encode/probe/decode, idle-only activation and rollback. Real backend acceptance upgraded an isolated Library from existing FFmpeg 7.1 to n9.0.2 and decoded the existing 96-frame Blender cinematic. No installed AI environment, weights or user game data were modified. Windows 0.8.14 passed all 92 tests, production packaging, generic native smoke and affected native acceptance: upstream results visible at 1280/1536 widths, opt-out without inference, real portable download/hash/codec QA, activation, restart persistence and rollback. Native testing found and fixed an asynchronous checkbox reset. Rollback disables automatic installation so a later daily check cannot undo it. See evidence/updates_native.json. See UPDATES.md.
+
+---
+
 # Video Studio in progress - 2026-10-22 (Asia/Saigon)
 
 New authority: doc/Asset_Forge_Studio_Video_Studio_Cinematic_Director_V1.md, including Audio Director. Initial P0 work implements pinned multi-GLB scene composition, hierarchy/transforms/gizmos, immutable snapshots, explicit orbit/dolly storyboard, shared CPU Blender rendering, checked frame reuse, H.264/FFprobe/full decode, atomic per-version delivery and Library/Production preview. Backend acceptance rendered a real 8-second two-source fixture cinematic and reused all 96 frames on retry. Windows 0.8.13 passed all 89 tests, packaged smoke and affected native acceptance: two GLBs, transform undo/redo, immutable versions, paused queue/restart, actual 96-frame render, MP4 playback and Library reopening. Evidence: evidence/cinematic_native.json. See VIDEO_STUDIO.md.

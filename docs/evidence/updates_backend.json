@@ -1,0 +1,248 @@
+{
+  "policy": {
+    "auto_check": true,
+    "auto_update_media": true
+  },
+  "items": [
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg + FFprobe",
+      "kind": "tool",
+      "installed": "n9.0.2-31-gc89d6ee1ca-20261021",
+      "latest": "9.0",
+      "status": "current",
+      "source": "https://ffmpeg.org/download.html",
+      "provider": "BtbN Windows builds (linked by FFmpeg)",
+      "license": "GPL build; license notices retained",
+      "automatic": true,
+      "reason": "Portable side-by-side install; actual H.264 encode, probe and decode before activation. Managed builds compare archive digests; unmanaged installs compare stable branches only.",
+      "candidate": {
+        "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n9.0-latest-win64-gpl-9.0.zip",
+        "sha256": "16a9ade0aaef765c8f7f33dd5f6c97b16389343a3e2ed7a6575d4225a7e1f462",
+        "bytes": 193977587,
+        "name": "ffmpeg-n9.0-latest-win64-gpl-9.0.zip"
+      }
+    },
+    {
+      "id": "blender",
+      "name": "Blender (installed series)",
+      "kind": "tool",
+      "installed": "4.5.14",
+      "latest": "4.5.14",
+      "status": "current",
+      "source": "https://download.blender.org/release/Blender4.5/",
+      "automatic": false,
+      "license": "GPL",
+      "reason": "Keep the working Blender. A new build must pass geometry, animation and cinematic regression tests before switching."
+    },
+    {
+      "id": "unity",
+      "name": "Unity Editor",
+      "kind": "tool",
+      "installed": "6000.4.8f1",
+      "latest": "6000.6.7f1",
+      "status": "available",
+      "source": "https://unity.com/releases/editor/archive",
+      "automatic": false,
+      "license": "Unity terms/account required",
+      "reason": "Editor activation is pinned to validated AFS import profiles; install through Unity Hub and validate separately."
+    },
+    {
+      "id": "trellis2",
+      "name": "TRELLIS.2",
+      "kind": "model",
+      "installed": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "detected": true,
+      "latest": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "status": "current",
+      "source": "https://huggingface.co/microsoft/TRELLIS.2-4B",
+      "license": "mit",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "trellis_v1",
+      "name": "TRELLIS v1",
+      "kind": "model",
+      "installed": "25e0d31ffbebe4b5a97464dd851910efc3002d96",
+      "detected": true,
+      "latest": "25e0d31ffbebe4b5a97464dd851910efc3002d96",
+      "status": "current",
+      "source": "https://huggingface.co/microsoft/TRELLIS-image-large",
+      "license": "mit",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "hi3dgen",
+      "name": "Hi3DGen geometry",
+      "kind": "model",
+      "installed": null,
+      "detected": true,
+      "latest": "fdfac1d0e0cb3f86adcac69239c1abdd82228e17",
+      "status": "revision_unknown",
+      "source": "https://huggingface.co/Stable-X/trellis-normal-v0-1",
+      "license": "mit",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "hi3dgen_normal",
+      "name": "Hi3DGen normal estimator",
+      "kind": "model",
+      "installed": null,
+      "detected": true,
+      "latest": "4dd7d000d76febb68254ebe27251c2cb79dc1c2a",
+      "status": "revision_unknown",
+      "source": "https://huggingface.co/Stable-X/yoso-normal-v1-8-1",
+      "license": "apache-2.0",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "triposg",
+      "name": "TripoSG",
+      "kind": "model",
+      "installed": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "detected": true,
+      "latest": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "status": "current",
+      "source": "https://huggingface.co/VAST-AI/TripoSG",
+      "license": "mit",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "sdxl",
+      "name": "SDXL concept",
+      "kind": "model",
+      "installed": "462165984030d82259a11f4367a4eed129e94a7b",
+      "detected": true,
+      "latest": "462165984030d82259a11f4367a4eed129e94a7b",
+      "status": "current",
+      "source": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+      "license": "openrail++",
+      "automatic": false,
+      "reason": "Weights stay pinned. A new revision requires separate dependencies/license review and a real quality benchmark before promotion. Repository revision changes can be documentation-only; no quality improvement is assumed."
+    },
+    {
+      "id": "trellis_v1_code",
+      "name": "TRELLIS v1 code",
+      "kind": "engine_code",
+      "installed": "442aa1e1afb9014e80681d3bf604e8d728a86ee7",
+      "latest": "442aa1e1afb9014e80681d3bf604e8d728a86ee7",
+      "status": "current",
+      "source": "https://github.com/microsoft/TRELLIS",
+      "automatic": false,
+      "reason": "Default-branch commit comparison only. Local patches, dependency compatibility and commercial licenses require a separate environment and regression benchmark; no git pull or pip upgrade is performed."
+    },
+    {
+      "id": "hi3dgen_code",
+      "name": "Hi3DGen code",
+      "kind": "engine_code",
+      "installed": "2b12d057e82bdeb751edfe7fab82632f7df2c7ba",
+      "latest": "2b12d057e82bdeb751edfe7fab82632f7df2c7ba",
+      "status": "current",
+      "source": "https://github.com/bytedance/Hi3DGen",
+      "automatic": false,
+      "reason": "Default-branch commit comparison only. Local patches, dependency compatibility and commercial licenses require a separate environment and regression benchmark; no git pull or pip upgrade is performed."
+    },
+    {
+      "id": "triposg_code",
+      "name": "TripoSG code",
+      "kind": "engine_code",
+      "installed": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+      "latest": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+      "status": "current",
+      "source": "https://github.com/VAST-AI-Research/TripoSG",
+      "automatic": false,
+      "reason": "Default-branch commit comparison only. Local patches, dependency compatibility and commercial licenses require a separate environment and regression benchmark; no git pull or pip upgrade is performed."
+    },
+    {
+      "id": "unreal",
+      "name": "Unreal Editor",
+      "kind": "tool",
+      "status": "manual",
+      "automatic": false,
+      "source": "https://www.unrealengine.com/download",
+      "reason": "Deferred by user. Epic account and terms required; no unattended installation or version check is claimed."
+    }
+  ],
+  "status": "checked",
+  "error": null,
+  "checked_at": "2026-10-22T05:17:28.092097+00:00",
+  "pending_media": null,
+  "active_media": {
+    "ffmpeg": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\update-acceptance\\Library\\tools\\ffmpeg\\16a9ade0aaef765c8f7f33dd5f6c97b16389343a3e2ed7a6575d4225a7e1f462\\ffmpeg-n9.0-latest-win64-gpl-9.0\\bin\\ffmpeg.exe",
+    "ffprobe": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\update-acceptance\\Library\\tools\\ffmpeg\\16a9ade0aaef765c8f7f33dd5f6c97b16389343a3e2ed7a6575d4225a7e1f462\\ffmpeg-n9.0-latest-win64-gpl-9.0\\bin\\ffprobe.exe",
+    "hashes": {
+      "ffmpeg": "a53659f00322c3b8797dec81e6ea99b33b3227d7179370371e6b2197584f0f24",
+      "ffprobe": "33dc14dfebc0bb830b5afdf6e384e342ecdbafd55e5b4822660321cbdfbf4cd2"
+    },
+    "version": "n9.0.2-31-gc89d6ee1ca-20261021",
+    "archive_sha256": "16a9ade0aaef765c8f7f33dd5f6c97b16389343a3e2ed7a6575d4225a7e1f462",
+    "validated_at": "2026-10-22T05:16:17.886265+00:00",
+    "qa": "PASS_REAL_H264_ENCODE_PROBE_DECODE"
+  },
+  "previous_media": null,
+  "check_started_at": "2026-10-22T05:17:25.663638+00:00",
+  "jobs": [
+    {
+      "id": "ddbb9fb21e2744f88bae67212f9c23e1",
+      "status": "REVIEW_REQUIRED",
+      "created_at": "2026-10-22T05:15:41.178487+00:00",
+      "updated_at": "2026-10-22T05:16:17.931848+00:00",
+      "payload": {
+        "kind": "tool_update",
+        "engine": "portable_ffmpeg",
+        "candidate": {
+          "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n9.0-latest-win64-gpl-9.0.zip",
+          "sha256": "16a9ade0aaef765c8f7f33dd5f6c97b16389343a3e2ed7a6575d4225a7e1f462",
+          "bytes": 193977587,
+          "name": "ffmpeg-n9.0-latest-win64-gpl-9.0.zip"
+        },
+        "timeout_seconds": 1800,
+        "priority": -100,
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-22T05:15:50.551663+00:00",
+            "error": null
+          },
+          {
+            "state": "GENERATED",
+            "at": "2026-10-22T05:16:11.281648+00:00",
+            "error": null
+          },
+          {
+            "state": "VALIDATING",
+            "at": "2026-10-22T05:16:11.297959+00:00",
+            "error": null
+          },
+          {
+            "state": "REVIEW_REQUIRED",
+            "at": "2026-10-22T05:16:17.931848+00:00",
+            "error": null
+          }
+        ]
+      },
+      "error": null,
+      "progress": {
+        "stage": "REVIEW_REQUIRED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    }
+  ],
+  "actual_cinematic_compatibility": {
+    "status": "PASS_FULL_DECODE",
+    "source": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\cinematic-native\\2026-10-22T05-07-33-687Z\\Library\\exports\\d42c8b0151c04be1b3dfe67a9a4e0d46\\cinematics\\10fe0ddff841580cb8a0a8db858e60df\\26243be4e3dc2fe7d99f218b4311657b91b7a4a030db3ab7a434897a39d7e866\\cinematic.mp4",
+    "sha256": "9703e04db4f6f8cee8f34417d3fc7fdd891a554a001ffb2e0f5b425ffb6e9439",
+    "frames": 96,
+    "resolution": [
+      640,
+      360
+    ],
+    "scope": "Existing real Blender multi-GLB cinematic, no AI generation"
+  }
+}

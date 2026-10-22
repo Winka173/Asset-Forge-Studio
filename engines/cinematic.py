@@ -9,6 +9,9 @@ from apps.api import store
 from engines.quality import fingerprint
 
 def media_tools():
+    from apps.api.updates import active_media
+    managed=active_media()
+    if managed and not os.environ.get('AFS_FFMPEG') and not os.environ.get('AFS_FFPROBE'):return managed
     base=Path.home()/'Tools/trellis2'
     ffmpeg=os.environ.get('AFS_FFMPEG') or shutil.which('ffmpeg') or next((str(p) for p in (base/'code/venv/Lib/site-packages/imageio_ffmpeg/binaries').glob('ffmpeg*.exe')),None)
     ffprobe=os.environ.get('AFS_FFPROBE') or shutil.which('ffprobe') or str(base/'tools/python/ffprobe.exe')

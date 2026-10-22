@@ -1,0 +1,14 @@
+.studio .updates-panel{grid-column:1/-1;padding:28px;min-width:0}
+.updates-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}
+.updates-heading h2{margin:8px 0}.updates-heading p{margin:8px 0;max-width:680px}.updates-heading button{flex-shrink:0;min-height:46px}
+.updates-policy{display:grid;gap:16px;padding:20px;background:var(--surface-raised,#292c33);border-radius:12px;margin-bottom:20px}
+.updates-policy label{display:flex;align-items:center;gap:12px}.updates-policy input{width:18px;height:18px;flex-shrink:0}.updates-policy small{line-height:1.7;color:var(--text-muted,#aab1c1)}
+.updates-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;margin:24px 0}
+.update-item{padding:22px;background:var(--surface-raised,#292c33);border-radius:14px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.update-item-title{display:flex;align-items:start;justify-content:space-between;gap:14px}.update-item-title h3{margin:0}.update-item-title span{background:#343a44;color:#c6d1e4;border-radius:7px;padding:6px 9px;font-size:11px;line-height:1.5}
+.update-available .update-item-title span{background:#55472d;color:#ffda91}.update-check_failed .update-item-title span{background:#52353c;color:#ffd0d6}
+.update-item dl{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0}.update-item dl div{min-width:0}.update-item dt{color:var(--text-muted,#aab1c1);font-size:11px;margin-bottom:6px}.update-item dd{margin:0;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.update-item p{margin:0;line-height:1.7}.update-item small{overflow-wrap:anywhere}.update-item a{margin-top:auto;padding-top:8px}.update-item button{margin-top:8px}
+.updates-caption{color:var(--text-muted,#aab1c1)}.updates-checking{display:flex;align-items:center;gap:10px}.updates-spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:updates-spin 1s linear infinite;margin-right:8px}
+.updates-pending,.updates-history{padding:22px;background:var(--surface-raised,#292c33);border-radius:12px;margin:20px 0}.updates-history article{padding:14px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}.updates-history article p{flex-basis:100%;overflow-wrap:anywhere}
+@keyframes updates-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.updates-spinner{animation:none}}@media(max-width:760px){.updates-heading{align-items:stretch;flex-direction:column}.studio .updates-panel{padding:20px}}

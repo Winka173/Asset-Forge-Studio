@@ -1,5 +1,6 @@
 import {VideoStudio} from './video-studio';
 import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
+import {UpdatesSettings} from './updates';
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
@@ -1832,7 +1833,7 @@ export function Studio() {
                   </p>
                 </div>
               </div>
-              <div className="settings-grid"><LocalToolsSettings/><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
+              <div className="settings-grid"><UpdatesSettings/><LocalToolsSettings/><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
                 <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">

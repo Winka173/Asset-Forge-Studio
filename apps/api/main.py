@@ -24,13 +24,15 @@ from . import jobs
 async def lifespan(app):
     app.state.shutting_down=False
     jobs.worker.start()
+    from .updates import startup
+    startup()
     try:
         yield
     finally:
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.13", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.14", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -364,6 +366,8 @@ from .local_tools import router as tools_router
 app.include_router(tools_router)
 from .cinematic import router as cinematic_router
 app.include_router(cinematic_router)
+from .updates import router as updates_router
+app.include_router(updates_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():
