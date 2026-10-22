@@ -1,0 +1,55 @@
+{
+  "status": "PASS_REAL_CONCEPT_LAYOUT_NEGATIVE_POSITIVE",
+  "reports": [
+    {
+      "expected": false,
+      "job_id": "0b5004da5fb142da83fa324e80cd974b",
+      "result": {
+        "schema_version": 1,
+        "suitable_single_asset_image": false,
+        "observed_subject_en": "castle",
+        "issues": [
+          "multiple_views_or_panels"
+        ],
+        "observations": [
+          "The image contains a main castle model on the left, but also includes multiple inset panels showing different views and components of the castle.",
+          "The inset panels show a front view, a side view, and separate tower elements, which violates the requirement for a single standalone asset.",
+          "The composition is a contact sheet or asset breakdown, not a single unified image of the requested subject."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 18.76600000000326,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "333562f4db4a4b08bc35db8c1e15418a",
+        "source_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2"
+      }
+    },
+    {
+      "expected": true,
+      "job_id": "7a624792ede44e61812047178816f5f5",
+      "result": {
+        "schema_version": 1,
+        "suitable_single_asset_image": true,
+        "observed_subject_en": "castle",
+        "issues": [],
+        "observations": [
+          "A single, complete castle model is centered in the image.",
+          "The castle has multiple towers with orange conical roofs and stone walls.",
+          "It includes a main entrance, steps, and small greenery at its base.",
+          "The image is a clean, isolated render with no multiple views or panels.",
+          "No cropping or missing subject is observed."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 18.26599999999962,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "ef6e2f0afdab4db4b2d0eca26bda4c6a",
+        "source_sha256": "907e1377d19a3f1e6d3c19e7fc80354a94a21d7bea8bc2748a86182f932bac5a"
+      }
+    }
+  ]
+}

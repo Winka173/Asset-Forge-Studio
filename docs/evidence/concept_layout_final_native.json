@@ -1,0 +1,13 @@
+{
+  "status": "PASS_NATIVE_FINAL_LAYOUT_STATE_AND_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\layout-final-native\\2026-10-22T08-14-52-162Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "real_rejected_concept_is_pending_repair_in_ui_not_passed_no_gpu_admission",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual native local Qwen interpretation, Maximum SDXL concept, inferred composition gate and bounded repair admission before 3D. GPU guard is acquired only after the real concept finishes; no simulated engine output."
+}

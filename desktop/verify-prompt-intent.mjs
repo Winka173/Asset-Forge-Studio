@@ -10,7 +10,7 @@ async function close(){closing=true;await page.evaluate(()=>window.__TAURI__.cor
 
 
 
-const hold=spawn(path.join(root,'.venv/Scripts/python.exe'),[path.join(root,'.local/native_gpu_hold.py')],{cwd:root,env:{...process.env,PYTHONPATH:root},windowsHide:true,stdio:['pipe','pipe','pipe']});
+const hold=spawn(path.join(root,'.venv/Scripts/python.exe'),['-c','from apps.api.jobs import exclusive_worker_lock; import sys\nwith exclusive_worker_lock():\n print("GPU_HELD",flush=True)\n sys.stdin.readline()'],{cwd:root,env:{...process.env,PYTHONPATH:root},windowsHide:true,stdio:['pipe','pipe','pipe']});
 await new Promise((resolve,reject)=>{let out='';hold.stdout.on('data',b=>{out+=b;if(out.includes('GPU_HELD'))resolve();});hold.on('exit',c=>reject(Error('GPU guard exited '+c)));});
 let batchId;
 try{

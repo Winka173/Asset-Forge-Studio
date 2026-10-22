@@ -1,0 +1,83 @@
+{
+  "status": "PASS_REAL_BOUNDED_REPAIR_EXECUTION",
+  "repair_job_id": "9b4428a456934122be23fbec61a631fa",
+  "assessment": {
+    "schema_version": 1,
+    "suitable_single_asset_image": true,
+    "observed_subject_en": "castle",
+    "issues": [],
+    "observations": [
+      "The image displays a single, complete castle structure with multiple towers and an arched entrance, fully visible and centered in the frame.",
+      "The style is consistent with a hand-drawn architectural illustration, matching the requested 't\u01b0\u1edfng t\u01b0\u1ee3ng h\u00ecnh ref' (reference-style imagination) aesthetic.",
+      "No multiple views, panels, or inset images are present; the entire castle is rendered as one cohesive asset.",
+      "The castle is not cropped or partially obscured; it occupies the majority of the image space.",
+      "The subject is clearly identifiable as a castle, fulfilling the original request."
+    ],
+    "model": "qwen3-vl:4b-instruct-q4_K_M",
+    "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+    "duration_seconds": 22.235000000000582,
+    "execution": "local_cpu_only",
+    "method": "VLM inferred composition check; not artistic approval",
+    "artistic_approval": false,
+    "source_artifact_id": "fca9bef3459f40978927163c6c58cf3a",
+    "source_sha256": "176c0d89ca137c64e3c45d4998211b65429c1434b09cdec2b5351583fbf3f8fe"
+  },
+  "asset_state": {
+    "status": "queued",
+    "stage": "image-to-3D",
+    "checkpoints": {
+      "255992fc4b96492f833ae027a8d7e5a6": {
+        "stage": "concept_layout",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T08:09:23.022735+00:00"
+      },
+      "9b4428a456934122be23fbec61a631fa": {
+        "stage": "concept",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T08:09:00.664776+00:00"
+      },
+      "9c22a444eb9943ed894481e7562bf9ad": {
+        "stage": "concept_layout",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T08:07:28.238440+00:00"
+      },
+      "fa7c71a47f7342c38b6cd1abdb9e348f": {
+        "stage": "concept",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T08:07:05.314067+00:00"
+      },
+      "b97a8fa900394754a1c9c6d5b21f651e": {
+        "stage": "prompt_analysis",
+        "state": "REVIEW_REQUIRED",
+        "updated_at": "2026-10-22T08:06:36.097546+00:00"
+      }
+    },
+    "engines": [
+      "trellis2_community"
+    ],
+    "enabled": true,
+    "attempt": 0,
+    "engine_policy": "Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score",
+    "human_approved": false,
+    "concept_selection": {
+      "artifact_id": "fca9bef3459f40978927163c6c58cf3a",
+      "sha256": "176c0d89ca137c64e3c45d4998211b65429c1434b09cdec2b5351583fbf3f8fe",
+      "method": "Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback",
+      "measurements": {
+        "width": 1024,
+        "height": 1024,
+        "mode": "RGB",
+        "has_transparency": false,
+        "laplacian_variance_proxy": 2393.759521484375,
+        "approval": "NEEDS_REVIEW",
+        "multi_view_consistency": "NOT_TESTED",
+        "background": "unsegmented"
+      },
+      "artistic_approval": false
+    }
+  },
+  "quality": "Maximum",
+  "steps": 50,
+  "size": 1024,
+  "seed": 43
+}

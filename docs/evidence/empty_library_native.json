@@ -1,0 +1,13 @@
+{
+  "status": "PASS_NATIVE_EMPTY_USER_LIBRARY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\empty-library-native\\2026-10-22T08-01-31-741Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "user_configured_clean_library_has_zero_projects_and_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual native local Qwen interpretation, Maximum SDXL concept, inferred composition gate and bounded repair admission before 3D. GPU guard is acquired only after the real concept finishes; no simulated engine output."
+}

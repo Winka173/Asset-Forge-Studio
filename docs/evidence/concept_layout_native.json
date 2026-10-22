@@ -1,0 +1,64 @@
+{
+  "status": "PASS_NATIVE_CONCEPT_LAYOUT_GATE",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-layout-native\\2026-10-22T08-06-09-291Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "real_native_concept_layout_check_before_3d_and_immutable_quality_repair",
+      "passed": true,
+      "assessment": {
+        "schema_version": 1,
+        "suitable_single_asset_image": false,
+        "observed_subject_en": "castle",
+        "issues": [
+          "multiple_views_or_panels"
+        ],
+        "observations": [
+          "The image contains a main castle model on the left, but also includes multiple inset panels showing different views and components of the castle, which violates the requirement for a single asset.",
+          "The inset panels show a front view, a side view, and separate tower elements, indicating multiple rendered views or panels rather than one unified asset.",
+          "The main asset is not cropped or missing; however, the presence of multiple views makes it unsuitable as a single image-to-3D source."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 22.562000000001717,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "e8b7608fb1e741eaa5ceb55d4faf3e71",
+        "source_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2"
+      },
+      "jobs": [
+        {
+          "id": "9b4428a456934122be23fbec61a631fa",
+          "status": "QUEUED",
+          "kind": "concept",
+          "quality": "Maximum",
+          "seed": 43,
+          "steps": 50,
+          "size": 1024
+        },
+        {
+          "id": "9c22a444eb9943ed894481e7562bf9ad",
+          "status": "REVIEW_REQUIRED",
+          "kind": "concept_layout"
+        },
+        {
+          "id": "fa7c71a47f7342c38b6cd1abdb9e348f",
+          "status": "REVIEW_REQUIRED",
+          "kind": "concept",
+          "quality": "Maximum",
+          "seed": 42,
+          "steps": 50,
+          "size": 1024
+        },
+        {
+          "id": "b97a8fa900394754a1c9c6d5b21f651e",
+          "status": "REVIEW_REQUIRED",
+          "kind": "prompt_analysis"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "scope": "Actual native local Qwen interpretation, Maximum SDXL concept, inferred composition gate and bounded repair admission before 3D. GPU guard is acquired only after the real concept finishes; no simulated engine output."
+}

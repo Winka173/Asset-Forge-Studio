@@ -273,6 +273,9 @@ def advance(identifier):
                     source=next((a for a in artifacts if a['id']==auto.get('concept_selection',{}).get('artifact_id')),None)
                     if source is None:
                         choices=[a for a in artifacts if a['role'] in ('concept','reference') and (a['id'] in item['reference_ids'] or a['role']=='concept' and a.get('asset_id')==item['asset_id'] and any(j['id']==a['metadata'].get('job_id') for j in current))]
+                        from .concept_guard import filter_choices
+                        choices=filter_choices(value,item,current,choices,auto)
+                        if choices is None:active_assets.add(item['asset_id']);continue
                         valid=[]
                         for choice in choices:
                             try:

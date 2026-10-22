@@ -149,7 +149,9 @@ def detail(asset_id:str):
         if logs.exists():
             with logs.open('rb') as stream:stream.seek(max(0,logs.stat().st_size-16000));tail=stream.read().decode('utf-8',errors='replace')
         report=folder/'output/report.json';qa=json.loads(report.read_text()) if report.exists() else None
-        stages.append(job_summary(j)|dict(events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation')} if qa else None)))
+        layout=folder/'concept_layout.json'
+        layout_qa=json.loads(layout.read_text(encoding='utf-8')) if layout.is_file() else None
+        stages.append(job_summary(j)|dict(events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation')} if qa else layout_qa)))
     from .export_profiles import export_history
     return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
 
