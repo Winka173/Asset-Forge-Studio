@@ -102,7 +102,7 @@ def ensure_blender(job):
         if any(j['payload'].get('parent_job')==job['id'] for j in existing):return
         manifest=json.loads((store.DATA/'jobs'/job['id']/'manifest.json').read_text(encoding='utf-8'))
         height=payload.get('benchmark_height_m')
-        export_fbx=True  # Legacy/manual stage contracts stay intact.
+        export_fbx=payload.get('blender_export_fbx',True)  # Already queued legacy stage contracts stay intact.
         if payload.get('batch_id'):
             row=db.execute('SELECT payload FROM batches WHERE id=?',(payload['batch_id'],)).fetchone()
             if row:

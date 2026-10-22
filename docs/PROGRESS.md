@@ -1,3 +1,13 @@
+# Windows 0.9.11 - GLB-only Enhance output contract - 2026-10-22
+
+165 backend tests PASS (207.07 s), TypeScript/Vite, fresh Windows/generic smoke, affected native retained-tower acceptance and backend/source cache PASS. Standalone Enhance now accepts explicit optional FBX and otherwise pins the project profile at admission. New Single inference admissions pin the same choice for their automatic Blender child; existing queued legacy contracts stay intact. Output preferences do not alter generation config, source masters, textures or LOD processing. The texture inspection footer now has separate button/help spacing.
+
+Actual native test ran two CPU Blender jobs on the retained neural tower: default GLB Only produced no internal FBX while keeping raw/master BLEND and 4K embedded PBR; explicit FBX produced all four FBXs and Blender reimport passed. GLB-only delivery contains one real GLB plus optional manifest, valid embedded images and source hashes; the delivered viewer reopened, one stable asset row remains and no AI inference was started. Reinspection and spacing passed. Evidence: evidence/glb_only_enhance_native_v0911.json and actual screenshots. Art stays Not Reviewed. This test exposed a separate standalone display issue: a successfully exported asset still shows the raw REVIEW_REQUIRED enum / ready-to-export wording in parts of Production and irrelevant pre-generation steps as Pending. That UI status projection remains next; do not confuse it with a failed export.
+
+Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe. Parent tower and user Library preserved. Artistic/Meshy acceptance, broader route benchmarks, bake coverage and unsupported modules remain open.
+
+---
+
 # Windows 0.9.10 - embedded texture integrity - 2026-10-22
 
 162 backend tests PASS (232.36 s), TypeScript/Vite, fresh Windows/generic smoke, affected native Library/Production/Compare and backend cache/source checks PASS. GLB inspection now decodes actual embedded PNG/JPEGs, verifies byte bounds/MIME/references and declared UV shape/count, rejects loaded nonfinite UVs, and stores measured resolution/channel bindings/encoded and decoded hashes. The GLB reader skips BIN into offsets rather than retaining a full duplicate. QA cache identities include dependent inspectors. Existing valid image-free materials remain valid; no maps or artistic detail are invented.

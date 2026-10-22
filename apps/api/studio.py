@@ -445,6 +445,9 @@ def generate(body: Generate):
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')
     from engines.quality import resolve, fingerprint
+    if not body.batch_id:
+        from .export_profiles import resolve_project_settings
+        payload['blender_export_fbx']=bool(resolve_project_settings(value['project_id']).get('fbx'))
     options=body.model_dump() | dict(engine=engine,prompt=payload['prompt'])
     if options['quality_lock'] is None:options['quality_lock']=body.quality=='Maximum'
     try:effective=resolve(options,source,config)

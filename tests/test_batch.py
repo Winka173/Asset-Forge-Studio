@@ -61,6 +61,7 @@ def test_single_batch_quality_parity_retry_and_hash_guard(client):
     approved=client.post(f'/api/assets/{item["asset_id"]}/concepts/{ref["id"]}/approve',json=dict(reviewer='QA config parity only'))
     assert approved.status_code==200
     first=client.post('/api/studio/generate',json=dict(asset_id=single['id'],artifact_id=ref['id'],request_id='single-parity-request',engine='triposg',quality='Maximum',seeds=[42,43],auto_blender=True,benchmark_height_m=10)).json()
+    assert all(j['payload']['blender_export_fbx'] is False for j in first['jobs'])
     result=client.post(f'/api/batches/{batch["id"]}/run',json=dict(selected_ids=[item['asset_id']]))
     assert result.status_code==200,result.text
     batched=[j for j in jobs.listing() if j['payload'].get('batch_id')==batch['id']]

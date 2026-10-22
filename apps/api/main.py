@@ -252,6 +252,7 @@ class BlenderJob(BaseModel):
     merge_distance_m: float = Field(default=0, ge=0, le=0.01)
     recalculate_normals: bool = False
     render: bool = True
+    export_fbx: bool | None = None
     resolutions: list[Literal['mobile', 'pc1440']] = Field(default=['mobile', 'pc1440'], min_length=1, max_length=2)
     views: list[Literal['front', 'three_quarter', 'side', 'back', 'top', 'gameplay']] = Field(default=['front', 'three_quarter', 'side', 'back', 'top', 'gameplay'], min_length=1, max_length=6)
 
@@ -262,7 +263,11 @@ def queue_blender(body: BlenderJob):
     except KeyError: raise HTTPException(404, 'Unknown source')
     if record['role'] not in {'golden', 'candidate'}: raise HTTPException(400, 'Source must be a real GLB')
     if body.target_height_m and not body.normalize: raise HTTPException(400, 'Height requires explicit normalization')
-    return jobs.enqueue(body.model_dump() | {'kind': 'blender','project_id':record.get('project_id'),'asset_id':record.get('asset_id')})
+    from .export_profiles import resolve_project_settings
+    fbx=body.export_fbx
+    if fbx is None:fbx=bool(resolve_project_settings(record['project_id']).get('fbx')) if record.get('project_id') else False
+    # Pin the output choice at admission; later project changes cannot rewrite it.
+    return jobs.enqueue(body.model_dump() | {'kind': 'blender','export_fbx':fbx,'project_id':record.get('project_id'),'asset_id':record.get('asset_id')})
 
 
 class Tournament(BaseModel):
