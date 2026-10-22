@@ -1,0 +1,234 @@
+{
+  "status": "PASS_REAL_LOCAL_CONCEPT_ONLY",
+  "scope": "One actual Maximum SDXL concept, no 3D inference or artistic pass claimed",
+  "job_id": "b6c0fddcbe144046a55a82970d85e569",
+  "prompt": "t\u1ea1o cho t\u00f4i 1 c\u0103n l\u00e2u \u0111\u00e0i c\u00f3 style t\u01b0\u01a1ng t\u1ef1 h\u00ecnh ref",
+  "reference_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+  "concept_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-reference-acceptance\\Library\\jobs\\b6c0fddcbe144046a55a82970d85e569\\output\\concept.png",
+  "concept_sha256": "ec45e88c91723a375d2e12270c49686ec06a456ec06e4cbe101032616dc037d4",
+  "generation": {
+    "status": "GENERATED_NEEDS_REVIEW",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "9baf009728164df5be381eedddb0918e",
+      "asset_id": "ee2835eb80294e6a9b8ea687f04a7b4b",
+      "name": "Castle subject from tower colors concept",
+      "prompt": "t\u1ea1o cho t\u00f4i 1 c\u0103n l\u00e2u \u0111\u00e0i c\u00f3 style t\u01b0\u01a1ng t\u1ef1 h\u00ecnh ref\nRequested subject (deterministic bilingual noun hint): castle, broad fortified complex, enclosing walls and multiple towers\nReference color palette only: brown, charcoal, gray, ivory. Design the subject requested in the prompt; do not reconstruct the reference object.\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.",
+      "user_prompt": "t\u1ea1o cho t\u00f4i 1 c\u0103n l\u00e2u \u0111\u00e0i c\u00f3 style t\u01b0\u01a1ng t\u1ef1 h\u00ecnh ref",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [
+          {
+            "artifact_id": "7251ef88342d453d9e49134ed23d0634",
+            "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+            "palette": [
+              {
+                "rgb": [
+                  87,
+                  80,
+                  83
+                ],
+                "pixels": 902,
+                "label": "brown"
+              },
+              {
+                "rgb": [
+                  66,
+                  56,
+                  58
+                ],
+                "pixels": 846,
+                "label": "charcoal"
+              },
+              {
+                "rgb": [
+                  124,
+                  112,
+                  100
+                ],
+                "pixels": 760,
+                "label": "gray"
+              },
+              {
+                "rgb": [
+                  161,
+                  146,
+                  124
+                ],
+                "pixels": 520,
+                "label": "gray"
+              },
+              {
+                "rgb": [
+                  198,
+                  190,
+                  160
+                ],
+                "pixels": 415,
+                "label": "ivory"
+              }
+            ]
+          }
+        ],
+        "bilingual_noun_hints": [
+          "castle, broad fortified complex, enclosing walls and multiple towers"
+        ],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Castle reference routing QA",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "9baf009728164df5be381eedddb0918e"
+      },
+      "seed": 42,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "t\u1ea1o cho t\u00f4i 1 c\u0103n l\u00e2u \u0111\u00e0i c\u00f3 style t\u01b0\u01a1ng t\u1ef1 h\u00ecnh ref\nRequested subject (deterministic bilingual noun hint): castle, broad fortified complex, enclosing walls and multiple towers\nReference color palette only: brown, charcoal, gray, ivory. Design the subject requested in the prompt; do not reconstruct the reference object.\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 42,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "3e0cb150dbccf1af8f3ceeb255911294761f1c52b4a166d1f71fc53d49bf5821",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "7251ef88342d453d9e49134ed23d0634",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [
+            "castle, broad fortified complex, enclosing walls and multiple towers"
+          ],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        }
+      },
+      "effective_config_hash": "dbe9cf0f908ec6af88d878b98ca42dad47615d2afff388018d2529eee60ec38a",
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-reference-acceptance\\Library\\jobs\\b6c0fddcbe144046a55a82970d85e569\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-reference-acceptance\\Library\\jobs\\b6c0fddcbe144046a55a82970d85e569\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "e611eac070afe77209b433057371ee93329a9855adbc2c276042df068cce7998",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "prompt_encoding": {
+      "chunks": 2,
+      "tokens_not_truncated": true,
+      "pooled": "mean across CLIP-2 chunks",
+      "experimental_long_prompt": true
+    },
+    "output_sha256": "ec45e88c91723a375d2e12270c49686ec06a456ec06e4cbe101032616dc037d4",
+    "peak_allocated_bytes": 5596858880,
+    "peak_reserved_bytes": 7847542784,
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "duration_seconds": 39.18799999999828
+  }
+}

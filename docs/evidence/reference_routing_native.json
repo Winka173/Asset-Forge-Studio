@@ -1,0 +1,16 @@
+{
+  "status": "PASS_NATIVE_REFERENCE_PURPOSE_ROUTING",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\reference-routing-native\\2026-10-22T07-20-43-522Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_create_submit_new_subject_routes_to_new_concept_not_raw_reference",
+      "passed": true,
+      "batch_id": "ddacf1266aaf45a5bf298b694504a4d5",
+      "original_prompt": "tạo cho tôi 1 căn lâu đài có style tương tự hình ref",
+      "reference_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+    }
+  ],
+  "errors": [],
+  "scope": "Actual packaged Create Text+Image submission, new-subject concept routing, original prompt/hash preservation and reference-purpose descriptions; globally paused to avoid extra GPU inference."
+}

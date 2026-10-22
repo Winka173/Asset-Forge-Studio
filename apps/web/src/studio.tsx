@@ -114,6 +114,7 @@ type Draft = {
   quality: "Fast" | "Balanced" | "Maximum";
   seeds: string;
   inspirationGame?:string;
+  referenceUsage?: "source" | "palette_style";
   steps: number;
   profile: string;
   textureSize: number;
@@ -603,7 +604,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,workflow};
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||'palette_style'):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -612,11 +613,11 @@ export function Studio() {
         setNotice(`${workflow.mode==='auto'?'Automatic':'Assisted'} local pipeline queued (${result.batch_id.slice(0,8)}). Progress and exports remain available after refresh.`);
         return;
       }
-      if (!source || draft.mode==='Text') {
+      if (!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||'palette_style')==='palette_style'&&source.metadata.origin!=='sdxl_local')) {
         if(!data.capabilities.text_to_concept)throw new Error('SDXL local chưa sẵn sàng. Nhập ảnh concept để tiếp tục.');
         if(!draft.prompt.trim())throw new Error('Nhập prompt để tạo concept.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,prompt:draft.prompt,quality:draft.quality,seed:Number(draft.seeds.split(',')[0])};
+        const body={asset_id:model.id,prompt:draft.prompt,quality:draft.quality,seed:Number(draft.seeds.split(',')[0]),style_reference_ids:draft.mode==='Text + Image'&&source?[source.id]:[]};
         const key=`afs.concept.request.${projectId}`,serialized=JSON.stringify(body),previous=JSON.parse(localStorage.getItem(key)||'null');
         const id=previous?.serialized===serialized?previous.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({serialized,id}));
         const job=await request<Job>('/api/studio/concept',{...body,request_id:id});
@@ -1173,8 +1174,7 @@ export function Studio() {
                         onChange={(e) => change({ prompt: e.target.value })}
                       />
                       <small>
-                        Prompt được lưu cùng asset. Engine image-to-3D hiện chưa
-                        sử dụng text conditioning.
+                        Choose whether the reference is a design to reconstruct or a color reference for a new subject.
                       </small>
                     </label>
                   )}
@@ -1250,6 +1250,7 @@ export function Studio() {
                       </label>
                     </>
                   )}
+                  {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||'palette_style'} onChange={e=>change({referenceUsage:e.target.value as 'source'|'palette_style'})}><option value="palette_style" data-description="Creates a new concept from your prompt using measured reference colors. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject ? reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||'palette_style')==='palette_style'?'Prompt ? new SDXL concept ? 3D ? Blender. Reference provides measured colors only; full style fidelity needs review.':'Image ? 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
                   <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
                   </div>}
@@ -1264,7 +1265,7 @@ export function Studio() {
                         busy ||
                         (!(candidate&&selectedAsset)&&(!workflowReady ||
                         (workflow.mode==='expert' && sourceNeedsApproval) ||
-                        ((!source || draft.mode==='Text') ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
+                        ((!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||'palette_style')==='palette_style'&&source.metadata.origin!=='sdxl_local')) ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
                         loadedProject !== projectId))
                       }
                       onClick={generate}

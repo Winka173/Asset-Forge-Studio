@@ -1,3 +1,9 @@
+# Windows 0.8.17 - reference purpose routing - 2026-10-22
+
+Fixed Single Text+Image routing: default new-subject mode creates a separate SDXL concept with measured reference palette, rather than silently reconstructing a style-reference object. Explicit image reconstruction remains available; original prompt and source hashes are retained. Bilingual architecture noun hints are deterministic rules, not an LLM or complete translation. Full semantic style transfer remains unavailable. 96 tests, TypeScript/Vite, Windows packaging/generic smoke and native Create submission/custom-select explanation/restart passed. Actual local Maximum SDXL generated a 1024px castle concept from the Vietnamese castle prompt and tower reference colors in 39.19 seconds (5.60 GB allocated, 7.85 GB reserved in decimal units). This is technical generation evidence, not artistic or Meshy approval. The full Maximum TRELLIS/Blender/export run is still in progress. See evidence/castle_reference_concept.json and reference_routing_native.json.
+
+---
+
 # Windows 0.8.16 - 2026-10-22
 
 95 backend tests and TypeScript/Vite pass. Packaged Windows build and generic smoke pass. Native actual CPU render verifies central generation activity instead of automatic reference imagery, opt-in reference preview, reduced motion, refresh restoration and animation stopping on completion. This is activity artwork, not an incremental generated mesh. Native Audio Director acceptance imports nine real QA recordings, saves/mixes four buses, plays AAC MP4, mutes music, ripple-cuts audio/video, reuses Blender frames and restores cue/version history after restart. See evidence/generation_preview_native.json and evidence/cinematic_audio_native.json. AI audio generation, TTS integration, semantic style transfer and artistic quality remain unverified.

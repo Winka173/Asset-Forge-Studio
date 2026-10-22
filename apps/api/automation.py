@@ -273,7 +273,7 @@ def advance(identifier):
                             except (OSError,ValueError):continue
                         if not valid:
                             if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
-                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
+                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
                             active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
                         _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
                         selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
@@ -395,6 +395,7 @@ class Single(BaseModel):
     engine:Literal['auto','trellis2_community','triposg']='auto'
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     reference_id:str|None=None
+    reference_usage:Literal['source','palette_style']='source'
     workflow:Workflow|None=None
 
 
@@ -406,6 +407,10 @@ def single(body:Single):
     if body.reference_id:
         reference=studio.scoped_artifact(body.reference_id,model['project_id'])
         if reference['role'] not in ('concept','reference'):raise HTTPException(400,'A reference image is required')
+    if body.reference_usage=='palette_style' and (not body.reference_id or not model['prompt'].strip()):raise HTTPException(422,'Style reference needs a subject prompt and an image')
+    if body.reference_usage=='palette_style':
+        from engines.concept_adapter import CONCEPT_ADAPTER
+        if not CONCEPT_ADAPTER.installed:raise HTTPException(409,'Creating a new subject from reference colors requires local SDXL. The image will not be silently reconstructed instead.')
     if model.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'This asset type requires its implemented dedicated pipeline')
     with batch.LOCK:
         with store.connect() as db:
@@ -415,6 +420,7 @@ def single(body:Single):
             from .manifest import ManifestItem
             row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
             row.update(attempt=0,started=False,version=1,quality_lock=body.quality=='Maximum',seeds=body.seeds)
+            if body.reference_usage=='palette_style':row.update(reference_ids=[],style_reference_ids=[body.reference_id],reference_usage=body.reference_usage)
             project=studio.project(model['project_id']);value=dict(id=identifier,project_id=model['project_id'],name=model['name'],mode={'Fast':'Fast Batch','Balanced':'Quality Batch','Maximum':'Maximum Quality Batch'}[body.quality],quality_lock=body.quality=='Maximum',master_prompt=model['prompt'],style_snapshot=project,warnings=[],items=[row],paused=True,created_at=store.now(),updated_at=store.now())
             db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,model['project_id'],json.dumps(value)));db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('auto-single:'+body.request_id,studio.request_digest(body),json.dumps(dict(batch_id=identifier))))
         result=start(identifier,workflow=body.workflow.model_dump() if body.workflow else None)
