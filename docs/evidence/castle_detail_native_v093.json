@@ -1,0 +1,48 @@
+{
+  "status": "PASS_NATIVE_REAL_NEURAL_CASTLE_VIEWER",
+  "version": "0.9.3",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.9.3\\Asset Forge Studio.exe",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-detail-native\\2026-10-22T12-06-52-183Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "real_neural_castle_GLb_visible_with_textures_no_new_jobs",
+      "passed": true,
+      "actual": {
+        "loaded": "1",
+        "textures": "1"
+      }
+    },
+    {
+      "name": "actual_viewer_camera_front_back_side_top_bottom",
+      "passed": true,
+      "views": [
+        "front",
+        "back",
+        "side",
+        "top",
+        "bottom"
+      ],
+      "limitation": "Visible native render evidence, not a calibrated artistic pass."
+    }
+  ],
+  "scope": "Actual new neural castle GLB in packaged viewer. No art acceptance or tower/Meshy equivalence claim.",
+  "layout": {
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 218,
+      "height": 934.0952758789062,
+      "top": 0,
+      "right": 218,
+      "bottom": 934.0952758789062,
+      "left": 0
+    },
+    "style": "218px",
+    "viewport": [
+      1372,
+      934
+    ],
+    "body": 1357
+  }
+}

@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import { useEffect, useState } from 'react';
 import { apiFetch, apiUrl } from './api';
 import { Select } from './select';
@@ -28,7 +29,7 @@ export function BatchExportSettings({projectId,assetId,artifactId,onChange,onBus
       <div className="selective-export-options"><label><input type="checkbox" checked={settings.manifest} disabled={saving} onChange={event=>void save({...settings,manifest:event.target.checked})}/><span>Agent manifest<small>Relative paths, measured bounds and SHA-256</small></span></label><label><input type="checkbox" checked={settings.zip} disabled={saving} onChange={event=>void save({...settings,zip:event.target.checked})}/><span>Also package ZIP<small>Optional · never required for GLB</small></span></label></div>
       <div className="selective-export-location"><span>Output folder</span><code>{settings.output_directory||root}</code>{isDesktop()&&<button disabled={saving} onClick={chooseFolder}>Choose folder…</button>}</div>
       <p className="selective-export-footnote">Files use stable source IDs in separate project / asset / export-version folders. Existing game files and Library masters are preserved.</p>
-      {saving&&<p role="status">Saving export preferences…</p>}{notice&&<p className="selective-export-notice" role="status">{notice}</p>}
+      {saving&&<p role="status">Saving export preferences…</p>}<ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
     </>}{error&&<p className="error-text" role="alert">{error}</p>}
   </section>;
 }

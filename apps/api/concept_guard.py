@@ -60,7 +60,7 @@ def execute(job,folder):
     result.update(source_artifact_id=source['id'],source_sha256=source['sha256'])
     target=folder/'concept_layout.json';part=folder/'concept_layout.json.part';part.write_text(json.dumps(result,indent=2),encoding='utf-8');part.replace(target)
     artifact=store.add_artifact(target,'concept_layout_report','Concept layout suitability',dict(project_id=p['project_id'],asset_id=p['asset_id'],job_id=job['id'],
-        parent_id=source['id'],source_sha256=source['sha256'],model=result['model'],artistic_approval=False))
+        parent_id=source['id'],source_sha256=source['sha256'],model=result.get('model'),artistic_approval=False))
     (folder/'manifest.json').write_text(json.dumps(dict(concept_layout_artifact=artifact['id'],sha256=artifact['sha256'])),encoding='utf-8')
     # A finished CHECK can report an unsuitable image; it is not a successful model.
     jobs.transition(job['id'],'GENERATED');jobs.transition(job['id'],'VALIDATING');jobs.transition(job['id'],'REVIEW_REQUIRED')
@@ -101,11 +101,16 @@ def filter_choices(value,item,current,choices,auto):
     if allowed or not rejected:return allowed
     count=len([j for j in current if j['payload']['kind']=='concept'])
     limit=min(2,value['automation']['settings'].get('retry_limit',1))
-    if count<=limit:
-        prompt=repair_prompt(item)
-        studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=f'{value["id"]}:{item["asset_id"]}:{item["attempt"]}:concept-layout-repair-{count}',
+    from .quality_repair import planner
+    images={image['id']:image for image in choices}
+    latest=max(rejected,key=lambda r:images[r['source_artifact_id']].get('created_at',''))
+    plan=planner.concept(value,item,current,[latest])
+    if count<=limit and plan['action']=='repair_concept':
+        prompt=repair_prompt(item)+'\n'+'\n'.join(plan['instructions'])
+        job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=plan['id'],
             prompt=item['prompt'],interpreted_prompt=prompt,style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
-            batch_id=value['id'],batch_attempt=item['attempt']))
+            batch_id=value['id'],batch_attempt=item['attempt'],quality_repair=plan))
+        plan['executed_job_id']=job['id']
         auto.update(status='queued',stage=f'Concept layout repair {count}/{limit}; quality preserved');return None
-    auto.update(status='blocked',stage='Needs Attention / concept layout',error='Concept still unsuitable after bounded repair: '+', '.join(sorted({issue for r in rejected for issue in r['issues']}))+'. Try a different concept or seed; no 3D inference was started.')
+    auto.update(status='blocked',stage='Needs Attention / concept layout',error=plan['reason']+'. No 3D inference was started; original concepts retained.')
     return None

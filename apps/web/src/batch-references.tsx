@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import {useEffect,useRef,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
 
@@ -32,7 +33,7 @@ export function BatchReferences({projectId,assetId,references,selected,onSelecte
   <div className="batch-reference-heading"><h3>{title}</h3><span>{selected.length} selected</span></div>
   <p>{description}</p>
   <label className="batch-import">{uploading?'Đang kiểm tra và lưu ảnh…':'＋ Thêm ảnh reference'}<input aria-label={assetId?'Upload reference for this asset':'Upload batch reference images'} type="file" accept=".png,.jpg,.jpeg,.webp" multiple disabled={disabled||uploading} onChange={event=>{const files=Array.from(event.target.files||[]);event.target.value='';void upload(files);}}/></label>
-  {error&&<p className="error-notice" role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}
+  {error&&<p className="error-notice" role="alert">{error}</p>}<ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
   {images.length>0?<details className="batch-reference-picker" open={selected.length>0}><summary>Project references ({images.length})</summary><div className="batch-reference-list">{images.map(ref=><label key={ref.id}><input type="checkbox" disabled={disabled||uploading} checked={selected.includes(ref.id)} onChange={event=>onSelected(event.target.checked?[...new Set([...selected,ref.id])]:selected.filter(id=>id!==ref.id))}/>{ref.role!=='golden'?<img src={apiUrl(ref.url)} alt="" loading="lazy"/>:<span aria-hidden="true">◇</span>}<span>{ref.name}{ref.role==='golden'&&<small>Golden GLB · comparison only, not an image-to-3D source</small>}</span></label>)}</div></details>:<small>Chưa có ảnh. Bạn vẫn có thể Analyze prompt và tạo concept local sau.</small>}
  </section>;
 }

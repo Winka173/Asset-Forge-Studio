@@ -55,14 +55,19 @@ def plan(value,item):
     words=dict(zero=0,one=1,two=2,three=3,four=4,five=5,six=6,seven=7,eight=8,nine=9,ten=10,hai=2,ba=3,bốn=4,sáu=6)
     count=(int(towers[1]) if towers[1].isdigit() else words[towers[1].lower()]) if towers else 4
     from .local_tools import executable
-    if castle and role!='source' and item['preferred_engine']=='auto' and not incompatible and count==4 and executable('blender'):
-        route='procedural_castle';rationale=['Whole-castle image inference failed structural identity in recent local tests.',
-            'This authored assembly profile can directly validate keep, four corner towers, gate opening and joined curtain walls.',
+    blockout=value.get('automation',{}).get('settings',{}).get('architecture_strategy')=='procedural_blockout' or bool(re.search(r'\bprocedural\s+(?:castle\s+)?blockout\b|\bblockout\s+castle\b',text,re.I))
+    if blockout and castle and role!='source' and item['preferred_engine']=='auto' and not incompatible and count==4 and executable('blender'):
+        route='procedural_castle';rationale=['Explicit procedural blockout requested; this is a structural layout study, not the high-detail AI route.',
+            'This limited assembly profile can validate keep, four corner towers, gate opening and joined curtain walls.',
             'Style reference supplies appearance only; it is never reconstructed as the castle.']
         limitations=['Authored parametric architecture, not AI-sculpted ornamentation or exact reference reconstruction.',
             'Procedural PBR textures are authored; artistic quality and Meshy parity are not established.',
             'No AI texture-equivalence claim. LOD silhouette loss and target-game performance still require evaluation.']
-    else:rationale=['Preserve explicit shape/engine constraints or use image route for an unsupported procedural profile.']
+    else:
+        rationale=['Prioritize detailed AI geometry and native textured output; simple parametric blockout is never an automatic quality substitute.',
+            'Preserve explicit shape/engine constraints; a new subject needs its own detailed concept rather than reconstructing the style reference.']
+        limitations=['Text-to-3D quality depends on the concept and neural reconstruction. Technical QA does not certify visual fidelity.',
+            'Image-to-3D cannot guarantee an exact count of architectural parts; unresolved structural requirements remain unverified, not silently passed.']
     project=value['style_snapshot'];bible=project.get('art_bible') or {};palette=bible.get('palette') or {}
     if not isinstance(palette,dict):palette={}
     colors=dict(stone=palette.get('limestone','#b8b3a6'),wood=palette.get('oak','#69442e'),roof=palette.get('slate','#344458'),metal=palette.get('bronze','#99704a'))

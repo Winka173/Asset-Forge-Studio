@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import {useEffect,useRef,useState} from 'react';
 import {apiFetch} from './api';
 import './updates.css';
@@ -14,7 +15,7 @@ export function UpdatesSettings(){
  function changePolicy(policy:Data['policy']){setData(value=>value?{...value,policy}:value);void act('/policy',policy);}
  const checking=data?.status==='checking';
  return <section className="settings-panel updates-panel" aria-label="Updates"><div className="updates-heading"><div><div className="overline">LOCAL COMPONENTS</div><h2>Models & tool updates</h2><p>Check public release metadata. Your prompts, models and game files stay on this PC.</p></div><button className="primary" disabled={!!busy||checking} onClick={()=>act('/check',{},'Checking upstream sources. Results appear below; generation is not started.')}>{checking?<><span className="updates-spinner"/> Checking releases…</>:'Check for updates'}</button></div>
- {!data&&<p role="status">Loading saved update checks…</p>}{(error||data?.error)&&<p className="error-notice" role="alert">{error||data?.error}</p>}{notice&&<p role="status">{notice}</p>}
+ {!data&&<p role="status">Loading saved update checks…</p>}{(error||data?.error)&&<p className="error-notice" role="alert">{error||data?.error}</p>}<ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
  {data&&<><div className="updates-policy"><label><input type="checkbox" checked={data.policy.auto_check} disabled={!!busy} onChange={e=>changePolicy({...data.policy,auto_check:e.target.checked})}/> Check daily after opening AFS</label><label><input type="checkbox" checked={data.policy.auto_update_media} disabled={!!busy} onChange={e=>changePolicy({...data.policy,auto_update_media:e.target.checked})}/> Automatically install validated FFmpeg updates</label><small>The first check starts here. Downloads use the CPU queue; Pause applies to new maintenance jobs too. Activation waits until production is idle. AI weights and editor versions stay pinned until separately tested.</small></div>
  {data.checked_at&&<p className="updates-caption">Last check: {new Date(data.checked_at).toLocaleString()} · {data.active_media?`Managed FFmpeg ${data.active_media.version}`:'Using existing media tools'}</p>}
  {checking&&<p className="updates-checking" role="status"><span className="updates-spinner"/> Comparing installed versions with upstream sources…</p>}

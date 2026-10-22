@@ -1,0 +1,823 @@
+{
+  "status": "TECHNICALLY_DELIVERED_ART_NOT_REVIEWED",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T114653Z",
+  "original_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+  "asset_id": "3d204d75b45e4ae186feab2760e31487",
+  "batch_id": "93d009319be7440d830212e510265f8b",
+  "reference_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+  "wall_seconds": 902.125,
+  "stages": [
+    {
+      "id": "8698444d8f0d4f2bb9424e11d6b9a0be",
+      "kind": "prompt_analysis",
+      "engine": "qwen3_vl_local_cpu",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 46.92199999999866,
+      "worker_peak_rss_bytes": 0,
+      "quality_repair": null,
+      "effective_config": null
+    },
+    {
+      "id": "fd4233256f50495b85133dd70fac5f11",
+      "kind": "concept",
+      "engine": null,
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 42.17199999999866,
+      "worker_peak_rss_bytes": 8883118080,
+      "quality_repair": null,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. Inferred ordinary details include: rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. No surrounding scenery, panels, or poster layouts are included.\ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 42,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "10b5aea86448e29ee0e0047922b40f299b4390f97ead784a6b7fbe19e58783de",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 2,
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "8615b70dbfb54b60b1bb66e52ebda790",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        }
+      }
+    },
+    {
+      "id": "2dfad00f4dac436e849c2df101d9d694",
+      "kind": "concept_layout",
+      "engine": "qwen3_vl_local_cpu",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 25.125,
+      "worker_peak_rss_bytes": 0,
+      "quality_repair": null,
+      "effective_config": null
+    },
+    {
+      "id": "1e25170dce9942f6b49409a2089fe651",
+      "kind": "concept",
+      "engine": null,
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 25.76600000000326,
+      "worker_peak_rss_bytes": 8879136768,
+      "quality_repair": {
+        "schema_version": 1,
+        "id": "concept-repair:9bca08e4af04947a19e7a595ff5dcf6997cd3d489578b1c4a3dec5ff5522f8de",
+        "asset_attempt": 0,
+        "root_cause": "CONCEPT_BACKGROUND_SCENE",
+        "stage": "concept",
+        "engine": "sdxl_local",
+        "action": "repair_concept",
+        "issues": [
+          "background_scene"
+        ],
+        "reason": "Cause-specific concept conditioning; geometry has not started",
+        "at": "2026-10-22T11:49:03.741059+00:00",
+        "budget": {
+          "allowed": true,
+          "reason": null,
+          "used": {
+            "attempts": 0,
+            "stage_attempts": 0,
+            "cause_attempts": 0,
+            "gpu_seconds": 42.17199999999866,
+            "cpu_seconds": 72.04699999999866,
+            "disk_bytes": 1609793
+          },
+          "limits": {
+            "max_attempts": 3,
+            "per_stage": 2,
+            "per_cause": 1,
+            "gpu_seconds": 7200.0,
+            "cpu_seconds": 7200.0,
+            "disk_gb": 16.0
+          },
+          "scope": "Current asset attempt across engines; elapsed/disk include failed stages and retained recovery outputs. Prediction reuses the last measured attempt, not a guarantee."
+        },
+        "predicted_cost": {
+          "seconds": 42.17199999999866,
+          "resource": "gpu",
+          "disk_bytes": 1567705,
+          "basis": "Persisted resource receipt / stage events; disk bytes measured on retained attempt"
+        },
+        "instructions": [
+          "Photograph the isolated object against a uniform neutral studio sweep."
+        ],
+        "source_hashes": [
+          "e48ae435cf9c61a9eaadbe0e241e6e7aab9f0e06e5c270864b0490be84ce0709"
+        ],
+        "quality_preserved": true,
+        "validation": [
+          "Recheck the new image with the current suitability policy",
+          "Do not start 3D until the source is admitted"
+        ]
+      },
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "A complete castle complex viewed from a three-quarter angle, standing on a plain neutral studio background. The castle features interconnected fortified walls with crenellated tops, multiple square and cylindrical towers of varying heights, and a central keep with arched windows and a prominent gatehouse. Exterior surfaces are rendered in smooth, painted stone with subtle texture, accented with blue, brown, beige, and gray tones. Wooden shutters, metal gates, and shingled roof sections are visible on towers and annexes. The rendering style is cartoonish 3D with soft lighting, clear outlines, and stylized proportions. Inferred ordinary details include: rounded turret bases, stone pathways leading to the main gate, small battlements along the walls, arched entryways with wooden doors, and a flagpole atop the central tower. No surrounding scenery, panels, or poster layouts are included.\ncreate for me 1 castle, style similar to this image ref\nVisual style: blue; brown; beige; gray; stone; wood; metal; shingles; smooth and painted surfaces with subtle texture; cartoonish 3D rendering with soft lighting and clear outlines\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.\nPhotograph the isolated object against a uniform neutral studio sweep.\nColors: brown, charcoal, gray, ivory.\nVisual style: ivory limestone; chestnut oak; midnight blue slate; aged bronze; navy gold cloth; cyan mana; limestone #e4d7b5; oak #69442e; slate #263b59; bronze #99704a; banner #1b315f; mana #55e5ef; orthographic view\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 43,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "10b5aea86448e29ee0e0047922b40f299b4390f97ead784a6b7fbe19e58783de",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 2,
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "8615b70dbfb54b60b1bb66e52ebda790",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        }
+      }
+    },
+    {
+      "id": "0f6fe1bffa3c41d3b3953503a162ea3e",
+      "kind": "concept_layout",
+      "engine": "qwen3_vl_local_cpu",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 23.937999999994645,
+      "worker_peak_rss_bytes": 0,
+      "quality_repair": null,
+      "effective_config": null
+    },
+    {
+      "id": "a684631075a8499c9f15399bcd1c3cf6",
+      "kind": "inference",
+      "engine": "trellis2_community",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 386.125,
+      "worker_peak_rss_bytes": 27694166016,
+      "quality_repair": null,
+      "effective_config": {
+        "schema_version": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "engine_id": "trellis2_community",
+        "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+        "checkpoint": {
+          "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+          "files": {
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+          }
+        },
+        "input_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "reference_hashes": [
+          "fd4eb06927feb31a8bf320649212e150e33feb11c7c508dba0da1102dee3a68c"
+        ],
+        "project_style_hash": "10b5aea86448e29ee0e0047922b40f299b4390f97ead784a6b7fbe19e58783de",
+        "resolution": 1024,
+        "inference_steps": 32,
+        "guidance": {
+          "sparse_structure_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.7,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 5.0
+          },
+          "shape_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.5,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 3.0
+          },
+          "tex_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 1.0,
+            "guidance_rescale": 0.0,
+            "guidance_interval": [
+              0.6,
+              0.9
+            ],
+            "rescale_t": 3.0
+          }
+        },
+        "seeds": [
+          43
+        ],
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "geometry": {
+          "pipeline_type": "1024_cascade",
+          "octree_depth": null,
+          "decode_chunk_size": null,
+          "export_triangle_target": 1000000
+        },
+        "texture": {
+          "size": 4096,
+          "pbr": "native basecolor/metallic-roughness"
+        },
+        "blender": {
+          "enabled": true,
+          "profile": "existing_quality_pipeline_v1",
+          "height_m": 10.0,
+          "render_views": [
+            "front",
+            "three_quarter",
+            "side",
+            "back",
+            "top",
+            "gameplay"
+          ],
+          "render_resolutions": [
+            "mobile",
+            "pc1440"
+          ],
+          "bake": "not_requested"
+        },
+        "lod": {
+          "ratios": [
+            0.65,
+            0.35,
+            0.15
+          ]
+        },
+        "export": {
+          "formats": [
+            "glb",
+            "fbx"
+          ],
+          "preserve_master": true
+        },
+        "candidate_count": 1,
+        "qa": {
+          "mesh_validity": true,
+          "geometry_defects": true,
+          "dimensions": true,
+          "uv_texture_inventory": true,
+          "export_reopen": true,
+          "per_asset": true,
+          "human_concept_approval": true,
+          "human_master_approval": true,
+          "visual_parity": "NOT_TESTED"
+        },
+        "seed": 43
+      }
+    },
+    {
+      "id": "baea8d9535d24dcb9f79a569b6c77efd",
+      "kind": "blender",
+      "engine": null,
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 237.53199999999924,
+      "worker_peak_rss_bytes": 5320949760,
+      "quality_repair": null,
+      "effective_config": {
+        "schema_version": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "engine_id": "trellis2_community",
+        "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+        "checkpoint": {
+          "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+          "files": {
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+          }
+        },
+        "input_prompt": "tạo cho tôi 1 lâu đài, style giống hình ảnh ref này",
+        "reference_hashes": [
+          "fd4eb06927feb31a8bf320649212e150e33feb11c7c508dba0da1102dee3a68c"
+        ],
+        "project_style_hash": "10b5aea86448e29ee0e0047922b40f299b4390f97ead784a6b7fbe19e58783de",
+        "resolution": 1024,
+        "inference_steps": 32,
+        "guidance": {
+          "sparse_structure_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.7,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 5.0
+          },
+          "shape_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.5,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 3.0
+          },
+          "tex_slat_sampler": {
+            "steps": 32,
+            "guidance_strength": 1.0,
+            "guidance_rescale": 0.0,
+            "guidance_interval": [
+              0.6,
+              0.9
+            ],
+            "rescale_t": 3.0
+          }
+        },
+        "seeds": [
+          43
+        ],
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "geometry": {
+          "pipeline_type": "1024_cascade",
+          "octree_depth": null,
+          "decode_chunk_size": null,
+          "export_triangle_target": 1000000
+        },
+        "texture": {
+          "size": 4096,
+          "pbr": "native basecolor/metallic-roughness"
+        },
+        "blender": {
+          "enabled": true,
+          "profile": "existing_quality_pipeline_v1",
+          "height_m": 10.0,
+          "render_views": [
+            "front",
+            "three_quarter",
+            "side",
+            "back",
+            "top",
+            "gameplay"
+          ],
+          "render_resolutions": [
+            "mobile",
+            "pc1440"
+          ],
+          "bake": "not_requested"
+        },
+        "lod": {
+          "ratios": [
+            0.65,
+            0.35,
+            0.15
+          ]
+        },
+        "export": {
+          "formats": [
+            "glb",
+            "fbx"
+          ],
+          "preserve_master": true
+        },
+        "candidate_count": 1,
+        "qa": {
+          "mesh_validity": true,
+          "geometry_defects": true,
+          "dimensions": true,
+          "uv_texture_inventory": true,
+          "export_reopen": true,
+          "per_asset": true,
+          "human_concept_approval": true,
+          "human_master_approval": true,
+          "visual_parity": "NOT_TESTED"
+        },
+        "seed": 43
+      }
+    },
+    {
+      "id": "711576d218ae4a139a3161affce1d66e",
+      "kind": "model_visual_check",
+      "engine": "qwen3_vl_local_cpu",
+      "status": "REVIEW_REQUIRED",
+      "duration_seconds": 90.92199999999866,
+      "worker_peak_rss_bytes": 0,
+      "quality_repair": null,
+      "effective_config": null
+    }
+  ],
+  "neural_generation": {
+    "raw_triangles": 14632080,
+    "peak_allocated_bytes": 4423128064,
+    "peak_reserved_bytes": 4708106240,
+    "peak_scope": "whole-process Torch maxima aggregated across upstream resets; excludes CUDA context and other GPU apps",
+    "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+    "duration_seconds": 382.09300000000076,
+    "output_sha256": "5f610de9acd74b0d528757f4057c4c2365aba34a352fd0b60add11f58581a4e7"
+  },
+  "export": {
+    "id": "2ba50d0be1155efd8c6eaca286c10494",
+    "status": "COMPLETED",
+    "delivery_scope": "game",
+    "asset_id": "3d204d75b45e4ae186feab2760e31487",
+    "project_id": "c8fa23ee987341c69c5040115cab55bc",
+    "source_asset_id": "3d204d75b45e4ae186feab2760e31487",
+    "artifact_id": "4d3a1dbae5524f1aa05033ddacc99803",
+    "settings": {
+      "preset": "glb_only",
+      "glb": true,
+      "manifest": true,
+      "zip": false,
+      "fbx": false,
+      "blend": false,
+      "textures": false,
+      "lods": false,
+      "high_poly": false,
+      "unity_package": false,
+      "unreal_package": false,
+      "output_directory": null
+    },
+    "created_at": "2026-10-22T12:01:56.285311+00:00",
+    "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T114653Z\\Library\\exports\\c8fa23ee987341c69c5040115cab55bc\\selective\\3d204d75b45e4ae186feab2760e31487\\2ba50d0be1155efd8c6eaca286c10494",
+    "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T114653Z\\Library\\exports",
+    "filename": "3d204d75b45e4ae186feab2760e31487--74c10577bd.glb",
+    "files": [
+      {
+        "name": "3d204d75b45e4ae186feab2760e31487--74c10577bd.glb",
+        "bytes": 69633600,
+        "sha256": "f9ddf88b7bdf4353d5b4d1de941e27f21e0b7a9966917675a45ce8435a8b4a96",
+        "kind": "glb",
+        "url": "/api/export-profiles/exports/2ba50d0be1155efd8c6eaca286c10494/files/3d204d75b45e4ae186feab2760e31487--74c10577bd.glb"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 4178,
+        "sha256": "1460e3d70e540b107fd63f22cc19dcdffb9d9df7da6135839ceabf4f6967c508",
+        "kind": "manifest",
+        "url": "/api/export-profiles/exports/2ba50d0be1155efd8c6eaca286c10494/files/manifest.json"
+      }
+    ],
+    "qa": {
+      "status": "NEEDS_REVIEW",
+      "triangles": 937369,
+      "mesh_instances": 1,
+      "dimensions_xyz_m": [
+        10.85480546951294,
+        10.0,
+        11.18764352798462
+      ],
+      "bounds_xyz_m": [
+        [
+          -5.427402943372726,
+          0.0,
+          -5.59382183663547
+        ],
+        [
+          5.427402526140213,
+          10.0,
+          5.593821691349149
+        ]
+      ],
+      "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+      "meshes": [
+        {
+          "node": "geometry_0",
+          "triangles": 937369,
+          "vertices": 656542,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": false,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        }
+      ],
+      "materials": [
+        {
+          "name": "Material_0",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": false,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 1,
+          "roughness_factor": 1
+        }
+      ],
+      "images": 2,
+      "checks": {
+        "container": "PASS",
+        "finite_nonempty_geometry": "PASS",
+        "external_resources": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "pbr_plausibility": "NOT_TESTED",
+        "dimensions_approved": "NOT_TESTED",
+        "unity_import": "NOT_TESTED",
+        "human_quality": "NOT_TESTED"
+      }
+    },
+    "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T114653Z\\Library\\exports\\c8fa23ee987341c69c5040115cab55bc\\manifest.json"
+  },
+  "visual_check": {
+    "schema_version": 1,
+    "screening_policy": 1,
+    "requested_subject_present": "yes",
+    "observed_subject_en": "castle with multiple towers and conical roofs",
+    "severe_observed_defects": [],
+    "observations": [
+      "All images show a single, connected castle structure with multiple towers and conical roofs, consistent across renders.",
+      "The castle has a central arched entrance with wooden doors and a stone pathway leading to it.",
+      "The structure features multiple cylindrical towers with blue slate roofs and small flags on top.",
+      "The castle is rendered from different angles: three-quarter, back, and side views, all showing the same asset.",
+      "The fourth image is a style reference, not a model render, and shows a more detailed, textured version of the castle with stone walls and a different material palette."
+    ],
+    "limitations": [
+      "The asset is rendered against a plain white or grey background in all views, which is not a scene environment.",
+      "The fourth image is a style reference, not a model render, and shows a more detailed, textured version of the castle with stone walls and a different material palette.",
+      "The asset is not scaled to a specific dimension or placed in a scene with environment or lighting.",
+      "The asset is not shown with the exact material palette or color scheme specified in the Art Bible."
+    ],
+    "style_observations": [
+      "The style of the fourth image is more detailed and textured, resembling a painted 3D model with stone and wood materials.",
+      "The style of the first three images is more simplified and stylized, with less detailed textures and a more uniform material appearance.",
+      "The fourth image shows a more realistic stone texture and a more detailed architectural structure, including a wooden door and a stone pathway.",
+      "The fourth image shows a more detailed and realistic material palette, including the colors specified in the Art Bible: ivory limestone, chestnut oak, and midnight blue slate."
+    ],
+    "unknown": [
+      "The exact dimensions of the castle are not specified in the request or project context.",
+      "The orientation of the door is not specified in the request or project context.",
+      "The number of balconies is not specified in the request or project context.",
+      "The symmetry of the castle is not specified in the request or project context."
+    ],
+    "decision": "continue",
+    "model": "qwen3-vl:4b-instruct-q4_K_M",
+    "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+    "duration_seconds": 90.7809999999954,
+    "execution": "local_cpu_only",
+    "artistic_approval": false,
+    "method": "Inferred severe visible defect screening; technical QA remains authoritative for file validity",
+    "source_artifact_id": "4d3a1dbae5524f1aa05033ddacc99803",
+    "source_sha256": "f9ddf88b7bdf4353d5b4d1de941e27f21e0b7a9966917675a45ce8435a8b4a96",
+    "renders": [
+      {
+        "view": "three_quarter",
+        "relative_path": "jobs/baea8d9535d24dcb9f79a569b6c77efd/output/mobile_three_quarter_asset.png",
+        "sha256": "878627c9b5a92b5dda1b290f98f42f923d23a37b01466722ef30f6a77642abbb"
+      },
+      {
+        "view": "back",
+        "relative_path": "jobs/baea8d9535d24dcb9f79a569b6c77efd/output/mobile_back_asset.png",
+        "sha256": "624a548c9290b5e8dca2ad8b9c294804442328029a71cb6048d50f8e7431cffa"
+      },
+      {
+        "view": "side",
+        "relative_path": "jobs/baea8d9535d24dcb9f79a569b6c77efd/output/mobile_side_asset.png",
+        "sha256": "9a98be2b7125e092c5132fa4b6b93d7139718ce9c039425e150309983aee046f"
+      }
+    ]
+  },
+  "limitations": [
+    "One seed, no human artistic approval or Meshy/tower parity established",
+    "Initial concept was rejected for surrounding scenery; one cause-specific repair used actual SDXL and recheck",
+    "This process imported concept composition before the subsequent positive-prompt sanitizer/Maximum detail wording edit; that final wording has deterministic tests only in this run",
+    "Visible geometry/texture softness and inferred backside remain; technical validity is separate from artistic quality",
+    "Resource readings are actual worker/Torch receipts; machine-wide RAM may include concurrent build/test work"
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "status": "PASS_NATIVE_WORKSPACE_POLISH",
+  "version": "0.9.3",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\workspace-polish-native\\2026-10-22T12-07-29-357Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "real_uncached_GPU_samples_and_real_allocation_visible",
+      "passed": true,
+      "baseline_mib": 3045,
+      "actual": {
+        "sampledAt": "2026-10-22T12:07:35.003715+00:00",
+        "vramMib": "3774",
+        "utilization": "0",
+        "text": "GPU 0% / peak 3.7 GBLive / 2s sampling / whole GPU"
+      },
+      "scope": "Whole GPU current usage; sampled session peak is not an exact per-job maximum."
+    },
+    {
+      "name": "sidebar_76px_icons_only_persists_refresh",
+      "passed": true
+    },
+    {
+      "name": "library_visible_selected_version_export_actual_hashes_no_inference",
+      "passed": true,
+      "export": {
+        "id": "35d4d2b7275e599cbf3e7f6f20e590b8",
+        "status": "COMPLETED",
+        "delivery_scope": "game",
+        "asset_id": "e4dcfe18924948a4bb43b9cc282e9686",
+        "project_id": "a3d91c8d32144d99bbec948115a91212",
+        "source_asset_id": "e4dcfe18924948a4bb43b9cc282e9686",
+        "artifact_id": "9fea8c05e14c4446925b3e8ed2adbfaa",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": null
+        },
+        "created_at": "2026-10-22T10:44:27.936501+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports\\a3d91c8d32144d99bbec948115a91212\\selective\\e4dcfe18924948a4bb43b9cc282e9686\\35d4d2b7275e599cbf3e7f6f20e590b8",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports",
+        "filename": "e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb",
+        "files": [
+          {
+            "name": "e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb",
+            "bytes": 65206328,
+            "sha256": "7489da3d16f5429e3c24c5d42196973e45a72fcba300c3368d9a84fd05017bdb",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/35d4d2b7275e599cbf3e7f6f20e590b8/files/e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4277,
+            "sha256": "6f73a180e550cbf6676005504449106fad03601b27fc20aa0ef6e2214385c647",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/35d4d2b7275e599cbf3e7f6f20e590b8/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 984911,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.47258299589157104,
+            1.0028677582740784,
+            0.41227661073207855
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.23621197044849396,
+              -0.5015204548835754,
+              -0.20722630620002747
+            ],
+            [
+              0.2363710254430771,
+              0.5013473033905029,
+              0.2050503045320511
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 984911,
+              "vertices": 721148,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports\\a3d91c8d32144d99bbec948115a91212\\manifest.json"
+      }
+    },
+    {
+      "name": "real_saved_review_marker_uses_dismissible_portal_toast",
+      "passed": true
+    },
+    {
+      "name": "production_visible_selected_version_export_actual_hashes_no_inference",
+      "passed": true,
+      "export": {
+        "id": "35d4d2b7275e599cbf3e7f6f20e590b8",
+        "status": "COMPLETED",
+        "delivery_scope": "game",
+        "asset_id": "e4dcfe18924948a4bb43b9cc282e9686",
+        "project_id": "a3d91c8d32144d99bbec948115a91212",
+        "source_asset_id": "e4dcfe18924948a4bb43b9cc282e9686",
+        "artifact_id": "9fea8c05e14c4446925b3e8ed2adbfaa",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": null
+        },
+        "created_at": "2026-10-22T10:44:27.936501+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports\\a3d91c8d32144d99bbec948115a91212\\selective\\e4dcfe18924948a4bb43b9cc282e9686\\35d4d2b7275e599cbf3e7f6f20e590b8",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports",
+        "filename": "e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb",
+        "files": [
+          {
+            "name": "e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb",
+            "bytes": 65206328,
+            "sha256": "7489da3d16f5429e3c24c5d42196973e45a72fcba300c3368d9a84fd05017bdb",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/35d4d2b7275e599cbf3e7f6f20e590b8/files/e4dcfe18924948a4bb43b9cc282e9686--48dfd33ae7.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 4277,
+            "sha256": "6f73a180e550cbf6676005504449106fad03601b27fc20aa0ef6e2214385c647",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/35d4d2b7275e599cbf3e7f6f20e590b8/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 984911,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.47258299589157104,
+            1.0028677582740784,
+            0.41227661073207855
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.23621197044849396,
+              -0.5015204548835754,
+              -0.20722630620002747
+            ],
+            [
+              0.2363710254430771,
+              0.5013473033905029,
+              0.2050503045320511
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 984911,
+              "vertices": 721148,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-replay\\20261022T103810Z\\Library\\exports\\a3d91c8d32144d99bbec948115a91212\\manifest.json"
+      }
+    }
+  ],
+  "scope": "Native WebView UI with actual historical test-library GLB. GPU telemetry change uses a real 512 MiB allocation under the shared resource lock, not inference or an art quality test."
+}

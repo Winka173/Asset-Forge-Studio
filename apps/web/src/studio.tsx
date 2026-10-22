@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import {VideoStudio} from './video-studio';
 import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
 import {UpdatesSettings} from './updates';
@@ -259,7 +260,7 @@ export function Studio() {
     [draftStatus, setDraftStatus] = useState("");
   useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx','video'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
   useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
-  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,prompt_interpretation:true,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
+  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,prompt_interpretation:true,architecture_strategy:'ai_detail' as 'ai_detail'|'procedural_blockout',review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
   useWorkflowUpdates(projectId,setWorkflow);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
@@ -277,6 +278,8 @@ export function Studio() {
     used_mib?: number;
     total_mib?: number;
     utilization_percent?: number;
+    sampled_at?: string;
+    peak_mib?: number;
   } | null>(null);
   const [previewTab, setPreviewTab] = useState("Model"),
     [view, setView] = useState("three_quarter"),
@@ -546,13 +549,19 @@ export function Studio() {
     return () => clearTimeout(timer);
   }, [draft, loadedProject, projectId]);
   useEffect(() => {
-    const load = () =>
-      request<typeof gpu>("/api/gpu")
-        .then(setGpu)
-        .catch(() => setGpu({ available: false }));
+    let alive=true;
+    let timer:ReturnType<typeof setTimeout>;
+    async function load(){
+      try {
+        const response=await apiFetch('/api/gpu',{cache:'no-store'});
+        if(!response.ok)throw Error('GPU telemetry unavailable');
+        const value=await response.json();
+        if(alive)setGpu(previous=>({...value,peak_mib:Math.max(previous?.peak_mib||0,value.used_mib||0)}));
+      } catch {if(alive)setGpu({available:false});}
+      finally {if(alive)timer=setTimeout(load,2000);}
+    }
     load();
-    const timer = setInterval(load, 10000);
-    return () => clearInterval(timer);
+    return ()=>{alive=false;clearTimeout(timer);};
   }, []);
   const change = (values: Partial<Draft>) =>
     setDraft((d) => ({ ...d, ...values }));
@@ -612,7 +621,7 @@ export function Studio() {
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
         await reload();setAssetId(model.id);setVersionId('');setPreviewTab('Model');
         openProduction(result.batch_id,model.id);
-        setNotice(`${workflow.mode==='auto'?'Automatic':'Assisted'} local pipeline queued (${result.batch_id.slice(0,8)}). Progress and exports remain available after refresh.`);
+        setNotice('Generation queued. Follow progress in Production.');
         return;
       }
       if (!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) {
@@ -945,7 +954,7 @@ export function Studio() {
           ))}
         </nav>
         <div className="production-secondary-label">TOOLS &amp; SETTINGS</div>
-        <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} aria-current={page===p?'page':undefined}><Icon name={p} size={18}/><span>{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
+        <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p} aria-current={page===p?'page':undefined}><Icon name={p} size={18}/><span>{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
         <div className="sidebar-bottom">
           <div>
             <span className="live-dot" /> Local workspace
@@ -969,6 +978,7 @@ export function Studio() {
               </small>
             </div>
           )}
+          {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% / peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live / 2s sampling / whole GPU</small></div>}
           <span className="studio-version">ASSET FORGE / LOCAL</span>
         </div>
       </aside>
@@ -978,6 +988,8 @@ export function Studio() {
             <button
               className="collapse-sidebar icon-button"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-expanded={!collapsed}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               onClick={() => {
                 setCollapsed(!collapsed);
                 localStorage.setItem(
@@ -1023,14 +1035,7 @@ export function Studio() {
           {projectId && page==='Create' && createStep>0 && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error&&<ErrorNotice message={error} onRefresh={()=>reload().catch(e=>setError(String(e)))} onEdit={page==='Create'&&creationMode==='single'?()=>setCreateStep(1):undefined} onDismiss={()=>setError('')}/>}
-          {notice && (
-            <div role="status" className="studio-message">
-              {notice}
-              <button aria-label="Đóng thông báo" onClick={() => setNotice("")}>
-                <Icon name="Close" size={16} />
-              </button>
-            </div>
-          )}
+          <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
           {projectId && page === "Home" && (
             <><ContinueWork assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at})):[]} onAsset={openLibraryAsset} onQueue={()=>navigate('Production')}/>
 
@@ -1289,7 +1294,7 @@ export function Studio() {
                       Save draft to library
                     </button>
                   </div>
-                  <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary><label className="studio-field"><span><input type="checkbox" checked={workflow.prompt_interpretation} onChange={e=>changeWorkflow({prompt_interpretation:e.target.checked})}/> Use local prompt understanding when available</span><small>Saved per game. CPU analysis translates the prompt and classifies image purpose before generation. Missing models use the visible deterministic fallback.</small></label>                  <div
+                  <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary><label className="studio-field">Architecture generation<Select aria-label="Architecture generation strategy" value={workflow.architecture_strategy||'ai_detail'} onChange={e=>changeWorkflow({architecture_strategy:e.target.value as 'ai_detail'|'procedural_blockout'})}><option value="ai_detail" data-description="Default quality route: generate a detailed concept when needed, then use local image-to-3D with native textures. Simple primitive assembly is never substituted. Artistic fidelity still needs review.">Detailed AI model (default)</option><option value="procedural_blockout" data-description="Optional structural layout study: simple authored castle components and procedural materials. Lower visual detail than the AI tower baseline. This is not a finished high-quality art asset.">Structural blockout (simple geometry)</option></Select><small>Detailed AI preserves the high-detail generation route. Blockout is a separate, explicitly chosen layout tool.</small></label><label className="studio-field"><span><input type="checkbox" checked={workflow.prompt_interpretation} onChange={e=>changeWorkflow({prompt_interpretation:e.target.checked})}/> Use local prompt understanding when available</span><small>Saved per game. CPU analysis translates the prompt and classifies image purpose before generation. Missing models use the visible deterministic fallback.</small></label>                  <div
                     className="studio-field"
                     role="group"
                     aria-label="Quality"

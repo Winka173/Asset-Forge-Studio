@@ -11,6 +11,7 @@ from typing import Literal
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
 from . import store,jobs,studio
+from .quality_repair import RepairBudget
 
 router=APIRouter(prefix='/api/automation')
 
@@ -30,6 +31,8 @@ class Workflow(BaseModel):
     auto_resume:bool=False
     review_policy:Literal['auto','review_flagged','manual_approval']='auto'
     prompt_interpretation:bool=True
+    architecture_strategy:Literal['ai_detail','procedural_blockout']='ai_detail'
+    repair_budget:RepairBudget=Field(default_factory=RepairBudget)
 
 
 @router.get('/projects/{project_id}')
@@ -65,9 +68,10 @@ def patch_project_workflow(project_id:str,body:dict):
         if not row:raise HTTPException(404,'Game project does not exist')
         current=Workflow.model_validate(json.loads(row['payload']).get('workflow_settings',{})).model_dump()
         patch=body.copy()
-        if 'checkpoints' in patch:
-            if not isinstance(patch['checkpoints'],dict) or set(patch['checkpoints'])-set(Checkpoints.model_fields):raise HTTPException(422,'Unsupported checkpoint setting')
-            patch['checkpoints']=current['checkpoints']|patch['checkpoints']
+        for key,schema in (('checkpoints',Checkpoints),('repair_budget',RepairBudget)):
+            if key in patch:
+                if not isinstance(patch[key],dict) or set(patch[key])-set(schema.model_fields):raise HTTPException(422,'Unsupported '+key+' setting')
+                patch[key]=current[key]|patch[key]
         try:validated=Workflow.model_validate(current|patch)
         except ValueError:raise HTTPException(422,'Invalid workflow value; no settings were saved')
         return write_project_workflow(db,project_id,validated)
@@ -236,14 +240,11 @@ def advance(identifier):
                 auto['status']='paused';continue
             failures=[j for j in current if j['status'] in ('FAILED','BLOCKED','CANCELLED')]
             if failures:
-                failed=failures[0];error=failed.get('error') or '';depth=0;parent=failed
-                while parent['payload'].get('retry_of'):
-                    depth+=1;parent=next((j for j in all_jobs if j['id']==parent['payload']['retry_of']),parent)
-                    if depth>10:break
-                transient=any(w in error.lower() for w in ('oom','timeout','interrupted','server stopped','temporar','connection reset'))
-                if not value['paused'] and transient and depth<settings['retry_limit'] and failed['status']!='CANCELLED':
-                    jobs.retry(failed['id']);auto.update(status='queued',stage='retry checkpoint');active_assets.add(item['asset_id'])
-                else:auto.update(status='failed' if failed['status']=='FAILED' else 'blocked',stage=failed['payload']['kind'],error=error or failed['status'])
+                from .quality_repair import planner,submit_stage_retry
+                failed=failures[0];plan=planner.stage(value,item,failed,all_jobs)
+                if not value['paused'] and plan['action']=='retry_stage':
+                    submit_stage_retry(plan,failed);auto.update(status='queued',stage='Recover '+failed['payload']['kind'],error=None);active_assets.add(item['asset_id'])
+                else:auto.update(status='failed' if failed['status']=='FAILED' else 'blocked',stage=failed['payload']['kind'],error=plan['reason'])
                 continue
             delivery_ready=sum(j['payload']['kind'] in ('blender','animation_retime') and j['status']=='REVIEW_REQUIRED' for j in current)>=len(auto.get('engines',[]))*item['candidates'] and bool(auto.get('engines'))
             if value['paused'] and (not delivery_ready or 'Disk reserve' in (value['automation'].get('pause_reason') or '')):
@@ -372,6 +373,8 @@ def advance(identifier):
                 auto.update(status='blocked' if isinstance(exc,HTTPException) else 'failed',stage=auto.get('stage','production'),error=str(exc.detail if isinstance(exc,HTTPException) else exc),retry_required=True)
         active_running=any(j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and j['status']!='QUEUED' for j in all_jobs)
         for revision_item in value['items']:
+            if revision_item.get('repair_history'):
+                studio.patch_resolved_specification(revision_item['asset_id'],dict(quality_repair_history=revision_item['repair_history']))
             if revision_item.get('revision_id') and revision_item.get('automation',{}).get('status')!='exported':
                 from .revisions import update_execution
                 update_execution(revision_item['asset_id'],revision_item['revision_id'],dict(state=revision_item['automation'].get('status','queued'),stage=revision_item['automation'].get('stage')))

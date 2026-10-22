@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import {useEffect,useRef,useState} from 'react';
 import {apiUrl} from './api';
 import {Select} from './select';
@@ -32,7 +33,7 @@ export function FxStudio({projectId,assetId,onSaved,onProduction}:{projectId:str
  }catch(e){setError(String(e));}finally{submitting.current=false;setBusy(false);}}
  const currentFrame=frames[Math.min(frame,frames.length-1)],step=(delta:number)=>{setPlaying(false);setFrame(v=>Math.max(0,Math.min(frames.length-1,v+delta)));};
  return <section className="fx-studio" aria-label="Realtime Effects Studio"><header><div className="overline">EDITABLE LOCAL REALTIME EFFECTS</div><h2>Sword slash &amp; elements</h2><p>Describe an element, generate, choose a result and refine it here.</p></header>
- {error&&<ErrorNotice message={error} onDismiss={()=>setError('')}/>} {notice&&<p role="status">{notice}</p>}
+ {error&&<ErrorNotice message={error} onDismiss={()=>setError('')}/>} <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
  <div className="fx-studio-layout"><div className="fx-studio-input"><label>Effect name<input aria-label="Effect name" value={name} onChange={e=>setName(e.target.value)} placeholder="Auto name from recipe"/></label><label>{assetId?'Refine the selected result':'Describe the effect'}<textarea ref={promptInput} aria-label="Effect prompt" rows={5} value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="Ice sword slash, 3 seconds"/></label>
  <label>Results to choose from<Select aria-label="Effect result count" value={count} onChange={e=>setCount(Number(e.target.value))}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select></label>
  <button className="primary fx-generate" disabled={busy||!caps?.installed} onClick={generate}>{busy?'Preparing effect jobs...':assetId?'Generate New Effect Version':'Generate Effect'}</button>

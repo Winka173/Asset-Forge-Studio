@@ -151,7 +151,7 @@ def test_permanent_admission_error_waits_for_explicit_retry(client,monkeypatch):
 
 
 def test_explicit_regeneration_replans_legacy_attempt_without_mutating_history(client):
-    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Castle')).json()
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Procedural blockout castle')).json()
     legacy=value['items'][0];legacy.update(started=True,attempt=0)
     legacy.pop('planner_version',None)
     legacy['automation']=dict(enabled=True,engines=['trellis2_community'],attempt=0,status='blocked',stage='Old concept',checkpoints={})

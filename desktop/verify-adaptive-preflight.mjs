@@ -13,7 +13,7 @@ async function api(route,body){const r=await fetch(runtime.api_base+route,{heade
 async function close(){closing=true;await page.unrouteAll({behavior:'wait'});await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close'));for(let n=0;n<150&&child.exitCode===null;n++)await sleep(200);assert.notEqual(child.exitCode,null);await browser.close().catch(()=>{});browser=null;}
 try{
  await launch();const project=await api('/api/projects',{name:'Adaptive preflight native QA',art_bible:JSON.parse(fs.readFileSync(path.join(root,'presets/runavelle.json'),'utf8'))});
- await api('/api/automation/projects/'+project.id,{prompt_interpretation:false});
+ await api('/api/automation/projects/'+project.id,{prompt_interpretation:false,architecture_strategy:'procedural_blockout'});
  const output=path.join(run,'GameAssets');fs.mkdirSync(output,{recursive:true});await api('/api/export-profiles/projects/'+project.id,{preset:'glb_only',manifest:true,output_directory:output});
  await page.route(url=>url.pathname==='/api/studio',async route=>{try{const r=await route.fetch(),body=await r.json();body.capabilities.text_to_concept=false;body.capabilities.image_to_3d=false;capabilityInjections++;await route.fulfill({response:r,json:body});}catch{report.interruptedCapabilityRequests=(report.interruptedCapabilityRequests||0)+1;await route.abort().catch(()=>{});}});
  await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.getByRole('link',{name:'Create',exact:true}).click();await page.getByRole('button',{name:'Single asset One prompt',exact:false}).click();await page.getByRole('tab',{name:'Text',exact:true}).click();

@@ -8,6 +8,17 @@ from apps.api.main import app
 from engines.concept_guard import Assessment,checked_assessment
 
 
+def test_maximum_concept_avoids_negated_layout_keywords_without_rewriting_source():
+    from engines.concept_prompt import compose
+    original='A castle with 4 towers, height 12 m. No surrounding scenery, panels, or poster layouts are included.'
+    positive,negative=compose(original,'ivory limestone and navy slate','Maximum')
+    assert '4 towers' in positive and '12 m' in positive
+    assert 'panels' not in positive and 'poster' not in positive
+    assert 'poster' in negative and 'collage' in negative
+    assert 'finely resolved surface relief' in positive
+    assert 'No surrounding' in original  # Source text is untouched.
+
+
 def test_layout_check_admission_is_cpu_only_and_does_not_start_3d(tmp_path,monkeypatch,qa_project):
     monkeypatch.setattr(store,'DATA',tmp_path);qa_project();client=TestClient(app)
     model=client.post('/api/assets',json=dict(project_id='runavelle',name='Castle',prompt='One castle')).json()

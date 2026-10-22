@@ -8,6 +8,8 @@ def test_architecture_profile_respects_shape_engine_and_unsupported_constraints(
     model=studio.create_asset(studio.AssetInput(project_id='runavelle',name='Castle',prompt='Create 1 castle with 4 corner towers'))
     item=dict(asset_id=model['id'],prompt=model['prompt'],preferred_engine='auto',reference_ids=[],style_reference_ids=[],target_width_m=12.,target_depth_m=10.,target_height_m=8.,quality='Maximum')
     value=dict(project_id='runavelle',style_snapshot=studio.project('runavelle'))
+    assert asset_strategy.plan(value,item)['route']=='image_to_3d'
+    value['automation']=dict(settings=dict(architecture_strategy='procedural_blockout'))
     spec=asset_strategy.plan(value,item)
     assert spec['route']=='procedural_castle'
     assert spec['original_prompt_sha256']==hashlib.sha256(item['prompt'].encode()).hexdigest()
@@ -35,6 +37,20 @@ def test_architecture_profile_respects_shape_engine_and_unsupported_constraints(
 def test_legacy_items_do_not_change_route_and_original_prompt_is_pinned(tmp_path,monkeypatch,qa_project):
     monkeypatch.setattr(store,'DATA',tmp_path);qa_project()
     assert asset_strategy.admit({},dict(prompt='Castle'),{}) is None
+
+
+def test_maximum_castle_never_uses_blockout_as_automatic_quality_fallback(tmp_path,monkeypatch,qa_project):
+    monkeypatch.setattr(store,'DATA',tmp_path);qa_project()
+    model=studio.create_asset(studio.AssetInput(project_id='runavelle',name='Castle',prompt='Create a castle'))
+    item=dict(asset_id=model['id'],prompt=model['prompt'],preferred_engine='auto',reference_ids=[],style_reference_ids=[],target_width_m=12.,target_depth_m=10.,target_height_m=8.,quality='Maximum')
+    value=dict(project_id='runavelle',style_snapshot=studio.project('runavelle'))
+    spec=asset_strategy.plan(value,item)
+    assert spec['route']=='image_to_3d'
+    assert any('never' in r for r in spec['rationale'])
+    assert not any(r['id']=='corner_tower' for r in spec['requirements'])  # No invented verified structure.
+    explicit=asset_strategy.plan(dict(value,automation=dict(settings=dict(architecture_strategy='procedural_blockout'))),item)
+    assert explicit['route']=='procedural_castle'
+    assert any('blockout' in r for r in explicit['rationale'])
 
 
 def test_intentionally_open_plane_is_not_rejected_as_nonwatertight(tmp_path,monkeypatch,qa_project):

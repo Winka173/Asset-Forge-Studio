@@ -1,7 +1,7 @@
 # Known issues
 
 - Qwen4B visual judgments can be wrong or inconsistent; no independently human-rated calibration set. Never claim zero failures.
-- Whole-castle SDXL/image-to-3D is unreliable for exact structural requirements. A narrow four-corner authored castle profile now has real structural/export evidence; arbitrary architecture, hybrid ornamentation and structural mesh edits remain unavailable.
+- Whole-castle SDXL/image-to-3D remains unreliable for exact structural requirements. The detailed neural route is now the default; the narrow authored castle is explicitly labeled Structural blockout and requires opt-in. Earlier automatic routing was an incorrect quality tradeoff. Arbitrary architecture, hybrid ornamentation and structural mesh edits remain unavailable.
 - SDXL here lacks verified image-to-image editing/geometry constraint fidelity; 50 steps is an existing pinned Maximum profile, not a universal optimum.
 - Generic Blender QA does not prove zero intersections/UV overlap or PBR plausibility. Split UV vertices must not be mistaken for physical holes.
 - TRELLIS.2 community and bundled segmentation commercial licensing pending full audit; evaluation authorization is not blanket clearance.
@@ -12,6 +12,6 @@
 - 0.9.1 passed packaged native acceptance with physical component checks, explicit roof color QA, GLB-only children, stage-boundary restart and revision rollback. Broader routing/quality repair remain incomplete.
 - Candidate seeds for the authored profile vary procedural texture detail, not independently AI-designed castle geometry. Never present those as neural geometry candidates.
 - Auto image fallback retains the existing experimental textured TRELLIS.2 route; broad benchmark-based selection among Hunyuan/SF3D/TripoSG/textured engines is unfinished. No silent shape-only substitution for requested PBR.
-- Full QualityRepairPlanner budgets, general modular/hybrid routes, independent VLM calibration, the representative hero/boss benchmark and new target-game acceptance remain incomplete; do not mark all P0/P1/P2 complete.
+- Bounded cause-specific repair budgets are implemented and tested for interrupted/transient admission, no-progress concept conditioning and negative dependency/OOM/timeout cases. A real concept repair completed a neural castle, but no real GPU OOM repair, general geometry repair or broad endurance claim is established. General modular/hybrid routes, independent VLM calibration, representative hero/boss benchmarks and new target-game acceptance remain incomplete; do not mark all P0/P1/P2 complete.
 
 - Fixed in 0.9.1: terminal concept blockers and quarantined/paused queued stages no longer occupy the logical admission window. Regression tests use injected negative conditions with real SQLite/coordinator logic; this is not a 349-output endurance benchmark.

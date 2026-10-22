@@ -1,4 +1,4 @@
-"""Hash-bound render review and bounded 3D regeneration in the shared job graph."""
+"""Hash-bound advisory render observations in the shared job graph."""
 import json
 from . import store,studio,jobs
 
@@ -29,7 +29,7 @@ def execute(job,folder):
     target=folder/'model_visual_check.json';part=target.with_suffix('.part')
     part.write_text(json.dumps(result,indent=2),encoding='utf-8');part.replace(target)
     record=store.add_artifact(target,'model_visual_report','Local model render observations',dict(project_id=p['project_id'],asset_id=p['asset_id'],job_id=job['id'],
-        parent_id=candidate['id'],source_sha256=candidate['sha256'],model=result['model'],artistic_approval=False))
+        parent_id=candidate['id'],source_sha256=candidate['sha256'],model=result.get('model'),artistic_approval=False))
     (folder/'manifest.json').write_text(json.dumps(dict(model_visual_artifact=record['id'],sha256=record['sha256'])),encoding='utf-8')
     jobs.transition(job['id'],'GENERATED');jobs.transition(job['id'],'VALIDATING');jobs.transition(job['id'],'REVIEW_REQUIRED')
 

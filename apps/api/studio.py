@@ -4,7 +4,7 @@ import json
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 from . import jobs, store
 
@@ -12,13 +12,14 @@ router = APIRouter(prefix='/api')
 
 
 @router.get('/gpu')
-def gpu_status():
+def gpu_status(response: Response):
     import subprocess
+    response.headers['Cache-Control'] = 'no-store'
     try:
         result = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.used,memory.total,utilization.gpu', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=5)
         if result.returncode: raise ValueError('nvidia-smi failed')
         parts = result.stdout.splitlines()[0].split(',')
-        return dict(available=True, name=parts[0].strip(), used_mib=float(parts[1]), total_mib=float(parts[2]), utilization_percent=float(parts[3]))
+        return dict(available=True, sampled_at=store.now(), name=parts[0].strip(), used_mib=float(parts[1]), total_mib=float(parts[2]), utilization_percent=float(parts[3]))
     except (OSError, ValueError, IndexError, subprocess.TimeoutExpired):
         return dict(available=False, reason='Không đọc được GPU local')
 
@@ -305,6 +306,7 @@ def studio(project_id: str = ''):
 
 
 class ConceptInput(BaseModel):
+    quality_repair: dict | None = None
     interpreted_prompt: str | None = Field(default=None,max_length=100000)
     style_reference_ids: list[str] = Field(default_factory=list,max_length=5)
     asset_id: str
@@ -340,11 +342,11 @@ def concept(body: ConceptInput):
     try:directed,reference_direction=concept_direction(body.interpreted_prompt or body.prompt,body.style_reference_ids,value['project_id'])
     except ValueError as exc:raise HTTPException(409,str(exc))
     from engines.concept_prompt import compose
-    prompt,negative=compose(directed,style)
+    prompt,negative=compose(directed,style,body.quality)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
-    effective.update(negative_prompt=negative,composition_policy=2)
+    effective.update(negative_prompt=negative,composition_policy=3)
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
@@ -353,7 +355,7 @@ def concept(body: ConceptInput):
         admit(dict(kind='concept',asset_id=value['id'],effective_config=effective))
         result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
             prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,
-            steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective)),db=db)
+            steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective),quality_repair=body.quality_repair),db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_digest(body),json.dumps(result)))
         value.update(prompt=body.prompt,updated_at=store.now())
         db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(value),value['id']))

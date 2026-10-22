@@ -1,3 +1,4 @@
+import {ToastNotice} from './workspace-feedback';
 import { Select } from "./select";
 import { apiFetch, apiUrl } from "./api";
 import { useEffect, useState } from "react";
@@ -278,11 +279,7 @@ export function QualityLab({
             {error}
           </div>
         )}
-        {notice && (
-          <div className="message" role="status">
-            {notice}
-          </div>
-        )}
+        <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
         <section id="compare">
           <div className="section-head">
             <div>
