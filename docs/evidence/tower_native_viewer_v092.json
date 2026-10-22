@@ -1,0 +1,32 @@
+{
+  "status": "PASS_NATIVE_FRESH_TOWER_VIEWER",
+  "version": "0.9.2",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\tower-native\\2026-10-22T11-20-13-739Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "fresh_actual_tower_GLb_visible_with_textures_no_new_jobs",
+      "passed": true,
+      "artifact_id": "9fea8c05e14c4446925b3e8ed2adbfaa",
+      "sha256": "7489da3d16f5429e3c24c5d42196973e45a72fcba300c3368d9a84fd05017bdb",
+      "actual": {
+        "loaded": "1",
+        "textures": "1"
+      }
+    },
+    {
+      "name": "actual_viewer_camera_front_back_side_top_bottom",
+      "passed": true,
+      "views": [
+        "front",
+        "back",
+        "side",
+        "top",
+        "bottom"
+      ],
+      "limitation": "Visible native render evidence, not a calibrated artistic pass."
+    }
+  ],
+  "scope": "Actual fresh tower GLB loaded in packaged Three.js viewer. Native source array parity is recorded separately; no art/Meshy equivalence claim."
+}

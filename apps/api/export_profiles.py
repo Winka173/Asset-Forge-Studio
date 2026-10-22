@@ -167,6 +167,28 @@ def _record_path(record):
     return path
 
 
+def revision_for_artifact(asset,record):
+    """An exported artifact pointer is committed after validation, not before it.
+
+    Resolve in-flight versions from their existing persistent execution job so
+    their constraints cannot fall back to the original asset's specification.
+    """
+    revisions=asset.get('revisions',[])
+    matched=next((r for r in revisions if r.get('artifact_id')==record['id']),None)
+    if matched:return matched
+    job_id=record['metadata'].get('job_id')
+    if not job_id:return None
+    from . import jobs
+    try:job=jobs.get(job_id)
+    except KeyError:return None
+    payload=job['payload']
+    if payload.get('asset_id')!=asset['id']:raise HTTPException(409,'Artifact execution belongs to another asset; revision constraints were not inferred.')
+    revision_id=payload.get('revision_id')
+    matched=next((r for r in revisions if r['id']==revision_id or not revision_id and r.get('group_id')==payload.get('batch_id')),None)
+    if revision_id and not matched:raise HTTPException(409,'Revision execution record missing; restore its checkpoint before export.')
+    return matched
+
+
 def _source(asset, artifact_id=None):
     from .studio import scoped_artifact
     if artifact_id:
@@ -193,7 +215,7 @@ def _source(asset, artifact_id=None):
         import copy
         from .quality_evaluation import VERSION,validator_hash,evaluate
         from engines.quality import fingerprint
-        revision=next((r for r in asset.get('revisions',[]) if r.get('artifact_id')==record['id']),None)
+        revision=revision_for_artifact(asset,record)
         effective=copy.deepcopy((revision or {}).get('effective_specification') or asset.get('resolved_specification') or {})
         spec=effective.get('asset_generation_spec');parent_hash=effective.get('structural_parent_spec_hash')
         plan=(revision or {}).get('plan',{})

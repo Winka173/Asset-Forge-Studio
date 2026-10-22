@@ -14,6 +14,8 @@ The replay's direct legacy API request used no normalization height. Fixed metri
 
 Measured replay resources: `tower_replay_resources.json`: 318 whole-device nvidia-smi samples, peak 6,266 MiB, peak utilization 99%. Whole-machine RAM peak 48,617,463,808 bytes during inference, worker tree RSS peak 23,522,455,552 bytes. Blender whole-machine peak 30,382,047,232 bytes, worker tree RSS peak 5,026,295,808 bytes. These scopes include desktop/system memory where stated; do not compare them to exclusive CUDA allocated counters as the same metric. Packaged Windows 0.9.1 viewer acceptance passed with a full-size interactive tower preview, screenshot `tower_native_viewer.png`; no new inference was triggered by viewing.
 
+Windows 0.9.2 retained-tower verification: actual front/back/side/top/bottom and initial three-quarter screenshots are in `../evidence/tower_views_v092/`; viewer receipt `tower_native_viewer_v092.json`. These expose the real generated backside for review and preserve the same GLB/hash; camera changes do not regenerate or alter the asset. Render evidence is not a human-accepted backside quality score.
+
 | New case (n=1 each) | End-to-end | Geometry stage | Blender | Delivered master | Interpretation |
 |---|---:|---:|---:|---|---|
 | TripoSG, supplied alpha castle, Maximum shape-only | 437.83 s | 65.61 s including worker/load | 352.83 s | 3,324,960 triangles; 265.08 MiB; 0 embedded images | Valid shape/export, not a textured-quality substitute |

@@ -1,0 +1,14 @@
+{
+  "status": "PASS_REAL_INFLIGHT_REVISION_CONTEXT_AND_COLOR_REJECTION",
+  "native_run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-native\\2026-10-22T10-50-59-528Z",
+  "asset_id": "5c194e0fcef543409395a4b79f183f9f",
+  "artifact_id": "d3125c8698fc4f5ba67a217cc770bf61",
+  "artifact_sha256": "2bec847c0d581a73d0487be14d60d07f829fc571c39daf4072b0a71a38fec7b9",
+  "checks": {
+    "inflight_revision_resolved": true,
+    "stale_original_not_used": true,
+    "contradictory_color_blocked": true,
+    "original_metadata_preserved": true
+  },
+  "scope": "Real GLB validation with in-memory negative context injection; no new inference or artistic claim"
+}

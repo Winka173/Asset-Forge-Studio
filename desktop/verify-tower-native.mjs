@@ -19,9 +19,15 @@ try{
  await page.locator('.library-card-open').filter({hasText:'Archer Tower / preserved source'}).first().click();
  await page.waitForFunction(()=>{const viewer=document.querySelector('.library-detail-viewport .viewer');return Number(viewer?.dataset.loaded)>0&&Number(viewer?.dataset.textures)>0;},{timeout:90000});
  await page.screenshot({path:path.join(run,'fresh-tower-packaged-viewer.png'),fullPage:true});
+ for(const view of ['front','back','side','top','bottom']){
+   await page.getByRole('combobox',{name:'Library camera',exact:true}).click();await page.getByRole('option',{name:new RegExp('^'+view+'$','i')}).click();await page.evaluate(()=>window.scrollTo(0,0));await sleep(250);
+   assert.equal(await page.locator('.library-detail-viewport .viewer').getAttribute('data-loaded'),'1');
+   await page.screenshot({path:path.join(run,`tower-${view}.png`),fullPage:true});
+ }
  const actual=await page.locator('.library-detail-viewport .viewer').evaluate(e=>({loaded:e.dataset.loaded,textures:e.dataset.textures}));
  assert.equal((await get('/api/jobs')).length,jobsBefore.length);assert.equal(report.errors.length,0);
  report.checks.push({name:'fresh_actual_tower_GLb_visible_with_textures_no_new_jobs',passed:true,artifact_id:replay.artifact.id,sha256:replay.artifact.sha256,actual});
+ report.checks.push({name:'actual_viewer_camera_front_back_side_top_bottom',passed:true,views:['front','back','side','top','bottom'],limitation:'Visible native render evidence, not a calibrated artistic pass.'});
  report.status='PASS_NATIVE_FRESH_TOWER_VIEWER';
 }catch(error){report.status='FAILED';report.error=String(error);if(page)await page.screenshot({path:path.join(run,'failure.png'),fullPage:true}).catch(()=>{});throw error;}
 finally{

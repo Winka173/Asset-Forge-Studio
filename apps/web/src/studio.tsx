@@ -1266,7 +1266,7 @@ export function Studio() {
                         busy ||
                         (!(candidate&&selectedAsset)&&(!workflowReady ||
                         (workflow.mode==='expert' && sourceNeedsApproval) ||
-                        ((!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
+                        ((!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) ? (!draft.prompt.trim() || workflow.mode==='expert'&&!data.capabilities.text_to_concept) : workflow.mode==='expert'&&!data.capabilities.image_to_3d) ||
                         loadedProject !== projectId))
                       }
                       onClick={generate}

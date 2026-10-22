@@ -12,6 +12,20 @@ from fastapi.testclient import TestClient
 from apps.api import store, studio, export_profiles as exports
 
 
+def test_inflight_revision_export_uses_pinned_execution_not_original_spec(tmp_path,monkeypatch,qa_project):
+    from apps.api import jobs
+    monkeypatch.setattr(store,'DATA',tmp_path);qa_project()
+    model=studio.create_asset(studio.AssetInput(project_id='runavelle',name='Revision context',prompt='Original blue roof'))
+    revision=dict(id='revision-red',group_id='revision-group',effective_specification=dict(roof='red'))
+    model['revisions']=[revision]
+    job=jobs.enqueue(dict(kind='blender',asset_id=model['id'],batch_id='revision-group',revision_id=revision['id']))
+    artifact=dict(id='not-yet-published',metadata=dict(job_id=job['id']))
+    assert exports.revision_for_artifact(model,artifact)==revision
+    assert not revision.get('artifact_id') and jobs.get(job['id'])['status']=='QUEUED'
+    missing=dict(model,revisions=[])
+    with pytest.raises(Exception,match='Revision execution record missing'):exports.revision_for_artifact(missing,artifact)
+
+
 def setup_asset(tmp_path, monkeypatch, source_id='TOWER / Archer:T3'):
     monkeypatch.setattr(store,'DATA',tmp_path)
     app=FastAPI();app.include_router(studio.router);app.include_router(exports.router)
