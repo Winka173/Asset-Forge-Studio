@@ -1,5 +1,7 @@
 # Development changelog
 
+0.9.12 VERIFIED: persisted production/QA/export/art projection for standalone rows without rewriting raw worker states; completed label/action states, explicit skipped upstream stages for existing-model processing, accurate compact/full settled-stage meters. 165 tests (231.13 s), frontend/Windows/generic smoke/cache and real retained-tower native paths PASS. Art remains Not Reviewed; raw REVIEW_REQUIRED preserved in stage history. See standalone_status_native_v0912.json/png.
+
 0.9.11 VERIFIED: fix standalone Enhance ignoring export_fbx; pin project default or explicit output choice, carry new Single admission into Blender children, preserve legacy queued contracts and generation quality. Separate texture-inspection button/footer spacing. 165 tests (207.07 s), frontend/Windows/generic smoke/cache and real retained-tower no-FBX / explicit four-FBX reopen / single-GLB delivery / 4K/source preservation native PASS. No AI rerun; production raw-status display issue discovered separately.
 
 0.9.10 VERIFIED: embedded texture decoding/reference/UV declaration integrity, actual PBR resolution/hash evidence in Library/Production/Compare, selected-version reinspection with safe metadata merge and dependent-validator cache expiry. 162 tests (232.36 s), TypeScript/Vite, Windows/generic and affected real native checks/cache PASS. Corrupted embedded PNG rejected; sources preserved. Initial details-attribute harness bug corrected and rerun passed. Corner-normal experiment remains research-only. See TEXTURE_DIAGNOSTICS.md.

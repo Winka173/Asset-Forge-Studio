@@ -57,8 +57,9 @@ def test_transitions_cancel_retry_and_recovery(database):
 def test_real_blender_queue_and_output_download(database):
     # Actual Blender subprocess, not mocked success. No concept-to-3D claim.
     with TestClient(app) as client:
+        asset=client.post('/api/assets',json=dict(project_id='runavelle',name='Actual Blender delivery test')).json()
         mesh = trimesh.creation.box(extents=[2, 10, 3]).export(file_type='glb')
-        source = client.post('/api/import/candidate', files={'file': ('qa_box.glb', mesh)}).json()
+        source = client.post('/api/import/candidate',params=dict(project_id='runavelle',asset_id=asset['id']),files={'file': ('qa_box.glb', mesh)}).json()
         queued = client.post('/api/jobs/blender', json={'artifact_id': source['id'], 'render': False}).json()
         assert queued['payload']['export_fbx'] is False
         deadline = time.monotonic() + 45
@@ -77,6 +78,17 @@ def test_real_blender_queue_and_output_download(database):
         assert (database/'jobs'/queued['id']/'output/master.blend').exists()
         assert client.post(f'/api/jobs/{job["id"]}/cancel').status_code == 409
         assert len(client.get('/api/status').json()['artifacts']) == 2
+        overview=client.get('/api/production').json();row=overview['standalone'][0]
+        assert row['qa_status']=='passed' and row['export_status']=='not_exported'
+        assert row['status']=='REVIEW_REQUIRED'  # Retain raw job state independently.
+        processed=next(a for a in client.get('/api/production/assets/'+row['asset_id']).json()['artifacts'] if a['metadata'].get('stage')=='blender_processed')
+        delivery=client.post('/api/export-profiles/assets/'+asset['id'],json=dict(artifact_id=processed['id']))
+        assert delivery.status_code==200,delivery.text
+        exported=client.get('/api/production').json()['standalone'][0]
+        assert exported['production_status']=='completed' and exported['export_status']=='exported'
+        assert exported['qa_status']=='passed' and exported['art_review_status']=='not_reviewed'
+        assert exported['status']=='REVIEW_REQUIRED' and jobs.get(job['id'])['status']=='REVIEW_REQUIRED'
+        assert len(client.get('/api/production').json()['standalone'])==1
 
 
 def test_enhance_pins_project_fbx_default_and_honors_explicit_overrides(database):

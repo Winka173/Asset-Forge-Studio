@@ -1,3 +1,13 @@
+# Windows 0.9.12 - truthful completed standalone production - 2026-10-22
+
+165 backend tests PASS (231.13 s), TypeScript/Vite, fresh Windows/generic smoke, affected native status/export/reinspection checks and backend/source cache PASS. Standalone queue projections now include independent persisted status dimensions without rewriting raw job states. Completed delivered model rows and inspector show production Completed, with game delivery saved; completed stages do not offer active Pause/Cancel. Existing-model processing explicitly skips prompt/concept/AI geometry stages rather than leaving them Pending. Both compact and full stage-count meters settle at 6/6 with three skipped stages for this route. This is stage count, not elapsed-time percentage or an artistic score.
+
+Actual retained tower two CPU Blender paths, optional FBX/reimport, GLB-only export, embedded 4K textures/source hashes, one asset row, reload, actual completed label/meters/skips/disabled controls and pipeline descriptions passed. Technical QA remains Passed, export Exported, art Not Reviewed and raw jobs remain REVIEW_REQUIRED in history. No inference rerun or original-data modification. Evidence: evidence/standalone_status_native_v0912.json/png. Current executable: dist/windows/stable/0.9.12/Asset Forge Studio.exe (previous latest was open during publication and was preserved).
+
+Parallel read-only audits reproduced separate Library selected-version Re-export, stale Refine plan and hidden filtered selection bugs; repairs are next. No-remesh castle finishing research completed but is not a production capability/default change or quality pass; visual comparison remains in progress. Artistic/Meshy acceptance and broader engine/route coverage remain open.
+
+---
+
 # Windows 0.9.11 - GLB-only Enhance output contract - 2026-10-22
 
 165 backend tests PASS (207.07 s), TypeScript/Vite, fresh Windows/generic smoke, affected native retained-tower acceptance and backend/source cache PASS. Standalone Enhance now accepts explicit optional FBX and otherwise pins the project profile at admission. New Single inference admissions pin the same choice for their automatic Blender child; existing queued legacy contracts stay intact. Output preferences do not alter generation config, source masters, textures or LOD processing. The texture inspection footer now has separate button/help spacing.

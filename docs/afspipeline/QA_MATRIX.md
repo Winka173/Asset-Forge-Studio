@@ -1,5 +1,7 @@
 # Acceptance matrix
 
+0.9.12 VERIFIED: retained tower actual CPU processing/FBX reopen/GLB-only delivery, native completed label and row, 6/6 settled (3 skipped) meters, disabled inactive Pause/Cancel, actual pipeline description/reload, one stable asset, unchanged source/4K and no new AI. Backend165 tests (231.13 s), frontend/Windows/generic smoke/cache PASS. Raw job history remains REVIEW_REQUIRED and art Not Reviewed. Evidence standalone_status_native_v0912.json/png.
+
 0.9.11 VERIFIED: actual retained-tower two CPU Blender stages. Default GLB Only no internal FBX, raw/master preserved, two embedded 4K PBR images. Explicit FBX creates four actual reimported files. Game delivery one validated GLB plus manifest, source hash retained, no new AI, one stable asset row and reopened viewer. Native footer-spacing/reinspection PASS. 165 tests (207.07 s), frontend/Windows/generic smoke/cache pass. Evidence: glb_only_enhance_native_v0911.json. Separate raw status enum / irrelevant Pending stage display is not yet fixed.
 
 0.9.10 VERIFIED: actual tower CPU Blender, embedded 4K material images/links, selected raw-version reinspection and refresh preservation, deliberately corrupted PNG API400, actual Library/Production/Compare cards. No duplicate/new AI jobs, source checksums unchanged. 162 tests (232.36 s), frontend, Windows/generic smoke/cache PASS. Evidence: texture_diagnostics_native_v0910.json, texture_compare_native_v0910.json. An initial native harness failure was caused by incorrect details boolean-attribute interpretation and corrected before final PASS.
