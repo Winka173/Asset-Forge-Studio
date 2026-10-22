@@ -1,3 +1,5 @@
+0.9.13 Library/version safety VERIFIED: actual retained tower/castle, one real CPU Blender job, selected artifact re-export identity/hash, changing parent clears checked plan, delayed real response rejected after context change, leaving pending submit never queues after unmount, Grid/List preserves selection, result filter clears hidden selections. Baseline native reproduced the original failures. 165 tests (227.64 s), TypeScript/Vite, Windows/generic smoke/cache PASS; evidence/library_version_safety_native_v0913.json/png. No new AI inference or artistic approval.
+
 # Acceptance matrix
 
 0.9.12 VERIFIED: retained tower actual CPU processing/FBX reopen/GLB-only delivery, native completed label and row, 6/6 settled (3 skipped) meters, disabled inactive Pause/Cancel, actual pipeline description/reload, one stable asset, unchanged source/4K and no new AI. Backend165 tests (231.13 s), frontend/Windows/generic smoke/cache PASS. Raw job history remains REVIEW_REQUIRED and art Not Reviewed. Evidence standalone_status_native_v0912.json/png.

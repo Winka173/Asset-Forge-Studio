@@ -1,0 +1,86 @@
+[
+  {
+    "status": "NotEvaluated",
+    "scope": "static single-mesh single-material core PBR LOD0",
+    "checks": {
+      "base_color_rgba": true,
+      "metallic_roughness_gb": true,
+      "core_factors": true,
+      "known_bounds": true,
+      "triangle_count": true,
+      "uv_triangle_multiset": true
+    },
+    "artistic_quality": "NotEvaluated",
+    "sampler_fidelity": "NotEvaluated",
+    "limitations": [
+      "No artistic, PBR plausibility, holes/intersections, normals or hierarchy certification.",
+      "Exact unique UV triangle keys are required. Unknown routes do not get a Pass.",
+      "Unspecified sampler defaults are not equivalent to a fixed explicit filter; sampler changes are observations."
+    ],
+    "source_sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+    "target_sha256": "96a663a9e1e12696e850e09254242f8d766f895e6bf37bc293f0e3c15dcbc6e8",
+    "sampler_observation": {
+      "source": {
+        "base_color": null,
+        "metallic_roughness": null
+      },
+      "target": {
+        "base_color": {
+          "magFilter": 9729,
+          "minFilter": 9987
+        },
+        "metallic_roughness": {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      },
+      "declarations_equal": false
+    },
+    "bounds_max_delta_m": 0.0,
+    "semantic_pbr_status": "Pass",
+    "reason": "UV multiset equal; duplicate/repeated UV keys prevent proving geometry association",
+    "name": "tower"
+  },
+  {
+    "status": "NotEvaluated",
+    "scope": "static single-mesh single-material core PBR LOD0",
+    "checks": {
+      "base_color_rgba": true,
+      "metallic_roughness_gb": true,
+      "core_factors": true,
+      "known_bounds": true,
+      "triangle_count": true,
+      "uv_triangle_multiset": true
+    },
+    "artistic_quality": "NotEvaluated",
+    "sampler_fidelity": "NotEvaluated",
+    "limitations": [
+      "No artistic, PBR plausibility, holes/intersections, normals or hierarchy certification.",
+      "Exact unique UV triangle keys are required. Unknown routes do not get a Pass.",
+      "Unspecified sampler defaults are not equivalent to a fixed explicit filter; sampler changes are observations."
+    ],
+    "source_sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+    "target_sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+    "sampler_observation": {
+      "source": {
+        "base_color": null,
+        "metallic_roughness": null
+      },
+      "target": {
+        "base_color": {
+          "magFilter": 9729,
+          "minFilter": 9987
+        },
+        "metallic_roughness": {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      },
+      "declarations_equal": false
+    },
+    "bounds_max_delta_m": 1.8742050755804485e-07,
+    "semantic_pbr_status": "Pass",
+    "reason": "UV multiset equal; duplicate/repeated UV keys prevent proving geometry association",
+    "name": "castle"
+  }
+]

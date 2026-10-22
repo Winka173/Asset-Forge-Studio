@@ -1,0 +1,88 @@
+"""Negative mutations of the REAL retained tower GLB, not synthesized assets."""
+import sys,copy,struct,json,io,importlib.util
+from pathlib import Path
+import numpy as np
+from PIL import Image
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+from apps.api.inspection import glb_layout
+from apps.api.texture_diagnostics import image_bytes
+spec=importlib.util.spec_from_file_location('preservation',ROOT/'.local/pbr_preservation_prototype.py')
+p=importlib.util.module_from_spec(spec);spec.loader.exec_module(p)
+SOURCE=ROOT/'.local/native-checkpoint-real/20261022T124320Z/Library/jobs/770b27a74afa439998bc51e9dd320c70/output/raw.glb'
+PROCESSED=ROOT/'.local/texture-diagnostics-native/2026-10-22T15-39-21-154Z/Library/jobs/a597fe3180644169809524ac827dff10/output/LOD0.glb'
+
+def image_pixel_mutator(binding,channel):
+    def change(d,b):
+        image_index=d['textures'][d['materials'][0]['pbrMetallicRoughness'][binding]['index']]['source']
+        _,layout=glb_layout(SOURCE);_,data=image_bytes(SOURCE,d,layout,d['images'][image_index])
+        with Image.open(io.BytesIO(data)) as image:
+            rgba=image.convert('RGBA');v=list(rgba.getpixel((0,0)));v[channel]=(v[channel]+1)%256;rgba.putpixel((0,0),tuple(v));out=io.BytesIO();rgba.save(out,format='PNG');encoded=out.getvalue()
+        b.extend(b'\0'*((-len(b))%4));offset=len(b);b.extend(encoded)
+        d['bufferViews'].append(dict(buffer=0,byteOffset=offset,byteLength=len(encoded)))
+        d['images'][image_index]=dict(bufferView=len(d['bufferViews'])-1,mimeType='image/png')
+    return change
+
+def rewrite(source,target,mutate):
+    doc,layout=glb_layout(source)
+    with source.open('rb') as f:f.seek(layout[0]);binary=bytearray(f.read(doc['buffers'][0]['byteLength']))
+    mutate(doc,binary)
+    doc['buffers'][0]['byteLength']=len(binary)
+    raw=json.dumps(doc,separators=(',',':')).encode();raw+=b' '*((-len(raw))%4);binary+=b'\0'*((-len(binary))%4)
+    with target.open('wb') as f:
+        f.write(struct.pack('<4sII',b'glTF',2,12+8+len(raw)+8+len(binary)))
+        f.write(struct.pack('<II',len(raw),0x4e4f534a));f.write(raw)
+        f.write(struct.pack('<II',len(binary),0x004e4942));f.write(binary)
+
+def test_actual_factor_loss(tmp_path):
+    target=tmp_path/'changed_factor.glb'
+    rewrite(SOURCE,target,lambda d,b:d['materials'][0]['pbrMetallicRoughness'].update(roughnessFactor=.123456))
+    r=p.compare(SOURCE,target);assert r['status']=='Fail' and r['checks']['core_factors'] is False
+
+def test_actual_missing_texture_binding(tmp_path):
+    target=tmp_path/'missing_base_color.glb'
+    rewrite(SOURCE,target,lambda d,b:d['materials'][0]['pbrMetallicRoughness'].pop('baseColorTexture'))
+    r=p.compare(SOURCE,target);assert r['status']=='Fail' and r['checks']['base_color_rgba'] is False
+
+def test_actual_one_pixel_loss(tmp_path):
+    target=tmp_path/'changed_basecolor_pixel.glb'
+    rewrite(SOURCE,target,image_pixel_mutator('baseColorTexture',0))
+    r=p.compare(SOURCE,target);assert r['status']=='Fail' and r['checks']['base_color_rgba'] is False
+
+def test_actual_unused_mr_red_is_not_roughness_loss(tmp_path):
+    target=tmp_path/'changed_unused_mr_red.glb'
+    rewrite(SOURCE,target,image_pixel_mutator('metallicRoughnessTexture',0))
+    r=p.compare(SOURCE,target);assert r['semantic_pbr_status']=='Pass' and r['checks']['metallic_roughness_gb'] is True
+
+def test_actual_used_mr_green_loss(tmp_path):
+    target=tmp_path/'changed_roughness_green.glb'
+    rewrite(SOURCE,target,image_pixel_mutator('metallicRoughnessTexture',1))
+    r=p.compare(SOURCE,target);assert r['status']=='Fail' and r['checks']['metallic_roughness_gb'] is False
+
+def test_actual_sampler_difference_not_fake_shader_pass():
+    r=p.compare(SOURCE,PROCESSED)
+    assert r['semantic_pbr_status']=='Pass' and r['sampler_observation']['declarations_equal'] is False
+    assert r['sampler_fidelity']=='NotEvaluated'
+
+def test_actual_uv_assignment_loss(tmp_path):
+    target=tmp_path/'changed_uv.glb'
+    def change(d,b):
+        a=d['accessors'][d['meshes'][0]['primitives'][0]['attributes']['TEXCOORD_0']];assert a['componentType']==5126
+        v=d['bufferViews'][a['bufferView']];offset=v.get('byteOffset',0)+a.get('byteOffset',0)
+        old=struct.unpack_from('<f',b,offset)[0];struct.pack_into('<f',b,offset,old+.125)
+    rewrite(SOURCE,target,change)
+    r=p.compare(SOURCE,target);assert r['status']=='Fail' and r['checks']['uv_triangle_multiset'] is False
+
+def test_actual_unsupported_route_is_not_fake_pass(tmp_path):
+    target=tmp_path/'unsupported_material_extension.glb'
+    rewrite(SOURCE,target,lambda d,b:d['materials'][0].update(extensions={'KHR_materials_clearcoat':{'clearcoatFactor':1.}}))
+    r=p.compare(SOURCE,target);assert r['status']=='NotEvaluated' and not r['checks']
+
+def test_intentional_edit_no_channel_wide_bypass():
+    r=p.compare(SOURCE,SOURCE,intentional_material_edit=True)
+    assert r['status']=='NotEvaluated' and not r['checks']
+
+def test_actual_duplicate_uv_scope_honest_and_source_unchanged():
+    before=p.sha(SOURCE);r=p.compare(SOURCE,SOURCE)
+    assert r['status']=='NotEvaluated' and r['semantic_pbr_status']=='Pass'
+    assert r['checks']['uv_triangle_multiset'] is True and 'duplicate' in r['reason']
+    assert p.sha(SOURCE)==before

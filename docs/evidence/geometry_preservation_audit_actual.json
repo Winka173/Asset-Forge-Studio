@@ -1,0 +1,85 @@
+{
+  "script_sha256": "a11b61c9a6b8a701ef784e1b6e019331533a429cc18820d884c654be43e2b2ee",
+  "pairs": [
+    {
+      "name": "tower",
+      "source_sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+      "target_sha256": "96a663a9e1e12696e850e09254242f8d766f895e6bf37bc293f0e3c15dcbc6e8",
+      "source_triangles": 984536,
+      "target_triangles": 984536,
+      "same_triangle_count": true,
+      "expected_normalization_scale": 1.0,
+      "max_corresponding_ordered_corner_world_delta_m": 0.0,
+      "max_corresponding_ordered_corner_uv_delta": 0.0,
+      "expected_bounds": [
+        [
+          -0.23621153831481934,
+          -0.5015204548835754,
+          -0.20722630620002747
+        ],
+        [
+          0.2363710254430771,
+          0.5013473033905029,
+          0.20505228638648987
+        ]
+      ],
+      "actual_bounds": [
+        [
+          -0.23621153831481934,
+          -0.5015204548835754,
+          -0.20722630620002747
+        ],
+        [
+          0.2363710254430771,
+          0.5013473033905029,
+          0.20505228638648987
+        ]
+      ],
+      "bounds_max_abs_error_m": 0.0,
+      "limitations": [
+        "Actual single-mesh pairs only, shared face-order correspondence directly tested on all triangle corners. Nonzero discrepancy cannot disambiguate reorder from corruption for general assets.",
+        "Identity or explicit height normalization only; hierarchy, normals/tangents and artistic quality are not certified."
+      ]
+    },
+    {
+      "name": "castle",
+      "source_sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+      "target_sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+      "source_triangles": 983534,
+      "target_triangles": 983534,
+      "same_triangle_count": true,
+      "expected_normalization_scale": 12.559049491988983,
+      "max_corresponding_ordered_corner_world_delta_m": 4.099438655202903e-07,
+      "max_corresponding_ordered_corner_uv_delta": 0.0,
+      "expected_bounds": [
+        [
+          -6.301200935692161,
+          0.0,
+          -5.399479229477013
+        ],
+        [
+          6.301200935692161,
+          10.0,
+          5.399479229477013
+        ]
+      ],
+      "actual_bounds": [
+        [
+          -6.301201096270233,
+          0.0,
+          -5.39947941689752
+        ],
+        [
+          6.301201113965362,
+          10.0,
+          5.399479361483827
+        ]
+      ],
+      "bounds_max_abs_error_m": 1.8742050755804485e-07,
+      "limitations": [
+        "Actual single-mesh pairs only, shared face-order correspondence directly tested on all triangle corners. Nonzero discrepancy cannot disambiguate reorder from corruption for general assets.",
+        "Identity or explicit height normalization only; hierarchy, normals/tangents and artistic quality are not certified."
+      ]
+    }
+  ]
+}

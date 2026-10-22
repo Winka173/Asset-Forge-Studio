@@ -1,0 +1,105 @@
+"""Narrow READ-ONLY prototype. Not integrated into AFS or an artistic assessment.
+
+Unknown routes are NotEvaluated. Names/image numbering/PNG encoding and triangle
+ordering are not identities. UV triangle keys must be exact and unique; ambiguous
+UVs are not silently matched. Sampler declarations are observations only.
+"""
+import hashlib,io,json
+from pathlib import Path
+import numpy as np
+import trimesh
+from PIL import Image
+from apps.api.inspection import glb_layout
+from apps.api.texture_diagnostics import image_bytes
+
+class Unknown(Exception):pass
+
+def sha(path):
+    with Path(path).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+
+def snapshot(path):
+    doc,bin_layout=glb_layout(path)
+    if doc.get('animations') or doc.get('skins') or doc.get('extensionsUsed'):raise Unknown('Animation, skin or extension route outside initial scope')
+    meshes=doc.get('meshes',[])
+    if len(meshes)!=1 or len(meshes[0].get('primitives',[]))!=1:raise Unknown('Requires one mesh / primitive')
+    prim=meshes[0]['primitives'][0];mats=doc.get('materials',[])
+    if len(mats)!=1 or prim.get('material')!=0 or prim.get('mode',4)!=4:raise Unknown('Requires one core triangle material')
+    if prim.get('targets') or any(k.startswith(('JOINTS','WEIGHTS')) for k in prim.get('attributes',{})):raise Unknown('Morph/skin inputs outside initial scope')
+    mat=mats[0];pbr=mat.get('pbrMetallicRoughness',{})
+    if mat.get('extensions') or pbr.get('extensions') or any(mat.get(k) for k in ('normalTexture','occlusionTexture','emissiveTexture')):raise Unknown('Additional shader channels outside initial scope')
+    maps={};samplers={}
+    for channel,key,pixels in [('base_color','baseColorTexture','RGBA'),('metallic_roughness','metallicRoughnessTexture','GB')]:
+        info=pbr.get(key)
+        if info is None:maps[channel]=None;continue
+        if info.get('extensions') or info.get('texCoord',0)!=0:raise Unknown('Only direct TEXCOORD_0 core texture bindings scoped')
+        tex=doc['textures'][info['index']]
+        if tex.get('extensions'):raise Unknown('Texture extension outside initial scope')
+        _,data=image_bytes(path,doc,bin_layout,doc['images'][tex['source']])
+        hashes={c:hashlib.sha256() for c in pixels}
+        with Image.open(io.BytesIO(data)) as image:
+            size=list(image.size)
+            for y in range(0,image.height,64):
+                with image.crop((0,y,image.width,min(y+64,image.height))).convert('RGBA') as strip:
+                    for c in pixels:
+                        with strip.getchannel(c) as actual:hashes[c].update(actual.tobytes())
+        maps[channel]=dict(size=size,pixel_channels={c:h.hexdigest() for c,h in hashes.items()})
+        samplers[channel]=doc.get('samplers',[])[tex['sampler']] if 'sampler' in tex else None
+    factors=dict(base_color=pbr.get('baseColorFactor',[1.,1.,1.,1.]),metallic=pbr.get('metallicFactor',1.),roughness=pbr.get('roughnessFactor',1.),alpha_mode=mat.get('alphaMode','OPAQUE'),alpha_cutoff=mat.get('alphaCutoff',.5),double_sided=mat.get('doubleSided',False),emissive=mat.get('emissiveFactor',[0.,0.,0.]))
+    scene=trimesh.load(path,force='scene',process=False)
+    if len(scene.graph.nodes_geometry)!=1:raise Unknown('Requires one static mesh instance')
+    matrix,key=scene.graph[scene.graph.nodes_geometry[0]];mesh=scene.geometry[key]
+    uv=getattr(mesh.visual,'uv',None)
+    if uv is None:raise Unknown('No UV correspondence for initial textured scope')
+    xyz=trimesh.transform_points(mesh.vertices,matrix)
+    if not np.isfinite(xyz).all() or not np.isfinite(uv).all():raise ValueError('Nonfinite geometry/UV')
+    return dict(sha256=sha(path),maps=maps,factors=factors,samplers=samplers,xyz=xyz,uv=np.asarray(uv),faces=np.asarray(mesh.faces))
+
+def canonical_uv_triangles(snapshot):
+    faces=snapshot['faces'];uv=snapshot['uv'][faces];xyz=snapshot['xyz'][faces]
+    # Cyclic rotation only: reversing winding cannot be hidden by sorting corners.
+    first=np.zeros(len(faces),dtype=np.int8)
+    for i in (1,2):
+        current=uv[np.arange(len(faces)),first];candidate=uv[:,i]
+        choose=(candidate[:,0]<current[:,0])|((candidate[:,0]==current[:,0])&(candidate[:,1]<current[:,1]))
+        first[choose]=i
+    take=(first[:,None]+np.arange(3))%3
+    uv=uv[np.arange(len(faces))[:,None],take];xyz=xyz[np.arange(len(faces))[:,None],take]
+    keys=uv.reshape((-1,6));order=np.lexsort(tuple(keys[:,i] for i in reversed(range(6))))
+    keys=keys[order];xyz=xyz[order]
+    duplicate_keys=bool(len(keys)>1 and np.any(np.all(keys[1:]==keys[:-1],axis=1)))
+    # Distinct corners are needed to define a unique first corner in cyclic rotation.
+    repeated_corners=bool(np.any(np.all(uv[:,0]==uv[:,1],axis=1)|np.all(uv[:,1]==uv[:,2],axis=1)|np.all(uv[:,0]==uv[:,2],axis=1)))
+    return keys,xyz,duplicate_keys or repeated_corners
+
+def compare(source,target,*,normalize_height_m=None,intentional_material_edit=False,tolerance_m=1e-6):
+    report=dict(status='NotEvaluated',scope='static single-mesh single-material core PBR LOD0',checks={},artistic_quality='NotEvaluated',sampler_fidelity='NotEvaluated',limitations=['No artistic, PBR plausibility, holes/intersections, normals or hierarchy certification.','Exact unique UV triangle keys are required. Unknown routes do not get a Pass.','Unspecified sampler defaults are not equivalent to a fixed explicit filter; sampler changes are observations.'])
+    try:
+        if intentional_material_edit:raise Unknown('Intentional material edits excluded; no channel-wide bypass implemented')
+        a=snapshot(source);b=snapshot(target)
+        report.update(source_sha256=a['sha256'],target_sha256=b['sha256'])
+        report['checks']['base_color_rgba']=a['maps']['base_color']==b['maps']['base_color']
+        report['checks']['metallic_roughness_gb']=a['maps']['metallic_roughness']==b['maps']['metallic_roughness']
+        report['checks']['core_factors']=a['factors']==b['factors']
+        report['sampler_observation']=dict(source=a['samplers'],target=b['samplers'],declarations_equal=a['samplers']==b['samplers'])
+        low=a['xyz'].min(0);high=a['xyz'].max(0)
+        if normalize_height_m is not None:
+            if not np.isfinite(normalize_height_m) or normalize_height_m<=0 or high[1]-low[1]<=0:raise ValueError('Invalid known normalization')
+            center=(low+high)/2;center[1]=low[1];scale=normalize_height_m/(high[1]-low[1]);a['xyz']=(a['xyz']-center)*scale
+        bounds_delta=float(np.abs(np.asarray([a['xyz'].min(0),a['xyz'].max(0)])-np.asarray([b['xyz'].min(0),b['xyz'].max(0)])).max())
+        report['bounds_max_delta_m']=bounds_delta;report['checks']['known_bounds']=bounds_delta<=tolerance_m
+        report['checks']['triangle_count']=len(a['faces'])==len(b['faces'])
+        report['semantic_pbr_status']='Pass' if all(report['checks'][k] for k in ('base_color_rgba','metallic_roughness_gb','core_factors')) else 'Fail'
+        ka,xa,ambiguous_a=canonical_uv_triangles(a);kb,xb,ambiguous_b=canonical_uv_triangles(b)
+        report['checks']['uv_triangle_multiset']=ka.shape==kb.shape and np.array_equal(ka,kb)
+        if report['checks']['uv_triangle_multiset']:
+            if ambiguous_a or ambiguous_b:raise Unknown('UV multiset equal; duplicate/repeated UV keys prevent proving geometry association')
+            delta=float(np.abs(xa-xb).max());report['corresponding_world_corner_max_delta_m']=delta
+            report['checks']['uv_bound_geometry']=delta<=tolerance_m
+        else:report['checks']['uv_bound_geometry']=False
+        report['status']='Pass' if all(report['checks'].values()) else 'Fail'
+    except Unknown as exc:report['reason']=str(exc)
+    except (ValueError,KeyError,IndexError,OSError) as exc:report.update(status='Fail',reason=str(exc))
+    # Known invariant loss is still reported if an unrelated unknown correspondence
+    # prevents evaluating the remaining checks.
+    if any(v is False for v in report['checks'].values()):report['status']='Fail'
+    return report

@@ -1,0 +1,32 @@
+import hashlib,json,re,statistics
+from pathlib import Path
+from transformers import CLIPTokenizer
+
+root=Path(__file__).resolve().parents[1]
+weights=Path.home()/'.cache/huggingface/hub/models--stabilityai--stable-diffusion-xl-base-1.0/snapshots/462165984030d82259a11f4367a4eed129e94a7b'
+request_path=root/'.local/castle-quality-route/20261022T132736Z/Library/jobs/a26c9ecf305344dabfd9c89d51a93253/request.json'
+request=json.loads(request_path.read_text('utf-8'))
+source=Path.home()/'Downloads/Runavelle_V4_ALL_349_Model_Prompts.md'
+text=source.read_text('utf-8-sig')
+headings=list(re.finditer(r'^# ([A-Z][A-Z0-9]*_[A-Za-z0-9_]+)[ \t]+[\u2014\u2013-][ \t]+([^\r\n]+)',text,re.M))
+prompts=[(m[1],text[m.start():headings[i+1].start() if i+1<len(headings) else len(text)]) for i,m in enumerate(headings)]
+result={'source_file':str(source),'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'parsed_count':len(prompts),'future_count':sum(i.startswith('FUT_') for i,p in prompts),'request_file':str(request_path),'request_sha256':hashlib.sha256(request_path.read_bytes()).hexdigest(),'tokenizers':[]}
+for folder in ['tokenizer','tokenizer_2']:
+    tokenizer=CLIPTokenizer.from_pretrained(str(weights/folder),local_files_only=True)
+    tokens=tokenizer(request['prompt'],add_special_tokens=False).input_ids
+    negative=tokenizer(request['negative_prompt'],add_special_tokens=False).input_ids
+    counts=[(i,len(tokenizer(p,add_special_tokens=False).input_ids)) for i,p in prompts]
+    windows=[{'window':i//75+1,'tokens':len(tokens[i:i+75]),'decoded':tokenizer.decode(tokens[i:i+75])} for i in range(0,len(tokens),75)]
+    entries=[]
+    for phrase in ['Exactly ONE','Visual style: ivory','Production game-asset','A single standalone','orthographic view']:
+        position=request['prompt'].find(phrase)
+        count=len(tokenizer(request['prompt'][:position],add_special_tokens=False).input_ids)
+        entries.append({'phrase':phrase,'char_start':position,'approximate_first_token':count,'window':count//75+1})
+    result['tokenizers'].append({'name':folder,'max_length':tokenizer.model_max_length,'bos':tokenizer.bos_token_id,'eos':tokenizer.eos_token_id,'pad':tokenizer.pad_token_id,'positive_tokens':len(tokens),'negative_tokens':len(negative),'windows':windows,'constraint_locations':entries,'would_be_lost_under_default_75_content_token_truncation':tokenizer.decode(tokens[75:]),'manifest_original_prompt_token_counts':{'min':min(n for _,n in counts),'median':statistics.median(n for _,n in counts),'max':max(n for _,n in counts),'exceed_75':sum(n>75 for _,n in counts),'exceed_4800':sum(n>4800 for _,n in counts),'counts':counts}})
+output=root/'.local/concept_conditioning_audit.json'
+output.write_text(json.dumps(result,indent=2,ensure_ascii=False),'utf-8')
+print(json.dumps({k:v for k,v in result.items() if k!='tokenizers'},indent=2))
+for item in result['tokenizers']:
+    print(item['name'],{k:v for k,v in item.items() if k in ['max_length','positive_tokens','negative_tokens','constraint_locations']})
+    print({k:v for k,v in item['manifest_original_prompt_token_counts'].items() if k!='counts'})
+print('OUTPUT',output)

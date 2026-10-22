@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "script_sha256": "64f3e5a38f151bdc7823367a27608b31dd80efdbaeb36cfc0a8e68f88293aca0",
+  "pairs": [
+    {
+      "name": "tower",
+      "source": {
+        "path": ".local\\native-checkpoint-real\\20261022T124320Z\\Library\\jobs\\770b27a74afa439998bc51e9dd320c70\\output\\raw.glb",
+        "sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+        "materials": [
+          {
+            "index": 0,
+            "name": null,
+            "factors": {
+              "base_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 1.0,
+              "roughness": 1.0,
+              "alpha_mode": "OPAQUE",
+              "alpha_cutoff": 0.5,
+              "double_sided": false,
+              "extensions": {}
+            },
+            "maps": {
+              "base_color": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "R": "651e6e60d0593112037b6788b1b15a56f7c3ab92620440732907ad98b27c52f9",
+                  "G": "cb9b4094562d53a70769c14ce5b3c07988fc151543fbb43d03158e6061adc4dc",
+                  "B": "2eb5657c0e1f10999dbfc4bad4514f1d0ff1f88ff2926e942f30958a70f94908",
+                  "A": "c37cb3d61ef26f40d078f83628997218e29b1fd9d3df4830197686bdbfe2e4db"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {}
+              },
+              "metallic_roughness": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "G": "fb82f0235acd06b170b64fe43cde12ae67cc21781c3ccd89bce070d1e42d817a",
+                  "B": "f38579ff3336cb40c1ff74e6abd35ef71237c322e5e404ff619861fd17550002"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {}
+              }
+            },
+            "uses": [
+              {
+                "mesh": 0,
+                "primitive": 0,
+                "position_count": 696941,
+                "index_count": 2953608
+              }
+            ]
+          }
+        ],
+        "has_skins": false,
+        "has_animations": false,
+        "nodes": [
+          {
+            "name": "geometry_0",
+            "mesh": 0
+          }
+        ]
+      },
+      "processed": {
+        "path": ".local\\texture-diagnostics-native\\2026-10-22T15-39-21-154Z\\Library\\jobs\\a597fe3180644169809524ac827dff10\\output\\LOD0.glb",
+        "sha256": "96a663a9e1e12696e850e09254242f8d766f895e6bf37bc293f0e3c15dcbc6e8",
+        "materials": [
+          {
+            "index": 0,
+            "name": "Material_0",
+            "factors": {
+              "base_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 1.0,
+              "roughness": 1.0,
+              "alpha_mode": "OPAQUE",
+              "alpha_cutoff": 0.5,
+              "double_sided": false,
+              "extensions": {}
+            },
+            "maps": {
+              "base_color": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "R": "651e6e60d0593112037b6788b1b15a56f7c3ab92620440732907ad98b27c52f9",
+                  "G": "cb9b4094562d53a70769c14ce5b3c07988fc151543fbb43d03158e6061adc4dc",
+                  "B": "2eb5657c0e1f10999dbfc4bad4514f1d0ff1f88ff2926e942f30958a70f94908",
+                  "A": "c37cb3d61ef26f40d078f83628997218e29b1fd9d3df4830197686bdbfe2e4db"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {
+                  "magFilter": 9729,
+                  "minFilter": 9987
+                }
+              },
+              "metallic_roughness": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "G": "fb82f0235acd06b170b64fe43cde12ae67cc21781c3ccd89bce070d1e42d817a",
+                  "B": "f38579ff3336cb40c1ff74e6abd35ef71237c322e5e404ff619861fd17550002"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {
+                  "magFilter": 9729,
+                  "minFilter": 9987
+                }
+              }
+            },
+            "uses": [
+              {
+                "mesh": 0,
+                "primitive": 0,
+                "position_count": 720994,
+                "index_count": 2953608
+              }
+            ]
+          }
+        ],
+        "has_skins": false,
+        "has_animations": false,
+        "nodes": [
+          {
+            "name": "geometry_0",
+            "mesh": 0
+          }
+        ]
+      },
+      "channels_equal": {
+        "base_color": {
+          "size": true,
+          "pixels": true,
+          "texcoord": true,
+          "extensions": true,
+          "sampler": false
+        },
+        "metallic_roughness": {
+          "size": true,
+          "pixels": true,
+          "texcoord": true,
+          "extensions": true,
+          "sampler": false
+        }
+      },
+      "factors_equal": true,
+      "limitations": [
+        "Read-only retained single-material pair observation; not a calibrated artistic score, texture-detail proof, or general multi-material assignment validation.",
+        "RGBA preserves basecolor alpha. Metallic/roughness uses only G and B; irrelevant packed R/A differences are deliberately excluded.",
+        "Source omitted sampler; Blender explicitly uses LINEAR/LINEAR_MIPMAP_LINEAR. Pixel identity does not imply sampling/shader fidelity.",
+        "Geometry/UV/world-transform correspondence is not established by this texture-only comparison."
+      ]
+    },
+    {
+      "name": "castle",
+      "source": {
+        "path": ".local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+        "sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+        "materials": [
+          {
+            "index": 0,
+            "name": null,
+            "factors": {
+              "base_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 1.0,
+              "roughness": 1.0,
+              "alpha_mode": "OPAQUE",
+              "alpha_cutoff": 0.5,
+              "double_sided": false,
+              "extensions": {}
+            },
+            "maps": {
+              "base_color": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "R": "fa69dc00816b05cde0dc728c3436d185e364149f53171f2d4ea5e4baa9558bc2",
+                  "G": "a2166ab295e86de1a427acfc3ed1ec2b92a875c7c1313743b12c03b3548a8daf",
+                  "B": "fcdad56f859ecc843f89f2087fa8c5fb6de3706c2ced8e93e1b53c63a846a0f6",
+                  "A": "00d14b234609ffdad2796fad0b5c938e42bfb4c8b8ae6fc199cd4c3a8d349fd8"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {}
+              },
+              "metallic_roughness": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "G": "b266fb3bc5002fd5705650f24e9da155754c69d47f9ff82be11f49adbdc64abe",
+                  "B": "94f26fc23d0f3a05edff187baae7f75842ed718f1c812620f8a7027790ebfe30"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {}
+              }
+            },
+            "uses": [
+              {
+                "mesh": 0,
+                "primitive": 0,
+                "position_count": 718650,
+                "index_count": 2950602
+              }
+            ]
+          }
+        ],
+        "has_skins": false,
+        "has_animations": false,
+        "nodes": [
+          {
+            "name": "geometry_0",
+            "mesh": 0
+          }
+        ]
+      },
+      "processed": {
+        "path": ".local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\f8e1db57f13749838fe23c825fad8563\\output\\LOD0.glb",
+        "sha256": "b58923da29ad558a4a955c201d2acdefe9b3c34e6f24c466e2adeb5860b0349c",
+        "materials": [
+          {
+            "index": 0,
+            "name": "Material_0",
+            "factors": {
+              "base_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 1.0,
+              "roughness": 1.0,
+              "alpha_mode": "OPAQUE",
+              "alpha_cutoff": 0.5,
+              "double_sided": false,
+              "extensions": {}
+            },
+            "maps": {
+              "base_color": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "R": "fa69dc00816b05cde0dc728c3436d185e364149f53171f2d4ea5e4baa9558bc2",
+                  "G": "a2166ab295e86de1a427acfc3ed1ec2b92a875c7c1313743b12c03b3548a8daf",
+                  "B": "fcdad56f859ecc843f89f2087fa8c5fb6de3706c2ced8e93e1b53c63a846a0f6",
+                  "A": "00d14b234609ffdad2796fad0b5c938e42bfb4c8b8ae6fc199cd4c3a8d349fd8"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {
+                  "magFilter": 9729,
+                  "minFilter": 9987
+                }
+              },
+              "metallic_roughness": {
+                "size": [
+                  4096,
+                  4096
+                ],
+                "pixels": {
+                  "G": "b266fb3bc5002fd5705650f24e9da155754c69d47f9ff82be11f49adbdc64abe",
+                  "B": "94f26fc23d0f3a05edff187baae7f75842ed718f1c812620f8a7027790ebfe30"
+                },
+                "texcoord": 0,
+                "extensions": {},
+                "sampler": {
+                  "magFilter": 9729,
+                  "minFilter": 9987
+                }
+              }
+            },
+            "uses": [
+              {
+                "mesh": 0,
+                "primitive": 0,
+                "position_count": 729140,
+                "index_count": 2950602
+              }
+            ]
+          }
+        ],
+        "has_skins": false,
+        "has_animations": false,
+        "nodes": [
+          {
+            "name": "geometry_0",
+            "mesh": 0,
+            "translation": [
+              0.0019953339360654354,
+              4.990696430206299,
+              -0.002563504269346595
+            ]
+          }
+        ]
+      },
+      "channels_equal": {
+        "base_color": {
+          "size": true,
+          "pixels": true,
+          "texcoord": true,
+          "extensions": true,
+          "sampler": false
+        },
+        "metallic_roughness": {
+          "size": true,
+          "pixels": true,
+          "texcoord": true,
+          "extensions": true,
+          "sampler": false
+        }
+      },
+      "factors_equal": true,
+      "limitations": [
+        "Read-only retained single-material pair observation; not a calibrated artistic score, texture-detail proof, or general multi-material assignment validation.",
+        "RGBA preserves basecolor alpha. Metallic/roughness uses only G and B; irrelevant packed R/A differences are deliberately excluded.",
+        "Source omitted sampler; Blender explicitly uses LINEAR/LINEAR_MIPMAP_LINEAR. Pixel identity does not imply sampling/shader fidelity.",
+        "Geometry/UV/world-transform correspondence is not established by this texture-only comparison."
+      ]
+    }
+  ]
+}

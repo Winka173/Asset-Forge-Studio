@@ -1,0 +1,10 @@
+{
+  "status": "PASS_RESEARCH_PROTOTYPE_ONLY",
+  "command": ".venv/Scripts/python.exe -m pytest .local/test_pbr_preservation_prototype.py -q",
+  "passed": 10,
+  "duration_seconds": 34.74,
+  "production_integration": false,
+  "scope": "Negative copied actual GLBs and actual source roundtrips. Semantic PBR pixel/factor findings are separate from ambiguous UV/geometry correspondence and sampler fidelity.",
+  "sources_preserved": true,
+  "prototype_sha256": "2d0358ca9dcedc978d872233a9f0f7e064fcad23c409e5b1c8724a3b9dd693e7"
+}

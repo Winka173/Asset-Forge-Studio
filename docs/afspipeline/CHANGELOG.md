@@ -1,3 +1,5 @@
+0.9.13 VERIFIED: selected-artifact Library Re-export, stale/late revision-plan invalidation with unmount safety, filter-cleared hidden selection and Grid/List preservation. Baseline native reproduced bugs; fixed native request/receipt/source hashes, real delayed backend responses, zero unintended jobs and actual model display pass. 165 tests (227.64 s), frontend/Windows/generic/affected native/cache PASS. Latest EXE dist/windows/stable/latest. Research audits remain separate from product quality guarantees.
+
 # Development changelog
 
 0.9.12 VERIFIED: persisted production/QA/export/art projection for standalone rows without rewriting raw worker states; completed label/action states, explicit skipped upstream stages for existing-model processing, accurate compact/full settled-stage meters. 165 tests (231.13 s), frontend/Windows/generic smoke/cache and real retained-tower native paths PASS. Art remains Not Reviewed; raw REVIEW_REQUIRED preserved in stage history. See standalone_status_native_v0912.json/png.

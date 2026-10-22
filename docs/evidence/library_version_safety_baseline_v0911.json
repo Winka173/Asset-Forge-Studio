@@ -1,0 +1,259 @@
+{
+  "status": "OBSERVED_NATIVE_VERSION_SAFETY_BUGS",
+  "version": "0.9.11",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\library-version-safety-native\\2026-10-22T16-50-17-746Z",
+  "checks": [
+    {
+      "name": "Library re-export explicitly targets the selected candidate",
+      "passed": false,
+      "evidence": {
+        "endpoint": "/api/library/bulk",
+        "request": {
+          "asset_ids": [
+            "835f3f7bc83a4dd0bf081951551f15bd"
+          ],
+          "action": "export"
+        },
+        "response": {
+          "completed": [
+            {
+              "id": "d9dc3ff8fecd5688ac68fb01b8771541",
+              "status": "COMPLETED",
+              "delivery_scope": "game",
+              "asset_id": "835f3f7bc83a4dd0bf081951551f15bd",
+              "project_id": "5416278529d9451baf559b7a785533cc",
+              "source_asset_id": "835f3f7bc83a4dd0bf081951551f15bd",
+              "artifact_id": "1d0ad33f98924c0a9305641dc04c5256",
+              "settings": {
+                "preset": "glb_only",
+                "glb": true,
+                "manifest": true,
+                "zip": false,
+                "fbx": false,
+                "blend": false,
+                "textures": false,
+                "lods": false,
+                "high_poly": false,
+                "unity_package": false,
+                "unreal_package": false,
+                "output_directory": null
+              },
+              "created_at": "2026-10-22T16:52:41.461320+00:00",
+              "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\library-version-safety-native\\2026-10-22T16-50-17-746Z\\Library\\exports\\5416278529d9451baf559b7a785533cc\\selective\\835f3f7bc83a4dd0bf081951551f15bd\\d9dc3ff8fecd5688ac68fb01b8771541",
+              "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\library-version-safety-native\\2026-10-22T16-50-17-746Z\\Library\\exports",
+              "filename": "835f3f7bc83a4dd0bf081951551f15bd--bb5f03af29.glb",
+              "files": [
+                {
+                  "name": "835f3f7bc83a4dd0bf081951551f15bd--bb5f03af29.glb",
+                  "bytes": 65157456,
+                  "sha256": "96a663a9e1e12696e850e09254242f8d766f895e6bf37bc293f0e3c15dcbc6e8",
+                  "kind": "glb",
+                  "url": "/api/export-profiles/exports/d9dc3ff8fecd5688ac68fb01b8771541/files/835f3f7bc83a4dd0bf081951551f15bd--bb5f03af29.glb"
+                },
+                {
+                  "name": "manifest.json",
+                  "bytes": 8088,
+                  "sha256": "9caf9638b74c255fa81f4f49ffc8e3216e3fe5ecc8dccdc42e1e83c20b0c77ca",
+                  "kind": "manifest",
+                  "url": "/api/export-profiles/exports/d9dc3ff8fecd5688ac68fb01b8771541/files/manifest.json"
+                }
+              ],
+              "qa": {
+                "status": "NEEDS_REVIEW",
+                "triangles": 984536,
+                "mesh_instances": 1,
+                "dimensions_xyz_m": [
+                  0.4725825637578964,
+                  1.0028677582740784,
+                  0.41227859258651733
+                ],
+                "bounds_xyz_m": [
+                  [
+                    -0.23621153831481934,
+                    -0.5015204548835754,
+                    -0.20722630620002747
+                  ],
+                  [
+                    0.2363710254430771,
+                    0.5013473033905029,
+                    0.20505228638648987
+                  ]
+                ],
+                "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+                "meshes": [
+                  {
+                    "node": "geometry_0",
+                    "triangles": 984536,
+                    "vertices": 720994,
+                    "watertight": false,
+                    "winding_consistent": true,
+                    "watertight_after_position_weld_1e8": false,
+                    "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+                    "has_uv": true
+                  }
+                ],
+                "materials": [
+                  {
+                    "name": "Material_0",
+                    "base_color_texture": true,
+                    "metallic_roughness_texture": true,
+                    "normal_texture": false,
+                    "ao_texture": false,
+                    "emissive_texture": false,
+                    "metallic_factor": 1,
+                    "roughness_factor": 1
+                  }
+                ],
+                "images": 2,
+                "surface_diagnostics": {
+                  "schema_version": 1,
+                  "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+                  "geometry_count": 1,
+                  "totals": {
+                    "triangles": 984536,
+                    "zero_area_triangles": 0,
+                    "very_thin_triangles": 3
+                  },
+                  "faces_opposing_mean_vertex_normal": 326,
+                  "all_vertex_normals_finite": true,
+                  "meshes": [
+                    {
+                      "triangles": 984536,
+                      "zero_area_triangles": 0,
+                      "very_thin_triangles": 3,
+                      "triangle_quality_p01": 0.3020308273560675,
+                      "faces_opposing_mean_vertex_normal": 326,
+                      "finite_vertex_normals": true,
+                      "vertex_normals_source": "loaded GLB normals",
+                      "surface_area_source_units_squared": 3.8966482501988287,
+                      "bounding_diagonal_source_units": 1.1828151411183325,
+                      "geometry": "geometry_0"
+                    }
+                  ],
+                  "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+                  "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+                  "limitations": [
+                    "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+                    "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+                    "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+                  ]
+                },
+                "texture_diagnostics": {
+                  "schema_version": 1,
+                  "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+                  "status": "VALIDATED_EMBEDDED_IMAGES",
+                  "images": [
+                    {
+                      "index": 0,
+                      "name": "texture_000",
+                      "width": 4096,
+                      "height": 4096,
+                      "mime_type": "image/png",
+                      "encoded_bytes": 24596288,
+                      "encoded_sha256": "11623617732eb9112d69b51fd005871fc1151c915b5c2a219e6091a010ba99ad",
+                      "decoded_rgba_sha256": "9d29dcc2119771e793ac630c34e58ff86fa4e9699a8b46f7ab2639bef95892f9",
+                      "storage": "embedded",
+                      "decode": "PASS"
+                    },
+                    {
+                      "index": 1,
+                      "name": "texture_001",
+                      "width": 4096,
+                      "height": 4096,
+                      "mime_type": "image/png",
+                      "encoded_bytes": 5673364,
+                      "encoded_sha256": "81813876bbba8e6fb396c9805bfb3f67e53ad0c3cd3ba3a042547c9b04bb2ffd",
+                      "decoded_rgba_sha256": "57cb6bc2f8ac99bd3e34f71fbf2d5bf16c73049c51b9500b7520ec30c34ae21c",
+                      "storage": "embedded",
+                      "decode": "PASS"
+                    }
+                  ],
+                  "bindings": [
+                    {
+                      "material_index": 0,
+                      "material_name": "Material_0",
+                      "channel": "base_color",
+                      "texture_index": 0,
+                      "image_index": 0,
+                      "texcoord": 0,
+                      "primitive_uses": 1,
+                      "encoding": "sRGB",
+                      "packed_channels": null
+                    },
+                    {
+                      "material_index": 0,
+                      "material_name": "Material_0",
+                      "channel": "metallic_roughness",
+                      "texture_index": 1,
+                      "image_index": 1,
+                      "texcoord": 0,
+                      "primitive_uses": 1,
+                      "encoding": "linear",
+                      "packed_channels": "G=roughness, B=metallic"
+                    }
+                  ],
+                  "checks": {
+                    "image_decode": "PASS",
+                    "embedded_image_bounds": "PASS",
+                    "material_texture_references": "PASS",
+                    "texture_coordinate_declarations": "PASS"
+                  },
+                  "limitations": [
+                    "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+                    "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+                  ]
+                },
+                "checks": {
+                  "container": "PASS",
+                  "finite_nonempty_geometry": "PASS",
+                  "external_resources": "PASS",
+                  "embedded_texture_integrity": "PASS",
+                  "uv_overlap": "NOT_TESTED",
+                  "self_intersections": "NOT_TESTED",
+                  "pbr_plausibility": "NOT_TESTED",
+                  "dimensions_approved": "NOT_TESTED",
+                  "unity_import": "NOT_TESTED",
+                  "human_quality": "NOT_TESTED"
+                }
+              },
+              "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\library-version-safety-native\\2026-10-22T16-50-17-746Z\\Library\\exports\\5416278529d9451baf559b7a785533cc\\manifest.json"
+            }
+          ],
+          "errors": [],
+          "inference_started": false
+        }
+      }
+    },
+    {
+      "name": "Changing selected model invalidates the checked revision plan",
+      "passed": false,
+      "evidence": {
+        "previous_plan": "Start At Blender\n\nUniform scaling through the installed Blender pipeline; original geometry and textures remain available.",
+        "remaining_plan": [
+          "Start at blenderUniform scaling through the installed Blender pipeline; original geometry and textures remain available."
+        ]
+      }
+    },
+    {
+      "name": "Changing filters clears hidden bulk selections",
+      "passed": false,
+      "evidence": {
+        "selection": "Select matching (2)\n1 selected\nExport Selected\nExport Completed\nExport All Matching\nFavorites\nArchived"
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Actual retained neural tower/castle, one real CPU Blender stage, isolated Library, selected-version export and hidden-selection/plan invalidation. No new AI, no artistic approval.",
+  "sources": {
+    "tower": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\native-checkpoint-real\\20261022T124320Z\\Library\\jobs\\770b27a74afa439998bc51e9dd320c70\\output\\raw.glb",
+    "castle": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb"
+  },
+  "hashes": {
+    "tower": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+    "castle": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e"
+  },
+  "project_id": "5416278529d9451baf559b7a785533cc",
+  "asset_id": "835f3f7bc83a4dd0bf081951551f15bd",
+  "job_id": "444262bb0033463c88b8d6105f288ee3",
+  "selected_artifact_id": "d7dc8ecb91ba455d9755c846c8aa7907"
+}

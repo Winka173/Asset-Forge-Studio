@@ -1,3 +1,13 @@
+# Windows 0.9.13 - selected-version and revision plan safety - 2026-10-23
+
+165 backend tests PASS (227.64 s), TypeScript/Vite, fresh Windows/generic smoke, affected native acceptance and packaged backend/source cache PASS. Library Re-export now explicitly targets the previewed artifact rather than an implicitly chosen latest model. Changing the parent or revision inputs invalidates the checked plan; late real plan responses cannot reappear or enqueue a revision after the form unmounts. Result filters clear hidden bulk selections, while Grid/List preserves matching selections.
+
+Actual packaged native test used retained neural tower/castle GLBs and one real CPU Blender job: selected-candidate request/receipt/hash matched; parent-change, delayed actual plan response, leaving an in-flight form, filter selection and source preservation checks passed with no frontend errors or extra AI jobs. The baseline executable reproduced all three original bugs before repair. Evidence: evidence/library_version_safety_native_v0913.json/png and baseline report. Latest executable: dist/windows/stable/latest/Asset Forge Studio.exe. Art remains Not Reviewed. Another user-assigned agent is redesigning UI; subsequent root work focuses backend/quality/export.
+
+Read-only audits found retained tower/castle core PBR pixels/factors and measured ordered geometry/UV preserved through LOD0; sampler declarations changed and ambiguous duplicate UV keys prevent a general reorder-independent mapping proof. Prototype negative tests 10 PASS (34.74 s); this is not yet a shipping QA gate. SDXL already chunks long prompts, so a universal 77-token truncation diagnosis would be incorrect; see CONCEPT_CONDITIONING_AUDIT_20261022.md. No-remesh castle experiment visibly worsens holes/speckles and is rejected for defaults. Two-million-triangle finishing remains isolated research pending visual assessment. No Meshy equivalence or artistic acceptance claim.
+
+---
+
 # Windows 0.9.12 - truthful completed standalone production - 2026-10-22
 
 165 backend tests PASS (231.13 s), TypeScript/Vite, fresh Windows/generic smoke, affected native status/export/reinspection checks and backend/source cache PASS. Standalone queue projections now include independent persisted status dimensions without rewriting raw job states. Completed delivered model rows and inspector show production Completed, with game delivery saved; completed stages do not offer active Pause/Cancel. Existing-model processing explicitly skips prompt/concept/AI geometry stages rather than leaving them Pending. Both compact and full stage-count meters settle at 6/6 with three skipped stages for this route. This is stage count, not elapsed-time percentage or an artistic score.
