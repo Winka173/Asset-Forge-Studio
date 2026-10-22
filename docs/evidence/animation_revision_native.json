@@ -1,0 +1,43 @@
+{
+  "status": "PASS_NATIVE_ANIMATION_RETIME_REVISION_EXPORT_AND_ROLLBACK",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\animation-revision-native\\2026-10-22T03-58-06-016Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.11\\20261022T035535Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_refine_clip_ui_real_Blender_QA_queued_restart_manual_resume_staged_delivery_promote_rollback_animated_preview",
+      "passed": true,
+      "job_id": "7ece4283900c45c0abdcd3a0d706c809",
+      "source_sha256": "d6be85417d3e256861ee733eea6916093a7af7c79c16366181fd8abcaeb38cf5",
+      "clip_duration_before": 1.25,
+      "clip_duration_after": 1.6666666269302368,
+      "qa": {
+        "status": "PASS_DEFORMATION_RETIME",
+        "source": {
+          "armatures": 1,
+          "bones": 19,
+          "sampled_vertices": 412,
+          "mesh_vertices": 412,
+          "skins_present": true
+        },
+        "output": {
+          "armatures": 1,
+          "bones": 19,
+          "sampled_vertices": 412,
+          "mesh_vertices": 412,
+          "skins_present": true
+        },
+        "samples": 6,
+        "max_pose_error": 1.884864366154897e-7,
+        "tolerance": 0.0002476141691207886,
+        "source_motion_m": 0.4168651517610891,
+        "loop_seam_vertex_distance": 0.4168651517610891,
+        "vertex_sampling": "Deterministic stride, at most approximately 20000 vertices per mesh at six temporal samples; not exhaustive deformation proof",
+        "root_motion_quality": "not_evaluated",
+        "foot_contact_quality": "not_evaluated",
+        "artistic_quality": "not_reviewed"
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Actual licensed skinned GLB, clip revision via UI/shared CPU queue, Blender deformation checks, staged export and rollback"
+}

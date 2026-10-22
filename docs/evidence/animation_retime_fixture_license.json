@@ -1,0 +1,30 @@
+{
+  "source": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/RiggedFigure/",
+  "sha256": "d6be85417d3e256861ee733eea6916093a7af7c79c16366181fd8abcaeb38cf5",
+  "metadata": {
+    "version": 2,
+    "legal": [
+      {
+        "license": "CC-BY-4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "artist": "Cesium",
+        "year": "2017",
+        "owner": "Cesium",
+        "what": "Everything",
+        "text": "Creative Commons Attribution 4.0 International",
+        "spdx": "CC-BY-4.0",
+        "icon": "https://licensebuttons.net/l/by/4.0/88x31.png"
+      }
+    ],
+    "tags": [
+      "core",
+      "testing"
+    ],
+    "screenshot": "screenshot/screenshot.gif",
+    "name": "Rigged Figure",
+    "path": "./Models/RiggedFigure",
+    "summary": "Animations. Skins.",
+    "createReadme": true
+  },
+  "purpose": "Licensed rigged character technical test, not generated or proof of auto-rig quality"
+}

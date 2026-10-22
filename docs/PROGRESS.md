@@ -1,3 +1,13 @@
+# Current work - 2026-10-22 (Asia/Saigon)
+
+The shipped 0.8.10 baseline includes one admitted Production row per asset, real outside pipeline progress, intentional generation attempts with idempotent retries, persistent all-project notifications and validated local Blender/Unity tool discovery. Actual Runavelle 349-file native tests exercise admission and restart without starting 349 GPU jobs. Map versions retain immutable source plans and version-specific real Unity captures.
+
+The 0.8.11 slice adds existing skinned clip retiming through Refine, the shared CPU scheduler, actual headless Blender deformation checks, staged GLB export and explicit publish/rollback. All 86 backend tests, the final packaged Windows smoke and the native pause/restart/refine/playback/publish/rollback acceptance passed; see ANIMATION_RETIME.md and evidence/animation_revision_native.json. This is existing-motion editing, not automatic rigging, retargeting or new motion generation.
+
+Still open: artistic/Meshy acceptance; full multi-engine/commercial benchmark clearance; local visual prompt-fidelity evaluation; auto-rig/retarget and new combat animation; richer text-driven maps and runtime VFX performance. Unreal remains deferred. Long-duration production and arbitrary power-loss recovery coverage remain incomplete. Historical sections below record earlier milestones and do not override this status.
+
+---
+
 # Shared settings and text-first Home - 2026-10-22 (Asia/Saigon)
 
 Windows 0.8.7 passed 75 backend tests and bundled native GLB/export/restart smoke. Project workflow changes now patch only edited fields under one SQLite write lock; nested checkpoints merge independently. Single, Batch and Settings synchronize validated values rather than overwriting another panel's newer recovery policy. The legacy full-settings endpoint and stored format remain compatible. Concurrent partial-update tests verify unrelated settings survive and invalid values leave the record unchanged.

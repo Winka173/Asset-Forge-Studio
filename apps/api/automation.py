@@ -233,7 +233,7 @@ def advance(identifier):
                     jobs.retry(failed['id']);auto.update(status='queued',stage='retry checkpoint');active_assets.add(item['asset_id'])
                 else:auto.update(status='failed' if failed['status']=='FAILED' else 'blocked',stage=failed['payload']['kind'],error=error or failed['status'])
                 continue
-            delivery_ready=sum(j['payload']['kind']=='blender' and j['status']=='REVIEW_REQUIRED' for j in current)>=len(auto.get('engines',[]))*item['candidates'] and bool(auto.get('engines'))
+            delivery_ready=sum(j['payload']['kind'] in ('blender','animation_retime') and j['status']=='REVIEW_REQUIRED' for j in current)>=len(auto.get('engines',[]))*item['candidates'] and bool(auto.get('engines'))
             if value['paused'] and (not delivery_ready or 'Disk reserve' in (value['automation'].get('pause_reason') or '')):
                 if auto.get('status') not in ('failed','blocked','exported','needs_review'):auto['status']='paused'
                 continue
@@ -247,7 +247,12 @@ def advance(identifier):
                 from .revisions import execution_context,update_execution
                 revision=execution_context(item)
                 processing=bool(item.get('processing_source') or revision and revision['plan']['method']=='blender_transform')
-                if processing:
+                if revision and revision['plan']['method']=='animation_retime':
+                    if not any(j['payload']['kind']=='animation_retime' for j in current):
+                        jobs.enqueue(dict(kind='animation_retime',engine='blender_animation',artifact_id=revision['parent_artifact_id'],project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'],clip_index=revision['plan']['clip_index'],speed=revision['plan']['clip_speed'],
+                                          effective_config=revision['effective_config'],effective_config_hash=revision['effective_config_hash'],priority=item['priority'],timeout_seconds=180))
+                        active_assets.add(item['asset_id']);auto.update(status='queued',stage='Animation retiming and deformation QA');continue
+                elif processing:
                     if not any(j['payload']['kind']=='blender' for j in current):
                         processing_source=item.get('processing_source') or dict(artifact_id=revision['parent_artifact_id'],normalize=True)
                         jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
@@ -284,7 +289,7 @@ def advance(identifier):
                             studio.generate(studio.Generate(asset_id=item['asset_id'],artifact_id=source['id'],request_id=prefix+':'+engine,engine=engine,quality=item['quality'],prompt=item.get('resolved_prompt') or item['prompt'],seeds=item.get('seeds') or [42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m'],batch_id=identifier,batch_attempt=item['attempt'],quality_lock=item['quality_lock']))
                         active_assets.add(item['asset_id']);auto.update(status='queued',stage='image-to-3D');continue
                     for job in inference:jobs.ensure_blender(job)
-                processed=[a for a in artifacts if a.get('asset_id')==item['asset_id'] and a['metadata'].get('stage')=='blender_processed' and any(j['id']==a['metadata'].get('job_id') for j in current)]
+                processed=[a for a in artifacts if a.get('asset_id')==item['asset_id'] and a['metadata'].get('stage') in ('blender_processed','animation_processed') and any(j['id']==a['metadata'].get('job_id') for j in current)]
                 required=len(auto['engines'])*item['candidates']
                 if len(processed)<required:
                     auto.update(status='queued',stage='Blender / QA');active_assets.add(item['asset_id']);continue

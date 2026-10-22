@@ -133,7 +133,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind']=='batch_semantics':return 'cpu'
+    if payload['kind'] in ('batch_semantics','animation_retime'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -306,6 +306,9 @@ class Worker:
             artifact = store.get_artifact(payload['artifact_id'])
             source = store.safe_path(artifact['relative_path'])
             if store.digest(source) != artifact['sha256']: raise ValueError('Immutable source checksum changed')
+            if payload['kind']=='animation_retime':
+                self.animation_retime(job,artifact,source,folder)
+                return
             if payload['kind'] == 'inference':
                 self.inference(job, artifact, source, folder)
                 return
@@ -364,6 +367,34 @@ class Worker:
                 with log.open('rb') as stream:stream.seek(max(0,log.stat().st_size-12000));tail=stream.read().decode('utf-8',errors='replace').lower()
                 if 'out of memory' in tail or 'memory guard' in tail:message='OOM/BLOCKED: '+message+'; settings preserved, no automatic downgrade'
             if current not in TERMINAL: transition(identifier, 'BLOCKED' if message.startswith('OOM/') else 'FAILED', message)
+
+    def animation_retime(self,job,artifact,source,folder):
+        from engines.animation_clip import retime,single_clip
+        from .local_tools import executable
+        identifier=job['id'];payload=job['payload'];output=folder/'output';output.mkdir(exist_ok=True)
+        blender=executable('blender')
+        if not blender:raise ValueError('Local Blender is required for real deformation QA')
+        record=retime(source,output/'Animation.glb',payload['clip_index'],payload['speed'])
+        if not record['original_binary_prefix_preserved'] or not record['geometry_skin_materials_unchanged']:raise ValueError('Animation edit changed protected source data')
+        single_clip(source,folder/'source-clip.glb',payload['clip_index']);single_clip(output/'Animation.glb',folder/'output-clip.glb',payload['clip_index'])
+        request=dict(source_clip=str(folder/'source-clip.glb'),output_clip=str(folder/'output-clip.glb'),before=record['before'],after=record['after'],report=str(output/'animation_qa.json'))
+        (folder/'request.json').write_text(json.dumps(request),encoding='utf-8');transition(identifier,'GENERATED');transition(identifier,'VALIDATING')
+        with (folder/'worker.log').open('w',encoding='utf-8') as log:
+            process=subprocess.Popen([blender,'-b','-t','4','--factory-startup','--python-exit-code','1','--python',str(store.ROOT/'scripts/blender_animation_qa.py'),'--',str(folder/'request.json')],stdout=log,stderr=subprocess.STDOUT)
+            (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='animation_retime')))
+            while process.poll() is None:
+                if self.stop.is_set() or get(identifier)['status']=='CANCELLED':
+                    kill_tree(process)
+                    if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Server stopped; animation stage may be re-executed from immutable source')
+                    return
+                self.stop.wait(.2)
+            if process.returncode:raise ValueError('Animation deformation QA failed; inspect worker.log')
+        report=json.loads((output/'animation_qa.json').read_text(encoding='utf-8'))
+        if report['status']!='PASS_DEFORMATION_RETIME':raise ValueError('Real deformation validation did not pass')
+        inspection=inspect_glb(output/'Animation.glb')
+        (output/'report.json').write_text(json.dumps(dict(status='PASS_DEFORMATION_RETIME',checks=dict(export_reopen='PASS',deformation_retime='PASS'),animation=record,deformation=report,artifacts=[dict(path='Animation.glb',sha256=store.digest(output/'Animation.glb'))]),indent=2),encoding='utf-8')
+        store.add_artifact(output/'Animation.glb','candidate','Animation / '+record['after']['name'],inspection|dict(project_id=payload['project_id'],asset_id=payload['asset_id'],parent_id=artifact['id'],job_id=identifier,stage='animation_processed',engine='blender_animation',animation=record,animation_qa=report,license=artifact['metadata'].get('license','NEEDS_REVIEW')))
+        transition(identifier,'REVIEW_REQUIRED')
 
     def unity_import(self,job,artifact,folder):
         from engines import unity_editor

@@ -2,3 +2,5 @@
 
 .asset-refine-goals{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}.asset-refine-goals button{font-size:10px!important;padding:7px 9px!important;min-height:30px!important}.asset-revision-summary{font-size:11px!important;line-height:1.8!important;color:#c0d3b1!important}
 .asset-requirements{margin:18px 0;padding:18px;background:#1b211c;border-radius:12px}.asset-requirements p,.asset-requirements small{display:block;line-height:1.7}.asset-requirements ul{padding:0;list-style:none}.asset-requirements li{display:grid;gap:5px;padding:12px 0;border-bottom:1px solid #ffffff10}.asset-requirements li span{font-size:11px;color:#b8cba9}.asset-requirements button{margin:10px 8px 10px 0}
+
+.studio .asset-motion-refine{padding:20px;background:#2b303a;border-radius:12px;margin:20px 0}.studio .asset-motion-refine h4{margin:0 0 12px}.studio .asset-motion-refine p{line-height:1.75}.studio .asset-motion-refine>div{padding-top:16px}.studio .asset-motion-refine button{background:#3c506c;border-color:#3c506c;color:#eaf1fc;min-height:40px}

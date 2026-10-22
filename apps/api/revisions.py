@@ -22,6 +22,17 @@ class RevisionInput(BaseModel):
     auto_replace:bool=False
 
 
+@router.get('/assets/{asset_id}/animation-clips')
+def animation_clips(asset_id:str,artifact_id:str):
+    from engines.animation_clip import clips
+    model=studio.asset(asset_id);record=studio.scoped_artifact(artifact_id,model['project_id'],asset_id)
+    path=store.safe_path(record['relative_path'])
+    if path.suffix.lower()!='.glb':raise HTTPException(400,'Choose a self-contained GLB')
+    if store.digest(path)!=record['sha256']:raise HTTPException(409,'Source checksum changed')
+    try:return clips(path)
+    except ValueError as exc:raise HTTPException(409,str(exc))
+
+
 def origin_config(record):
     seen=set();current=record
     while current and current['id'] not in seen:
@@ -41,12 +52,26 @@ def revision_plan(asset_id,body):
     model=studio.asset(asset_id);parent=studio.scoped_artifact(body.parent_artifact_id,model['project_id'],asset_id)
     if parent['role']!='candidate':raise HTTPException(400,'Choose a real model candidate as the parent version')
     if store.digest(store.safe_path(parent['relative_path']))!=parent['sha256']:raise HTTPException(409,'Parent model changed; no revision was queued')
+    from .local_tools import executable
+    clip_match=re.fullmatch(r'\s*(?:set\s+)?clip\s+(\d+)\s+speed\s+(?:to\s+)?(\d+(?:\.\d+)?)x\s*[.!]?\s*',body.prompt,re.I)
+    if clip_match and body.method!='regenerate':
+        from engines.animation_clip import clips
+        try:source=clips(store.safe_path(parent['relative_path']))
+        except ValueError as exc:raise HTTPException(409,str(exc))
+        index=int(clip_match[1])-1;speed=float(clip_match[2])
+        if not 0<=index<len(source['clips']):raise HTTPException(400,'Choose an existing clip number from the model viewer; no new animation is synthesized')
+        if not source['clips'][index]['retime_supported']:raise HTTPException(409,source['clips'][index]['retime_limitation'])
+        if not .25<=speed<=4:raise HTTPException(400,'Clip speed must be between 0.25x and 4x')
+        if not source['skins'] or not executable('blender'):raise HTTPException(409,'This verified retiming route requires a skinned GLB and local Blender')
+        return dict(method='animation_retime',earliest_stage='animation',clip_index=index,clip_speed=speed,source_clip=source['clips'][index],target_height_m=None,
+                    refinement_goal='Retime the selected existing clip; preserve geometry, skinning, materials, all other clips and original constraints',
+                    explanation='Change only selected clip key times, then compare actual deformed vertices in headless Blender. This does not generate new motion or rig a static model.',
+                    parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],capabilities=dict(direct_mesh_edit=False,direct_material_edit=False,uniform_blender_scale=False,animation_retime=True),artistic_evaluation='not_available')
     match=re.fullmatch(r'\s*(?:please\s+)?uniformly\s+(?:scale|resize)(?:\s+the\s+(?:asset|model))?\s+(?:to\s+)?(?:a\s+)?height\s*(?:of|to|=|:)?\s*(\d+(?:\.\d+)?)\s*(m|cm)\s*[.!]?\s*',body.prompt,re.I)
     height=float(match[1])*(.01 if match[2].lower()=='cm' else 1) if match else None
-    from scripts.audit import audit
-    supported=bool(height and 0<height<=1000 and audit().get('blender_path'))
+    supported=bool(height and 0<height<=1000 and executable('blender'))
     method='blender_transform' if supported and body.method!='regenerate' else 'regenerate'
-    if body.method=='modify_existing' and not supported:raise HTTPException(400,'Installed engines do not support prompt-based mesh/material editing. Modify Existing currently supports only: Uniformly scale to height 18 m. Use Regenerate for other changes.')
+    if body.method=='modify_existing' and not supported:raise HTTPException(400,'Verified edits: Uniformly scale to height 18 m; or Set clip 1 speed to 0.75x for an actually animated/skinned GLB. Other mesh/material/motion editing is unavailable.')
     generic=bool(re.fullmatch(r'\s*(?:make (?:it )?(?:better|prettier)|improve(?: it)?|\u0111\u1eb9p h\u01a1n|l\u00e0m \u0111\u1eb9p h\u01a1n)\s*[.!]?\s*',body.prompt,re.I))
     return dict(method=method,refinement_goal='Balanced silhouette readability, construction coherence and material clarity; preserve explicit style and dimensions' if generic else 'Explicit user revision instructions',earliest_stage='blender' if method=='blender_transform' else 'concept',target_height_m=height if method=='blender_transform' else None,
         explanation='Uniform scaling through the installed Blender pipeline; original geometry and textures remain available.' if method=='blender_transform' else 'Direct prompt-based material/mesh editing is unavailable. Regenerate creates a new text-conditioned concept and 3D candidate. Original images are retained as provenance; SDXL here does not provide image-to-image constraint editing.',
@@ -102,12 +127,14 @@ def create(asset_id:str,body:RevisionInput):
             source_spec.setdefault('provenance',{})['target_height_m']=dict(kind='explicit',source='Revision uniform-scale instruction',value=height)
             if config:
                 config['blender']['height_m']=height;config['revision']=dict(id=rev_id,parent=parent['id'],method='explicit_uniform_scale',parent_config_hash=parent_job['payload'].get('effective_config_hash'))
-        candidate_count=1 if planned['method']=='blender_transform' else (config or {}).get('candidate_count',1)
+        if planned['method']=='animation_retime':
+            config=dict(schema_version=1,quality=quality,operation='animation_retime',clip_index=planned['clip_index'],speed=planned['clip_speed'],source_sha256=parent['sha256'],qa='headless_blender_deformation_comparison',preserve_original_binary=True)
+        candidate_count=1 if planned['method'] in ('blender_transform','animation_retime') else (config or {}).get('candidate_count',1)
         row=ManifestItem(asset_id=asset_id,name=model['name'],prompt=effective_prompt,source_asset_id=model.get('settings',{}).get('source_asset_id') or asset_id,
             category=model.get('category') or 'Prop',quality=quality,candidates=candidate_count,preferred_engine=(config or {}).get('engine_id','auto'),target_height_m=dims.get('target_height_m'),target_width_m=dims.get('target_width_m'),target_depth_m=dims.get('target_depth_m')).model_dump()
         row['seeds']=list((config or {}).get('seeds') or [42+n for n in range(candidate_count)])[:candidate_count]
         row.update(attempt=0,started=True,version=1,quality_lock=quality=='Maximum',priority=100 if body.priority=='next' else 0,revision_id=rev_id)
-        engines=[(config or {}).get('engine_id','trellis2_community')] if planned['method']=='blender_transform' else automation.plan_engines(row)
+        engines=['blender_animation'] if planned['method']=='animation_retime' else [(config or {}).get('engine_id','trellis2_community')] if planned['method']=='blender_transform' else automation.plan_engines(row)
         row['automation']=dict(enabled=True,engines=engines,attempt=0,status='queued',stage='pending',checkpoints={},human_approved=False)
         workflow=automation.project_workflow(model['project_id']);workflow['mode']='auto'
         value=dict(id=group_id,project_id=model['project_id'],name=model['name'],mode={'Maximum':'Maximum Quality Batch','Balanced':'Quality Batch','Fast':'Fast Batch'}[quality],quality_lock=quality=='Maximum',master_prompt=effective_prompt,style_snapshot=style,items=[row],warnings=[],paused=False,created_at=store.now(),updated_at=store.now(),revision_id=rev_id,revision_of=base_group['id'] if base_group else None,

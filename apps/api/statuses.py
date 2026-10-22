@@ -91,7 +91,7 @@ def refresh_all():
         decisions=sorted([r for r in model.get('art_reviews',[])+model.get('approvals',[]) if r.get('artifact_id')==current_id],key=lambda r:r.get('at') or r.get('created_at') or '')
         art=(decisions[-1].get('decision','approved') if decisions and decisions[-1].get('reviewer') else 'not_reviewed')
         active=[j for j in related if j['status'] not in jobs.TERMINAL|{'QUEUED'}];queued=[j for j in related if j['status']=='QUEUED'];failed=[j for j in related if j['status'] in ('FAILED','BLOCKED')]
-        qa='passed' if valid_exports or any(j['payload']['kind']=='blender' and j['status']=='REVIEW_REQUIRED' for j in related) else 'not_run'
+        qa='passed' if valid_exports or any(j['payload']['kind'] in ('blender','animation_retime') and j['status']=='REVIEW_REQUIRED' for j in related) else 'not_run'
         export='exported' if valid_exports else 'not_exported';stage='completed' if related and all(j['status']=='REVIEW_REQUIRED' for j in related) else 'pending';production='draft';reasons=[]
         if auto.get('status')=='exported' or (valid_exports and not revisions):production='completed'
         elif i.get('started') or queued:production='queued'
@@ -100,7 +100,7 @@ def refresh_all():
         if queued and paused:production='paused';stage='paused'
         if active:
             job=active[0];kind=job['payload']['kind'];stage='running'
-            production='validating' if job['status']=='VALIDATING' else 'processing' if kind=='blender' else 'generating'
+            production='validating' if job['status']=='VALIDATING' else 'processing' if kind in ('blender','animation_retime') else 'generating'
             if job['status']=='VALIDATING':qa='running'
         elif failed and auto.get('status')!='exported':
             production='failed' if failed[0]['status']=='FAILED' else 'needs_attention';stage='failed' if production=='failed' else 'blocked'
@@ -127,7 +127,11 @@ def refresh_all():
                 # Only patch status fields; never replace a concurrently edited prompt or review record.
                 db.execute('BEGIN IMMEDIATE')
                 row=db.execute('SELECT payload FROM assets WHERE id=?',(identifier,)).fetchone();latest=json.loads(row['payload'])
-                for k in (*FIELDS,'attention_reasons','art_review_artifact_id','published_artifact_id','status_events','status_updated_at','original_prompt','original_prompt_sha256'):latest[k]=model[k]
+                for k in (*FIELDS,'attention_reasons','art_review_artifact_id','status_events','status_updated_at'):latest[k]=model[k]
+                # Publication may finish after the snapshot above. Preserve the latest
+                # explicit selection; a status poll must never undo publish/rollback.
+                if not latest.get('published_artifact_id') and delivery:latest['published_artifact_id']=delivery['artifact_id']
+                for k in ('original_prompt','original_prompt_sha256'):latest.setdefault(k,model[k])
                 if model.get('status')=='Completed':latest['status']='Completed'
                 db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(latest),identifier))
                 models[identifier]=latest
