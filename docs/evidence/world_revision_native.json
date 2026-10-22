@@ -1,0 +1,199 @@
+{
+  "status": "PASS_NATIVE_WORLD_REVISION_INTEGRITY_AND_TWO_REAL_UNITY_BUILDS",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\world-revision-native\\2026-10-22T02-55-41-904Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.9\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_draft_coordinates_svg_two_roads_no_fake_capture_no_jobs_two_viewports",
+      "passed": true
+    },
+    {
+      "name": "v2_does_not_inherit_v1_render_export_qa_or_mutate_original_prompt_and_plan",
+      "passed": true
+    },
+    {
+      "name": "two_actual_Unity_builds_cold_reopen_native_navigation_version_specific_captures_immutable_v1_sources_and_bundle",
+      "passed": true,
+      "job_ids": [
+        "46a95f76db46468ebc016fc4b8382332",
+        "bea8b46969a84129800cf7ed99570117"
+      ],
+      "manifests": [
+        {
+          "status": "PASS_EDITOR_VALIDATION",
+          "engine": "unity",
+          "version": "6000.4.8f1",
+          "asset_type": "map_environment",
+          "render_pipeline": "Built-in",
+          "reports": [
+            {
+              "source_road_alpha": 1,
+              "native_road_alpha": 1,
+              "navigation": {
+                "spawn_west": {
+                  "reachable": true,
+                  "corners": 6
+                },
+                "spawn_east": {
+                  "reachable": true,
+                  "corners": 4
+                }
+              },
+              "terrain_resolution": 129,
+              "terrain_size_m": [
+                256,
+                20,
+                256
+              ],
+              "prop_instances": 0,
+              "build_zones": 4,
+              "physics_sources": 1,
+              "render_status": "ACTUAL_UNITY_CAMERA_RENDER",
+              "preview_lod_policy": "LOD0 forced only for captures; saved scene restores automatic LODs; not player FPS",
+              "scene_path": "Assets/AFS/World/RunavelleWorld.unity",
+              "terrain_path": "Assets/AFS/World/TerrainData.asset",
+              "navmesh_path": "Assets/AFS/World/Navigation.asset",
+              "performance": "NOT_TESTED_IN_PLAYER",
+              "artistic_quality": "NEEDS_HUMAN_REVIEW",
+              "checks_passed": true,
+              "failures": [],
+              "unity_version": "6000.4.8f1",
+              "config_hash": "9d07853d5ce993574cc7e5b586a3c7c887bca1da0e907e204b2772ad5eafeeff",
+              "game_ready": false
+            },
+            {
+              "navigation": {
+                "spawn_west": {
+                  "reachable": true,
+                  "corners": 6
+                },
+                "spawn_east": {
+                  "reachable": true,
+                  "corners": 4
+                }
+              },
+              "prop_instances": 0,
+              "scope": "Separate Editor process reopened native scene, TerrainData, layers, collider, props and runtime-loaded NavMeshData",
+              "checks_passed": true,
+              "failures": [],
+              "unity_version": "6000.4.8f1",
+              "config_hash": "9d07853d5ce993574cc7e5b586a3c7c887bca1da0e907e204b2772ad5eafeeff",
+              "game_ready": false
+            }
+          ],
+          "native_files": [
+            {
+              "path": "jobs/46a95f76db46468ebc016fc4b8382332/editor_project/Assets/AFS/World/Navigation.asset",
+              "sha256": "b7b4cc8216f9bf1412708a2fdc3b8184e5c89928acc0ac6af529ca7dd72dac6e",
+              "bytes": 53004
+            },
+            {
+              "path": "jobs/46a95f76db46468ebc016fc4b8382332/editor_project/Assets/AFS/World/TerrainData.asset",
+              "sha256": "f9b2d59f4038f23d80ec06adfa44b0dfb200ec1f65222a5f7baa96495b58d697",
+              "bytes": 131564
+            },
+            {
+              "path": "jobs/46a95f76db46468ebc016fc4b8382332/editor_project/Assets/AFS/World/RunavelleWorld.unity",
+              "sha256": "441cae1fe0f46009296547d6e7042ad62e9d43fba08d9e4ae30623a102c6bd6e"
+            }
+          ],
+          "effective_config_hash": "9d07853d5ce993574cc7e5b586a3c7c887bca1da0e907e204b2772ad5eafeeff",
+          "source_height_bit_depth": 16,
+          "missing_prop_ai_jobs": 0,
+          "artistic_quality": "NEEDS_HUMAN_REVIEW",
+          "game_ready": false
+        },
+        {
+          "status": "PASS_EDITOR_VALIDATION",
+          "engine": "unity",
+          "version": "6000.4.8f1",
+          "asset_type": "map_environment",
+          "render_pipeline": "Built-in",
+          "reports": [
+            {
+              "source_road_alpha": 1,
+              "native_road_alpha": 1,
+              "navigation": {
+                "spawn_west": {
+                  "reachable": true,
+                  "corners": 7
+                },
+                "spawn_east": {
+                  "reachable": true,
+                  "corners": 5
+                }
+              },
+              "terrain_resolution": 129,
+              "terrain_size_m": [
+                192,
+                20,
+                256
+              ],
+              "prop_instances": 0,
+              "build_zones": 4,
+              "physics_sources": 1,
+              "render_status": "ACTUAL_UNITY_CAMERA_RENDER",
+              "preview_lod_policy": "LOD0 forced only for captures; saved scene restores automatic LODs; not player FPS",
+              "scene_path": "Assets/AFS/World/RunavelleWorld.unity",
+              "terrain_path": "Assets/AFS/World/TerrainData.asset",
+              "navmesh_path": "Assets/AFS/World/Navigation.asset",
+              "performance": "NOT_TESTED_IN_PLAYER",
+              "artistic_quality": "NEEDS_HUMAN_REVIEW",
+              "checks_passed": true,
+              "failures": [],
+              "unity_version": "6000.4.8f1",
+              "config_hash": "b1981f88b14bf040ab71b5abc44bda2bbbb9b889598c80dd05c252c86b2c1d4a",
+              "game_ready": false
+            },
+            {
+              "navigation": {
+                "spawn_west": {
+                  "reachable": true,
+                  "corners": 7
+                },
+                "spawn_east": {
+                  "reachable": true,
+                  "corners": 5
+                }
+              },
+              "prop_instances": 0,
+              "scope": "Separate Editor process reopened native scene, TerrainData, layers, collider, props and runtime-loaded NavMeshData",
+              "checks_passed": true,
+              "failures": [],
+              "unity_version": "6000.4.8f1",
+              "config_hash": "b1981f88b14bf040ab71b5abc44bda2bbbb9b889598c80dd05c252c86b2c1d4a",
+              "game_ready": false
+            }
+          ],
+          "native_files": [
+            {
+              "path": "jobs/bea8b46969a84129800cf7ed99570117/editor_project/Assets/AFS/World/Navigation.asset",
+              "sha256": "b92d69d13c2cdca41ee139ac101fa02b0ae6bd83ef915d96c48d86c70fda860e",
+              "bytes": 48476
+            },
+            {
+              "path": "jobs/bea8b46969a84129800cf7ed99570117/editor_project/Assets/AFS/World/TerrainData.asset",
+              "sha256": "770d81ed971b82aeac35ed0f16266d331a3729b149b8f7db7b1dd7837efc4889",
+              "bytes": 131556
+            },
+            {
+              "path": "jobs/bea8b46969a84129800cf7ed99570117/editor_project/Assets/AFS/World/RunavelleWorld.unity",
+              "sha256": "f7532610810c5dfce19ad5843313c8e3efa42fdadc9b7c2256dcc7849928790c"
+            }
+          ],
+          "effective_config_hash": "b1981f88b14bf040ab71b5abc44bda2bbbb9b889598c80dd05c252c86b2c1d4a",
+          "source_height_bit_depth": 16,
+          "missing_prop_ai_jobs": 0,
+          "artistic_quality": "NEEDS_HUMAN_REVIEW",
+          "game_ready": false
+        }
+      ]
+    },
+    {
+      "name": "native_reopen_restores_selected_older_version_without_regenerating",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows immutable Map versions, selected-version previews and real Unity terrain/NavMesh builds"
+}

@@ -1,4 +1,6 @@
 import io
+import hashlib
+import json
 import numpy as np
 import pytest
 from PIL import Image
@@ -56,3 +58,50 @@ def test_world_api_immutable_approval_and_idempotency(client):
     assert jobs.listing()==[]
     assert jobs.resource_class(dict(kind='world_unity',use_gpu=True))=='gpu'
     assert jobs.resource_class(dict(kind='world_unity',use_gpu=False))=='cpu'
+
+
+def test_world_revisions_preserve_original_latest_worker_metadata_and_approval(client,monkeypatch):
+    from apps.api import studio
+    plan=template('runavelle','First layout','Original immutable notes').model_dump()
+    first=client.post('/api/world/plans',json=dict(plan=plan,request_id='world-revision-original')).json()
+    asset_id=first['asset_id'];source=store.safe_path(first['artifact']['relative_path']);original_bytes=source.read_bytes()
+    approval=dict(reviewer='Technical layout reviewer',notes='Not artistic approval')
+    path='/api/world/plans/'+first['artifact']['id']+'/approve'
+    assert client.post(path,json=approval).status_code==200
+    assert client.post(path,json=approval).status_code==200
+    original_asset=studio.asset
+    def concurrently_completed(identifier):
+        stale=original_asset(identifier)
+        if identifier==asset_id:
+            latest=original_asset(identifier);latest['master_artifact_id']='preserved-existing-master';latest['worker_checkpoint']={'phase':'finished','hash':'recorded'}
+            latest['settings']['worker_metadata']='keep me';studio.save_asset(latest)
+        return stale
+    # A worker finishes after the endpoint's initial read but before its write transaction.
+    with monkeypatch.context() as patch:
+        patch.setattr(studio,'asset',concurrently_completed)
+        response=client.post('/api/world/plans',json=dict(plan=plan|dict(name='Revised layout',prompt='Revision delta notes',seed=43),asset_id=asset_id,request_id='world-revision-second'))
+    assert response.status_code==201,response.text
+    second=response.json();value=original_asset(asset_id)
+    assert value['prompt']==value['original_prompt']==plan['prompt']
+    assert value['original_prompt_sha256']==hashlib.sha256(plan['prompt'].encode()).hexdigest()
+    assert value['master_artifact_id']=='preserved-existing-master'
+    assert value['worker_checkpoint']==dict(phase='finished',hash='recorded') and value['settings']['worker_metadata']=='keep me'
+    assert len(value['settings']['world_plan_approvals'])==1
+    workspace=client.get('/api/world/assets/'+asset_id).json()
+    assert [p['approval_current'] for p in workspace['plans']]==[True,False]
+    assert workspace['plans'][1]['plan']['prompt']=='Revision delta notes'
+    assert source.read_bytes()==original_bytes and not list(source.parent.glob('*.tmp'))
+    assert client.get('/api/library',params={'project_id':'runavelle'}).json()['items'][0]['version_count']==2
+    assert jobs.listing()==[]
+
+
+def test_legacy_world_original_prompt_recovers_from_first_immutable_source(client):
+    from apps.api import studio
+    plan=template('runavelle','Legacy layout','First historical notes').model_dump()
+    first=client.post('/api/world/plans',json=dict(plan=plan,request_id='legacy-world-original')).json()
+    value=studio.asset(first['asset_id']);value.pop('original_prompt');value.pop('original_prompt_sha256');value['prompt']='Old implementation overwrote this';studio.save_asset(value)
+    response=client.post('/api/world/plans',json=dict(plan=plan|dict(prompt='New revision'),asset_id=value['id'],request_id='legacy-world-revision'))
+    assert response.status_code==201,response.text
+    stored=studio.asset(value['id']);assert stored['original_prompt']==plan['prompt']
+    assert stored['original_prompt_sha256']==hashlib.sha256(plan['prompt'].encode()).hexdigest()
+    assert len(client.get('/api/world/assets/'+value['id']).json()['plans'])==2

@@ -72,6 +72,8 @@ def refresh_all():
             # The first alternative may still be running while later ones are queued.
             # Pausing the queue must not report this asset safely paused prematurely.
             related=[j for j in related if j['payload'].get('artifact_id') in recipe_ids]
+        if model.get('asset_type')=='map_environment' and model.get('settings',{}).get('current_world_plan_id'):
+            related=[j for j in related if j['payload'].get('artifact_id')==model['settings']['current_world_plan_id']]
         retried={j['payload'].get('retry_of') for j in related};related=[j for j in related if j['id'] not in retried]
         # Revision jobs retain the stable identity and are included in the same status projection.
         revisions=model.get('revisions',[])
@@ -103,8 +105,8 @@ def refresh_all():
             production='failed' if auto['status']=='failed' else 'needs_attention';stage='blocked';reasons.append(dict(kind='manual_approval' if 'Review' in auto.get('stage','') or 'approval' in auto.get('stage','').lower() else 'input_or_dependency',message=auto.get('error') or auto.get('stage')))
         if (i.get('skipped') or g.get('production_cancelled')) and production!='completed':production='cancelled';stage='skipped'
         if production=='completed':stage='completed';qa='passed';reasons=[]
-        if model.get('asset_type')=='vfx' and not active and not queued and not failed:
-            native=next((j for j in related if j['payload']['kind']=='fx_unity' and j['status']=='REVIEW_REQUIRED'),None)
+        if model.get('asset_type') in ('vfx','map_environment') and not active and not queued and not failed:
+            native=next((j for j in related if j['payload']['kind']==('fx_unity' if model.get('asset_type')=='vfx' else 'world_unity') and j['status']=='REVIEW_REQUIRED'),None)
             if native:
                 report=store.DATA/'jobs'/native['id']/'manifest.json'
                 if report.is_file() and json.loads(report.read_text()).get('status')=='PASS_EDITOR_VALIDATION':

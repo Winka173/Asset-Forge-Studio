@@ -1,6 +1,7 @@
 """World Plan approval, immutable source snapshots and native level jobs."""
 import hashlib
 import json
+import os
 import uuid
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
@@ -45,7 +46,7 @@ def save_plan(body:SavePlan):
         if value['project_id']!=plan.project_id or value.get('asset_type')!='map_environment':raise HTTPException(400,'World Plan belongs to a different game/asset type')
     else:
         identifier=uuid.uuid5(uuid.NAMESPACE_URL,'AFS-world-asset:'+plan.project_id+':'+body.request_id).hex
-        value=dict(id=identifier,project_id=plan.project_id,asset_type='map_environment',name=plan.name,prompt=plan.prompt,category='Maps',reference_ids=[],settings={},
+        value=dict(id=identifier,project_id=plan.project_id,asset_type='map_environment',name=plan.name,prompt=plan.prompt,original_prompt=plan.prompt,original_prompt_sha256=hashlib.sha256(plan.prompt.encode()).hexdigest(),category='Maps',reference_ids=[],settings={},
             favorite=False,status='Candidate',master_artifact_id=None,approvals=[],created_at=store.now(),updated_at=store.now())
     request_hash=fingerprint(body.model_dump());version=uuid.uuid5(uuid.NAMESPACE_URL,'AFS-world-plan:'+body.request_id).hex
     path=store.safe_path(f'projects/{plan.project_id}/assets/{value["id"]}/world_plans/{version}/world_plan.json')
@@ -53,15 +54,34 @@ def save_plan(body:SavePlan):
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');cached=studio.cached(db,body.request_id,request_hash)
         if cached:return cached
+        if body.asset_id:
+            latest=db.execute('SELECT payload FROM assets WHERE id=?',(body.asset_id,)).fetchone()
+            if not latest:raise HTTPException(404,'Map asset no longer exists')
+            value=json.loads(latest['payload'])
+            if value['project_id']!=plan.project_id or value.get('asset_type')!='map_environment':raise HTTPException(409,'Map belongs to a different project or asset type')
+        if 'original_prompt' not in value:
+            first=db.execute("SELECT * FROM artifacts WHERE asset_id=? AND role='world_plan' ORDER BY created_at LIMIT 1",(value['id'],)).fetchone()
+            original=value.get('prompt','')
+            if first:
+                source=store.safe_path(first['relative_path'])
+                if store.digest(source)!=first['sha256']:raise HTTPException(409,'Original World Plan checksum changed; cannot recover immutable prompt')
+                original=json.loads(source.read_text(encoding='utf-8'))['prompt']
+            value['original_prompt']=original
+        value.setdefault('original_prompt_sha256',hashlib.sha256(value['original_prompt'].encode()).hexdigest())
         path.parent.mkdir(parents=True,exist_ok=True)
         if path.exists():
             if store.digest(path)!=checksum:raise HTTPException(409,'Immutable World Plan path already contains different bytes')
         else:
-            with path.open('xb') as stream:stream.write(data)
+            temporary=path.with_name(path.name+'.'+uuid.uuid4().hex+'.tmp')
+            try:
+                with temporary.open('xb') as stream:
+                    stream.write(data);stream.flush();os.fsync(stream.fileno())
+                temporary.replace(path)
+            finally:temporary.unlink(missing_ok=True)
         metadata=dict(project_id=plan.project_id,asset_id=value['id'],schema_version='1.0',license='AFS procedural plan; library/model/reference rights separate',requires_approval=True)
         db.execute('INSERT INTO artifacts (id,role,name,relative_path,sha256,created_at,metadata,project_id,asset_id) VALUES (?,?,?,?,?,?,?,?,?)',
             (version,'world_plan',plan.name+' / World Plan',path.relative_to(store.DATA).as_posix(),checksum,store.now(),json.dumps(metadata),plan.project_id,value['id']))
-        value.update(name=plan.name,prompt=plan.prompt,updated_at=store.now());value['settings']['current_world_plan_id']=version
+        value.update(name=plan.name,updated_at=store.now());value['settings']['current_world_plan_id']=version
         db.execute('INSERT INTO assets VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload',(value['id'],plan.project_id,json.dumps(value)))
         artifact=store.artifact(db.execute('SELECT * FROM artifacts WHERE id=?',(version,)).fetchone());result=dict(asset_id=value['id'],artifact=artifact)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_hash,json.dumps(result)))
@@ -80,11 +100,19 @@ def plan_record(identifier):
 @router.post('/plans/{identifier}/approve')
 def approve(identifier:str,body:studio.ConceptApproval):
     from engines.world_editor import code_hashes
-    record=plan_record(identifier);value=studio.asset(record['asset_id'])
+    record=plan_record(identifier)
     if not body.reviewer.strip():raise HTTPException(400,'Reviewer is required')
-    value['settings'].setdefault('world_plan_approvals',[]).append(dict(artifact_id=identifier,sha256=record['sha256'],generator_hash=fingerprint(code_hashes()),reviewer=body.reviewer,
-        notes=body.notes,created_at=store.now(),scope='this exact procedural layout/config only; not production artistic approval'))
-    studio.save_asset(value);return dict(status='PLAN_APPROVED',artifact_id=identifier,sha256=record['sha256'])
+    authorization=dict(artifact_id=identifier,sha256=record['sha256'],generator_hash=fingerprint(code_hashes()),reviewer=body.reviewer,
+        notes=body.notes,created_at=store.now(),scope='this exact procedural layout/config only; not production artistic approval')
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        row=db.execute('SELECT payload FROM assets WHERE id=?',(record['asset_id'],)).fetchone()
+        if not row:raise HTTPException(404,'Map asset no longer exists')
+        value=json.loads(row['payload']);entries=value.setdefault('settings',{}).setdefault('world_plan_approvals',[])
+        if not any(all(a.get(k)==authorization[k] for k in ('artifact_id','sha256','generator_hash','reviewer','notes')) for a in entries):entries.append(authorization)
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(value),value['id']))
+    return dict(status='PLAN_APPROVED',artifact_id=identifier,sha256=record['sha256'])
+
 
 
 class Generate(BaseModel):
@@ -98,7 +126,7 @@ def generate(identifier:str,body:Generate):
     from engines.world_editor import effective_config,code_hashes
     record=plan_record(identifier);asset=studio.asset(record['asset_id'])
     if body.commercial:raise HTTPException(409,'Commercial World output blocked pending procedural/source/library/reference rights clearance')
-    approval=any(a['artifact_id']==identifier and a['sha256']==record['sha256'] and a['generator_hash']==fingerprint(code_hashes()) for a in asset['settings'].get('world_plan_approvals',[]))
+    approval=any(a.get('artifact_id')==identifier and a.get('sha256')==record['sha256'] and a.get('generator_hash')==fingerprint(code_hashes()) for a in asset['settings'].get('world_plan_approvals',[]))
     if not approval:raise HTTPException(409,'Approve this exact World Plan and generator configuration before generation')
     try:config=effective_config(record,body.render_gpu)
     except (ValueError,KeyError,OSError) as exc:raise HTTPException(409,str(exc))
@@ -117,7 +145,9 @@ def workspace(identifier:str):
     value=studio.asset(identifier)
     if value.get('asset_type')!='map_environment':raise HTTPException(400,'Asset is not a World Plan')
     with store.connect() as db:artifacts=[store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE asset_id=? ORDER BY created_at',(identifier,))]
-    plans=[dict(artifact=a,plan=json.loads(store.safe_path(a['relative_path']).read_text())) for a in artifacts if a['role']=='world_plan']
+    from engines.world_editor import code_hashes
+    generator=fingerprint(code_hashes())
+    plans=[dict(artifact=a,plan=json.loads(store.safe_path(a['relative_path']).read_text(encoding='utf-8')),approval_current=any(r.get('artifact_id')==a['id'] and r.get('sha256')==a['sha256'] and r.get('generator_hash')==generator for r in value.get('settings',{}).get('world_plan_approvals',[]))) for a in artifacts if a['role']=='world_plan']
     with store.connect() as db:exports=[studio.output_files(dict(id=r['id'],**json.loads(r['payload']))) for r in db.execute('SELECT * FROM asset_exports WHERE asset_id=?',(identifier,))]
     return dict(asset=value,plans=plans,artifacts=artifacts,exports=exports,jobs=[j|dict(plan_id=j['payload']['artifact_id']) for j in jobs.listing() if j['payload'].get('asset_id')==identifier and j['payload']['kind']=='world_unity'])
 
