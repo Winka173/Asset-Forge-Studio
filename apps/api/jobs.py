@@ -62,6 +62,10 @@ def listing():
             from .engine_health import waiting
             hold=waiting(value['payload'],value['id'])
             if hold:progress.update(stage=hold['reason'],health_key=hold['health_key'],reason_code=hold['code'])
+            else:
+                from .host_resources import waiting as resource_waiting
+                resource=resource_waiting(value['id'])
+                if resource:progress.update(stage=resource['reason'],reason_code=resource['reason_code'],resource_admission=resource)
     return values
 
 
@@ -252,7 +256,10 @@ class Worker:
                         for _,job in sorted(candidates,key=lambda x:-x[0]):
                             kind=resource_class(job['payload']);limit=1 if kind=='gpu' else max(1,min(4,int(os.environ.get('AFS_CPU_CONCURRENCY','2'))))
                             if counts[kind]>=limit:continue
-                            if psutil.virtual_memory().available < (6 if kind=='gpu' else 3)*1024**3:continue
+                            from .host_resources import check
+                            try:admission,_=check(job,kind)
+                            except OSError:continue
+                            if not admission['allowed']:continue
                             thread=threading.Thread(target=self.managed,args=(job,kind),daemon=True)
                             self.active[job['id']]=(thread,kind);counts[kind]+=1;thread.start()
                         self.stop.wait(.3)
@@ -264,8 +271,10 @@ class Worker:
             self.stop.wait(0.3)
 
     def managed(self,job,kind):
+        from . import host_resources
         try:
-            with resource_slot(kind):
+            with resource_slot(kind),host_resources.reserve(job,kind) as admission:
+                if not admission['allowed']:return
                 from .production import eligible
                 fresh=get(job['id'])
                 if self.stop.is_set() or fresh['status']!='QUEUED' or not eligible(fresh['payload']):return
@@ -281,12 +290,13 @@ class Worker:
                 started=time.monotonic();started_at=store.now();samples=[];finished=threading.Event()
                 def monitor():
                     while not finished.wait(.5):
-                        rss=None
+                        rss=None;private=None
                         try:
                             record=json.loads((store.DATA/'jobs'/job['id']/'process.json').read_text());parent=psutil.Process(record['pid'])
-                            rss=sum(p.memory_info().rss for p in [parent]+parent.children(recursive=True) if p.is_running())
+                            memory=[p.memory_info() for p in [parent]+parent.children(recursive=True) if p.is_running()]
+                            rss=sum(info.rss for info in memory);private=sum(getattr(info,'private',info.rss) for info in memory)
                         except (OSError,ValueError,psutil.Error):pass
-                        samples.append(dict(seconds=time.monotonic()-started,worker_tree_rss_bytes=rss,ram_used_bytes=psutil.virtual_memory().used,
+                        samples.append(dict(seconds=time.monotonic()-started,worker_tree_rss_bytes=rss,worker_tree_private_bytes=private,ram_used_bytes=psutil.virtual_memory().used,
                             ram_available_bytes=psutil.virtual_memory().available,cpu_percent=psutil.cpu_percent(),
                             resource=kind))
                         timeout=job['payload'].get('timeout_seconds',7200)
@@ -300,9 +310,11 @@ class Worker:
                     folder=store.DATA/'jobs'/job['id'];folder.mkdir(parents=True,exist_ok=True)
                     reconcile_timeout(job['id'])
                     record_result(get(job['id']),folder)
+                    host_resources.record_peak(job['payload'],job['id'],samples)
                     (folder/'resources.json').write_text(json.dumps(dict(resource=kind,started_at=started_at,finished_at=store.now(),duration_seconds=time.monotonic()-started,
                         ram_peak_used_bytes=max((s['ram_used_bytes'] for s in samples),default=psutil.virtual_memory().used),
-                        worker_tree_peak_rss_bytes=max((s['worker_tree_rss_bytes'] or 0 for s in samples),default=0),samples=samples),indent=2))
+                        worker_tree_peak_rss_bytes=max((s['worker_tree_rss_bytes'] or 0 for s in samples),default=0),
+                        worker_tree_peak_private_bytes=max((s['worker_tree_private_bytes'] or 0 for s in samples),default=0),admission=admission,samples=samples),indent=2))
                 if job['payload'].get('batch_id') and not self.stop.is_set():
                     from .batch import advance
                     advance(job['payload']['batch_id'])

@@ -1,5 +1,7 @@
 # Incremental implementation and rollback
 
+0.9.7 VERIFIED reliability slice: shared host RAM admission claims prevent startup overlap based on conservative allowances/retained measured peaks, without quality downgrades. Persistent visible wait, manual restart/resume and real SDXL/CPU Blender acceptance pass; no real OOM/endurance guarantee. Broader artistic/reference conditioning, native-to-finishing quality experiments and baking coverage remain next. Keep projection research isolated until more than n=1 surface/visual/target-engine evidence supports a production capability/default change.
+
 0.9.5 LOD slice VERIFIED: source-preserving real Blender processing, area-weighted bidirectional sampled surface measurements/hash provenance, final packaged Library/Production table and model preview, padding, refresh and no-inference checks. All 140 tests and fresh Windows build/smoke pass. Normal/AO 4K research bake completed, but UV overlap, ray coverage, visual improvement and production integration remain open. Native-to-GLB loss measurement is separate from the implemented export-master-to-LOD measurement. No default budget change is justified by these results alone.
 
 1. P0: preserve current dirty work as reviewed changes, add structured diagnostics and persistent environment circuit breaker; optional VLM uncertainty must not become an invented technical failure. Test queue isolation, unchanged quality and exact-profile probes. Validate a fresh real geometry/export path. Rebuild and native smoke before commit/push main.

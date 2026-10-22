@@ -18,13 +18,14 @@ def test_real_missing_environment_quarantines_exact_route_and_probe_is_idempoten
     # an environment-failure assertion spuriously observe QUEUED instead.
     # Production and actual CUDA/native acceptance retain the machine lock.
     monkeypatch.setattr(jobs,'WORKER_LOCK',tmp_path/'negative-environment-gpu.lock')
+    runner=jobs.Worker()  # Previous TestClient shutdown may have stopped the global worker.
     payload=dict(kind='inference',engine='triposg',project_id='runavelle',asset_id=model['id'],artifact_id=source['id'],seed=42,steps=50,pipeline_type='512',texture_size=4096)
     for _ in range(2):
-        job=jobs.enqueue(payload);jobs.worker.managed(job,'gpu')
+        job=jobs.enqueue(payload);runner.managed(job,'gpu')
         assert jobs.get(job['id'])['status']=='FAILED'
     records=engine_health.listing()['records'];assert len(records)==1
     record=records[0];assert record['circuit']=='open' and record['root_cause']=='MODEL_DEPENDENCY_MISSING'
-    third=jobs.enqueue(payload);jobs.worker.managed(third,'gpu');assert jobs.get(third['id'])['status']=='QUEUED'
+    third=jobs.enqueue(payload);runner.managed(third,'gpu');assert jobs.get(third['id'])['status']=='QUEUED'
     assert engine_health.waiting(payload,third['id'])['code']=='ENGINE_ROUTE_QUARANTINED'
     assert engine_health.waiting(dict(kind='prompt_analysis')) is None
     changed=dict(payload,effective_config=dict(inference_steps=32))
@@ -33,7 +34,7 @@ def test_real_missing_environment_quarantines_exact_route_and_probe_is_idempoten
     assert response.status_code==200,response.text
     probe=response.json();assert probe['payload']['seed']==42 and probe['payload']['steps']==50
     assert client.post('/api/engine-health/'+record['key']+'/probe',json=dict(request_id='same-probe-request')).json()['id']==probe['id']
-    jobs.worker.managed(probe,'gpu');assert jobs.get(probe['id'])['status']=='FAILED'
+    runner.managed(probe,'gpu');assert jobs.get(probe['id'])['status']=='FAILED'
     assert engine_health.read(record['key'])['circuit']=='open'
     assert not list(tmp_path.rglob('raw.glb'))
 

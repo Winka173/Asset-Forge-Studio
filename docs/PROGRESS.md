@@ -1,3 +1,11 @@
+# Windows 0.9.7 - host RAM-aware shared scheduler - 2026-10-22
+
+145 backend tests PASS (245.74 s), TypeScript/Vite, fresh Windows packaging/generic smoke and affected native acceptance PASS. Shared GPU/CPU stage admission now reserves estimated unrealized RAM across processes before loading models, keeps two GiB headroom, records measured RSS/private peaks and can raise future profile allowances. RAM-held work stays Queued with a visible reason and unchanged quality; cheaper unrelated work can be considered. Resource claims bind owner process/thread/job directory, and owned surviving GPU children hold new GPU admission. This is risk reduction, not a zero-OOM guarantee or control over arbitrary external apps.
+
+Actual 0.9.7 native test: controlled pending-RAM claim prevented model process creation, Pause/close/reopen preserved the queue/manual resume requirement, Resume ran local SDXL Maximum 50 steps/1024 and then CPU Blender on the retained real tower with reopened GLBs, private/RSS receipts and unchanged source hash. Two independent jobs, no duplicate inference. The RAM hold is a declared negative fixture, not real RAM exhaustion; the outputs are genuine. Evidence: host_admission_native_v097.json and wait/restart screenshots. Backend/source cache verified. Fixed an order-dependent negative test reusing a globally stopped worker. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe. No user data deletion or default finishing/quality changes.
+
+---
+
 # Windows 0.9.6 - truthful reference comparison / fresh castle evidence - 2026-10-22
 
 140 backend tests PASS (252.50 s), TypeScript/Vite, fresh Windows packaging/generic native smoke and affected Compare native acceptance PASS. Compare no longer calls an arbitrary imported golden GLB Meshy, no longer hardcodes the project/Archer Tower identity, and uses generic reference-review wording. Two real tower finishing outputs were imported into an isolated Library and viewed front/back/side/three-quarter with shared cameras, unchanged hashes and zero AI jobs. Evidence: finishing_comparison_native_v096.json and actual PNGs. First build failed because a version bump unintentionally changed three dependency versions in Cargo.lock; restored dependencies, reviewed the diff and rebuilt successfully. Final packaged backend cache/source verified.

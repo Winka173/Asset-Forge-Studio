@@ -1,0 +1,189 @@
+{
+  "status": "PASS_NATIVE_HOST_RAM_ADMISSION_AND_REAL_STAGES",
+  "version": "0.9.7",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\host-admission-native\\2026-10-22T14-30-54-299Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "visible_RAM_wait_unchanged_Maximum_no_process_before_resume_manual_restart_real_GPU_concept_and_CPU_Blender",
+      "passed": true
+    }
+  ],
+  "scope": "Controlled planned-RAM claim, persisted queue/manual restart, actual Maximum local SDXL concept and real Blender retained-tower processing. No fresh image-to-3D diffusion or real OOM injection is claimed.",
+  "controlled_claim": {
+    "ready": true,
+    "path": "C:\\Users\\Winka\\AppData\\Local\\AssetForgeStudio\\locks\\host-ram\\native-admission-test-4a462e0318ba4dfcb4b1af4cc06018a1.json",
+    "claim": {
+      "schema_version": 1,
+      "job_id": "native-negative-admission-test",
+      "job_folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\host-admission-native\\2026-10-22T14-30-54-299Z\\planned-memory-holder",
+      "resource": "cpu",
+      "owner_pid": 53168,
+      "owner_created": 1792679457.2695804,
+      "owner_thread": 49060,
+      "reserved_at": 1792679457.6460571,
+      "allowance_bytes": 28426878976,
+      "purpose": "Controlled pending RAM reservation; no running model or successful output is simulated"
+    }
+  },
+  "concept_job": "51acb559cfe8448fa9fa1b7e8262bcac",
+  "actual_concept": {
+    "status": "GENERATED_NEEDS_REVIEW",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "5fcc52c673b74d61bd17d2f648740727",
+      "asset_id": "25a044a23911483eb5cd6494e981cfdb",
+      "name": "Archer Tower / GPU concept admission concept",
+      "prompt": "One finely detailed medieval archer tower game asset, ivory stone, midnight blue slate roof, wood balcony, single isolated object, neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+      "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+      "user_prompt": "One finely detailed medieval archer tower game asset, ivory stone, midnight blue slate roof, wood balcony, single isolated object, neutral studio background.",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [],
+        "bilingual_noun_hints": [],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Host RAM admission / real local stages",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "5fcc52c673b74d61bd17d2f648740727"
+      },
+      "seed": 43,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "One finely detailed medieval archer tower game asset, ivory stone, midnight blue slate roof, wood balcony, single isolated object, neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 43,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "9ba8850ca76992580775d9f7ab7eabfdb91bba3ecba11f359beee9f2ccd58cc5",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 3
+      },
+      "effective_config_hash": "e008c0e55f0a1c2f0f6cea69b036ca35c7a8796b09dac6a952e42dbf40c9b853",
+      "quality_repair": null,
+      "recovery_notice": {
+        "at": "2026-10-22T14:31:09.680031+00:00",
+        "reason": "AFS reopened. Pending GPU work waits for manual Resume; no mid-inference resume is claimed."
+      },
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\host-admission-native\\2026-10-22T14-30-54-299Z\\Library\\jobs\\51acb559cfe8448fa9fa1b7e8262bcac\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\host-admission-native\\2026-10-22T14-30-54-299Z\\Library\\jobs\\51acb559cfe8448fa9fa1b7e8262bcac\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "e611eac070afe77209b433057371ee93329a9855adbc2c276042df068cce7998",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "prompt_encoding": {
+      "chunks": 2,
+      "tokens_not_truncated": true,
+      "pooled": "mean across CLIP-2 chunks",
+      "experimental_long_prompt": true
+    },
+    "output_sha256": "075a0bc41d59fcc8a866afa30551a703ce88a7daa7be31748f1f1aa809106954",
+    "peak_allocated_bytes": 5596858880,
+    "peak_reserved_bytes": 7847542784,
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "duration_seconds": 40.56199999999808
+  },
+  "blender_job": "1c5fd915c8f64ca2bbfb4872bc0c56ea",
+  "actual_cpu_resources": {
+    "resource": "cpu",
+    "started_at": "2026-10-22T14:31:57.961239+00:00",
+    "finished_at": "2026-10-22T14:33:07.039435+00:00",
+    "duration_seconds": 69.07800000000134,
+    "ram_peak_used_bytes": 33322233856,
+    "worker_tree_peak_rss_bytes": 2060685312,
+    "worker_tree_peak_private_bytes": 2157768704,
+    "admission": {
+      "schema_version": 1,
+      "allowed": true,
+      "reason": null,
+      "reason_code": null,
+      "at": "2026-10-22T14:31:57.953478+00:00",
+      "checked_at_epoch": 1792679517.9534788,
+      "available_bytes": 35002544128,
+      "unrealized_reserved_bytes": 0,
+      "usable_bytes": 35002544128,
+      "headroom_bytes": 2147483648,
+      "allowance": {
+        "profile_key": "host-memory:v1:1e53cde4d90c43bfdbb63f8c377d1fb1a6f352019dd6393e6d1052e258a333e5",
+        "profile": {
+          "kind": "blender",
+          "engine": null,
+          "checkpoint": null,
+          "quality": null,
+          "pipeline_type": null,
+          "precision": null,
+          "texture_size": null,
+          "finishing_only": false,
+          "use_gpu": false
+        },
+        "bytes": 8589934592,
+        "planning_floor_gib": 8,
+        "observed": null,
+        "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+      },
+      "active_claims": [],
+      "quality_settings_changed": false
+    }
+  }
+}

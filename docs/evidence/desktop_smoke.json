@@ -1,7 +1,7 @@
 {
-  "version": "0.9.6",
-  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T140222Z\\Asset Forge Studio.exe",
-  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-07-57-021Z",
+  "version": "0.9.7",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T142145Z\\Asset Forge Studio.exe",
+  "run_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-27-27-719Z",
   "purpose": "Actual native application smoke; imported existing local model, no AI inference or art approval",
   "checks": [
     {
@@ -12,9 +12,9 @@
       "name": "native_window_and_packaged_backend",
       "passed": true,
       "page_url": "http://tauri.localhost/",
-      "native_pid": 46688,
-      "backend_pid": 29192,
-      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-07-57-021Z\\Library",
+      "native_pid": 50660,
+      "backend_pid": 47768,
+      "library": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T14-27-27-719Z\\Library",
       "unauthorized_status": 401
     },
     {
@@ -25,8 +25,8 @@
     {
       "name": "real_glb_webview_and_library",
       "passed": true,
-      "asset_id": "d786a9d233024233948c3fed438d2abc",
-      "artifact_id": "3b3407b70ffa4b64b6bd8be8aef217ab",
+      "asset_id": "e84a856620ce44cf81b82d82585f110c",
+      "artifact_id": "2389fff7ee7f430b92ee10c5fbde8c32",
       "source_sha256": "73a3569cfd0622cbfefb15a5e0d60555f0ff3fd429828c51dfb4215e921d2ec6",
       "triangles": 344475,
       "actual_inference": "NOT_RUN_IN_THIS_SMOKE"
@@ -36,24 +36,24 @@
       "passed": true,
       "popup_bounds": {
         "x": 278.76190185546875,
-        "y": 624.8483276367188,
+        "y": 624.5961303710938,
         "width": 384.90478515625,
-        "height": 234.5
+        "height": 234.50006103515625
       },
       "viewport_height": 934
     },
     {
       "name": "native_ui_export_actual_zip_project_folders_and_source_hash",
       "passed": true,
-      "export_id": "937442cdda6b494c9587b485a65200c7",
-      "project_id": "8e3afbee80c94a9abfd5273f9bda1d62",
-      "archive_root": "Desktop-smoke-2026-10-22T14-07-57-021Z-8e3afbee80c94a9abfd5273f9bda1d62/Archer-Tower-real-local-GLB-smoke-d786a9d233024233948c3fed438d2abc/Master-937442cdda6b494c9587b485a65200c7",
+      "export_id": "fbc084ac9cba420a975fa02d19fa2476",
+      "project_id": "f5afa566bbb84333bafe840555de432f",
+      "archive_root": "Desktop-smoke-2026-10-22T14-27-27-719Z-f5afa566bbb84333bafe840555de432f/Archer-Tower-real-local-GLB-smoke-e84a856620ce44cf81b82d82585f110c/Master-fbc084ac9cba420a975fa02d19fa2476",
       "bytes": 45467829
     },
     {
       "name": "native_output_routing_and_immutable_manifest_v2",
       "passed": true,
-      "manifest_id": "c197410ba90141d693c544c07c21f3a9",
+      "manifest_id": "666ef48dcdd441c48bcd685852749fa0",
       "unexpected_generation_jobs": 0
     },
     {
@@ -64,7 +64,7 @@
     {
       "name": "native_auto_batch_manifest_ready_no_gpu_before_explicit_click",
       "passed": true,
-      "batch_id": "24c4c9b8e73d4c7aa2c8bc0568b68841",
+      "batch_id": "85f4e4279707408fa9a728614d784093",
       "manifest_count": 14
     },
     {
@@ -77,5 +77,8 @@
     }
   ],
   "errors": [],
-  "status": "PASS"
+  "status": "PASS",
+  "expected_shutdown_network_errors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
 }
