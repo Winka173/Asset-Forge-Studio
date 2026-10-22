@@ -5,7 +5,29 @@ from typing import Literal,Annotated
 from pydantic import BaseModel,ConfigDict,Field
 from . import intent_adapter,local_semantics
 
-POLICY_VERSION=2
+POLICY_VERSION=3
+
+
+class ObservedLayout(BaseModel):
+    """One categorical fact per dimension; avoid conflicting pass/fail booleans."""
+    model_config=ConfigDict(extra='forbid')
+    observed_subject_en:str=Field(min_length=1,max_length=400)
+    composition:Literal['single_asset','multiple_views_or_panels','no_visible_asset']
+    requested_subject:Literal['matches','plainly_different','uncertain']
+    framing:Literal['whole_asset_visible','cropped']
+    background:Literal['plain_studio','surrounding_scenery']
+    lettering:Literal['absent','text_or_decorative_border']
+    observations:list[Annotated[str,Field(max_length=500)]]=Field(min_length=1,max_length=5)
+
+
+def from_observation(facts):
+    issues=[]
+    if facts.composition!='single_asset':issues.append(facts.composition)
+    if facts.requested_subject=='plainly_different':issues.append('missing_requested_subject')
+    if facts.requested_subject=='uncertain':issues.append('uncertain_source')
+    return checked_assessment(Assessment(suitable_single_asset_image=not issues,observed_subject_en=facts.observed_subject_en,issues=issues,
+        background_is_plain=facts.background=='plain_studio',border_or_text_visible=facts.lettering!='absent',
+        entire_main_asset_visible=facts.framing=='whole_asset_visible',observations=facts.observations))
 
 
 class Assessment(BaseModel):
@@ -13,7 +35,7 @@ class Assessment(BaseModel):
     suitable_single_asset_image:bool
     observed_subject_en:str=Field(min_length=1,max_length=400)
     issues:list[Literal['multiple_views_or_panels','cropped_main_object','missing_requested_subject','no_visible_asset',
-        'background_scene','border_or_text']]=Field(default_factory=list,max_length=6)
+        'background_scene','border_or_text','uncertain_source']]=Field(default_factory=list,max_length=7)
     background_is_plain:bool
     border_or_text_visible:bool
     entire_main_asset_visible:bool
@@ -36,22 +58,25 @@ def assess(path,subject,prompt,progress):
     system=('Check only if this generated image is a usable SINGLE image-to-3D source. '
         'Fail multiple separate rendered views, inset panels, contact sheets or turnarounds. '
         'One connected castle with several towers is ONE asset and is allowed. '
+        'For a requested CASTLE, a lone watchtower, small house or close-up entrance without a fortified castle complex is plainly_different. '
         'Fail if the main asset is cropped, absent or plainly a different requested subject. '
         'The entire asset including roof tips, side walls and contact base must fit inside the image with visible margin. '
         'Fail background_scene when trees, mountains, sky/clouds, other buildings, scenery or an illustrated landscape surround the asset. '
         'A small connected foundation, entrance steps, contact shadow or transparent/flat/neutral studio gradient is allowed. '
         'A black background behind a rendered isolated asset is allowed. Do not mistake the floor shadow for scenery. '
         'Fail border_or_text for poster frames, page margins with decorative borders, labels, captions or printed text even if tiny. '
-        'Set background_is_plain=false for surrounding scenery. Set border_or_text_visible=true for any visible framing or text. '
-        'Set entire_main_asset_visible=false for any important piece touching/cut by the image edge. '
+        'Choose background=plain_studio for flat/gradient studio backdrops, surrounding_scenery only for actual landscape or other surrounding objects. '
+        'Choose framing=cropped if an important piece is cut by the image edge. '
+        'Choose lettering=text_or_decorative_border for visible writing or poster framing. '
+        'Choose requested_subject=uncertain if the subject cannot be determined, not matches by default. '
         'Do not score aesthetics, material quality, game readiness or artistic approval. '
-        'Report only observed issues; unknown is not a quality pass. Return JSON schema: '+json.dumps(Assessment.model_json_schema()))
-    response=local_semantics.request('/api/chat',dict(model=selected['name'],stream=False,think=False,format=Assessment.model_json_schema(),keep_alive=0,
+        'Report only observed issues; unknown is not a quality pass. Return JSON schema: '+json.dumps(ObservedLayout.model_json_schema()))
+    response=local_semantics.request('/api/chat',dict(model=selected['name'],stream=False,think=False,format=ObservedLayout.model_json_schema(),keep_alive=0,
         options=dict(temperature=0,num_ctx=8192,num_predict=700,num_gpu=0,num_thread=8),messages=[dict(role='system',content=system),
         dict(role='user',content=json.dumps(dict(requested_subject_en=subject,original_request=prompt)),images=[intent_adapter.image_input(path)])]),timeout=600)
     if not response.get('done') or response.get('done_reason')=='length':raise ValueError('Concept layout response incomplete; not passed')
-    answer=checked_assessment(Assessment.model_validate_json(response['message']['content']))
+    facts=ObservedLayout.model_validate_json(response['message']['content']);answer=from_observation(facts)
     current=next((m for m in local_semantics.probe()['models'] if m['name']==selected['name']),None)
     if not current or current['digest']!=selected['digest']:raise ValueError('Concept screening model changed during inference; report not accepted')
-    return dict(schema_version=2,screening_policy=POLICY_VERSION,**answer.model_dump(),model=selected['name'],model_digest=selected['digest'],
+    return dict(schema_version=3,screening_policy=POLICY_VERSION,**answer.model_dump(),observed_facts=facts.model_dump(),model=selected['name'],model_digest=selected['digest'],
         duration_seconds=time.monotonic()-started,execution='local_cpu_only',method='VLM inferred composition check; not artistic approval',artistic_approval=False)

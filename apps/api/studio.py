@@ -329,16 +329,18 @@ def concept(body: ConceptInput):
     from .reference_direction import concept_direction
     try:directed,reference_direction=concept_direction(body.interpreted_prompt or body.prompt,body.style_reference_ids,value['project_id'])
     except ValueError as exc:raise HTTPException(409,str(exc))
-    prompt=directed+('\nGame art direction: '+style if style else '')+'\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.'
+    from engines.concept_prompt import compose
+    prompt,negative=compose(directed,style)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
+    effective.update(negative_prompt=negative,composition_policy=2)
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
         if previous:return previous
         result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
-            prompt=prompt,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,
+            prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,
             steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective)),db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_digest(body),json.dumps(result)))
         value.update(prompt=body.prompt,updated_at=store.now())

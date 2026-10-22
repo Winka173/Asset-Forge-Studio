@@ -29,7 +29,7 @@ def concept_direction(prompt,reference_ids,project_id):
     # Explainable bilingual hints for common architecture nouns; not a translation model.
     hints=[english for expression,english in [(r'lâu\s+đài','castle, broad fortified complex, enclosing walls and multiple towers'),(r'tháp\s+canh','watchtower')]
            if re.search(expression,prompt,re.I)]
-    suffix=('\nRequested subject (deterministic bilingual noun hint): '+ '; '.join(hints)) if hints else ''
-    if records:suffix+='\nReference color palette only: '+', '.join(dict.fromkeys(colors))+'. Design the subject requested in the prompt; do not reconstruct the reference object.'
+    suffix=('\nSubject: '+ '; '.join(hints)) if hints else ''
+    if records:suffix+='\nColors: '+', '.join(dict.fromkeys(colors))+'.'
     return prompt+suffix,dict(method='measured_palette_only',references=records,bilingual_noun_hints=hints,
         limitations='No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained.')

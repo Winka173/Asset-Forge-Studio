@@ -1,8 +1,8 @@
 import './generation-preview.css';
 
 /** Activity artwork, never a streamed mesh or an estimate of inference completion. */
-export function GenerationPreview({stage,reference,onReference,onPipeline}:{stage:string;reference?:{name:string;url:string};onReference:()=>void;onPipeline:()=>void}) {
- return <div className="generation-preview" aria-label="Asset generation activity">
+export function GenerationPreview({stage,reference,onPipeline,state='running',onRetry}:{stage:string;reference?:{name:string;url:string};onPipeline:()=>void;state?:'running'|'waiting'|'paused'|'blocked';onRetry?:()=>void}) {
+ return <div className="generation-preview" data-state={state} aria-label="Asset generation activity">
   <div className="generation-preview-art" aria-hidden="true">
    <div className="generation-preview-halo" />
    <svg className="generation-preview-mesh" viewBox="0 0 320 300" fill="none">
@@ -18,11 +18,12 @@ export function GenerationPreview({stage,reference,onReference,onPipeline}:{stag
    </svg>
   </div>
   <div className="generation-preview-copy" role="status" aria-live="polite" aria-atomic="true">
-   <span className="generation-preview-eyebrow">LOCAL CREATION IN PROGRESS</span>
-   <h2>Building your asset</h2><p>{stage}</p>
-   <small>Activity visualization · the actual model appears when ready.</small>
+   <span className="generation-preview-eyebrow">{state==='blocked'?'PRODUCTION NEEDS ATTENTION':state==='paused'?'PRODUCTION PAUSED':state==='waiting'?'WAITING FOR THE NEXT STAGE':'LOCAL CREATION IN PROGRESS'}</span>
+   <h2>{state==='blocked'?'Asset needs attention':state==='paused'?'Your progress is saved':state==='waiting'?'Your asset is in the queue':'Building your asset'}</h2><p>{stage}</p>
+   <small>The full 3D model appears after processing, validation and delivery finish. Intermediate images stay as thumbnails.</small>
   </div>
   <button className="generation-preview-details" onClick={onPipeline}>View pipeline <span aria-hidden="true">↗</span></button>
-  {reference&&<button className="generation-preview-reference" onClick={onReference} title="View the input image; this is not the generated model"><img src={reference.url} alt=""/><span>Input reference<small>{reference.name}</small></span><span aria-hidden="true">↗</span></button>}
+  {onRetry&&<button className="generation-preview-details" onClick={onRetry}>Try another concept</button>}
+  {reference&&<div className="generation-preview-reference"><img src={reference.url} alt="Input thumbnail"/><span>Source thumbnail<small>{reference.name}</small></span></div>}
  </div>;
 }

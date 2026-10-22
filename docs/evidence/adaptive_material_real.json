@@ -1,0 +1,1155 @@
+{
+  "status": "VERIFIED_REAL_NAMED_ROOF_RECOLOR_NO_AI_INFERENCE",
+  "sample_count": 1,
+  "job_id": "cee5d083b1714d0698401b52b7cd7f5b",
+  "duration_seconds": 188.75,
+  "material_edit": {
+    "method": "Named roof basecolor edit; luminance detail, UV, normals and roughness retained",
+    "changed": [
+      {
+        "material": "slate",
+        "meshes": [
+          "keep_roof",
+          "roof_nw_0",
+          "roof_nw_1",
+          "roof_nw_2",
+          "roof_nw_3",
+          "roof_nw_4",
+          "roof_nw_5",
+          "roof_nw_6",
+          "roof_nw_7",
+          "roof_nw_8",
+          "roof_nw_9",
+          "roof_ne_0",
+          "roof_ne_1",
+          "roof_ne_2",
+          "roof_ne_3",
+          "roof_ne_4",
+          "roof_ne_5",
+          "roof_ne_6",
+          "roof_ne_7",
+          "roof_ne_8",
+          "roof_ne_9",
+          "roof_sw_0",
+          "roof_sw_1",
+          "roof_sw_2",
+          "roof_sw_3",
+          "roof_sw_4",
+          "roof_sw_5",
+          "roof_sw_6",
+          "roof_sw_7",
+          "roof_sw_8",
+          "roof_sw_9",
+          "roof_se_0",
+          "roof_se_1",
+          "roof_se_2",
+          "roof_se_3",
+          "roof_se_4",
+          "roof_se_5",
+          "roof_se_6",
+          "roof_se_7",
+          "roof_se_8",
+          "roof_se_9"
+        ],
+        "color_hex": "#873b32",
+        "previous_factor": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "images": [
+          {
+            "before_pixels_sha256": "80a73e7054941df2170f4349db2843e8fa260863fe2cc70842617a663cb6d87f",
+            "after_pixels_sha256": "dc1a69b1bb394cab89211d7d9352904af40a0f5ba29f8fcd621cba1b52971e4b",
+            "resolution": [
+              2048,
+              2048
+            ]
+          }
+        ]
+      }
+    ],
+    "artistic_approval": false,
+    "geometry_verification": {
+      "mesh_count": 95,
+      "topology_unchanged": true,
+      "max_world_vertex_delta_m": 0.0
+    }
+  },
+  "export": {
+    "id": "2ddbcebdc74b5cd191a20869faba3177",
+    "status": "COMPLETED",
+    "delivery_scope": "staged",
+    "asset_id": "e24987d1edd44b3e9514e89292158d72",
+    "project_id": "3d114ab100754770b74de9ebe6805d3c",
+    "source_asset_id": "e24987d1edd44b3e9514e89292158d72",
+    "artifact_id": "23b149c8a21346829f354b2b763a880a",
+    "settings": {
+      "preset": "glb_only",
+      "glb": true,
+      "manifest": true,
+      "zip": false,
+      "fbx": false,
+      "blend": false,
+      "textures": false,
+      "lods": false,
+      "high_poly": false,
+      "unity_package": false,
+      "unreal_package": false,
+      "output_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-castle-20261022\\Library\\revision-previews"
+    },
+    "created_at": "2026-10-22T09:35:18.484266+00:00",
+    "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-castle-20261022\\Library\\revision-previews\\3d114ab100754770b74de9ebe6805d3c\\selective\\e24987d1edd44b3e9514e89292158d72\\2ddbcebdc74b5cd191a20869faba3177",
+    "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-castle-20261022\\Library\\revision-previews",
+    "filename": "e24987d1edd44b3e9514e89292158d72--467fa53637.glb",
+    "files": [
+      {
+        "name": "e24987d1edd44b3e9514e89292158d72--467fa53637.glb",
+        "bytes": 65330948,
+        "sha256": "1039dbf86106b1d357729be90507d0ff894ca6e7381f7af7a45d27bbb814ee9b",
+        "kind": "glb",
+        "url": "/api/export-profiles/exports/2ddbcebdc74b5cd191a20869faba3177/files/e24987d1edd44b3e9514e89292158d72--467fa53637.glb"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 42168,
+        "sha256": "45c56b722e786b813bd4281a647af9230aa27d6151962b894aa61e5c189dfcdc",
+        "kind": "manifest",
+        "url": "/api/export-profiles/exports/2ddbcebdc74b5cd191a20869faba3177/files/manifest.json"
+      }
+    ],
+    "qa": {
+      "status": "NEEDS_REVIEW",
+      "triangles": 39604,
+      "mesh_instances": 95,
+      "dimensions_xyz_m": [
+        8.0,
+        10.0,
+        8.0
+      ],
+      "bounds_xyz_m": [
+        [
+          -4.0,
+          0.0,
+          -4.0
+        ],
+        [
+          4.0,
+          10.0,
+          4.0
+        ]
+      ],
+      "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+      "meshes": [
+        {
+          "node": "window_lintel.011",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.011",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.010",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.010",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.009",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.009",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.008",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.008",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.007",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.007",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.006",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.006",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.005",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.005",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.004",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.004",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.003",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.003",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.002",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.002",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel.001",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window.001",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "window_lintel",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_window",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "gate_arch",
+          "triangles": 168,
+          "vertices": 336,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "gate_pier_right",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "gate_pier_left",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "curtain_wall_south_east",
+          "triangles": 2160,
+          "vertices": 4320,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "curtain_wall_south_west",
+          "triangles": 2160,
+          "vertices": 4320,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "curtain_wall_east",
+          "triangles": 3348,
+          "vertices": 6724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "curtain_wall_west",
+          "triangles": 3348,
+          "vertices": 6724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "curtain_wall_north",
+          "triangles": 3348,
+          "vertices": 6738,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_se_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_se_3",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_se_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "finial_se",
+          "triangles": 190,
+          "vertices": 392,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_9",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_8",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_7",
+          "triangles": 380,
+          "vertices": 708,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_6",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_4",
+          "triangles": 380,
+          "vertices": 724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_3",
+          "triangles": 380,
+          "vertices": 764,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_2",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_se_0",
+          "triangles": 380,
+          "vertices": 716,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "corner_tower_se",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_sw_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_sw_3",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_sw_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "finial_sw",
+          "triangles": 190,
+          "vertices": 392,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_9",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_8",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_7",
+          "triangles": 380,
+          "vertices": 708,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_6",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_4",
+          "triangles": 380,
+          "vertices": 724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_3",
+          "triangles": 380,
+          "vertices": 764,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_2",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_sw_0",
+          "triangles": 380,
+          "vertices": 716,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "corner_tower_sw",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_ne_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_ne_3",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_ne_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "finial_ne",
+          "triangles": 190,
+          "vertices": 392,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_9",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_8",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_7",
+          "triangles": 380,
+          "vertices": 708,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_6",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_4",
+          "triangles": 380,
+          "vertices": 724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_3",
+          "triangles": 380,
+          "vertices": 764,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_2",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_ne_0",
+          "triangles": 380,
+          "vertices": 716,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "corner_tower_ne",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_nw_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_nw_3",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "tower_band_nw_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "finial_nw",
+          "triangles": 190,
+          "vertices": 392,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_9",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_8",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_7",
+          "triangles": 380,
+          "vertices": 708,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_6",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_5",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_4",
+          "triangles": 380,
+          "vertices": 724,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_3",
+          "triangles": 380,
+          "vertices": 764,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_2",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_1",
+          "triangles": 380,
+          "vertices": 704,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "roof_nw_0",
+          "triangles": 380,
+          "vertices": 716,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "corner_tower_nw",
+          "triangles": 380,
+          "vertices": 712,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep_roof",
+          "triangles": 8,
+          "vertices": 18,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "keep",
+          "triangles": 108,
+          "vertices": 216,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        },
+        {
+          "node": "foundation",
+          "triangles": 108,
+          "vertices": 224,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": true,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": true
+        }
+      ],
+      "materials": [
+        {
+          "name": "limestone",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": true,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 0,
+          "roughness_factor": 1
+        },
+        {
+          "name": "slate",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": true,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 0,
+          "roughness_factor": 1
+        },
+        {
+          "name": "bronze",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": true,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 0.699999988079071,
+          "roughness_factor": 1
+        },
+        {
+          "name": "oak",
+          "base_color_texture": true,
+          "metallic_roughness_texture": true,
+          "normal_texture": true,
+          "ao_texture": false,
+          "emissive_texture": false,
+          "metallic_factor": 0,
+          "roughness_factor": 1
+        }
+      ],
+      "images": 12,
+      "checks": {
+        "container": "PASS",
+        "finite_nonempty_geometry": "PASS",
+        "external_resources": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "pbr_plausibility": "NOT_TESTED",
+        "dimensions_approved": "NOT_TESTED",
+        "unity_import": "NOT_TESTED",
+        "human_quality": "NOT_TESTED"
+      }
+    },
+    "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-castle-20261022\\Library\\revision-previews\\3d114ab100754770b74de9ebe6805d3c\\manifest.json",
+    "revision_id": "167f11cfe0044dceb03d7a594d8b0706"
+  },
+  "artistic_approval": false
+}

@@ -1,0 +1,251 @@
+{
+  "status": "PASS_NATIVE_ADAPTIVE_CREATE_PAUSE_RESTART_GLB_LIBRARY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-native\\2026-10-22T10-02-49-609Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "material_only_revision_no_AI_geometry_preserved_staged_promote_rollback",
+      "passed": true,
+      "revision": {
+        "revision_id": "42e32a4e26cc4580beb0917d91a060d9",
+        "group_id": "8b116982b6a443f390a11625ca763a6e",
+        "execution_group_id": "9551540aa68e4cbd878cd5393a35b252",
+        "asset_id": "061b17b341fd47c99a82c132d54d6b04",
+        "plan": {
+          "method": "blender_material",
+          "earliest_stage": "materials",
+          "target_height_m": null,
+          "material_edit": {
+            "material_names": [
+              "slate"
+            ],
+            "color_hex": "#873b32"
+          },
+          "refinement_goal": "Change only named roof basecolor; preserve geometry, topology, UV and other materials",
+          "explanation": "Direct named roof material edit in Blender. No concept or image-to-3D inference. Geometry invariance and export reimport are checked.",
+          "parent_artifact_id": "daedcee84c204b179b749b14b0386c3a",
+          "parent_sha256": "b69446b3965346d38cce65106b3c68436c66e234fc52c6a051d5eed73aeeb4c4",
+          "capabilities": {
+            "direct_material_edit": true,
+            "direct_mesh_edit": false
+          },
+          "artistic_evaluation": "not_available"
+        }
+      },
+      "job_id": "07771175caa247d5adc2d905f7235ae8",
+      "v1": "daedcee84c204b179b749b14b0386c3a",
+      "v2": "29706cfc262e48d0bfe0417d43728a0b",
+      "geometry": {
+        "mesh_count": 95,
+        "topology_unchanged": true,
+        "max_world_vertex_delta_m": 0
+      }
+    },
+    {
+      "name": "actual_maximum_castle_no_image_flash_six_stages_stage_boundary_resume_no_duplicate_delivery",
+      "passed": true,
+      "batch_id": "8b116982b6a443f390a11625ca763a6e",
+      "asset_id": "061b17b341fd47c99a82c132d54d6b04",
+      "glb": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-native\\2026-10-22T10-02-49-609Z\\GameAssets\\7703b5aaf308452c9136941f068e6ff4\\selective\\061b17b341fd47c99a82c132d54d6b04\\30ace7c5548d5fd7a375b45993e4196a\\061b17b341fd47c99a82c132d54d6b04--5a5f38d130.glb",
+      "qa": {
+        "schema_version": 2,
+        "validator_sha256": "8d9266cead13bb20041f6e88d72504baa7fcd9790fc5da85ad6dfd57c02bddf0",
+        "cache_key": "c441724c56a4daf58f322ab5eb09b6ec427acc5477632a4d91021cc14c2ad9f2",
+        "spec_hash": "73db958e88edcb3e0b4d3a1d6a1d9e4401f5bebd51d4ec30613defca0331ec87",
+        "artifact_id": "daedcee84c204b179b749b14b0386c3a",
+        "artifact_sha256": "b69446b3965346d38cce65106b3c68436c66e234fc52c6a051d5eed73aeeb4c4",
+        "at": "2026-10-22T10:07:42.195279+00:00",
+        "gates": [
+          {
+            "layer": "technical",
+            "outcome": "PASS",
+            "mandatory": true,
+            "tool": "AFS glTF/trimesh inspector v1",
+            "evidence": {
+              "artifact_sha256": "b69446b3965346d38cce65106b3c68436c66e234fc52c6a051d5eed73aeeb4c4",
+              "checks": {
+                "container": "PASS",
+                "finite_nonempty_geometry": "PASS",
+                "external_resources": "PASS",
+                "uv_overlap": "NOT_TESTED",
+                "self_intersections": "NOT_TESTED",
+                "pbr_plausibility": "NOT_TESTED",
+                "dimensions_approved": "NOT_TESTED",
+                "unity_import": "NOT_TESTED",
+                "human_quality": "NOT_TESTED"
+              },
+              "triangles": 39604,
+              "dimensions_xyz_m": [
+                8,
+                10,
+                8
+              ]
+            },
+            "limitations": [
+              "Does not prove zero self-intersections or UV overlap. Nonwatertight foliage/planes are not universally rejected."
+            ]
+          },
+          {
+            "layer": "structure",
+            "outcome": "PASS",
+            "mandatory": true,
+            "tool": "AFS named assembly validator v1 / 4.5.14 LTS",
+            "evidence": {
+              "missing": [],
+              "counts": {
+                "corner_towers": 4,
+                "curtain_walls": 5,
+                "keep": 1,
+                "gate": 1
+              },
+              "measured_bounds_xyz_m": [
+                8,
+                10,
+                8
+              ],
+              "expected_bounds_xyz_m": [
+                8,
+                10,
+                8
+              ],
+              "assembly_report_sha256": "89a5d2936e841d16c04192584c4a820085c35bf5bac08dae253b781251d417c1",
+              "checks": {
+                "keep_count": true,
+                "corner_tower_count": true,
+                "curtain_wall_count": true,
+                "wall_tower_contacts": true,
+                "gate_arch_present": true,
+                "gate_clearance": true,
+                "declared_bounds": true
+              },
+              "wall_contacts": [
+                {
+                  "wall": "curtain_wall_north",
+                  "touches": [
+                    "corner_tower_nw",
+                    "corner_tower_ne"
+                  ]
+                },
+                {
+                  "wall": "curtain_wall_west",
+                  "touches": [
+                    "corner_tower_nw",
+                    "corner_tower_sw"
+                  ]
+                },
+                {
+                  "wall": "curtain_wall_east",
+                  "touches": [
+                    "corner_tower_ne",
+                    "corner_tower_se"
+                  ]
+                },
+                {
+                  "wall": "curtain_wall_south_west",
+                  "touches": [
+                    "corner_tower_sw"
+                  ]
+                },
+                {
+                  "wall": "curtain_wall_south_east",
+                  "touches": [
+                    "corner_tower_se"
+                  ]
+                }
+              ],
+              "gate_clearance": [
+                [
+                  -0.612,
+                  -3.32,
+                  0.255
+                ],
+                [
+                  0.612,
+                  -2.44,
+                  2.045
+                ]
+              ]
+            },
+            "limitations": [
+              "Connector contact uses measured AABBs, not exact intersection-free CSG or navigation testing. LOD silhouette error remains unmeasured."
+            ]
+          },
+          {
+            "layer": "visual",
+            "outcome": "FLAGGED_UNCERTAIN",
+            "mandatory": false,
+            "tool": "qwen3-vl:4b-instruct-q4_K_M",
+            "evidence": {
+              "schema_version": 1,
+              "screening_policy": 1,
+              "requested_subject_present": "yes",
+              "observed_subject_en": "castle",
+              "severe_observed_defects": [],
+              "observations": [
+                "All images show a single castle asset from different angles, consistent with the request for a single model rendered from multiple perspectives."
+              ],
+              "limitations": [
+                "No visible asset in the first image, but the asset is present in the other images."
+              ],
+              "style_observations": [
+                "The fourth image is a style reference, not a model render, and shows a different design with gargoyle statues, a crystal spire, and a banner, which is not part of the requested subject."
+              ],
+              "unknown": [
+                "The requested subject is a 'lâu đài' (castle) with specific materials and palette, but the fourth image is a style reference and not the subject itself."
+              ],
+              "decision": "continue",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "duration_seconds": 63.20400000000154,
+              "execution": "local_cpu_only",
+              "artistic_approval": false,
+              "method": "Inferred severe visible defect screening; technical QA remains authoritative for file validity",
+              "source_artifact_id": "daedcee84c204b179b749b14b0386c3a",
+              "source_sha256": "b69446b3965346d38cce65106b3c68436c66e234fc52c6a051d5eed73aeeb4c4",
+              "renders": [
+                {
+                  "view": "three_quarter",
+                  "relative_path": "jobs/294ec83f2e514f51a3cde546c2d4dfea/output/mobile_three_quarter_asset.png",
+                  "sha256": "f14742f0f3e93a96d8699308410abc6c70b5c6ef90178e553096954f54711271"
+                },
+                {
+                  "view": "back",
+                  "relative_path": "jobs/294ec83f2e514f51a3cde546c2d4dfea/output/mobile_back_asset.png",
+                  "sha256": "e82d558c59a0fc70f63539c4f032969f9003b05e2906d5eb490937b5dff5cbb0"
+                },
+                {
+                  "view": "side",
+                  "relative_path": "jobs/294ec83f2e514f51a3cde546c2d4dfea/output/mobile_side_asset.png",
+                  "sha256": "dbedd93272b9253d748b2d35ece650325d3c0f5f2da9c94b8ad04fcfa8218c98"
+                }
+              ]
+            },
+            "limitations": [
+              "Uncalibrated VLM observations are not an artistic pass. No fixed numerical art score is used."
+            ]
+          },
+          {
+            "layer": "game_integration",
+            "outcome": "NOT_EVALUATED",
+            "mandatory": false,
+            "tool": "No target Editor run for this artifact",
+            "evidence": {},
+            "limitations": [
+              "No Unity/Unreal, target-camera or performance acceptance is implied."
+            ]
+          }
+        ],
+        "eligible": true,
+        "artistic_approval": false
+      },
+      "job_ids": [
+        "ff4c9586c8d344f4beadf36facd65b1d",
+        "294ec83f2e514f51a3cde546c2d4dfea",
+        "c8c84aaf0080450287e10764638e3cf4",
+        "7bcb350aba8e40d3a90820be4ec23d0a"
+      ]
+    }
+  ],
+  "errors": [],
+  "scope": "Actual maximum authored procedural castle; CPU Qwen intent/render observations; real technical/structure/export gates. Not artistic approval, game integration or Meshy parity."
+}

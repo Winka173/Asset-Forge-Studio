@@ -198,13 +198,20 @@ def run(request):
     objects = [o for o in bpy.context.scene.objects if o.type == 'MESH']
     if not objects: raise ValueError('No mesh after import')
     before = mesh_stats(objects)
+    material_change=None;geometry_before=None
+    if request.get('material_edit'):
+        sys.path.insert(0,str(Path(__file__).parent))
+        from material_edit import signature,recolor
+        geometry_before=signature(objects)
     # Snapshot before repairs/normalization. Packed resources make .blend portable.
     bpy.ops.file.pack_all()
     bpy.ops.wm.save_as_mainfile(filepath=str(output / 'raw.blend'))
+    if request.get('material_edit'):material_change=recolor(objects,request['material_edit'],output)
     # Preserve imported hierarchy/world transforms before mesh-only operations.
-    for obj in objects:
-        matrix = obj.matrix_world.copy(); obj.parent = None; obj.matrix_world = matrix
-    select(objects); bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    if not request.get('material_edit'):
+        for obj in objects:
+            matrix = obj.matrix_world.copy(); obj.parent = None; obj.matrix_world = matrix
+        select(objects); bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
     yaw = math.radians(request.get('yaw_degrees', 0))
     for obj in objects:
         # Rotate geometry and positions as one asset, not each component around its own origin.
@@ -229,6 +236,9 @@ def run(request):
         bm.to_mesh(obj.data); bm.free(); obj.data.update()
     bpy.context.view_layer.update()
     after = mesh_stats(objects); low, high = bounds(objects)
+    if material_change:
+        from material_edit import compare
+        material_change['geometry_verification']=compare(geometry_before,objects)
     textures = output / 'textures'; textures.mkdir()
     materials = material_inventory(objects, textures)
     bpy.ops.file.pack_all()
@@ -259,7 +269,7 @@ def run(request):
     report = {'status': 'NEEDS_REVIEW', 'input_sha256': sha(source), 'script_sha256': sha(__file__),
               'blender_version': bpy.app.version_string, 'dimensions_xyz_m_blender': [high[i]-low[i] for i in range(3)],
               'normalization': {'applied': request.get('normalize', False), 'target_height_m': target_height, 'scale': scale, 'yaw_degrees': request.get('yaw_degrees', 0)},
-              'before': before, 'after': after, 'materials': materials, 'lods': lod_stats,
+              'before': before, 'after': after, 'materials': materials, 'lods': lod_stats,'material_edit':material_change,
               'framing': framing, 'rendered': rendered,
               'checks': {'export_reopen': 'NOT_TESTED', 'uv_overlap': 'NOT_TESTED', 'self_intersections': 'NOT_TESTED',
                          'lod_silhouette_error': 'NOT_TESTED', 'normal_bake': 'NOT_TESTED', 'unity': 'NOT_TESTED', 'human_review': 'NOT_TESTED',

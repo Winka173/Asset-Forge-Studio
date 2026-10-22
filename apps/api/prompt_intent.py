@@ -30,8 +30,17 @@ def execute(job,folder):
         temp_receipt.write_text(store.digest(target));temp_receipt.replace(receipt)
     with (folder/'worker.log').open('a',encoding='utf-8') as log:
         def progress(message):log.write('STAGE '+message+'\n');log.flush()
-        result=intent_adapter.interpret(text,references,payload['project_style_snapshot'],payload.get('reference_usage','auto'),progress,
-            cancelled=lambda:jobs.get(identifier)['status']=='CANCELLED',checkpoint=checkpoint,prior=prior)
+        try:
+            result=intent_adapter.interpret(text,references,payload['project_style_snapshot'],payload.get('reference_usage','auto'),progress,
+                cancelled=lambda:jobs.get(identifier)['status']=='CANCELLED',checkpoint=checkpoint,prior=prior)
+        except (OSError,ValueError,TimeoutError) as exc:
+            import re
+            usage=payload.get('reference_usage','auto')
+            role='none' if not references else usage if usage in ('source','style') else 'style' if re.search(r'style|phong cách|màu|giống',text,re.I) else 'source'
+            result=dict(schema_version=4,status='not_evaluated',model=None,model_digest=None,execution='deterministic_fallback',
+                source_prompt_sha256=payload['source_prompt_sha256'],references=[dict(artifact_id=r['id'],sha256=r['sha256']) for r in references],
+                chunks=[],reference_role=role,generation_prompt_en=text,provenance='defaulted_original_text',artistic_approval=False,qa_status='not_run',
+                warnings=['Local interpretation unavailable; original request preserved: '+str(exc)[:500]])
     if jobs.get(identifier)['status']=='CANCELLED':return
     target=folder/'intent.json';temporary=folder/'intent.json.part'
     temporary.write_text(json.dumps(result,indent=2),encoding='utf-8');temporary.replace(target)
@@ -66,7 +75,7 @@ def admit(value,item,current,auto):
     result=json.loads(path.read_text(encoding='utf-8'))
     if result['source_prompt_sha256']!=hashlib.sha256(item['prompt'].encode()).hexdigest():raise ValueError('Interpretation no longer matches original prompt')
     if item.get('intent_reference_scope')=='palette_only':
-        result['generation_prompt_en']='\n'.join(r['interpretation']['translated_prompt_en'] for r in result['chunks'])
+        result['generation_prompt_en']='\n'.join(r['interpretation']['translated_prompt_en'] for r in result['chunks']) or item['prompt']
         result['style_application']='Measured palette only by explicit user selection; semantic traits were not applied'
     item['prompt_interpretation']=result
     refs=item.get('intent_reference_ids',[])

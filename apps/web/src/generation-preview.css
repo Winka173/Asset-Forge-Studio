@@ -12,7 +12,7 @@
 .studio .generation-preview-copy p{margin:0;font-size:12px;line-height:1.7;color:#c7ced9;overflow-wrap:anywhere}
 .studio .generation-preview-copy small{font-size:10px;line-height:1.7;color:#97a5b9}
 .studio button.generation-preview-details{display:flex;align-items:center;gap:20px;background:#384252;color:#e1e8f3;border:0;padding:11px 17px;border-radius:9px;min-height:40px;font-size:11px}
-.studio button.generation-preview-reference{display:flex;align-items:center;gap:12px;max-width:280px;width:100%;margin-top:8px;padding:10px 14px;background:#292f39;color:#d4dce8;border:0;border-radius:12px;text-align:left;min-height:64px}
+.studio .generation-preview-reference{display:flex;align-items:center;gap:12px;max-width:280px;width:100%;margin-top:8px;padding:10px 14px;background:#292f39;color:#d4dce8;border:0;border-radius:12px;text-align:left;min-height:64px}
 .studio .generation-preview-reference img{width:42px;height:42px;flex:none;object-fit:contain;border-radius:7px;background:#1c2027}
 .studio .generation-preview-reference>span:nth-child(2){min-width:0;flex:1;font-size:11px;line-height:1.6}
 .studio .generation-preview-reference small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#98a7bb;font-size:10px}
@@ -22,3 +22,8 @@
 @keyframes afs-build-glow{0%,100%{opacity:.35}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.generation-preview *{animation:none!important}}
 @media(max-height:850px){.studio .generation-preview{min-height:320px;padding:24px;gap:12px}.generation-preview-art{width:160px}}
+
+.studio .generation-preview[data-state=blocked] .generation-preview-art,.studio .generation-preview[data-state=paused] .generation-preview-art{opacity:.45}
+.studio .generation-preview[data-state=blocked] .generation-preview-art *,.studio .generation-preview[data-state=paused] .generation-preview-art *,.studio .generation-preview[data-state=waiting] .generation-preview-art *{animation:none}
+.studio .generation-preview[data-state=blocked] .generation-preview-eyebrow{color:#f0bd97}
+.studio .generation-preview-reference img{max-width:42px!important;max-height:42px!important}

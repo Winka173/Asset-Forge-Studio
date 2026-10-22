@@ -77,3 +77,12 @@ html[data-afs-motion=reduced] .studio [data-state=running]>.production-pipeline-
 .studio .production-source-issues p{margin:10px 0 14px;font-size:10px;line-height:1.8;color:#d9c7b4}
 .studio .production-source-issues button{padding:10px 14px;background:#67503b;border:0;border-radius:8px;color:#fff0dc;font-size:11px;min-height:38px}
 .studio .production-source-issues button:hover{background:#7d6046}
+
+.studio .production-preview-tabs[hidden]{display:none!important}
+.studio [data-state=running]>.production-pipeline-marker{position:relative;width:22px;height:22px;min-width:22px;border-width:2px;background:#51432f;border-color:#f4c16d #51432f #51432f;box-shadow:0 0 0 3px #efb45b13;animation:production-stage-spin .85s linear infinite}
+@media(prefers-reduced-motion:reduce){.studio [data-state=running]>.production-pipeline-marker{animation:none}}
+html[data-afs-motion=reduced] .studio [data-state=running]>.production-pipeline-marker{animation:none}
+.pipeline-evidence{padding:16px;background:var(--surface-2,#292d35);border-radius:12px;margin:14px 0;line-height:1.55}
+.pipeline-evidence summary{cursor:pointer;font-weight:650;padding:4px 0}
+.pipeline-evidence p{margin:12px 0}.pipeline-evidence dl>div{display:flex;justify-content:space-between;gap:14px;margin:10px 0}.pipeline-evidence dd{margin:0;font-size:11px}.pipeline-evidence dt{text-transform:capitalize}
+.engine-health details{background:var(--surface-2,#292d35);padding:16px;border-radius:12px;margin-top:14px}.engine-health summary{cursor:pointer;line-height:1.6}.engine-health button{margin:10px 0}

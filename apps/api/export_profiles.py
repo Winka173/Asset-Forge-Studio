@@ -183,6 +183,16 @@ def _source(asset, artifact_id=None):
     if path.suffix.lower() != '.glb':raise HTTPException(422, 'Select an actual GLB candidate or master.')
     try:qa = inspect_glb(path)
     except Exception as error:raise HTTPException(409, f'GLB validation failed: {error}') from error
+    current=record;seen=set();assembly=False
+    while current and current['id'] not in seen:
+        seen.add(current['id']);assembly=assembly or current['metadata'].get('engine')=='blender_procedural'
+        parent=current['metadata'].get('parent_id')
+        try:current=store.get_artifact(parent) if parent else None
+        except KeyError:current=None
+    if assembly:
+        from .quality_evaluation import VERSION,validator_hash
+        gate=next((r for r in reversed(asset.get('quality_evaluations',[])) if r['artifact_id']==record['id'] and r['artifact_sha256']==record['sha256']),None)
+        if not gate or not gate['eligible'] or gate['schema_version']!=VERSION or gate.get('validator_sha256')!=validator_hash():raise HTTPException(409,'This assembly has not passed the current required technical/structural gates. Retained source is available; no invalid delivery was published.')
     return record, path, qa
 
 

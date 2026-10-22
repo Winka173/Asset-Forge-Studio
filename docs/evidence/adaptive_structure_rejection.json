@@ -1,0 +1,96 @@
+{
+  "status": "VERIFIED_REAL_GLB_MISSING_MANDATORY_TOWER_REJECTED",
+  "source_sha256": "425e00b9df409a570fef58e7682861c04b4c0944babe12607d168db3a06b3d1b",
+  "negative_sha256": "3aefc9060cd5615fa2a94abcf1bce474531d47ca97b7206ab429752a02ede1a1",
+  "technical_integrity": "PASS",
+  "structural_gate": {
+    "layer": "structure",
+    "outcome": "BLOCKED",
+    "mandatory": true,
+    "tool": "AFS named assembly validator v1 / 4.5.14 LTS",
+    "evidence": {
+      "missing": [
+        "corner_tower_nw"
+      ],
+      "counts": {
+        "corner_towers": 3,
+        "curtain_walls": 5,
+        "keep": 1,
+        "gate": 1
+      },
+      "measured_bounds_xyz_m": [
+        8.0,
+        10.0,
+        8.0
+      ],
+      "expected_bounds_xyz_m": [
+        8.0,
+        10.0,
+        8.0
+      ],
+      "assembly_report_sha256": "3e4b0698cd3d8f979af7b39916ab09d503632087fe1292b0b4fcf8cd6e47e5fb",
+      "checks": {
+        "keep_count": true,
+        "corner_tower_count": true,
+        "curtain_wall_count": true,
+        "wall_tower_contacts": true,
+        "gate_arch_present": true,
+        "gate_clearance": true,
+        "declared_bounds": true
+      },
+      "wall_contacts": [
+        {
+          "wall": "curtain_wall_north",
+          "touches": [
+            "corner_tower_nw",
+            "corner_tower_ne"
+          ]
+        },
+        {
+          "wall": "curtain_wall_west",
+          "touches": [
+            "corner_tower_nw",
+            "corner_tower_sw"
+          ]
+        },
+        {
+          "wall": "curtain_wall_east",
+          "touches": [
+            "corner_tower_ne",
+            "corner_tower_se"
+          ]
+        },
+        {
+          "wall": "curtain_wall_south_west",
+          "touches": [
+            "corner_tower_sw"
+          ]
+        },
+        {
+          "wall": "curtain_wall_south_east",
+          "touches": [
+            "corner_tower_se"
+          ]
+        }
+      ],
+      "gate_clearance": [
+        [
+          -0.612,
+          -3.32,
+          0.255
+        ],
+        [
+          0.612,
+          -2.44,
+          2.045
+        ]
+      ]
+    },
+    "limitations": [
+      "Connector contact uses measured AABBs, not exact intersection-free CSG or navigation testing. LOD silhouette error remains unmeasured."
+    ]
+  },
+  "export_blocked": true,
+  "original_delivery_preserved": true,
+  "scope": "Deliberate geometry mutation for acceptance; not an engine failure or a real OOM"
+}

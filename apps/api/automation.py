@@ -138,6 +138,7 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
             if item['asset_id'] not in ids:continue
             resolve_specs(item,project,snapshot)
             model=studio.asset(item['asset_id'])
+            if not any(j['payload'].get('asset_id')==item['asset_id'] for j in snapshot['jobs']):item.setdefault('planner_version',1)
             model.setdefault('original_prompt',item['prompt']);model.setdefault('original_prompt_sha256',hashlib.sha256(model['original_prompt'].encode()).hexdigest())
             if not item['prompt'].strip() and item['name'].strip() and not re.fullmatch(r'(?:untitled(?: asset)?|empty(?: entry)?|asset(?: \d+)?|unknown)',item['name'].strip(),re.I):
                 item['resolved_prompt']=item['name'].strip();item['spec_provenance']['generation_prompt']=dict(kind='inferred',source='Original asset name; no original prompt text was replaced',value=item['resolved_prompt'])
@@ -246,16 +247,18 @@ def advance(identifier):
                 continue
             if not delivery_ready and len(active_assets)>=settings['max_active_assets'] and item['asset_id'] not in active_assets:continue
             if not (item.get('resolved_prompt') or item['prompt']).strip() and not item['reference_ids']:auto.update(status='blocked',stage='Needs Input',error='Empty prompt');continue
-            if not auto.get('engines'):auto.update(status='blocked',stage='Needs Input',error='No compatible installed local 3D engine; configure Settings. No fallback/download.');continue
             dependencies=[next((i for i in value['items'] if d in (i['asset_id'],i.get('source_asset_id'),i['name'])),None) for d in item['dependencies']]
             if any(d is None for d in dependencies):auto.update(status='blocked',stage='Needs Input',error='Unknown dependency ID');continue
             if any(d.get('automation',{}).get('status') not in ('exported','needs_review') for d in dependencies):auto.update(status='queued',stage='Waiting for dependency');continue
             try:
                 from .prompt_intent import admit
                 if admit(value,item,current,auto):active_assets.add(item['asset_id']);continue
+                from .asset_strategy import admit as plan_strategy
+                spec=plan_strategy(value,item,auto)
+                if not auto.get('engines'):auto.update(status='blocked',stage='Needs Input',error='No compatible verified local geometry route; configure Settings. No fallback/download.');continue
                 from .revisions import execution_context,update_execution
                 revision=execution_context(item)
-                processing=bool(item.get('processing_source') or revision and revision['plan']['method']=='blender_transform')
+                processing=bool(item.get('processing_source') or revision and revision['plan']['method'] in ('blender_transform','blender_material'))
                 if revision and revision['plan']['method']=='animation_retime':
                     if not any(j['payload']['kind']=='animation_retime' for j in current):
                         jobs.enqueue(dict(kind='animation_retime',engine='blender_animation',artifact_id=revision['parent_artifact_id'],project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'],clip_index=revision['plan']['clip_index'],speed=revision['plan']['clip_speed'],
@@ -264,10 +267,17 @@ def advance(identifier):
                 elif processing:
                     if not any(j['payload']['kind']=='blender' for j in current):
                         processing_source=item.get('processing_source') or dict(artifact_id=revision['parent_artifact_id'],normalize=True)
-                        jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
+                        jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=False if revision and revision['plan']['method']=='blender_material' else processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
+                            material_edit=revision['plan'].get('material_edit') if revision else None,
                             project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'] if revision else None,
                             effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay']))
                         active_assets.add(item['asset_id']);auto.update(status='queued',stage='Blender revision');continue
+                elif spec and spec['route']=='procedural_castle':
+                    if not any(j['payload']['kind']=='procedural_geometry' for j in current):
+                        from .procedural import submit
+                        submit(value,item,spec);auto.update(status='queued',stage='Build named castle geometry / Blender');active_assets.add(item['asset_id']);continue
+                    for job in current:
+                        if job['payload']['kind']=='procedural_geometry':jobs.ensure_blender(job)
                 else:
                     prefix=f'{identifier}:{item["asset_id"]}:{item["attempt"]}'
                     source=next((a for a in artifacts if a['id']==auto.get('concept_selection',{}).get('artifact_id')),None)
@@ -305,14 +315,22 @@ def advance(identifier):
                 required=len(auto['engines'])*item['candidates']
                 if len(processed)<required:
                     auto.update(status='queued',stage='Blender / QA');active_assets.add(item['asset_id']);continue
+                from .model_guard import filter_candidates
+                processed=filter_candidates(value,item,current,processed,auto)
+                if processed is None:active_assets.add(item['asset_id']);continue
                 ranking=[]
                 for candidate in processed:
+                    from .quality_evaluation import evaluate
+                    evaluation=evaluate(item,candidate)
+                    if not evaluation['eligible']:continue
                     metadata=candidate['metadata'];materials=metadata.get('materials',[])
                     raw=next((a for a in artifacts if a['id']==metadata.get('parent_id')),None)
                     if raw and raw['metadata'].get('engine')=='trellis2_community' and (not metadata.get('images') or not any(m.get('base_color_texture') for m in materials)):
                         raise ValueError('Required textured output missing from processed candidate; no placeholder export')
                     score=[int(any(m.get('base_color_texture') for m in materials)),int(any(m.get('metallic_roughness_texture') for m in materials)),int(all(m.get('has_uv') for m in metadata.get('meshes',[]))),int(all(m.get('winding_consistent') for m in metadata.get('meshes',[])))]
                     ranking.append(dict(artifact_id=candidate['id'],sha256=candidate['sha256'],technical_score=score,triangles=metadata.get('triangles')))
+                if not ranking:
+                    auto.update(status='blocked',stage='Needs Attention / structural QA',error='No candidate passes every mandatory technical/structural gate. Sources, raw meshes and QA evidence retained.');continue
                 ranking.sort(key=lambda r:(r['technical_score'],r['artifact_id']),reverse=True);winner=ranking[0]
                 auto.update(status='completed',stage='Technically validated',ranking=ranking,candidate_selection=winner,ranking_method='Texture/UV/winding validity only; tie by stable artifact ID, no artistic score')
                 if settings['mode']=='assisted' and settings['checkpoints']['candidate']:

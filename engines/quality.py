@@ -40,6 +40,18 @@ def resolve_concept(prompt,seed,steps,size,project,quality):
         qa=dict(image_validity=True,human_concept_approval=True,automatic_3d_generation=False))
 
 
+def resolve_procedural(spec,seed,candidate_count=1):
+    script=store.ROOT/'pipelines/blender/assemble_castle.py'
+    return dict(schema_version=1,quality=spec['quality'],quality_lock=spec['quality']=='Maximum',stage='geometry',engine_id='blender_procedural',engine_version='four_corner_castle_v1',
+        checkpoint=dict(script_sha256=store.digest(script)),input_prompt=spec['original_prompt'],reference_hashes=[r['sha256'] for r in spec['reference_hashes']],
+        project_style_hash=spec['source_style_hash'],spec_hash=fingerprint(spec),seed=seed,seeds=[seed],candidate_count=candidate_count,
+        resolution=None,inference_steps=None,precision='Blender geometry float32; no neural inference',
+        geometry=dict(profile='four_corner_castle_v1',bounds_m=spec['bounds_m'],required_named_components=True),
+        texture=dict(size={'Fast':512,'Balanced':1024,'Maximum':2048}[spec['quality']],method='authored_procedural_PBR',ai_texturing=False),
+        blender=dict(enabled=True,profile='existing_quality_pipeline_v1',normalize=False,height_m=None),lod=dict(ratios=[.65,.35,.15]),
+        export=dict(preserve_master=True,default_format='glb'),qa=dict(technical=True,structural=True,visual='inferred_or_not_evaluated',artistic_approval=False))
+
+
 def resolve(options, reference, project):
     engine=options['engine'];quality=options.get('quality','Maximum');adapter=ADAPTERS[engine]
     steps=options.get('steps') or (50 if engine=='triposg' else {'Fast':12,'Balanced':24,'Maximum':32}[quality])

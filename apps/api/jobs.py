@@ -58,6 +58,10 @@ def listing():
             if frames and 'STAGE encode' not in tail:
                 done,total=map(int,frames[-1]);progress.update(stage=f'Blender frames {done}/{total}',percent=100*done/total if total else None)
         value['progress'] = progress
+        if value['status']=='QUEUED':
+            from .engine_health import waiting
+            hold=waiting(value['payload'],value['id'])
+            if hold:progress.update(stage=hold['reason'],health_key=hold['health_key'],reason_code=hold['code'])
     return values
 
 
@@ -83,10 +87,19 @@ def enqueue(payload, db=None):
     return get(identifier)
 
 
+def reconcile_timeout(identifier):
+    """Worker termination uses CANCELLED internally; timeout is not user Cancel."""
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE');row=db.execute('SELECT status,error,payload FROM jobs WHERE id=?',(identifier,)).fetchone()
+        if not row or row['status']!='CANCELLED' or not (row['error'] or '').startswith('TIMEOUT;'):return
+        payload=json.loads(row['payload']);payload.setdefault('stage_events',[]).append(dict(state='BLOCKED',at=store.now(),reason='Stage process terminated after timeout; bounded retry may run unchanged settings'))
+        db.execute("UPDATE jobs SET status='BLOCKED',updated_at=?,payload=? WHERE id=?",(store.now(),json.dumps(payload),identifier))
+
+
 def ensure_blender(job):
     """Atomic child admission repairs a crash between validated inference and postprocessing."""
     payload=job['payload']
-    if job['status']!='REVIEW_REQUIRED' or payload['kind']!='inference' or not payload.get('auto_blender'):return
+    if job['status']!='REVIEW_REQUIRED' or payload['kind'] not in ('inference','procedural_geometry') or not payload.get('auto_blender'):return
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE')
         existing=[decode(r) for r in db.execute('SELECT * FROM jobs')]
@@ -136,7 +149,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('concept_layout','prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
+    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -216,6 +229,8 @@ class Worker:
                                 if job['id'] in self.active:continue
                                 from .production import eligible,scheduling_score
                                 if not eligible(job['payload']):continue
+                                from .engine_health import waiting
+                                if waiting(job['payload'],job['id']):continue
                                 priority=job['payload'].get('priority',0);batch_id=job['payload'].get('batch_id')
                                 if batch_id:
                                     parent=db.execute('SELECT payload FROM batches WHERE id=?',(batch_id,)).fetchone()
@@ -248,6 +263,8 @@ class Worker:
                 from .production import eligible
                 fresh=get(job['id'])
                 if self.stop.is_set() or fresh['status']!='QUEUED' or not eligible(fresh['payload']):return
+                from .engine_health import waiting,record_result
+                if waiting(fresh['payload'],fresh['id']):return
                 if job['payload'].get('batch_id'):
                     from . import batch
                     with batch.LOCK:
@@ -275,6 +292,8 @@ class Worker:
                 finally:
                     finished.set();watcher.join(timeout=2)
                     folder=store.DATA/'jobs'/job['id'];folder.mkdir(parents=True,exist_ok=True)
+                    reconcile_timeout(job['id'])
+                    record_result(get(job['id']),folder)
                     (folder/'resources.json').write_text(json.dumps(dict(resource=kind,started_at=started_at,finished_at=store.now(),duration_seconds=time.monotonic()-started,
                         ram_peak_used_bytes=max((s['ram_used_bytes'] for s in samples),default=psutil.virtual_memory().used),
                         worker_tree_peak_rss_bytes=max((s['worker_tree_rss_bytes'] or 0 for s in samples),default=0),samples=samples),indent=2))
@@ -293,9 +312,17 @@ class Worker:
                 from .concept_guard import execute
                 execute(job,folder)
                 return
+            if payload['kind']=='model_visual_check':
+                from .model_guard import execute
+                execute(job,folder)
+                return
             if payload['kind']=='prompt_analysis':
                 from .prompt_intent import execute
                 execute(job,folder)
+                return
+            if payload['kind']=='procedural_geometry':
+                from .procedural import execute
+                execute(job,folder,self)
                 return
             if payload['kind']=='tool_update':
                 from .updates import execute
@@ -310,6 +337,9 @@ class Worker:
                 effective=payload['effective_config']
                 if fingerprint(effective)!=payload['effective_config_hash']:
                     transition(identifier,'BLOCKED','EffectiveGenerationConfig hash mismatch; no automatic config changes');return
+                if payload['kind']=='concept' and effective.get('composition_policy')==2:
+                    if any(payload.get(k)!=effective.get(v) for k,v in [('prompt','input_prompt'),('negative_prompt','negative_prompt'),('steps','inference_steps'),('size','resolution'),('seed','seed')]):
+                        transition(identifier,'BLOCKED','Concept execution differs from locked conditioning; no automatic config changes');return
                 if payload['kind']=='inference':
                     actual=dict(engine=payload['engine'],steps=payload['steps'],seed=payload['seed'],pipeline=payload['pipeline_type'],
                                 texture=payload['texture_size'] if payload['engine']!='triposg' else None,blender=payload['auto_blender'])

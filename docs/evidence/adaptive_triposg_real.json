@@ -1,0 +1,242 @@
+{
+  "status": "VERIFIED_SHAPE_ONLY_DELIVERY",
+  "sample_count": 1,
+  "run": {
+    "status": "PASS_REAL_MAXIMUM_TEXT_IMAGE_TO_GLB",
+    "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-shape-20261022",
+    "prompt": "Reconstruct the supplied masked castle. Geometry-only evaluation; no texture equivalence claim.",
+    "original_prompt_sha256": "c262f6969621a54158a0fbcb391b3d40d77a7368916d7b81a97489f4f5b8e02b",
+    "artistic_approval": false,
+    "project_id": "604f008ae2794d95b747c3b192fec8ed",
+    "asset_id": "71a3ed547b36497d8a8360ab999b73e9",
+    "batch_id": "db03f4dd6beb411393da769512f0f7bc",
+    "reference_sha256": "6ca82a6b9e6de57476d5b07e9be5f4a29fb2c50cb9e639b25cd675fabf7fd6b2",
+    "duration_seconds": 437.8279999999977,
+    "automation": {
+      "status": "exported",
+      "stage": "Completed",
+      "checkpoints": {
+        "75a07b24b3d64718a67057b55f65b879": {
+          "stage": "blender",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T09:06:59.150321+00:00"
+        },
+        "499cf9b765b5494c8f2d8099d86fff11": {
+          "stage": "inference",
+          "state": "REVIEW_REQUIRED",
+          "updated_at": "2026-10-22T09:01:06.242593+00:00"
+        }
+      },
+      "engines": [
+        "triposg"
+      ],
+      "enabled": true,
+      "attempt": 0,
+      "engine_policy": "Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score",
+      "human_approved": false,
+      "concept_selection": {
+        "artifact_id": "0b36dbe24c644fa5be15dfa70a8a944e",
+        "sha256": "6ca82a6b9e6de57476d5b07e9be5f4a29fb2c50cb9e639b25cd675fabf7fd6b2",
+        "method": "Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback",
+        "measurements": {
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGBA",
+          "has_transparency": true,
+          "laplacian_variance_proxy": 715.8543701171875,
+          "approval": "NEEDS_REVIEW",
+          "multi_view_consistency": "NOT_TESTED",
+          "background": "alpha supplied"
+        },
+        "artistic_approval": false
+      },
+      "ranking": [
+        {
+          "artifact_id": "aac08241e3b34fc39fe38f99fc1f0ad7",
+          "sha256": "240a39eeb2f90f426abc5be4dd9e65a7bce985085eef01866a324e91a46db84f",
+          "technical_score": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "triangles": 3324960
+        }
+      ],
+      "candidate_selection": {
+        "artifact_id": "aac08241e3b34fc39fe38f99fc1f0ad7",
+        "sha256": "240a39eeb2f90f426abc5be4dd9e65a7bce985085eef01866a324e91a46db84f",
+        "technical_score": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "triangles": 3324960
+      },
+      "ranking_method": "Texture/UV/winding validity only; tie by stable artifact ID, no artistic score",
+      "export": {
+        "id": "858a69ff757452739f674b4d848915c9",
+        "status": "COMPLETED",
+        "delivery_scope": "game",
+        "asset_id": "71a3ed547b36497d8a8360ab999b73e9",
+        "project_id": "604f008ae2794d95b747c3b192fec8ed",
+        "source_asset_id": "71a3ed547b36497d8a8360ab999b73e9",
+        "artifact_id": "aac08241e3b34fc39fe38f99fc1f0ad7",
+        "settings": {
+          "preset": "glb_only",
+          "glb": true,
+          "manifest": true,
+          "zip": false,
+          "fbx": false,
+          "blend": false,
+          "textures": false,
+          "lods": false,
+          "high_poly": false,
+          "unity_package": false,
+          "unreal_package": false,
+          "output_directory": null
+        },
+        "created_at": "2026-10-22T09:07:14.689892+00:00",
+        "export_directory": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-shape-20261022\\Library\\exports\\604f008ae2794d95b747c3b192fec8ed\\selective\\71a3ed547b36497d8a8360ab999b73e9\\858a69ff757452739f674b4d848915c9",
+        "output_root": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-shape-20261022\\Library\\exports",
+        "filename": "71a3ed547b36497d8a8360ab999b73e9--fa81ced2de.glb",
+        "files": [
+          {
+            "name": "71a3ed547b36497d8a8360ab999b73e9--fa81ced2de.glb",
+            "bytes": 277952308,
+            "sha256": "240a39eeb2f90f426abc5be4dd9e65a7bce985085eef01866a324e91a46db84f",
+            "kind": "glb",
+            "url": "/api/export-profiles/exports/858a69ff757452739f674b4d848915c9/files/71a3ed547b36497d8a8360ab999b73e9--fa81ced2de.glb"
+          },
+          {
+            "name": "manifest.json",
+            "bytes": 3595,
+            "sha256": "4690b2bf47f58d9771439dc3b4faeb50dbfafb5a937b6af4b34adb6cb7bef710",
+            "kind": "manifest",
+            "url": "/api/export-profiles/exports/858a69ff757452739f674b4d848915c9/files/manifest.json"
+          }
+        ],
+        "qa": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 3324960,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            10.540730953216553,
+            10.0,
+            9.594685077667236
+          ],
+          "bounds_xyz_m": [
+            [
+              -5.270365450531244,
+              0.0,
+              -4.797342733480036
+            ],
+            [
+              5.2703655026853085,
+              10.0,
+              4.7973423441872
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 3324960,
+              "vertices": 9918825,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "project_manifest": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-shape-20261022\\Library\\exports\\604f008ae2794d95b747c3b192fec8ed\\manifest.json"
+      },
+      "completed_at": "2026-10-22T09:07:14.762497+00:00"
+    },
+    "jobs": [
+      {
+        "id": "75a07b24b3d64718a67057b55f65b879",
+        "kind": "blender",
+        "engine": null,
+        "status": "REVIEW_REQUIRED",
+        "error": null,
+        "effective_config_hash": "c14c77a69c494bee21f40ee6d82a0c661077955b0bc19225352e52c1d4682783"
+      },
+      {
+        "id": "499cf9b765b5494c8f2d8099d86fff11",
+        "kind": "inference",
+        "engine": "triposg",
+        "status": "REVIEW_REQUIRED",
+        "error": null,
+        "effective_config_hash": "c14c77a69c494bee21f40ee6d82a0c661077955b0bc19225352e52c1d4682783"
+      }
+    ],
+    "glb": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\adaptive-shape-20261022\\Library\\exports\\604f008ae2794d95b747c3b192fec8ed\\selective\\71a3ed547b36497d8a8360ab999b73e9\\858a69ff757452739f674b4d848915c9\\71a3ed547b36497d8a8360ab999b73e9--fa81ced2de.glb",
+    "glb_sha256": "240a39eeb2f90f426abc5be4dd9e65a7bce985085eef01866a324e91a46db84f",
+    "qa": {
+      "status": "NEEDS_REVIEW",
+      "triangles": 3324960,
+      "mesh_instances": 1,
+      "dimensions_xyz_m": [
+        10.540730953216553,
+        10.0,
+        9.594685077667236
+      ],
+      "bounds_xyz_m": [
+        [
+          -5.270365450531244,
+          0.0,
+          -4.797342733480036
+        ],
+        [
+          5.2703655026853085,
+          10.0,
+          4.7973423441872
+        ]
+      ],
+      "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+      "meshes": [
+        {
+          "node": "geometry_0",
+          "triangles": 3324960,
+          "vertices": 9918825,
+          "watertight": false,
+          "winding_consistent": true,
+          "watertight_after_position_weld_1e8": false,
+          "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+          "has_uv": false
+        }
+      ],
+      "materials": [],
+      "images": 0,
+      "checks": {
+        "container": "PASS",
+        "finite_nonempty_geometry": "PASS",
+        "external_resources": "PASS",
+        "uv_overlap": "NOT_TESTED",
+        "self_intersections": "NOT_TESTED",
+        "pbr_plausibility": "NOT_TESTED",
+        "dimensions_approved": "NOT_TESTED",
+        "unity_import": "NOT_TESTED",
+        "human_quality": "NOT_TESTED"
+      }
+    }
+  },
+  "limitation": "No AI PBR; not equivalent to textured Maximum profiles"
+}

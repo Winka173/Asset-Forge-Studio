@@ -24,8 +24,13 @@ def test_cpu_analysis_admission_is_separate_from_gpu_generation(tmp_path,monkeyp
     assert prompt_intent.admit(value,item,current,auto)
     assert len(jobs.listing())==1
     assert studio.asset(model['id'])['prompt']==model['prompt']
-    # No engine result/QA is fabricated: an unavailable local model fails before any output.
+    # An unavailable OPTIONAL interpreter is explicit NOT_EVALUATED, never fake
+    # understanding/QA or a mandatory blocker for deterministic supported routes.
     monkeypatch.setattr(intent_adapter.intent_runtime,'installed',lambda:False)
     jobs.worker.execute(current[0])
-    assert jobs.get(current[0]['id'])['status']=='FAILED'
-    with store.connect() as db:assert db.execute('SELECT COUNT(*) FROM artifacts').fetchone()[0]==0
+    assert jobs.get(current[0]['id'])['status']=='REVIEW_REQUIRED'
+    manifest=json.loads((tmp_path/'jobs'/current[0]['id']/'manifest.json').read_text())
+    report=json.loads(store.safe_path(store.get_artifact(manifest['interpretation_artifact'])['relative_path']).read_text())
+    assert report['status']=='not_evaluated' and report['qa_status']=='not_run'
+    assert report['generation_prompt_en']==model['prompt'] and not report['artistic_approval']
+    assert len(jobs.listing())==1

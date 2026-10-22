@@ -34,7 +34,7 @@ async def lifespan(app):
         close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.20", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.9.0", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -372,6 +372,8 @@ from .cinematic_audio import router as cinematic_audio_router
 app.include_router(cinematic_audio_router)
 from .updates import router as updates_router
 app.include_router(updates_router)
+from .engine_health import router as engine_health_router
+app.include_router(engine_health_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():

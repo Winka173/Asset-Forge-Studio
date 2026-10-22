@@ -36,3 +36,21 @@ def test_observed_defects_override_a_model_suitable_boolean():
         background_is_plain=False,border_or_text_visible=True,entire_main_asset_visible=False,issues=[]))
     assert not answer.suitable_single_asset_image
     assert set(answer.issues)=={'background_scene','border_or_text','cropped_main_object'}
+
+
+def test_manual_concept_retry_is_idempotent_and_preserves_quality(tmp_path,monkeypatch,qa_project):
+    from apps.api import batch
+    monkeypatch.setattr(store,'DATA',tmp_path);qa_project();client=TestClient(app)
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- One castle')).json()
+    stored=batch.batch(value['id']);item=stored['items'][0]
+    item.update(started=True,attempt=0,automation=dict(status='blocked',stage='Needs Attention / concept layout'))
+    stored['paused']=False;batch.save(stored)
+    body=dict(scope='asset',group_id=stored['id'],asset_id=item['asset_id'],action='retry_concept',request_id='idempotent-concept-retry')
+    first=client.post('/api/production/control',json=body);assert first.status_code==200,first.text
+    second=client.post('/api/production/control',json=body);assert second.status_code==200,second.text
+    assert first.json()['job']['id']==second.json()['job']['id']
+    assert len(jobs.listing())==1 and jobs.listing()[0]['payload']['kind']=='concept'
+    assert jobs.listing()[0]['payload']['user_prompt']==item['prompt']
+    assert jobs.listing()[0]['payload']['effective_config']['quality']==item['quality']
+    stored=batch.batch(stored['id']);stored['paused']=True;batch.save(stored)
+    assert client.post('/api/production/control',json=body|dict(request_id='different-paused-retry')).status_code==409

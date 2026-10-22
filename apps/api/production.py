@@ -151,18 +151,21 @@ def detail(asset_id:str):
         report=folder/'output/report.json';qa=json.loads(report.read_text()) if report.exists() else None
         layout=folder/'concept_layout.json'
         layout_qa=json.loads(layout.read_text(encoding='utf-8')) if layout.is_file() else None
+        visual=folder/'model_visual_check.json'
+        if visual.is_file():layout_qa=json.loads(visual.read_text(encoding='utf-8'))
         stages.append(job_summary(j)|dict(events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation')} if qa else layout_qa)))
     from .export_profiles import export_history
-    return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
+    return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','quality_evaluations','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
 
 
 class Control(BaseModel):
-    action:Literal['pause','resume','cancel','retry_failed','skip_failed','regenerate','prioritize','skip']
+    action:Literal['pause','resume','cancel','retry_failed','retry_concept','skip_failed','regenerate','prioritize','skip']
     scope:Literal['all','batch','asset','job']
     group_id:str|None=None
     asset_id:str|None=None
     job_id:str|None=None
     priority:Literal['next','normal','batch_order']='normal'
+    request_id:str|None=Field(default=None,min_length=8,max_length=100)
 
 
 @router.post('/control')
@@ -199,6 +202,9 @@ def control(body:Control):
                     body=body.model_copy(update={'group_id':revision['group_id']});value=batch.batch(body.group_id)
             item=next((i for i in value['items'] if i['asset_id']==body.asset_id),None)
             if not item:raise HTTPException(404,'Asset is outside the selected batch')
+            if body.action=='retry_concept':
+                from .concept_guard import retry_blocked
+                return retry_blocked(value,item,body.request_id)
             if body.action in ('pause','resume'):
                 item['production_paused']=body.action=='pause';batch.save(value)
             elif body.action=='prioritize':

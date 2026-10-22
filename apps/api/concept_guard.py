@@ -1,6 +1,45 @@
 """Bounded concept repair before admitting heavyweight 3D inference."""
 import json
+import hashlib
+from fastapi import HTTPException
 from . import store,studio,jobs
+
+
+def retry_blocked(value,item,request_id):
+    """Explicit idempotent concept-only retry; preserve all previous stages and outputs."""
+    if not request_id:raise HTTPException(422,'A persistent concept retry request ID is required')
+    key='concept-retry:'+hashlib.sha256(f'{value["id"]}:{item["asset_id"]}:{item["attempt"]}:{request_id}'.encode()).hexdigest()
+    with store.connect() as db:
+        previous=db.execute('SELECT response FROM studio_requests WHERE id=?',(key,)).fetchone()
+    if previous:return dict(ok=True,job=json.loads(previous['response']),reused=True)
+    auto=item.get('automation',{})
+    if auto.get('status')!='blocked' or 'concept' not in auto.get('stage','').lower():raise HTTPException(409,'Only an asset blocked by concept screening can retry its concept')
+    from .production import global_paused
+    if value.get('paused') or item.get('production_paused') or global_paused():raise HTTPException(409,'Resume this asset and its containing queue before requesting a new concept')
+    current=[j for j in jobs.listing() if j['payload'].get('batch_id')==value['id'] and j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt']]
+    if any(j['status'] not in jobs.TERMINAL for j in current):raise HTTPException(409,'This asset already has pending work; a second concept was not submitted')
+    if any(j['payload']['kind']=='inference' for j in current):raise HTTPException(409,'3D generation already exists; use a versioned revision instead')
+    count=sum(j['payload']['kind']=='concept' for j in current)
+    prompt=repair_prompt(item)
+    job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=key,prompt=item['prompt'],interpreted_prompt=prompt,
+        style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,batch_id=value['id'],batch_attempt=item['attempt']))
+    auto.pop('error',None);auto.pop('concept_selection',None)
+    auto.update(status='queued',stage='New concept requested; original prompt and quality preserved')
+    # One explicit retry adds one source. It never resets an unlimited automatic retry loop.
+    item.setdefault('concept_retry_history',[]).append(dict(request_id=request_id,job_id=job['id'],seed=42+count,at=store.now()))
+    from . import batch
+    batch.save(batch.stored(value))
+    return dict(ok=True,job=job,reused=False)
+
+
+def repair_prompt(item):
+    interpretation=item.get('prompt_interpretation',{})
+    prompt=interpretation.get('generation_prompt_en',item['prompt'])
+    if interpretation.get('schema_version',0)<4 and interpretation.get('chunks'):
+        prompt='\n'.join(r['interpretation']['translated_prompt_en'] for r in interpretation['chunks'])
+        subject=interpretation['chunks'][0]['interpretation'].get('requested_subject_en','game asset')
+        prompt='A complete '+subject+'. '+prompt
+    return prompt+'\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.'
 
 
 def execute(job,folder):
@@ -10,7 +49,13 @@ def execute(job,folder):
     if store.digest(path)!=p['source_sha256'] or source['sha256']!=p['source_sha256']:raise ValueError('Concept check source changed')
     with (folder/'worker.log').open('a',encoding='utf-8') as log:
         def progress(message):log.write('STAGE '+message+'\n');log.flush()
-        result=assess(path,p['subject_en'],p['original_prompt'],progress)
+        try:result=assess(path,p['subject_en'],p['original_prompt'],progress)
+        except (OSError,ValueError,TimeoutError) as exc:
+            from .inspection import inspect_image
+            measured=inspect_image(path)
+            result=dict(schema_version=3,screening_policy=p['screening_policy'],suitable_single_asset_image=None,issues=[],
+                evaluation_status='NOT_EVALUATED',observations=[],limitations=['Local semantic evaluation unavailable: '+str(exc)[:500]],
+                deterministic_checks=measured,artistic_approval=False,execution='not_evaluated')
     if jobs.get(job['id'])['status']=='CANCELLED':return
     result.update(source_artifact_id=source['id'],source_sha256=source['sha256'])
     target=folder/'concept_layout.json';part=folder/'concept_layout.json.part';part.write_text(json.dumps(result,indent=2),encoding='utf-8');part.replace(target)
@@ -35,18 +80,20 @@ def filter_choices(value,item,current,choices,auto):
     allowed=[];rejected=[]
     for image in choices:
         if image['role']!='concept' or image['id'] in item.get('reference_ids',[]):allowed.append(image);continue
-        reports=[j for j in current if j['payload']['kind']=='concept_layout' and j['payload']['artifact_id']==image['id'] and j['payload'].get('screening_policy')==POLICY_VERSION]
+        from .quality_evaluation import evaluator_key
+        key=evaluator_key(image,item['prompt'],item.get('asset_generation_spec',{}).get('reference_hashes',[]),'concept_guard.py')
+        reports=[j for j in current if j['payload']['kind']=='concept_layout' and j['payload']['artifact_id']==image['id'] and j['payload'].get('evaluation_key')==key]
         if not reports:
-            subject=item.get('prompt_interpretation',{}).get('chunks',[{}])[0].get('interpretation',{}).get('requested_subject_en','game asset')
+            subject=(item.get('prompt_interpretation',{}).get('chunks') or [{}])[0].get('interpretation',{}).get('requested_subject_en','game asset')
             jobs.enqueue(dict(kind='concept_layout',engine='qwen3_vl_local_cpu',project_id=value['project_id'],asset_id=item['asset_id'],
                 batch_id=value['id'],batch_attempt=item['attempt'],artifact_id=image['id'],source_sha256=image['sha256'],subject_en=subject,
-                original_prompt=item['prompt'],screening_policy=POLICY_VERSION,use_gpu=False,timeout_seconds=900,priority=item.get('priority',0)))
+                original_prompt=item['prompt'],screening_policy=POLICY_VERSION,use_gpu=False,timeout_seconds=900,priority=item.get('priority',0),evaluation_key=key))
             auto.update(status='queued',stage='Check concept layout before 3D');return None
         if not all(j['status']=='REVIEW_REQUIRED' for j in reports):auto.update(status='queued',stage='Check concept layout before 3D');return None
         result=receipt(reports[-1])
         if result['source_sha256']!=image['sha256'] or result['source_artifact_id']!=image['id']:raise ValueError('Concept layout bound to a different image')
         if result.get('screening_policy')!=POLICY_VERSION:raise ValueError('Concept screening policy changed; recheck the source before 3D')
-        if result['suitable_single_asset_image']:allowed.append(image)
+        if result['suitable_single_asset_image'] is not False or set(result.get('issues',[]))=={'uncertain_source'}:allowed.append(image)
         else:rejected.append(result)
     rejected_ids={r['source_artifact_id'] for r in rejected}
     if rejected_ids:
@@ -55,9 +102,7 @@ def filter_choices(value,item,current,choices,auto):
     count=len([j for j in current if j['payload']['kind']=='concept'])
     limit=min(2,value['automation']['settings'].get('retry_limit',1))
     if count<=limit:
-        prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en',item['prompt'])
-        prompt+='\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. No concept sheet, inset panel, collage, alternate views, diagrams, borders or labels.'
-        prompt+=' Plain neutral studio background only, generous clear space around all roof tips, side walls and foundation. No sky, trees, landscape, text, poster, decorative frame or scenery.'
+        prompt=repair_prompt(item)
         studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=f'{value["id"]}:{item["asset_id"]}:{item["attempt"]}:concept-layout-repair-{count}',
             prompt=item['prompt'],interpreted_prompt=prompt,style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
             batch_id=value['id'],batch_attempt=item['attempt']))
