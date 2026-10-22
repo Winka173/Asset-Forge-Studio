@@ -1,0 +1,14 @@
+﻿/* Filled action families use color to communicate purpose, not decorative outlines. */
+.studio .batch-studio .batch-row-actions { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:8px; max-width:340px; }
+.studio .batch-studio .batch-row-actions>button { min-height:40px; padding:10px 14px; background:#3b3d45; border-color:#3b3d45; color:#e2e5ec; font-size:12px; line-height:1.4; border-radius:8px; box-shadow:0 2px 3px #0002; }
+.studio .batch-studio .batch-row-actions>.batch-review-button,.studio .batch-studio .batch-row-actions>.batch-inspect-action { background:#354761; border-color:#354761; color:#e0ecfb; }
+.studio .batch-studio .batch-row-actions>.batch-deliver-action { background:#45604f; border-color:#45604f; color:#eef6ef; }
+.studio .batch-studio .batch-row-actions>button:hover:not(:disabled) { background:#4b4e59; border-color:#4b4e59; color:#fff; }
+.studio .batch-studio .batch-row-actions>:is(.batch-review-button,.batch-inspect-action):hover:not(:disabled) { background:#435b7c; border-color:#435b7c; }
+.studio .batch-studio .batch-row-actions>.batch-deliver-action:hover:not(:disabled) { background:#557563; border-color:#557563; }
+.studio .batch-studio .batch-row-actions>.afs-select { min-width:142px; max-width:190px; flex:1 1 142px; }
+.studio .batch-studio .batch-row-actions>.afs-select>.afs-select-trigger { min-height:40px; padding:10px 14px; background:#30323b; border-color:#505360; color:#c8d0df; }
+.studio .batch-studio .batch-production-actions>.primary,.studio .batch-studio .batch-intake-actions>.primary { background:#edbc70; border-color:#edbc70; color:#251b10; min-height:44px; }
+.studio .batch-studio .batch-row-actions>button:disabled { background:#2c2e35; border-color:#3b3e48; color:#858d9e; opacity:1; cursor:not-allowed; box-shadow:none; }
+.studio .batch-studio .batch-table td:last-child { min-width:230px; }
+@media(max-width:1350px) { .studio .batch-studio .batch-row-actions { max-width:270px; } .studio .batch-studio .batch-table td:last-child { min-width:220px; } }

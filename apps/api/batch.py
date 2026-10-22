@@ -299,26 +299,63 @@ class Run(BaseModel):
     selected_ids:list[str] | None=None
     automatic:bool=False
     dry_run:bool=False
+    request_id:str|None=Field(default=None,min_length=8,max_length=100)
+    regenerate_completed:bool=False
+
+
+def prepare_generation(value,ids,request_id,regenerate_completed,dry_run=False):
+    """A new explicit click may start new attempts; retrying that click may not."""
+    from engines.quality import fingerprint
+    if regenerate_completed and not request_id:raise HTTPException(422,'A request_id is required for explicit regeneration')
+    digest=fingerprint(dict(operation='batch_generation',batch_id=value['id'],selected_ids=sorted(ids),regenerate_completed=regenerate_completed))
+    if request_id and not dry_run:
+        with store.connect() as db:
+            if studio.cached(db,request_id,digest):return digest,True
+    if regenerate_completed and not dry_run:
+        history=jobs.listing()
+        for item in value['items']:
+            if item['asset_id'] not in ids or not item.get('started'):continue
+            stages=[j for j in history if j['payload'].get('batch_id')==value['id'] and j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item.get('attempt',0)]
+            if any(j['status'] not in jobs.TERMINAL for j in stages):continue
+            if not stages and item.get('automation',{}).get('status') not in ('exported','completed','failed','blocked'):continue
+            item.setdefault('generation_history',[]).append(dict(attempt=item['attempt'],automation=item.get('automation'),at=store.now(),request_id=request_id))
+            item.update(attempt=item['attempt']+1,started=False,skipped=False)
+            item.pop('automation',None);item.pop('last_error',None)
+        value.pop('production_cancelled',None)
+    return digest,False
+
+
+def persist_generation(value,request_id,digest):
+    value=stored(value);value['updated_at']=store.now()
+    with store.connect() as db:
+        db.execute('BEGIN IMMEDIATE')
+        if request_id and studio.cached(db,request_id,digest):return
+        db.execute('UPDATE batches SET payload=? WHERE id=?',(json.dumps(value),value['id']))
+        if request_id:db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(request_id,digest,json.dumps(dict(batch_id=value['id'],operation='batch_generation'))))
 
 
 @router.post('/{identifier}/run-all')
 def run_all(identifier:str,body:Run):
     from .automation import start
-    return start(identifier,dry_run=body.dry_run)
+    return start(identifier,dry_run=body.dry_run,request_id=body.request_id,regenerate_completed=body.regenerate_completed)
 
 
 @router.post('/{identifier}/run')
 def run(identifier:str,body:Run):
     if body.automatic:
         from .automation import start
-        return start(identifier,body.selected_ids,dry_run=body.dry_run)
+        return start(identifier,body.selected_ids,dry_run=body.dry_run,request_id=body.request_id,regenerate_completed=body.regenerate_completed)
     with LOCK:
         value=batch(identifier);selected=set(body.selected_ids) if body.selected_ids is not None else {i['asset_id'] for i in value['items'] if i['selected']}
+        if selected-{i['asset_id'] for i in value['items']}:raise HTTPException(400,'Asset selection is outside this batch')
+        digest,reused=prepare_generation(value,selected,body.request_id,body.regenerate_completed,body.dry_run)
+        if reused:return detail(value)
+        if body.dry_run:return dict(dry_run=True,plan=dict(total=len(selected)),items=[i['asset_id'] for i in value['items'] if i['asset_id'] in selected])
         for item in value['items']:
             if item['asset_id'] in selected and missing(item):raise HTTPException(409,f'{item["name"]}: cần xác nhận '+', '.join(missing(item)))
         for item in value['items']:
             if item['asset_id'] in selected:item['started']=True
-        value['paused']=False;save(value)
+        value['paused']=False;persist_generation(value,body.request_id,digest)
     return advance(identifier)
 
 

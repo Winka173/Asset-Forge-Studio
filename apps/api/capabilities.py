@@ -50,8 +50,8 @@ def registry():
         resource='gpu',min_vram_gb=6,tested_platforms=['Windows 11 / RTX 5070 Ti 16GB'],evidence=['docs/evidence/sdxl_local_concept.json'],constraints=['Requires concept approval; prompt fidelity not guaranteed']))
     # Detect paths without invoking the broad system audit (which starts external tools).
     import os,shutil
-    blender=os.environ.get('AFS_BLENDER') or shutil.which('blender')
-    if not blender:blender=next((str(p) for p in sorted((Path.home()/'Tools').glob('blender*/blender.exe'),reverse=True)),None)
+    from .local_tools import executable
+    blender=executable('blender')
     values.append(Capability(id='blender_headless',label='Blender postprocessing',asset_types=[AssetType.static_3d],inputs=['glb'],outputs=['blend','glb','fbx','lod','previews'],
         installed=bool(blender and Path(blender).is_file()),status='experimental' if blender else 'unavailable',dependency_health=dict(path=blender),
         license=Provenance(source_code='Blender GPL; asset rights are a separate question',model_weights='not used',commercial='review_required'),resource='cpu',

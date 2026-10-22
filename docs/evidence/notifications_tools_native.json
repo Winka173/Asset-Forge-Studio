@@ -1,0 +1,114 @@
+{
+  "status": "PASS_NATIVE_NOTIFICATIONS_REAL_OUTPUTS_FAILURE_AND_LOCAL_TOOL_DETECTION",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\notifications-tools-native\\2026-10-22T03-30-46-648Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.10\\20261022T032727Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_Blender_version_subprocess_Unity_PE_metadata_autodetect_Find_again_invalid_path_rejected_previous_selection_kept_Unreal_not_claimed_supported",
+      "passed": true,
+      "tools": {
+        "tools": [
+          {
+            "tool": "blender",
+            "selected": {
+              "tool": "blender",
+              "path": "C:\\Users\\Winka\\Tools\\blender-4.5.14-windows-x64\\blender.exe",
+              "version": "4.5.14",
+              "installed": true,
+              "validated": true,
+              "pipeline_supported": true,
+              "reason": "Headless executable identified; each exported asset still requires technical QA."
+            },
+            "candidates": [
+              {
+                "tool": "blender",
+                "path": "C:\\Users\\Winka\\Tools\\blender-4.5.14-windows-x64\\blender.exe",
+                "version": "4.5.14",
+                "installed": true,
+                "validated": true,
+                "pipeline_supported": true,
+                "reason": "Headless executable identified; each exported asset still requires technical QA."
+              }
+            ],
+            "errors": [],
+            "status": "ready",
+            "searched": "Saved selection, environment, PATH and standard installation folders; Unreal registered builds",
+            "selection_error": null
+          },
+          {
+            "tool": "unity",
+            "selected": {
+              "tool": "unity",
+              "path": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.4.8f1\\Editor\\Unity.exe",
+              "version": "6000.4.8f1",
+              "installed": true,
+              "validated": true,
+              "pipeline_supported": true,
+              "reason": "Pinned Unity 6000.4.8f1 / Built-in profile."
+            },
+            "candidates": [
+              {
+                "tool": "unity",
+                "path": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Unity.exe",
+                "version": "6000.6.3f1",
+                "installed": true,
+                "validated": true,
+                "pipeline_supported": false,
+                "reason": "Editor detected, but this version has not passed the AFS native import profile."
+              },
+              {
+                "tool": "unity",
+                "path": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.4.8f1\\Editor\\Unity.exe",
+                "version": "6000.4.8f1",
+                "installed": true,
+                "validated": true,
+                "pipeline_supported": true,
+                "reason": "Pinned Unity 6000.4.8f1 / Built-in profile."
+              }
+            ],
+            "errors": [
+              {
+                "path": "C:\\Users\\Winka\\AppData\\Local\\Unity\\bin\\unity.exe",
+                "message": "The executable has no recognized Unity Editor product version. Choose Unity.exe inside Editor."
+              }
+            ],
+            "status": "ready",
+            "searched": "Saved selection, environment, PATH and standard installation folders; Unreal registered builds",
+            "selection_error": null
+          },
+          {
+            "tool": "unreal",
+            "selected": null,
+            "candidates": [],
+            "errors": [],
+            "status": "not_found",
+            "searched": "Saved selection, environment, PATH and standard installation folders; Unreal registered builds",
+            "selection_error": null
+          }
+        ],
+        "checked_at": "2026-10-22T03:30:48.560249+00:00",
+        "scope": "Local detection only; no downloads, activation, AI inference or game project changes"
+      }
+    },
+    {
+      "name": "real_completed_Unity_events_not_synthetic_success_Opening_does_not_markread_explicitread_and_open_pipeline_work",
+      "passed": true
+    },
+    {
+      "name": "notification_filter_popover_layer",
+      "z_index": "30000"
+    },
+    {
+      "name": "real_worker_rejected_tampered_copied_GLB_checksum_failure_appears_with_actionable_message_and_failed_filter",
+      "passed": true,
+      "job_id": "2c170f8faacb48f8b1a9cf236d95b7ed",
+      "error": "Immutable source checksum changed"
+    },
+    {
+      "name": "notification_events_and_explicit_read_persist_across_native_restart_no_extra_jobs",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows durable notifications from two real Unity builds and real checksum failure; actual local tool probes"
+}

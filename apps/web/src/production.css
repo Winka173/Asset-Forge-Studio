@@ -17,3 +17,55 @@
 @media(max-width:1000px){.studio .production-panels{height:auto;min-height:600px}.studio .production-explorer{height:600px!important}.studio .production-center{min-height:600px}.studio .production-inspector{max-height:700px}}
 
 .production-context-action{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;background:#282f26;font-size:11px;line-height:1.7}.production-context-action button{font-size:11px;white-space:nowrap;flex-shrink:0}.production-batch-scope summary{font-size:11px;margin:12px 0;cursor:pointer}
+/* Current attempt stages are distinct from immutable attempt history. */
+.studio .production-current-stage { min-width:0; flex:1; }
+.studio .production-current-stage>strong { display:block; color:#eee8dc; font-size:12px; line-height:1.65; overflow-wrap:anywhere; }
+.studio .production-current-stage>small { display:block; margin-top:5px; color:#aab3c4; font-size:11px; line-height:1.6; overflow-wrap:anywhere; }
+.studio .production-context-action { flex-wrap:wrap; }
+.studio .production-context-action .production-pipeline-link { min-height:36px; padding:8px 12px; background:#383b44; color:#e5c797; border-color:#535763; }
+.studio .production-pipeline-strip { display:flex; flex-wrap:wrap; gap:12px 16px; padding:16px 20px; margin:0; list-style:none; border-bottom:1px solid #393d46; background:#252830; }
+.studio .production-pipeline-strip>li { display:flex; align-items:center; gap:8px; min-width:64px; font-size:11px; line-height:1.5; color:#abb3c3; }
+.studio .production-pipeline-strip small { display:block; color:#8f99ab; font-size:9px; margin-top:2px; }
+.studio .production-pipeline-marker { display:inline-grid; place-items:center; width:18px; height:18px; min-width:18px; border-radius:50%; border:1px solid #697182; color:#a8b2c4; font:11px/1 system-ui,sans-serif; }
+.studio [data-state=completed]>.production-pipeline-marker { background:#385346; border-color:#7eab90; color:#e1f2e7; }
+.studio [data-state=running]>.production-pipeline-marker { border-color:#e6b876; border-right-color:transparent; animation:production-stage-spin 1.2s linear infinite; }
+.studio [data-state=error]>.production-pipeline-marker { background:#603d3c; border-color:#cf9490; color:#ffdcda; }
+.studio .production-pipeline-history { padding-top:4px; outline-offset:3px; }
+.studio .production-pipeline-history h3 { margin-top:16px; }
+.studio .production-pipeline-timeline { list-style:none; padding:0; margin:16px 0 24px; }
+.studio .production-pipeline-timeline>li { display:flex; align-items:flex-start; gap:12px; padding:0 0 20px; position:relative; }
+.studio .production-pipeline-timeline>li:not(:last-child):before { content:''; position:absolute; top:24px; bottom:6px; left:8px; width:1px; background:#424958; }
+.studio .production-pipeline-timeline>li>div { flex:1; min-width:0; }
+.studio .production-pipeline-timeline strong { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:8px; font-size:12px; font-weight:550; color:#e0e5ee; }
+.studio .production-pipeline-timeline strong>span { color:#a9b2c3; font-size:10px; font-weight:400; }
+.studio .production-pipeline-timeline p { margin:8px 0 0; color:#a7b0c1; font-size:11px; line-height:1.7; overflow-wrap:anywhere; }
+@keyframes production-stage-spin { to { transform:rotate(360deg); } }
+@media(max-width:1350px) { .studio .production-pipeline-strip { gap:10px 12px; padding:16px; } .studio .production-pipeline-strip>li { min-width:58px; } }
+@media(prefers-reduced-motion:reduce) { .studio [data-state=running]>.production-pipeline-marker { animation:none; border-style:dashed; } }
+html[data-afs-motion=reduced] .studio [data-state=running]>.production-pipeline-marker { animation:none; border-style:dashed; }
+.studio [data-state=skipped]>.production-pipeline-marker { border-style:dashed; border-color:#7e8ca3; color:#c0cbdd; background:#303846; }
+.studio .production-workspace .production-scope-controls>button { min-height:40px; padding:10px 14px; background:#393c45; border-color:#393c45; color:#e0e5ee; }
+.studio .production-workspace button.production-danger-action { background:#704544; border-color:#704544; color:#fff0ee; }
+.studio .production-workspace button.production-danger-action:hover:not(:disabled) { background:#85514e; border-color:#85514e; }
+.studio .production-workspace button.production-regenerate-action { background:#51475f; border-color:#51475f; color:#f2e7fc; }
+.studio .production-workspace button.production-review-action,.studio .production-workspace button.production-pipeline-link { background:#364963; border-color:#364963; color:#e3efff; min-height:40px; padding:10px 14px; }
+.studio .production-workspace .production-scope-controls>button:disabled { background:#2b2e36; border-color:#3d424e; color:#858f9f; opacity:1; cursor:not-allowed; }
+.studio .production-workspace .production-action-help { margin:12px 0 20px; color:#aeb8ca; font-size:11px; line-height:1.75; }
+/* These bars count verified stage transitions; they never estimate elapsed time. */
+.studio .production-stage-progress { padding:16px 20px 12px; background:#242831; border-bottom:1px solid #383e4a; }
+.studio .production-stage-progress>div { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; margin-bottom:10px; }
+.studio .production-stage-progress strong { color:#e5eaf3; font-size:12px; font-weight:550; }
+.studio .production-stage-progress span { color:#9caac0; font-size:10px; line-height:1.6; }
+.studio .production-stage-progress progress,.studio .production-engine-progress progress,.studio progress.production-row-progress { appearance:none; -webkit-appearance:none; display:block; width:100%; height:7px; overflow:hidden; border:0; border-radius:6px; background:#3d4554; padding:0; color:#edbc70; }
+.studio .production-stage-progress progress::-webkit-progress-bar,.studio .production-engine-progress progress::-webkit-progress-bar,.studio progress.production-row-progress::-webkit-progress-bar { background:#3d4554; border-radius:6px; }
+.studio .production-stage-progress progress::-webkit-progress-value,.studio progress.production-row-progress::-webkit-progress-value { background:#edbc70; border-radius:6px; }
+.studio .production-stage-progress progress::-moz-progress-bar,.studio progress.production-row-progress::-moz-progress-bar { background:#edbc70; border-radius:6px; }
+.studio .production-engine-progress { padding:12px 20px; background:#232831; border-bottom:1px solid #383e4a; }
+.studio .production-engine-progress label { display:block; font-size:11px; color:#bfd4f1; line-height:1.6; }
+.studio .production-engine-progress progress { margin-top:8px; color:#8fb9e7; }
+.studio .production-engine-progress progress::-webkit-progress-value { background:#8fb9e7; }
+.studio .production-engine-progress progress::-moz-progress-bar { background:#8fb9e7; }
+.studio .production-engine-progress small { display:block; margin-top:8px; color:#91a2bd; font-size:10px; }
+.studio .production-row button>span:last-child { flex:1; }
+.studio progress.production-row-progress { height:3px; margin-top:5px; }
+.studio .production-row:has(progress.production-row-progress) small { margin-top:3px; }

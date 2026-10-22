@@ -80,7 +80,12 @@ def refresh_all():
         if revisions and revisions[-1].get('state') not in ('published','staged','failed','cancelled'):
             ids=set(revisions[-1].get('job_ids',[]));related=[j for j in all_jobs if j['id'] in ids]
         auto=i.get('automation',{});mine=[a for a in artifacts if a.get('asset_id')==identifier and a['role']=='candidate'];processed=[a for a in mine if a['metadata'].get('stage')=='blender_processed']
+        if auto.get('enabled'):
+            current_job_ids={j['id'] for j in related}
+            mine=[a for a in mine if a['metadata'].get('job_id') in current_job_ids]
+            processed=[a for a in mine if a['metadata'].get('stage')=='blender_processed']
         valid_exports=[e for e in exports if e['asset_id']==identifier and e['status']=='COMPLETED'];delivery=next((e for e in reversed(valid_exports) if e.get('delivery_scope')!='staged'),None)
+        if auto.get('enabled'):valid_exports=[e for e in valid_exports if e['id']==auto.get('export',{}).get('id')]
         current_id=revisions[-1].get('artifact_id') if revisions else (processed[-1]['id'] if processed else mine[-1]['id'] if mine else None)
         if revisions:valid_exports=[e for e in valid_exports if e['artifact_id']==current_id]
         decisions=sorted([r for r in model.get('art_reviews',[])+model.get('approvals',[]) if r.get('artifact_id')==current_id],key=lambda r:r.get('at') or r.get('created_at') or '')

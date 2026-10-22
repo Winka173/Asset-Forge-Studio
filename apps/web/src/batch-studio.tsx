@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
 import "./batch-spacing.css";
+import "./batch-action-polish.css";
 import { BatchReferences } from "./batch-references";
 
 type Reference = { id: string; name: string; role: string; url: string };
@@ -466,10 +467,18 @@ export function BatchStudio({
       );
     });
   }
+  async function generationRequest(path:string,payload:Record<string,unknown>){
+    const key='afs.batch.generation-request.'+projectId,signature=JSON.stringify({path,payload});
+    let previous;try{previous=JSON.parse(localStorage.getItem(key)||'null');}catch{}
+    const requestId=previous?.signature===signature?previous.id:crypto.randomUUID();
+    localStorage.setItem(key,JSON.stringify({signature,id:requestId}));
+    await call(path,{...payload,request_id:requestId,regenerate_completed:true});
+    localStorage.removeItem(key);
+  }
   async function runBatch(ids = selectedItems.map((item) => item.asset_id)) {
     if (!batch) return;
     await execute(async () => {
-      await call(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic });
+      await generationRequest(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic });
       await refresh(batch.id);
       await onRefresh?.();
       onSubmitted?.(batch.id);
@@ -481,7 +490,7 @@ export function BatchStudio({
   async function runAll() {
     if (!batch) return;
     await execute(async()=>{
-      await call(`/api/batches/${batch.id}/run-all`,{});
+      await generationRequest(`/api/batches/${batch.id}/run-all`,{});
       await refresh(batch.id);await onRefresh?.();onSubmitted?.(batch.id);
       setNotice(`Đã bắt đầu automatic production cho toàn bộ ${batch.items.length} asset, gồm Future. Quality Lock giữ nguyên; output cần review sau khi tạo.`);
     });
@@ -991,13 +1000,14 @@ export function BatchStudio({
                       </td>
                       <td>
                         <div className="batch-row-actions">
-                          <button onClick={() => edit(item)}>Edit</button>
+                          <button className="batch-edit-action" title="Edit this asset prompt, dimensions and generation settings. Does not start generation." onClick={() => edit(item)}>Edit settings</button>
                           {item.concept_artifact_id &&
                             (["Concept Ready", "Awaiting Approval"].includes(
                               item.status,
                             ) || item.automation?.stage==='Review concept') && (
                               <button
                                 className="batch-review-button"
+                                title="Inspect this concept image and its approval checkpoint. Opening review does not export or start GPU generation."
                                 onClick={() => {
                                   setApproval(item);
                                   setReviewer("");
@@ -1009,15 +1019,18 @@ export function BatchStudio({
                             )}
                           {item.versions?.length > 0 && (
                             <button
+                              className="batch-inspect-action"
+                              title="Open saved candidate versions for inspection. No new generation is started."
                               onClick={() => onOpenAsset?.(item.asset_id)}
                               disabled={!onOpenAsset}
                             >
                               Review candidates
                             </button>
                           )}
-                          {item.automation?.stage==='Review before export' && <button className="batch-review-button" disabled={busy} onClick={()=>itemAction(item,'authorize_export')}>Continue export</button>}
+                          {item.automation?.stage==='Review before export' && <button className="batch-deliver-action" title="Authorize the existing validated result to continue export. This does not regenerate the asset." disabled={busy} onClick={()=>itemAction(item,'authorize_export')}>Continue export</button>}
                           <Select
                             aria-label={`Actions ${item.name}`}
+                            title="Queue actions: prioritize, skip, retry the interrupted checkpoint, or explicitly regenerate a new version."
                             value=""
                             disabled={busy}
                             onChange={(e) => {

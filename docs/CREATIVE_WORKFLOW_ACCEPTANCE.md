@@ -31,3 +31,8 @@ Character skin quality, deformation/contact/root motion, retarget accuracy, targ
 0.8.4 native acceptance: effects have 1-5 seed admission, actual two-result comparison, selected-result prompt refinement and real captured-frame transport. See evidence/fx_candidates_native.json.
 
 0.8.5/0.8.6 recovery: project-scoped restart opt-in covers standalone heavy GPU work; Windows close holds admission and waits for the active stage instead of cancelling the queue. Native manual/forced-process recovery and explicit auto-resume are recorded separately, including the observed Unity Package Manager failure and manual Retry.
+
+
+0.8.9: immutable World Plan revisions, draft SVG, correct selected-version native captures, two actual Unity terrain/NavMesh builds and older-version restart acceptance PASS (evidence/world_revision_native.json).
+
+0.8.10: Production displays admitted assets only, explicit new Generate starts terminal attempts with idempotent request replay, current-attempt timelines and stage-count progress bars, filled action buttons with explanations, durable all-game Notifications and real local Blender/Unity discovery. Packaged Windows 349-source selection/queue/restart acceptance and actual Unity-completion/checksum-failure notifications PASS. See evidence/production_admission_native.json and evidence/notifications_tools_native.json. User's already-running older app was preserved, so the new build lives in the versioned 0.8.10 release directory rather than replacing its open executable.

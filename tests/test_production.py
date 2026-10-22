@@ -38,6 +38,62 @@ def test_global_workspace_real349_bounded_snapshot_and_scoped_pause(client):
     client.post('/api/production/control',json=dict(scope='all',action='resume'))
     assert batch.batch(group['id'])['paused'] and batch.batch(group['id'])['production_cancelled']
 
+
+def test_actual349_only_explicitly_admitted_asset_in_production_and_new_click_restarts_terminal_attempt(client):
+    source=Path.home()/'Downloads/Runavelle_V4_ALL_349_Model_Prompts.md'
+    if not source.exists():pytest.skip('Actual Runavelle source unavailable')
+    response=client.post('/api/batches/import',files={'file':(source.name,source.read_bytes())},data=dict(project_id='runavelle'))
+    assert response.status_code==201
+    value=response.json();prefix='/api/batches/'+value['id'];first=value['items'][0]
+    assert client.get('/api/production').json()['groups']==[]
+    selected=dict(selected_ids=[first['asset_id']],automatic=True,regenerate_completed=True,request_id='production-one-explicit-click')
+    assert client.post(prefix+'/run',json=selected).status_code==200
+    overview=client.get('/api/production').json();group=overview['groups'][0]
+    assert len(overview['groups'])==1 and len(group['items'])==group['admitted_count']==1
+    assert group['imported_count']==349 and group['items'][0]['id']==first['asset_id']
+    assert group['counts']['draft']==0 and len(jobs.listing())==1
+    old=jobs.listing()[0];assert old['payload']['user_prompt']==first['prompt']
+    assert client.post(prefix+'/run',json=selected).status_code==200
+    assert len(jobs.listing())==1 and batch.batch(value['id'])['items'][0]['attempt']==0
+    # A second click while the stage is active also preserves the single attempt.
+    assert client.post(prefix+'/run',json=selected|dict(request_id='production-one-active-click')).status_code==200
+    assert len(jobs.listing())==1
+    jobs.transition(old['id'],'CANCELLED','Explicit test cancellation; no output fabricated')
+    dry=client.post(prefix+'/run-all',json=dict(dry_run=True,regenerate_completed=True,request_id='production-all-dry-plan'))
+    assert dry.status_code==200 and dry.json()['plan']['total']==349
+    assert len(jobs.listing())==1 and batch.batch(value['id'])['items'][0]['attempt']==0
+    assert client.post(prefix+'/run',json=selected|dict(request_id='production-one-new-click')).status_code==200
+    stored=batch.batch(value['id']);assert stored['items'][0]['attempt']==1
+    assert stored['items'][0]['generation_history'][0]['attempt']==0
+    assert len(jobs.listing())==2 and {j['payload']['batch_attempt'] for j in jobs.listing()}=={0,1}
+    group=client.get('/api/production').json()['groups'][0]
+    assert len(group['items'])==1 and len(group['items'][0]['jobs'])==1
+    assert group['items'][0]['jobs'][0]['batch_attempt']==1
+    assert len(client.get('/api/production/assets/'+first['asset_id']).json()['stages'])==2
+    assert client.post(prefix+'/run',json=selected).status_code==200  # retry an old HTTP action
+    assert len(jobs.listing())==2 and batch.batch(value['id'])['items'][0]['attempt']==1
+    assert client.post(prefix+'/run',json=selected|dict(selected_ids=[value['items'][1]['asset_id']])).status_code==409
+
+
+def test_new_attempt_never_inherits_prior_candidate_artistic_approval(client):
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='- Prior version versus new run')).json()
+    asset_id=value['items'][0]['asset_id'];prefix='/api/batches/'+value['id']
+    first=dict(automatic=True,selected_ids=[asset_id],request_id='art-projection-initial',regenerate_completed=True)
+    assert client.post(prefix+'/run',json=first).status_code==200
+    old=jobs.listing()[0];jobs.transition(old['id'],'CANCELLED','Unit fixture: old attempt ended')
+    # Projection fixture only: no generated file, QA, or successful export is claimed.
+    with store.connect() as db:
+        db.execute('INSERT INTO artifacts (id,role,name,relative_path,sha256,created_at,metadata,project_id,asset_id) VALUES (?,?,?,?,?,?,?,?,?)',
+                   ('old-version-candidate','candidate','Prior version','unit-only/old.glb','unit-only',store.now(),json.dumps(dict(job_id=old['id'])),'runavelle',asset_id))
+        row=db.execute('SELECT payload FROM assets WHERE id=?',(asset_id,)).fetchone();model=json.loads(row['payload'])
+        model['approvals']=[dict(artifact_id='old-version-candidate',reviewer='Unit fixture only',decision='approved')]
+        model['master_artifact_id']='old-version-candidate'
+        db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),asset_id))
+    assert client.post(prefix+'/run',json=first|dict(request_id='art-projection-new-run')).status_code==200
+    detail=client.get('/api/production/assets/'+asset_id).json()['asset']
+    assert detail['master_artifact_id']=='old-version-candidate'
+    assert detail['art_review_status']=='not_reviewed' and detail['qa_status']=='not_run' and detail['export_status']=='not_exported'
+
 def test_persistent_events_legacy_job_and_fair_priority(client):
     model=client.post('/api/assets',json=dict(project_id='runavelle',name='Stage event QA')).json()
     j=jobs.enqueue(dict(kind='concept',project_id='runavelle',asset_id=model['id']))

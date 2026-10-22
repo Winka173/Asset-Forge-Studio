@@ -67,17 +67,25 @@ def batches():
 
 
 def job_summary(j):
-    return {k:j.get(k) for k in ('id','status','created_at','updated_at','progress','error')}|dict(kind=j['payload']['kind'],engine=j['payload'].get('engine'),seed=j['payload'].get('seed'),asset_id=j['payload'].get('asset_id'),project_id=j['payload'].get('project_id'),priority=j['payload'].get('priority',0),paused=j['payload'].get('production_paused',False))
+    return {k:j.get(k) for k in ('id','status','created_at','updated_at','progress','error')}|dict(kind=j['payload']['kind'],engine=j['payload'].get('engine'),seed=j['payload'].get('seed'),artifact_id=j['payload'].get('artifact_id'),asset_id=j['payload'].get('asset_id'),project_id=j['payload'].get('project_id'),batch_id=j['payload'].get('batch_id'),batch_attempt=j['payload'].get('batch_attempt',0),priority=j['payload'].get('priority',0),paused=j['payload'].get('production_paused',False))
 
 
-def item_summary(i,group,all_jobs,all_paused=False):
-    related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id']]
+def item_summary(i,group,all_jobs,all_paused=False,model=None):
+    related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id'] and j['payload'].get('batch_id')==group['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0)]
+    revisions=(model or {}).get('revisions',[])
+    if revisions:
+        revision_jobs=[j for j in all_jobs if j['id'] in revisions[-1].get('job_ids',[])]
+        if revision_jobs and max(j['created_at'] for j in revision_jobs)>=max((j['created_at'] for j in related),default=''):
+            related=revision_jobs
+    retried={j['payload'].get('retry_of') for j in related};related=[j for j in related if j['id'] not in retried]
     auto=i.get('automation',{});status=auto.get('status') or ('running' if any(j['status'] not in jobs.TERMINAL for j in related) else 'draft')
     active=any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related)
     paused=group['paused'] or i.get('production_paused') or all_paused
     if (group.get('production_cancelled') or i.get('skipped')) and status not in ('exported','completed'):status='cancelled'
     if paused and i.get('started') and status!='cancelled' and status not in ('exported','completed','failed','blocked'):status='pausing' if active else 'paused'
-    return dict(id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=auto.get('stage'),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
+    running=next((j for j in related if j['status'] not in jobs.TERMINAL|{'QUEUED'}),None)
+    stage=(running.get('progress') or {}).get('stage') if running else None
+    return dict(id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=stage or auto.get('stage'),current_stage=stage or auto.get('stage'),attempt=i.get('attempt',0),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
 
 
 @router.get('')
@@ -90,7 +98,8 @@ def overview():
         if value.get('revision_of'):continue
         # Imported drafts are shown only after explicit generation admission.
         if not any(i.get('started') for i in value['items']) and not any(j['payload'].get('batch_id')==value['id'] for j in all_jobs):continue
-        items=[item_summary(i,value,all_jobs,all_paused) for i in value['items'] if i['asset_id'] not in seen]
+        admitted={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==value['id']}
+        items=[item_summary(i,value,all_jobs,all_paused,models.get(i['asset_id'])) for i in value['items'] if i['asset_id'] not in seen and (i.get('started') or i['asset_id'] in admitted)]
         if not items:continue
         seen.update(i['id'] for i in items)
         for i in items:
@@ -107,7 +116,7 @@ def overview():
         counts['blocked']=sum(i.get('stage_status')=='blocked' for i in items)
         counts['needs_attention']=sum(bool(i.get('attention_required')) for i in items)
         counts['needs_review']=sum(i.get('needs_review',False) for i in items)
-        groups.append(dict(id=value['id'],name=value['name'],project_id=value['project_id'],project_name=projects.get(value['project_id'],value['project_id']),kind='single' if len(items)==1 else 'batch',paused=value['paused'],created_at=value['created_at'],started_at=value.get('automation',{}).get('started_at'),counts=counts,items=items))
+        groups.append(dict(id=value['id'],name=value['name'],project_id=value['project_id'],project_name=projects.get(value['project_id'],value['project_id']),kind='single' if len(items)==1 else 'batch',paused=value['paused'],created_at=value['created_at'],started_at=value.get('automation',{}).get('started_at'),counts=counts,items=items,imported_count=len(value['items']),admitted_count=len(items)))
     standalone={}
     for j in all_jobs:
         asset_id=j['payload'].get('asset_id')

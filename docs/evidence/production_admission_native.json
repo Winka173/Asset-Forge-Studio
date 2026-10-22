@@ -1,0 +1,19 @@
+{
+  "status": "PASS_NATIVE_ONE_ADMITTED_ASSET_PIPELINE_AND_EXPLICIT_REGENERATION",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\production-admission-native\\2026-10-22T03-30-25-853Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.10\\20261022T032727Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual349_import_select_exactly_one_click_Generate_one_Production_row_actual_queued_stage_and_clickable_pipeline_no_fake_completion",
+      "passed": true,
+      "batch_id": "df383da8310a41cca6d828ea4ce462e9",
+      "asset_id": "f285b336af9f5f52ac34a605e4158e75"
+    },
+    {
+      "name": "new_explicit_click_new_attempt_old_request_replay_idempotent_all349_dry_plan_only_restart_one_asset_and_full_history_preserved",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows 349 source, one selected asset, explicit admission/re-generation and real queued pipeline states; GPU held paused"
+}

@@ -312,8 +312,8 @@ class Worker:
             if payload['kind'] in ['unity_import','world_unity','fx_unity']:
                 self.unity_import(job,artifact,folder)
                 return
-            from scripts.audit import audit
-            blender = audit()['blender_path']
+            from .local_tools import executable
+            blender = executable('blender')
             if not blender: raise ValueError('Blender executable not found; set AFS_BLENDER')
             cfg = store.ROOT / 'benchmarks/archer_tower_t3/benchmark.json'
             request = {k: v for k, v in payload.items() if k not in {'kind', 'artifact_id', 'retry_of'}}

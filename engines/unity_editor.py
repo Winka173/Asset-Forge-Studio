@@ -15,9 +15,15 @@ PACKAGE='integrations/unity/Packages/com.assetforge.editor'
 
 
 def probe():
-    editor=Path(os.environ.get('ProgramFiles','C:/Program Files'))/'Unity/Hub/Editor'/VERSION/'Editor/Unity.exe'
+    from apps.api.local_tools import executable
+    editor=Path(executable('unity') or str(Path(os.environ.get('ProgramFiles','C:/Program Files'))/'Unity/Hub/Editor'/VERSION/'Editor/Unity.exe'))
+    version_compatible=editor.parent.parent.name==VERSION
+    if editor.is_file() and not version_compatible:
+        from apps.api.local_tools import inspect
+        try:version_compatible=inspect('unity',str(editor))['version']==VERSION
+        except (OSError,ValueError):version_compatible=False
     package=store.ROOT/PACKAGE
-    return dict(id='unity_editor',installed=editor.is_file() and (package/'Editor/AssetForgeImport.cs').is_file(),
+    return dict(id='unity_editor',installed=editor.is_file() and version_compatible and (package/'Editor/AssetForgeImport.cs').is_file(),
         editor=str(editor),version=VERSION,render_pipeline=PIPELINE,importer_version='0.1.0',
         outputs=['unity_prefab','unity_scene','unitypackage','material','lod_group','box_collider','import_report','gpu_previews'],
         constraints=['Only pinned Built-in Editor profile tested','AFS-owned project; no arbitrary target game path','Four validated FBX LODs and real basecolor/MR source maps required','Editor import is not artistic or target-platform performance approval'],

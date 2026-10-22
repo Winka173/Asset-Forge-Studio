@@ -30,7 +30,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.9", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.10", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -258,7 +258,7 @@ def queue_blender(body: BlenderJob):
     except KeyError: raise HTTPException(404, 'Unknown source')
     if record['role'] not in {'golden', 'candidate'}: raise HTTPException(400, 'Source must be a real GLB')
     if body.target_height_m and not body.normalize: raise HTTPException(400, 'Height requires explicit normalization')
-    return jobs.enqueue(body.model_dump() | {'kind': 'blender'})
+    return jobs.enqueue(body.model_dump() | {'kind': 'blender','project_id':record.get('project_id'),'asset_id':record.get('asset_id')})
 
 
 class Tournament(BaseModel):
@@ -358,6 +358,10 @@ from .fidelity import router as fidelity_router
 app.include_router(fidelity_router)
 from .fx import router as fx_router
 app.include_router(fx_router)
+from .notifications import router as notifications_router
+app.include_router(notifications_router)
+from .local_tools import router as tools_router
+app.include_router(tools_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():

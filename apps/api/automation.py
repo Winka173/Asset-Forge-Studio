@@ -122,7 +122,7 @@ def plan_engines(item,source=None):
     return compatible
 
 
-def start(identifier,selected_ids=None,workflow=None,dry_run=False):
+def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=None,regenerate_completed=False):
     from . import batch
     from .export_profiles import resolve_project_settings
     with batch.LOCK:
@@ -130,6 +130,8 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False):
         if settings['mode']=='expert':settings['mode']='auto'  # this endpoint is an explicit automatic action
         ids=set(selected_ids if selected_ids is not None else [i['asset_id'] for i in value['items']])
         if ids-{i['asset_id'] for i in value['items']}:raise HTTPException(400,'Asset selection is outside this batch')
+        digest,reused=batch.prepare_generation(value,ids,request_id,regenerate_completed,dry_run)
+        if reused:return batch.detail(value)
         snapshot=studio.studio(value['project_id']);project=studio.project(value['project_id'])
         for item in value['items']:
             if item['asset_id'] not in ids:continue
@@ -151,7 +153,7 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False):
         if dry_run:return dict(dry_run=True,plan=info,items=[{k:i.get(k) for k in ('asset_id','source_asset_id','source_status','spec_provenance','automation')} for i in value['items'] if i['asset_id'] in ids])
         prior=value.get('automation',{})
         value['automation']=dict(mode=settings['mode'],settings=settings,export_settings=prior.get('export_settings') or resolve_project_settings(value['project_id']),started_at=prior.get('started_at') or store.now(),plan=info,policy='Automatic technical selection and export; no artistic approval',pause_reason=None)
-        value['paused']=False;batch.save(batch.stored(value))
+        value['paused']=False;batch.persist_generation(value,request_id,digest)
     return advance(identifier)
 
 

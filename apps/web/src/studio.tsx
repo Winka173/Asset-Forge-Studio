@@ -1,3 +1,4 @@
+import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
@@ -232,6 +233,7 @@ function route(): Page {
 function normalizeDraft(value:Draft):Draft {const seeds:unknown=value.seeds;return {...value,seeds:Array.isArray(seeds)?seeds.join(','):typeof seeds==='string'&&seeds.trim()?seeds:'42'};}
 
 export function Studio() {
+  useStartupToolDetection();
   const interfacePreferences=useInterfacePreferences();
   const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'>('single');
   const [createStep,setCreateStep]=useState(0);
@@ -1828,7 +1830,7 @@ export function Studio() {
                   </p>
                 </div>
               </div>
-              <div className="settings-grid"><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
+              <div className="settings-grid"><LocalToolsSettings/><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
                 <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
                 <section className="settings-panel">
@@ -2689,7 +2691,7 @@ function DesktopSettings({activeJobs}:{activeJobs:number}) {
     <div className="batch-intake-actions">
       <button disabled={working||activeJobs>0} onClick={()=>choose('library')}>Choose library folder</button>
       <button disabled={working||activeJobs>0} onClick={()=>choose('workspace')}>Choose AI workspace</button>
-      <button disabled={working||activeJobs>0} onClick={()=>choose('blender')}>Choose Blender</button>
+
       <button onClick={()=>openDesktopFolder('library').catch(e=>setError(String(e)))}>Open library folder</button>
       <button onClick={()=>openDesktopFolder('logs').catch(e=>setError(String(e)))}>Open desktop logs</button>
     </div>
