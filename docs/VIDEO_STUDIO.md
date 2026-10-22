@@ -103,3 +103,12 @@ reveal preset rendered 48/reused 48. MP4 frame counts, FPS, duration and full de
 were validated; original frame/source/video hashes stayed unchanged. Fixture
 roles test target routing and are not generated Aetherward hero/boss/crystal.
 Windows 0.8.15 passed all 94 tests, packaging/native smoke and actual UI zoom/cut, MP4 playback, source comparison, preserved delivery hash and restart acceptance. See evidence/cinematic_edits_native.json. Cache leases prevent parallel writers from racing on the same PNGs; manifest changes are rejected without overwrite.
+
+
+## Imported Audio Director (0.8.16 verified slice)
+
+Imported local audio is decoded before use, retained with SHA-256 and source provenance, and arranged as music, dialogue, SFX and ambience cues. The real FFmpeg mix supports gain, pan, fades, mute/solo and dialogue-driven music ducking. Outputs include PCM master, present-family stems and AAC in the actual cinematic MP4. Exact music-mute and ripple-cut revisions retain source offsets and original fade envelopes; unaffected Blender frames are reused. Import is not evidence of AI generation or commercial clearance. No AI music/TTS adapter, word alignment, lip sync or artistic audio approval is claimed.
+
+Real backend tests exercise nine original procedural/Windows speech QA recordings, four actual buses, ducking, silence in a muted interval, audio/video duration, clipping/true peak, image-frame reuse and immutable delivery. A discovered FFmpeg delay-timestamp problem was corrected by rebuilding sample-counter PTS after delay. Retry reuses a hash-verified encoded checkpoint rather than assuming repeated H.264 encodes are byte-identical. Packaged UI acceptance is recorded separately.
+
+Packaged 0.8.16 acceptance passed actual file inputs, nine cues/four families, native AAC playback, mute/ripple frame reuse and restart. Evidence: evidence/cinematic_audio_native.json.

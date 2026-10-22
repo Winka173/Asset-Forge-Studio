@@ -1,29 +1,32 @@
 ﻿{
-    "version":  "0.8.15",
-    "timestamp_utc":  "20261022T061218Z",
-    "git_commit":  "c41c0adefe945dea6275e370d534162eed9fe9a5",
+    "version":  "0.8.16",
+    "timestamp_utc":  "20261022T070306Z",
+    "git_commit":  "3f6581d427bb94444e7bbefafd89dbd1e2394ba9",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/cinematic.py",
+                          " M apps/api/cinematic_edits.py",
                           " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/web/src/video-studio.css",
+                          " M apps/web/src/cinematic-refine.tsx",
+                          " M apps/web/src/production.tsx",
                           " M apps/web/src/video-studio.tsx",
-                          " M docs/VIDEO_STUDIO.md",
-                          " M docs/evidence/desktop_build.json",
-                          " M docs/evidence/desktop_smoke.json",
                           " M engines/cinematic.py",
                           " M package-lock.json",
                           " M package.json",
-                          " M scripts/blender_cinematic.py",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_cinematic.py",
-                          "?? apps/api/cinematic_edits.py",
-                          "?? apps/web/src/cinematic-refine.tsx",
-                          "?? desktop/verify-cinematic-edits.mjs"
+                          "?? apps/api/cinematic_audio.py",
+                          "?? apps/web/src/cinematic-audio.css",
+                          "?? apps/web/src/cinematic-audio.tsx",
+                          "?? apps/web/src/generation-preview.css",
+                          "?? apps/web/src/generation-preview.tsx",
+                          "?? desktop/verify-cinematic-audio.mjs",
+                          "?? engines/cinematic_audio.py",
+                          "?? tests/audio_fixtures.py",
+                          "?? tests/test_cinematic_audio.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -32,7 +35,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T061218Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T070306Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -43,14 +46,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "449444f73851e20dfd7433d5e91e63bf0eb43b9c0ac1be30e28b43fc9fc0f13d",
-                            "afs-backend.exe":  "806f7aefc38d01e13a8745c5df5c9bce7d5b601630c222da01e14d91017a3820",
-                            "Asset Forge Studio_0.8.15_x64-setup.exe":  "fd1e18141d09e84fc4eef4b78c338cad3bbecba33d875e8fbf57be33e465de5f"
+                            "Asset Forge Studio_0.8.16_x64-setup.exe":  "74b69e6a5a0fd071fbee84ca6f83eb545ee2ab2baaaa82196afa8c5ef4fa2cff",
+                            "Asset Forge Studio.exe":  "cbb3de9ee43c153a9161d61e7fe62639ea3c45196354a977e9171578ab8721b2",
+                            "afs-backend.exe":  "a118d216d7c8c5765124e04fe687727930102cfce04e0dda385f8dbca9c738ed"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T06-15-41-642Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T07-07-40-682Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.15_x64-setup.exe",
-    "previous_latest_kept_running":  true,
-    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.15\\20261022T061218Z"
+    "installer":  "Asset Forge Studio_0.8.16_x64-setup.exe",
+    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

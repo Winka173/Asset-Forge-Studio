@@ -1,3 +1,9 @@
+# Windows 0.8.16 - 2026-10-22
+
+95 backend tests and TypeScript/Vite pass. Packaged Windows build and generic smoke pass. Native actual CPU render verifies central generation activity instead of automatic reference imagery, opt-in reference preview, reduced motion, refresh restoration and animation stopping on completion. This is activity artwork, not an incremental generated mesh. Native Audio Director acceptance imports nine real QA recordings, saves/mixes four buses, plays AAC MP4, mutes music, ripple-cuts audio/video, reuses Blender frames and restores cue/version history after restart. See evidence/generation_preview_native.json and evidence/cinematic_audio_native.json. AI audio generation, TTS integration, semantic style transfer and artistic quality remain unverified.
+
+---
+
 # Cinematic targeted revision work - 2026-10-22 (Asia/Saigon)
 
 Implemented deterministic zoom-by-interval, frame-based ripple cut and scoped camera/violet-rim reveal revisions in the existing Video Studio. Immutable scenes retain source hashes, original prompt, quality, motion duration and source frame offsets. Per-motion caches reuse unaffected frames; shared cache leases serialize overlapping writers while retaining the CPU scheduler. Existing delivery manifest edits are rejected. Actual backend renders verify zoom 24 new/72 reused, cut 0 new/72 reused and reveal 48 new/48 reused from an eight-second two-fixture scene. Preliminary packaged UI acceptance passed preview/no-job, Generate Revision, actual MP4 playback, source comparison, cuts and restart. Windows 0.8.15 passed all 94 tests, production build, generic smoke and the final affected native rerun: preview starts no jobs, zoom renders 24/reuses 72 frames, ripple cut renders zero/reuses 72 frames, source comparison plays actual MP4s and all three versions persist after restart. See evidence/cinematic_edits_native.json. No general LLM, audio, fog or generated-motion claim is made. See VIDEO_STUDIO.md.

@@ -32,7 +32,7 @@ async def lifespan(app):
         jobs.worker.close()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.15", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.16", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -366,6 +366,8 @@ from .local_tools import router as tools_router
 app.include_router(tools_router)
 from .cinematic import router as cinematic_router
 app.include_router(cinematic_router)
+from .cinematic_audio import router as cinematic_audio_router
+app.include_router(cinematic_audio_router)
 from .updates import router as updates_router
 app.include_router(updates_router)
 

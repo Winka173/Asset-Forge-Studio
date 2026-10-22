@@ -445,8 +445,18 @@ class Worker:
                 return True
         transition(identifier,'POSTPROCESSING')
         if not run(command,'Blender CPU shot rendering'):return
+        stems={}
+        if request['scene']['audio_mode']=='imported':
+            from engines import cinematic_audio as audio
+            duration=sum(round(s['duration']*request['scene']['fps']) for s in request['scene']['shots'])/request['scene']['fps']
+            mix,stems=audio.mix_command(request['scene']['audio_cues'],request['audio_sources'],payload['effective_config']['tools'],folder/'output',duration,request['scene'].get('duck_music',True))
+            if not run(mix,'Mix imported audio and dialogue ducking'):return
+            measured=audio.measure(folder/'output/audio_master.wav',payload['effective_config']['tools'])
+            if measured['clipped_samples'] or abs(measured['measured_duration_seconds']-duration)>1/48000:raise ValueError('Mixed audio failed duration/clipping QA')
+            (folder/'output/audio_qa.json').write_text(json.dumps(measured|dict(source_hashes=payload['effective_config']['audio']['source_hashes'],cues=request['scene']['audio_cues'],duck_music=request['scene'].get('duck_music',True),stems={name:store.digest(path) for name,path in stems.items()}),indent=2))
         command,partial,frames=cinematic.encode(payload,folder,request)
-        if not run(command,'encode MP4'):return
+        if not cinematic.reuse_encoded(payload,artifact,frames,partial):
+            if not run(command,'encode MP4'):return
         transition(identifier,'VALIDATING');qa=cinematic.validate_video(payload,partial,request)
         final=partial.with_name('cinematic.mp4');partial.replace(final);output=folder/'output'
         report=qa|dict(scene_artifact_id=artifact['id'],scene_sha256=artifact['sha256'],source_hashes=payload['effective_config']['source_hashes'],frame_hashes=frames)
@@ -459,6 +469,7 @@ class Worker:
             if store.digest(temporary)!=checksum:raise ValueError('Delivery copy checksum mismatch')
             temporary.replace(target)
         manifest=dict(schema_version=1,asset_id=payload['asset_id'],project_id=payload['project_id'],scene_id=artifact['id'],scene_sha256=artifact['sha256'],source_hashes=payload['effective_config']['source_hashes'],video='cinematic.mp4',sha256=checksum,qa=qa,exported_at=store.now())
+        if stems:manifest['audio']=payload['effective_config']['audio']
         manifest_path=delivery/'manifest.json'
         if manifest_path.exists():
             previous=json.loads(manifest_path.read_text(encoding='utf-8'))
@@ -472,6 +483,10 @@ class Worker:
         store.add_artifact(output/'video_qa.json','qa_report','Cinematic technical QA',metadata)
         store.add_artifact(output/'source.blend','cinematic_source','Editable cinematic scene.blend',metadata)
         store.add_artifact(output/'scene.json','cinematic_source','Reproducible scene.json',metadata)
+        if stems:
+            store.add_artifact(output/'audio_master.wav','cinematic_audio_mix','Audio master / PCM 24-bit',metadata)
+            store.add_artifact(output/'audio_qa.json','qa_report','Audio technical QA',metadata)
+            for family,path in stems.items():store.add_artifact(Path(path),'cinematic_audio_stem',family+' stem / float WAV',metadata)
         with store.connect() as db:
             db.execute('BEGIN IMMEDIATE');model=json.loads(db.execute('SELECT payload FROM assets WHERE id=?',(payload['asset_id'],)).fetchone()['payload']);model.setdefault('published_video_id',video['id']);model.setdefault('video_deliveries',[]).append(dict(artifact_id=video['id'],scene_id=artifact['id'],sha256=checksum,path=str(target),at=store.now()));db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),model['id']))
         transition(identifier,'REVIEW_REQUIRED')

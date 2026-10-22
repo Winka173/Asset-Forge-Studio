@@ -8,6 +8,7 @@ from pydantic import BaseModel,ConfigDict,Field,model_validator,model_serializer
 from . import store,studio,jobs
 from .inspection import inspect_glb
 from engines.quality import fingerprint
+from engines.cinematic_audio import Cue
 
 router=APIRouter(prefix='/api/cinematics')
 class Strict(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
@@ -62,7 +63,15 @@ class Scene(Strict):
     height:int=Field(default=1080,ge=180,le=2160)
     fps:Literal[12,24,30]=24
     samples:int=Field(default=64,ge=8,le=1024)
-    audio_mode:Literal['silent']='silent'
+    audio_mode:Literal['silent','imported']='silent'
+    audio_cues:list[Cue]=Field(default_factory=list,max_length=64)
+    duck_music:bool=True
+    @model_serializer(mode='wrap')
+    def compatible_audio(self,handler):
+        data=handler(self)
+        if not self.audio_cues:data.pop('audio_cues',None)
+        if self.duck_music:data.pop('duck_music',None)
+        return data
     @model_validator(mode='after')
     def references(self):
         ids=[o.id for o in self.objects]
@@ -80,6 +89,13 @@ class Scene(Strict):
         for shot in self.shots:
             count=round(shot.duration*self.fps);motion=round((shot.motion_duration or shot.duration)*self.fps)
             if count<1 or shot.source_start_frame+count>motion:raise ValueError('Clip frame range is outside its source camera motion; reset the trim before extending duration or changing FPS')
+        duration=sum(round(s.duration*self.fps) for s in self.shots)/self.fps
+        if len({c.id for c in self.audio_cues})!=len(self.audio_cues):raise ValueError('Duplicate audio cue IDs')
+        if self.audio_mode=='imported' and not self.audio_cues:raise ValueError('Import audio and add at least one cue, or select Silent')
+        for cue in self.audio_cues:
+            if cue.start+cue.duration>duration+1e-6:raise ValueError('Audio cue extends beyond the video. Trim or move it: '+cue.name)
+            if cue.linked_shot and cue.linked_shot not in {s.id for s in self.shots}:raise ValueError('Audio cue shot link is missing')
+            if cue.linked_object_id and cue.linked_object_id not in ids:raise ValueError('Audio cue object link is missing')
         return self
 
 def sources(scene):
@@ -111,7 +127,10 @@ def save(body:Save):
 
 def save_snapshot(body,edit=None):
     scene=body.scene
-    try:sources(scene)
+    try:
+        sources(scene)
+        from .cinematic_audio import sources as audio_sources
+        audio_sources(scene)
     except (ValueError,KeyError,OSError) as exc:raise HTTPException(409,str(exc))
     if body.asset_id:
         model=studio.asset(body.asset_id)
@@ -173,6 +192,16 @@ class Refine(Strict):
     prompt:str=Field(min_length=1,max_length=4000)
     request_id:str=Field(min_length=8,max_length=100)
     base_scene_id:str
+
+class DraftEdit(Strict):
+    scene:Scene
+    prompt:str=Field(min_length=1,max_length=4000)
+
+@router.post('/timeline/plan')
+def edit_draft(body:DraftEdit):
+    from .cinematic_edits import plan
+    try:return plan(body.scene,body.prompt)
+    except ValueError as exc:raise HTTPException(422,str(exc))
 
 @router.post('/refinements/plan')
 def refine_plan(body:Refine):

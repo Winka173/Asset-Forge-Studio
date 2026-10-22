@@ -1,0 +1,14 @@
+{
+  "status": "PASS_NATIVE_GENERATION_ACTIVITY",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\generation-preview-native\\2026-10-22T07-08-10-888Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_running_stage_animation_reference_opt_in_reduced_motion_refresh_completion",
+      "passed": true,
+      "job_id": "f0468e6fb91848dd98592dfca5894081"
+    }
+  ],
+  "errors": [],
+  "scope": "Native activity preview driven by a real CPU Blender render job, reference opt-in, reduced motion and completion. No extra GPU inference."
+}
