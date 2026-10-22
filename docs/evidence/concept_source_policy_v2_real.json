@@ -1,0 +1,107 @@
+{
+  "status": "PASS_REAL_POLICY_V2_COMPOSITION_BACKGROUND_BORDER",
+  "cases": [
+    {
+      "name": "multipanel",
+      "input_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\intent-acceptance\\Library\\jobs\\d17fad2402a54e6395669bbdc3ff58d1\\output\\concept.png",
+      "source_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2",
+      "job_id": "7fa526c705de4a4bb3d3ac797e2ba55f",
+      "expected_suitable": false,
+      "result": {
+        "schema_version": 2,
+        "screening_policy": 2,
+        "suitable_single_asset_image": false,
+        "observed_subject_en": "castle",
+        "issues": [
+          "multiple_views_or_panels",
+          "background_scene",
+          "cropped_main_object"
+        ],
+        "background_is_plain": false,
+        "border_or_text_visible": false,
+        "entire_main_asset_visible": false,
+        "observations": [
+          "The image contains multiple rendered views of the castle: a large main view, and three smaller inset panels showing different angles and components.",
+          "The main castle is not fully visible as it is surrounded by other panels and is not isolated on a plain background.",
+          "The requested subject is a single standalone castle, but the image displays a composite of multiple views and components."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 28.71799999999712,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "15f5393a9e00460ea0d27189f0432324",
+        "source_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2"
+      }
+    },
+    {
+      "name": "illustrated_scene",
+      "input_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-layout-native\\2026-10-22T08-06-09-291Z\\Library\\jobs\\9b4428a456934122be23fbec61a631fa\\output\\concept.png",
+      "source_sha256": "176c0d89ca137c64e3c45d4998211b65429c1434b09cdec2b5351583fbf3f8fe",
+      "job_id": "cb8b4a3041f345e49cab07944699106d",
+      "expected_suitable": false,
+      "result": {
+        "schema_version": 2,
+        "screening_policy": 2,
+        "suitable_single_asset_image": false,
+        "observed_subject_en": "castle",
+        "issues": [
+          "background_scene",
+          "border_or_text",
+          "cropped_main_object"
+        ],
+        "background_is_plain": false,
+        "border_or_text_visible": true,
+        "entire_main_asset_visible": false,
+        "observations": [
+          "The castle is surrounded by trees, sky, and clouds, which is not allowed.",
+          "There is text at the bottom of the image, which is not allowed.",
+          "The castle is partially cropped by the image edges, making it not fully visible.",
+          "The background includes a sky and clouds, which is not allowed.",
+          "The image contains text at the bottom, which is not allowed."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 25.0,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "2699d2f3f2a34a49919ec72e47f2bab1",
+        "source_sha256": "176c0d89ca137c64e3c45d4998211b65429c1434b09cdec2b5351583fbf3f8fe"
+      }
+    },
+    {
+      "name": "isolated_actual_glb_render",
+      "input_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-reference-acceptance\\Library\\jobs\\02bb340dfbc84440bba0effe3a2681a7\\output\\mobile_three_quarter_asset.png",
+      "source_sha256": "907e1377d19a3f1e6d3c19e7fc80354a94a21d7bea8bc2748a86182f932bac5a",
+      "job_id": "a70f36984633407aa9b6f4c85d325f55",
+      "expected_suitable": true,
+      "result": {
+        "schema_version": 2,
+        "screening_policy": 2,
+        "suitable_single_asset_image": true,
+        "observed_subject_en": "castle",
+        "issues": [],
+        "background_is_plain": true,
+        "border_or_text_visible": false,
+        "entire_main_asset_visible": true,
+        "observations": [
+          "The image contains a single, complete castle with multiple towers and a central entrance, rendered as a standalone 3D model.",
+          "The castle is centered in the frame with no surrounding scenery or background elements.",
+          "The asset includes all visible parts of the castle, including roof tips, side walls, and contact base, with no cropping or edge cutting.",
+          "The background is a plain white, which is acceptable per the requirements.",
+          "No text, borders, or framing elements are visible in the image."
+        ],
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "duration_seconds": 24.2970000000023,
+        "execution": "local_cpu_only",
+        "method": "VLM inferred composition check; not artistic approval",
+        "artistic_approval": false,
+        "source_artifact_id": "4e119d3c90b04439909dd21f36588df3",
+        "source_sha256": "907e1377d19a3f1e6d3c19e7fc80354a94a21d7bea8bc2748a86182f932bac5a"
+      }
+    }
+  ]
+}

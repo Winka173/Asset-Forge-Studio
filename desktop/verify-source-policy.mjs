@@ -1,0 +1,30 @@
+// Actual packaged cinematic edits, Blender renders, cache receipts and immutable versions.
+import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
+import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import zlib from 'node:zlib';import crypto from 'node:crypto';import {spawn} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..'),stamp=new Date().toISOString().replaceAll(/[:.]/g,'-'),run=path.join(root,'.local/source-policy-v2-native',stamp),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(root,'.local/concept-policy-v2/Library'),blender:null,setup_complete:true}));
+const build=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/desktop_build.json'),'utf8').replace(/^\uFEFF/,'')),exe=process.env.AFS_SMOKE_EXE||path.join(build.delivery_location,build.executable),server=net.createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));const sleep=ms=>new Promise(r=>setTimeout(r,ms));let child,browser,page,runtime,closing=false;
+const report={status:'RUNNING',run,executable:exe,checks:[],errors:[],scope:'Final packaged UI reopens actual Qwen policy-v2 reports for three real images, displays readable source defects and keeps artistic approval separate. No GPU inference.'};
+async function api(url,body){const r=await fetch(runtime.api_base+url,{headers:{'X-AFS-Token':runtime.api_token,...(body?{'Content-Type':'application/json'}:{})},...(body?{method:'POST',body:JSON.stringify(body)}:{})});assert(r.ok,`${url}: ${r.status} ${await r.clone().text()}`);return r.json();}
+async function launch(){closing=false;child=spawn(exe,[],{env:{...process.env,AFS_DESKTOP_CONFIG_DIR:config,WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:`--remote-debugging-port=${port}`},stdio:'ignore',windowsHide:false});for(let n=0;n<180;n++){try{browser=await chromium.connectOverCDP(`http://127.0.0.1:${port}`);break;}catch{await sleep(1000);}}page=browser.contexts()[0].pages()[0];page.on('pageerror',e=>{if(!closing)report.errors.push(e.message);});await page.locator('.studio-sidebar').waitFor({timeout:180000});runtime=await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_bootstrap'));}
+async function close(){closing=true;await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close'));for(let n=0;n<100&&child.exitCode===null;n++)await sleep(200);assert.notEqual(child.exitCode,null);await browser.close().catch(()=>{});browser=null;}
+
+
+
+
+
+
+async function selectSource(id){await page.getByRole('combobox',{name:'Production preview source',exact:true}).click();const index=await page.locator('.afs-select-native[aria-label="Production preview source"]').evaluate((s,id)=>Array.from(s.options).findIndex(o=>o.value===id),id);assert(index>=0);await page.locator(`.afs-select-option[data-index="${index}"]`).click();}
+try{
+ await launch();const projects=await api('/api/projects'),overview=await api('/api/production');assert.equal(projects.length,1);assert.equal(overview.standalone.length,1);const row=overview.standalone[0];await page.evaluate(({project,job})=>{localStorage.setItem('afs.project',project);localStorage.setItem('afs.production.selection','job/'+job);},{project:projects[0].id,job:row.id});await page.reload();await page.getByRole('link',{name:'Production',exact:true}).click();await page.getByRole('combobox',{name:'Production preview source',exact:true}).waitFor();
+ const detail=await api('/api/production/assets/'+row.asset_id),check=JSON.parse(fs.readFileSync(path.join(root,'.local/concept-policy-v2/report.json'),'utf8'));assert.equal(check.status,'PASS_REAL_POLICY_V2_COMPOSITION_BACKGROUND_BORDER');
+ const bad=check.cases.find(c=>c.name==='illustrated_scene'),good=check.cases.find(c=>c.name==='isolated_actual_glb_render'),multi=check.cases.find(c=>c.name==='multipanel');
+ for(const [record,text] of [[bad,'Scenery around the asset'],[multi,'Several views or image panels']]){
+  await selectSource(record.result.source_artifact_id);await page.locator('.production-source-issues').getByText(text,{exact:true}).waitFor();assert.equal(await page.locator('.production-viewport > img').getAttribute('alt'),detail.artifacts.find(a=>a.id===record.result.source_artifact_id).name);
+  if(record===bad)await page.locator('.production-source-issues').getByText('Frame, labels or text in the image',{exact:true}).waitFor();
+  await page.screenshot({path:path.join(run,record.name+'-readable-issues.png'),fullPage:true});
+ }
+ await page.getByRole('button',{name:'View concept checks',exact:true}).click();await page.locator('.production-pipeline-history').waitFor();
+ await selectSource(good.result.source_artifact_id);await page.locator('.production-source-issues').waitFor({state:'detached'});await page.screenshot({path:path.join(run,'single-castle-source-no-defect-notice.png'),fullPage:true});
+ const before=await api('/api/jobs');assert.equal(before.length,3);assert(before.every(j=>j.payload.kind==='concept_layout'&&j.status==='REVIEW_REQUIRED'));assert(!detail.asset.art_reviews?.length);await close();await launch();assert.deepEqual((await api('/api/jobs')).map(j=>j.id).sort(),before.map(j=>j.id).sort());assert.equal(report.errors.length,0);await close();report.status='PASS_NATIVE_SOURCE_POLICY_V2_READABLE_DEFECTS_RESTART';report.checks.push({name:'actual_three_source_reports_visible_no_gpu_generation',passed:true,case_hashes:check.cases.map(c=>({name:c.name,sha256:c.source_sha256,issues:c.result.issues,suitable:c.result.suitable_single_asset_image}))});
+}catch(e){report.status='FAILED';report.error=String(e);if(page)await page.screenshot({path:path.join(run,'failure.png'),fullPage:true}).catch(()=>{});throw e;}
+finally{if(browser)await close().catch(()=>{});fs.writeFileSync(path.join(run,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,run,error:report.error}));}

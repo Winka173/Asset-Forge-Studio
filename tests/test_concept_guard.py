@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 from apps.api import store,jobs,concept_guard
 from apps.api.main import app
-from engines.concept_guard import Assessment
+from engines.concept_guard import Assessment,checked_assessment
 
 
 def test_layout_check_admission_is_cpu_only_and_does_not_start_3d(tmp_path,monkeypatch,qa_project):
@@ -28,3 +28,11 @@ def test_layout_check_admission_is_cpu_only_and_does_not_start_3d(tmp_path,monke
 
 def test_concept_layout_schema_does_not_accept_an_artistic_score():
     with pytest.raises(ValidationError):Assessment.model_validate(dict(suitable_single_asset_image=True,observed_subject_en='castle',artistic_score=100))
+
+
+def test_observed_defects_override_a_model_suitable_boolean():
+    # Schema enforcement is essential even when a model returns contradictory fields.
+    answer=checked_assessment(Assessment(suitable_single_asset_image=True,observed_subject_en='castle',
+        background_is_plain=False,border_or_text_visible=True,entire_main_asset_visible=False,issues=[]))
+    assert not answer.suitable_single_asset_image
+    assert set(answer.issues)=={'background_scene','border_or_text','cropped_main_object'}

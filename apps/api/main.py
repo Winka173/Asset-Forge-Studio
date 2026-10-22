@@ -34,7 +34,7 @@ async def lifespan(app):
         close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.19", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.20", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)

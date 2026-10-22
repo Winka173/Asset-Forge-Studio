@@ -1,32 +1,21 @@
 ﻿{
-    "version":  "0.8.19",
-    "timestamp_utc":  "20261022T081018Z",
-    "git_commit":  "66441ee70fe0864430c825daaacaf7ae9ffdbb5c",
+    "version":  "0.8.20",
+    "timestamp_utc":  "20261022T081926Z",
+    "git_commit":  "173620af88f4224c84233e8831abb22cbefc5d29",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/automation.py",
-                          " M apps/api/jobs.py",
+                          " M apps/api/concept_guard.py",
                           " M apps/api/main.py",
-                          " M apps/api/production.py",
-                          " M apps/api/statuses.py",
+                          " M apps/web/src/production.css",
                           " M apps/web/src/production.tsx",
-                          " M desktop/verify-prompt-intent.mjs",
-                          " M docs/evidence/desktop_build.json",
-                          " M docs/evidence/desktop_smoke.json",
+                          " M engines/concept_guard.py",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? apps/api/concept_guard.py",
-                          "?? desktop/verify-concept-layout.mjs",
-                          "?? docs/PROMPT_UNDERSTANDING.md",
-                          "?? docs/evidence/concept_layout_native.json",
-                          "?? docs/evidence/concept_layout_real.json",
-                          "?? docs/evidence/empty_library_native.json",
-                          "?? engines/concept_guard.py",
-                          "?? tests/test_concept_guard.py"
+                          " M tests/test_concept_guard.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -35,7 +24,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T081018Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T081926Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -46,13 +35,14 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "a5af56cf7109e4ed32f2777c4d2a18eda27c0995a336c9d0fde3d3eb3832311a",
-                            "Asset Forge Studio_0.8.19_x64-setup.exe":  "acc6febfd30b6f2f8ae4db1cb97e6e1179a99d3ced7c2b50b557ca20c2439b69",
-                            "afs-backend.exe":  "f766bed1094337839cdc70e19059fc7440fa77c3d2482ee5fa629ac247465670"
+                            "Asset Forge Studio.exe":  "220becb5542c290e717161d201cd1b2d327a1451b68fa09c6e8b232a11fbbbc1",
+                            "afs-backend.exe":  "3f44bdda295dff89773a797b2d30bf0c53cecc328e3df5f3d3d7d2aafd03649b",
+                            "Asset Forge Studio_0.8.20_x64-setup.exe":  "7e8dd9f6d007396e3f452095cad46613fb21ebfccd625796f6bfdb58a62d5e19"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T08-14-24-602Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T08-23-44-915Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.19_x64-setup.exe",
-    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
+    "installer":  "Asset Forge Studio_0.8.20_x64-setup.exe",
+    "previous_latest_kept_running":  true,
+    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.20"
 }

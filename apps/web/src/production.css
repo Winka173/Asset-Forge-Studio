@@ -69,3 +69,11 @@ html[data-afs-motion=reduced] .studio [data-state=running]>.production-pipeline-
 .studio .production-row button>span:last-child { flex:1; }
 .studio progress.production-row-progress { height:3px; margin-top:5px; }
 .studio .production-row:has(progress.production-row-progress) small { margin-top:3px; }
+
+/* Source-screening failures are readable without opening technical JSON. */
+.studio .production-source-issues{margin:12px 18px;padding:18px 20px;background:#493b30;border:0;border-radius:10px;color:#f0dac0;min-width:0}
+.studio .production-source-issues>strong{font-size:12px;line-height:1.7;font-weight:600}
+.studio .production-source-issues ul{margin:10px 0;padding-left:18px;font-size:11px;line-height:1.9}
+.studio .production-source-issues p{margin:10px 0 14px;font-size:10px;line-height:1.8;color:#d9c7b4}
+.studio .production-source-issues button{padding:10px 14px;background:#67503b;border:0;border-radius:8px;color:#fff0dc;font-size:11px;min-height:38px}
+.studio .production-source-issues button:hover{background:#7d6046}

@@ -1,0 +1,41 @@
+{
+  "status": "PASS_NATIVE_SOURCE_POLICY_V2_READABLE_DEFECTS_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\source-policy-v2-native\\2026-10-22T08-24-23-429Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.20\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_three_source_reports_visible_no_gpu_generation",
+      "passed": true,
+      "case_hashes": [
+        {
+          "name": "multipanel",
+          "sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2",
+          "issues": [
+            "multiple_views_or_panels",
+            "background_scene",
+            "cropped_main_object"
+          ],
+          "suitable": false
+        },
+        {
+          "name": "illustrated_scene",
+          "sha256": "176c0d89ca137c64e3c45d4998211b65429c1434b09cdec2b5351583fbf3f8fe",
+          "issues": [
+            "background_scene",
+            "border_or_text",
+            "cropped_main_object"
+          ],
+          "suitable": false
+        },
+        {
+          "name": "isolated_actual_glb_render",
+          "sha256": "907e1377d19a3f1e6d3c19e7fc80354a94a21d7bea8bc2748a86182f932bac5a",
+          "issues": [],
+          "suitable": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "scope": "Final packaged UI reopens actual Qwen policy-v2 reports for three real images, displays readable source defects and keeps artistic approval separate. No GPU inference."
+}
