@@ -2070,6 +2070,8 @@ export function Studio() {
                     }
                   />
                 </label>
+                <details className="advanced project-defaults"><summary>Optional game defaults &amp; Art Bible</summary>
+                <p>Leave these empty to start. Defaults fill missing asset settings; explicit prompt constraints take priority.</p>
                 <div className="field-pair">
                   <label className="studio-field">
                     Default style
@@ -2168,6 +2170,7 @@ export function Studio() {
                       }
                     />
                   </label>
+                </details>
                 </details>
                 <button
                   className="primary"

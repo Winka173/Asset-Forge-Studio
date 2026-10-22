@@ -1,0 +1,42 @@
+{
+  "status": "PASS_NATIVE_BATCH_REFERENCE_UPLOAD_349_LOSSLESS_AND_RESTART",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\batch-reference-native\\2026-10-22T02-06-47-984Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "new_project_requires_name_only_optional_style_height_palette_collapsed",
+      "passed": true
+    },
+    {
+      "name": "real_reference_upload_visible_and_spacing_no_overflow",
+      "width": 1280,
+      "measured": {
+        "padding": 24,
+        "noteMargin": 24,
+        "inheritanceMargin": 24
+      },
+      "passed": true
+    },
+    {
+      "name": "real_reference_upload_visible_and_spacing_no_overflow",
+      "width": 1536,
+      "measured": {
+        "padding": 24,
+        "noteMargin": 24,
+        "inheritanceMargin": 24
+      },
+      "passed": true
+    },
+    {
+      "name": "actual349_lossless_source_spans_hashes_312_primary_37_future_reference_ids_and_no_automatic_generation",
+      "passed": true,
+      "batch_id": "d35b04273b23425f8a6b016724efba54"
+    },
+    {
+      "name": "per_asset_upload_save_full_prompt_and_references_survive_native_close_reopen_without_generation",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Windows batch image upload and lossless 349 manifest; no GPU generation"
+}

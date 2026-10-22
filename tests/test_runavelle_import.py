@@ -1,5 +1,6 @@
 """Acceptance uses the user's actual large source, never a generated 349-row substitute."""
 import hashlib
+import json
 import os
 import re
 from pathlib import Path
@@ -85,6 +86,32 @@ def test_import_validation_and_local_semantic_boundaries(monkeypatch):
     with pytest.raises(ValueError):SemanticMetadata.model_validate(dict(source_asset_id='a',prompt='Rewrite source'))
     monkeypatch.setenv('AFS_OLLAMA_URL','https://paid.example.com')
     with pytest.raises(ValueError,match='loopback'):endpoint()
+
+
+def test_actual_batch_image_upload_and_individual_reference_persist_losslessly(source,tmp_path,monkeypatch,qa_project):
+    file,content,text=source
+    image=store.ROOT/'.local/fixtures/ArcherTowerSource.png'
+    if not image.is_file():pytest.skip('Real Archer reference unavailable')
+    monkeypatch.setattr(store,'DATA',tmp_path);qa_project();client=TestClient(app)
+    uploaded=client.post('/api/import/reference?project_id=runavelle',files={'file':(image.name,image.read_bytes(),'image/png')})
+    assert uploaded.status_code==201,uploaded.text
+    reference=uploaded.json()
+    assert reference['sha256']==hashlib.sha256(image.read_bytes()).hexdigest()
+    assert client.get(reference['url']).content==image.read_bytes()
+    imported=client.post('/api/batches/import',files={'file':(file.name,content,'text/markdown')},data=dict(project_id='runavelle',reference_ids=json.dumps([reference['id']])))
+    assert imported.status_code==201,imported.text[:500]
+    value=imported.json();assert len(value['items'])==349 and jobs.listing()==[]
+    for item in value['items']:
+        assert item['reference_ids']==[reference['id']]
+        assert item['prompt']==text[item['source_char_start']:item['source_char_end']]
+        assert item['source_sha256']==hashlib.sha256(item['prompt'].encode()).hexdigest()
+    first=value['items'][0];prefix='/api/batches/'+value['id']
+    other=client.post('/api/projects',json=dict(name='Unrelated game')).json()
+    foreign=client.post('/api/import/reference?project_id='+other['id'],files={'file':(image.name,image.read_bytes(),'image/png')}).json()
+    assert client.post(prefix+'/items/'+first['asset_id'],json=dict(reference_ids=[foreign['id']])).status_code==400
+    assert client.post(prefix+'/items/'+first['asset_id'],json=dict(reference_ids=[])).status_code==200
+    assert client.get(prefix).json()['items'][0]['reference_ids']==[]
+    assert jobs.listing()==[]
 
 
 def test_unavailable_local_analysis_does_not_submit_jobs(tmp_path,monkeypatch,qa_project):

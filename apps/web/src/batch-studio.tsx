@@ -5,6 +5,8 @@ import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
+import "./batch-spacing.css";
+import { BatchReferences } from "./batch-references";
 
 type Reference = { id: string; name: string; role: string; url: string };
 type Version = {
@@ -221,7 +223,8 @@ export function BatchStudio({
     finally {setCheckingModels(false);}
   }
   useEffect(()=>{checkLocalModels();},[]);
-  const [busy, setBusy] = useState(false),
+  const [referenceBusy,setReferenceBusy]=useState(false);
+  const [operationBusy, setBusy] = useState(false),
     [analyzing, setAnalyzing] = useState(false),
     [draftWarning, setDraftWarning] = useState(""),
     [assetSearch, setAssetSearch] = useState(""),
@@ -230,6 +233,7 @@ export function BatchStudio({
     [notice, setNotice] = useState(""),
     [filter, setFilter] = useState("all"),
     [exportSelection, setExportSelection] = useState("selected");
+  const busy=operationBusy||referenceBusy;
   const [editing, setEditing] = useState<ManifestItem | null>(null),
     [styleJson, setStyleJson] = useState("{}"),
     [approval, setApproval] = useState<ManifestItem | null>(null),
@@ -276,7 +280,9 @@ export function BatchStudio({
   const pageItems = visibleItems.slice((currentPage - 1) * 50, currentPage * 50);
   const selectableItems = visibleItems;
   useEffect(() => { setManifestPage(1); }, [assetSearch, filter, selectedBatch]);
-  const imageReferences = artifacts.filter((a) =>
+  const [uploadedReferences,setUploadedReferences] = useState<Reference[]>([]);
+  useEffect(()=>{setUploadedReferences([]);},[projectId]);
+  const imageReferences = [...new Map([...artifacts,...uploadedReferences].map(a=>[a.id,a])).values()].filter((a) =>
     ["concept", "reference", "golden"].includes(a.role),
   );
   const hasModels = (selection: string) =>
@@ -576,6 +582,11 @@ export function BatchStudio({
       `/api/batches/${batch?.id}/export?selection=${exportSelection}&format=${kind}`,
     );
 
+  const referencePanel = (<BatchReferences projectId={projectId} references={imageReferences} selected={references}
+        onSelected={setReferences} onUploaded={value=>setUploadedReferences(current=>[...current,value])} onBusy={setReferenceBusy}
+        disabled={busy} title="Reference images" description={batch
+          ? "Images here apply to the next Analyze. For this manifest, use Edit on each asset to assign its own image; running jobs are never changed."
+          : "Optional. Selected images become the 3D geometry source for every imported asset. For different assets, leave this empty and assign individual images using Edit after Analyze."}/>);
   return (
     <div className="batch-studio">
       <div className="batch-heading">
@@ -638,7 +649,7 @@ export function BatchStudio({
       {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
       <details className="batch-workflow-disclosure"><summary>Workflow &amp; recovery <span>{workflow.mode==='auto'?'Automatic':workflow.mode==='assisted'?'Assisted':'Expert'}</span></summary><div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate All starts production when you choose.'}</p></div>
       <details className="advanced batch-workflow-options"><summary>Advanced · workflow checkpoints and recovery</summary>{workflow.mode==='assisted' && <div className="batch-checkpoint-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint} className="check-field"><input type="checkbox" disabled={busy} checked={workflow.checkpoints[checkpoint]} onChange={event=>updateWorkflow({checkpoints:{[checkpoint]:event.target.checked}})}/>Review {checkpoint==='candidate'?'3D candidate':checkpoint==='export'?'before export':'concept'}</label>)}</div>}<div className="batch-edit-pair"><label className="studio-field">Retry limit<input type="number" min="0" max="3" disabled={busy} value={workflow.retry_limit} onChange={event=>updateWorkflow({retry_limit:Number(event.target.value)})}/></label><label className="studio-field">Disk reserve (GB)<input type="number" min="1" disabled={busy} value={workflow.disk_reserve_gb} onChange={event=>updateWorkflow({disk_reserve_gb:Number(event.target.value)})}/></label></div><label className="studio-field">After reopening<Select aria-label="Batch recovery policy" value={workflow.auto_resume ? "auto" : "manual"} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({auto_resume:event.target.value==="auto"})}><option value="manual">Wait for manual Resume</option><option value="auto">Auto-resume after reopening</option></Select><small>Automatic GPU restart requires this explicit opt-in. Completed outputs and exports remain available in either mode.</small></label><p>One logical batch, up to {workflow.max_active_assets} active assets. Only one heavy GPU task runs at a time. Pause finishes the current stage before stopping; recovery reuses completed checkpoints.</p></details>
-      </details><details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration · original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">
+      </details>      <details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration · original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">
         <section className="batch-brief">
           <div className="batch-panel-title">
             <Glyph kind="list" />
@@ -719,11 +730,7 @@ export function BatchStudio({
             </Select>
           </label>
           <div className="batch-mode-note">
-            {mode === "Maximum Quality Batch"
-              ? "Nhiều candidate / engine khi có sẵn, Blender và technical QA; Master vẫn do người dùng duyệt."
-              : mode === "Quality Batch"
-                ? "Ưu tiên chất lượng, concept được duyệt trước khi chuyển sang 3D."
-                : "Giảm cấu hình xử lý; không bỏ qua kiểm chứng output và human review."}
+            {mode === "Maximum Quality Batch" ? "Multiple candidates / engines when available, Blender and technical QA. Auto exports valid assets; artistic review stays independent." : mode === "Quality Batch" ? "Quality-focused processing with technical QA. Review stops only at enabled checkpoints." : "Faster processing settings; technical validation still runs before export."}
           </div>
           <div className="batch-inheritance">
             <span className="live-dot" />
@@ -736,49 +743,7 @@ export function BatchStudio({
               {project?.default_style && <small>{project.default_style}</small>}
             </div>
           </div>
-          <details className="advanced batch-reference-picker">
-            <summary>
-              Reference images & Golden Assets{" "}
-              <span>{references.length} selected</span>
-            </summary>
-            {imageReferences.length ? (
-              <div className="batch-reference-list">
-                {imageReferences.map((reference) => (
-                  <label key={reference.id}>
-                    <input
-                      type="checkbox"
-                      checked={references.includes(reference.id)}
-                      onChange={(e) =>
-                        setReferences((current) =>
-                          e.target.checked
-                            ? [...current, reference.id]
-                            : current.filter((id) => id !== reference.id),
-                        )
-                      }
-                    />
-                    {reference.role !== "golden" ? (
-                      <img src={apiUrl(reference.url)} alt={reference.name} />
-                    ) : (
-                      <Glyph />
-                    )}
-                    <span>
-                      {reference.name}
-                      <small>
-                        {reference.role === "golden"
-                          ? "Golden GLB reference"
-                          : "Image reference"}
-                      </small>
-                    </span>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <p>
-                Chưa có reference trong game này. Nhập ảnh ở Single Asset hoặc
-                tạo concept local tại checkpoint kế tiếp.
-              </p>
-            )}
-          </details>
+          {!batch && referencePanel}
           <p className="batch-scope-note">
             Không tự thêm module ngoài yêu cầu. Style consistency cần được
             review; không có cam kết khóa style tuyệt đối.
@@ -786,6 +751,7 @@ export function BatchStudio({
         </section>
       </div>
       </details>
+      {batch && referencePanel}
       {batch && (
         <>
           <section className="batch-manifest" ref={manifestRef} tabIndex={-1} aria-label="Batch asset manifest">
@@ -1334,8 +1300,12 @@ export function BatchStudio({
                 </small>
               </span>
             </label>
+            <BatchReferences projectId={projectId} assetId={editing.asset_id} references={imageReferences}
+              selected={editing.reference_ids} onSelected={ids=>setEditing(current=>current?{...current,reference_ids:ids}:current)}
+              onUploaded={value=>setUploadedReferences(current=>[...current,value])} onBusy={setReferenceBusy} disabled={busy}
+              title="Asset reference images" description="Selected images guide 3D geometry, not just colors. With multiple images the current pipeline selects one valid image by resolution; this is not multi-view fusion. Save changes before Generate."/>
             <details className="advanced">
-              <summary>Per-asset overrides & references</summary>
+              <summary>Per-asset overrides</summary>
               <div className="batch-edit-pair">
                 <label className="studio-field">
                   Quality
@@ -1411,27 +1381,6 @@ export function BatchStudio({
                   onChange={(e) => setOutputsText(e.target.value)}
                 />
               </label>
-              <div className="batch-reference-list">
-                {imageReferences.map((reference) => (
-                  <label key={reference.id}>
-                    <input
-                      type="checkbox"
-                      checked={editing.reference_ids.includes(reference.id)}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          reference_ids: e.target.checked
-                            ? [...editing.reference_ids, reference.id]
-                            : editing.reference_ids.filter(
-                                (id) => id !== reference.id,
-                              ),
-                        })
-                      }
-                    />
-                    <span>{reference.name}</span>
-                  </label>
-                ))}
-              </div>
             </details>
             {editing.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}
             {editing.config_warning && <p className="batch-preflight-warning">{editing.config_warning}</p>}
