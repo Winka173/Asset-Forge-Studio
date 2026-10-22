@@ -1,0 +1,151 @@
+{
+  "status": "VERIFIED_REAL_EDITOR_STAGE_RELAUNCH",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-startup-recovery\\20261022T132524Z",
+  "original_job": "6649d45d9e3145ddb9032dc4155224fd",
+  "original_status": "FAILED",
+  "fbx_sha256": "4d717d69e76650aa146b719c3f565e01c41a7d7f9fe25b2c412d97f6b0e5547a",
+  "scope": "Real failed UPM IPC log and real Editor relaunch/cold reopen/clean package import; completed Blender FBX is reused. Original failed SQL job is not relabeled successful.",
+  "seconds": 23.95300000000134,
+  "validation": {
+    "status": "PASS_EDITOR_VALIDATION",
+    "profile": "existing_single_clip_animation",
+    "engine": "unity",
+    "version": "6000.4.8f1",
+    "reports": [
+      {
+        "unity_version": "6000.4.8f1",
+        "effective_config_hash": "001a9a9b7499e2360a48b2a69f2cd19d499ce5d5ef49fcdf68cc80b59018ecf3",
+        "cold_reopen": false,
+        "clean_package_import": false,
+        "root_motion_quality": "not_evaluated",
+        "foot_contact_quality": "not_evaluated",
+        "artistic_approval": "not_given",
+        "dimensions_xyz_m": [
+          1.902116,
+          2.476142,
+          2
+        ],
+        "source_motion_m": 0.4168651,
+        "playable_graph_motion_m": 0.1695803,
+        "clip_duration_seconds": 1.25,
+        "bone_count": 19,
+        "weighted_vertices": 312,
+        "min_weight_sum": 0.9999999,
+        "max_weight_sum": 1,
+        "sampled_motion_m": 0.4168653,
+        "samples": 6,
+        "failures": [],
+        "checks_passed": true
+      },
+      {
+        "unity_version": "6000.4.8f1",
+        "effective_config_hash": "001a9a9b7499e2360a48b2a69f2cd19d499ce5d5ef49fcdf68cc80b59018ecf3",
+        "cold_reopen": true,
+        "clean_package_import": false,
+        "root_motion_quality": "not_evaluated",
+        "foot_contact_quality": "not_evaluated",
+        "artistic_approval": "not_given",
+        "dimensions_xyz_m": [
+          1.902116,
+          2.476142,
+          2
+        ],
+        "source_motion_m": 0.4168651,
+        "playable_graph_motion_m": 0.1695803,
+        "clip_duration_seconds": 1.25,
+        "bone_count": 19,
+        "weighted_vertices": 312,
+        "min_weight_sum": 0.9999999,
+        "max_weight_sum": 1,
+        "sampled_motion_m": 0.4168653,
+        "samples": 6,
+        "failures": [],
+        "checks_passed": true
+      },
+      {
+        "unity_version": "6000.4.8f1",
+        "effective_config_hash": "001a9a9b7499e2360a48b2a69f2cd19d499ce5d5ef49fcdf68cc80b59018ecf3",
+        "cold_reopen": true,
+        "clean_package_import": true,
+        "root_motion_quality": "not_evaluated",
+        "foot_contact_quality": "not_evaluated",
+        "artistic_approval": "not_given",
+        "dimensions_xyz_m": [
+          1.902116,
+          2.476142,
+          2
+        ],
+        "source_motion_m": 0.4168651,
+        "playable_graph_motion_m": 0.1695803,
+        "clip_duration_seconds": 1.25,
+        "bone_count": 19,
+        "weighted_vertices": 312,
+        "min_weight_sum": 0.9999999,
+        "max_weight_sum": 1,
+        "sampled_motion_m": 0.4168653,
+        "samples": 6,
+        "failures": [],
+        "checks_passed": true
+      }
+    ],
+    "fbx_deformation": {
+      "status": "PASS_FBX_DEFORMATION",
+      "samples": 6,
+      "max_point_cloud_error": 0.0028747012838721275,
+      "tolerance": 0.004952283382415772,
+      "source_vertices": 412,
+      "source_dimensions": [
+        1.9021157026290894,
+        1.9999998807907104,
+        2.4761416912078857
+      ],
+      "source_motion_m": 0.4168651517610891,
+      "scope": "Six frame point-cloud comparison; vertex order is not assumed, not exhaustive animation proof"
+    },
+    "native_files": [
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animated.prefab",
+        "sha256": "1519182cfc05de1e3be6b6f2943f384c64650a211c80264efda0b954980cc957"
+      },
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animated.prefab.meta",
+        "sha256": "78652e16a543095ee5ae73136ad94d3fd93469704b5cf7919768465bbb63cb00"
+      },
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animation.controller",
+        "sha256": "0fe946e3b2b7d744a40f67067720dfb199d08803b764531b844c5f4c5f948877"
+      },
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animation.controller.meta",
+        "sha256": "f925c9a01c5eb53b6e965a992b6836a0deaf1282035722196dfd7cff382bcec3"
+      },
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animation.unity",
+        "sha256": "bbee89f346f00bb500154194d05f930c977541339e7d00967ce97f04dbc1664e"
+      },
+      {
+        "path": "jobs/6649d45d9e3145ddb9032dc4155224fd/editor_project/Assets/AFS/Output/AFS_Animation.unity.meta",
+        "sha256": "c21e397e9e781c1a2ee3432b55ad1956c92acff283180c966da18f1b789172c4"
+      }
+    ],
+    "effective_config_hash": "001a9a9b7499e2360a48b2a69f2cd19d499ce5d5ef49fcdf68cc80b59018ecf3",
+    "game_ready": false,
+    "artistic_approval": "not_given",
+    "root_motion_quality": "not_evaluated",
+    "foot_contact_quality": "not_evaluated"
+  },
+  "recovery": [
+    {
+      "stage": "animation_native_import",
+      "root_cause": "UNITY_UPM_IPC_DISCONNECTED",
+      "action": "relaunch_same_editor_stage_once",
+      "command_sha256": "651cd6f30ea598bc4332eeae67c61a1603cf8ee71fd700bb304749451d4206ca",
+      "failed_log": "animation_native_import.failed_startup.log",
+      "failed_log_sha256": "0f1d1cd0029f307fe9f82b86cdda3a5d3edcab5dee445bd82e30841281bc89f8",
+      "at": "2026-10-22T13:25:25.492358+00:00",
+      "policy": "One startup relaunch only; no source regeneration, quality change or retry of license/compiler/content errors"
+    }
+  ],
+  "fbx_preserved": true,
+  "diagnostic_note": "Initial report validation used wrong DATA root; corrected to retained isolated Library and revalidated existing real Editor outputs."
+}

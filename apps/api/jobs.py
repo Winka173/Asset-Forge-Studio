@@ -411,7 +411,9 @@ class Worker:
             processed=store.add_artifact(folder / 'output/LOD0.glb', 'candidate', artifact['name'] + ' / processed LOD0',
                                inspections['LOD0.glb'] | {'parent_id': artifact['id'], 'parent_sha256': artifact['sha256'],
                                 'project_id': payload.get('project_id') or artifact.get('project_id'), 'asset_id': payload.get('asset_id') or artifact.get('asset_id'),
-                                'job_id': identifier, 'stage': 'blender_processed', 'license': artifact['metadata'].get('license', 'NEEDS_REVIEW')})
+                                'job_id': identifier, 'stage': 'blender_processed',
+                                'lod_surface_quality':[{k:row[k] for k in ('level','ratio','surface_error')} for row in report['lods']],
+                                'license': artifact['metadata'].get('license', 'NEEDS_REVIEW')})
             if processed.get('asset_id'):
                 from .fidelity import evaluate
                 evaluate(processed['asset_id'],processed['id'],inspections['LOD0.glb'])
@@ -551,28 +553,37 @@ class Worker:
         try:
             with (folder/'worker.log').open('w',encoding='utf-8') as log:
                 for command,stage in commands:
-                    log.write('STAGE '+stage+'\n');log.flush()
-                    process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
-                    (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='unity_import',stage=stage)))
-                    while process.poll() is None:
-                        if time.monotonic()-started>int(payload.get('timeout_seconds',900)):
-                            kill_tree(process)
-                            raise TimeoutError('Native Editor validation timeout; exact settings and partial files retained')
-                        if get(identifier)['status']=='CANCELLED' or self.stop.is_set():
-                            kill_tree(process)
-                            if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Desktop stopped; native import checkpoint retained, retry uses a new immutable project')
+                    for attempt in range(2):
+                        if self.stop.is_set() or get(identifier)['status']=='CANCELLED':
+                            if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Editor stopped before next stage; retained inputs unchanged')
                             return
-                        try:
-                            tree=[psutil.Process(process.pid),*psutil.Process(process.pid).children(recursive=True)]
-                            ram=sum(p.memory_info().rss for p in tree if p.is_running())
-                        except (psutil.NoSuchProcess,psutil.AccessDenied):ram=None
-                        sample=dict(seconds=time.monotonic()-started,process_tree_ram_bytes=ram)
-                        if payload.get('use_gpu'):
-                            gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
-                            sample['all_gpu_memory_mib_power_w_utilization_percent']=gpu.stdout.strip()
-                        samples.append(sample)
-                        self.stop.wait(.5)
-                    if process.returncode:raise RuntimeError(f'Unity stage {stage} exited {process.returncode}; inspect unity.log/unity_reopen.log')
+                        log.write('STAGE '+stage+'\n');log.flush()
+                        process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
+                        (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,kind='unity_import',stage=stage)))
+                        while process.poll() is None:
+                            if time.monotonic()-started>int(payload.get('timeout_seconds',900)):
+                                kill_tree(process)
+                                raise TimeoutError('Native Editor validation timeout; exact settings and partial files retained')
+                            if get(identifier)['status']=='CANCELLED' or self.stop.is_set():
+                                kill_tree(process)
+                                if get(identifier)['status']!='CANCELLED':transition(identifier,'BLOCKED','Desktop stopped; native import checkpoint retained, retry uses a new immutable project')
+                                return
+                            try:
+                                tree=[psutil.Process(process.pid),*psutil.Process(process.pid).children(recursive=True)]
+                                ram=sum(p.memory_info().rss for p in tree if p.is_running())
+                            except (psutil.NoSuchProcess,psutil.AccessDenied):ram=None
+                            sample=dict(seconds=time.monotonic()-started,process_tree_ram_bytes=ram)
+                            if payload.get('use_gpu'):
+                                gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+                                sample['all_gpu_memory_mib_power_w_utilization_percent']=gpu.stdout.strip()
+                            samples.append(sample)
+                            self.stop.wait(.5)
+                        if not process.returncode:break
+                        from engines.editor_recovery import prepare_retry
+                        if attempt==0 and not self.stop.is_set() and get(identifier)['status']!='CANCELLED' and prepare_retry(folder,command,stage):
+                            log.write('STAGE Recover Package Manager IPC startup / same Editor stage / one retry\n');log.flush()
+                            continue
+                        raise RuntimeError(f'Unity stage {stage} exited {process.returncode}; inspect retained Editor logs')
             transition(identifier,'VALIDATING')
             report=plugin.invoke(Operation.validate,payload,folder)
             (folder/'manifest.json').write_text(json.dumps(report,indent=2),encoding='utf-8')

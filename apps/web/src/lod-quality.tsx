@@ -1,0 +1,7 @@
+type Measurement={level:number;surface_error:{target_triangles:number;samples_per_direction:number;symmetric_p95_relative_diagonal:number|null;symmetric_sampled_max_relative_diagonal:number|null}};
+export function LodQualityEvidence({metadata}:{metadata?:Record<string,unknown>}){
+ const measurements=metadata?.lod_surface_quality;
+ if(!Array.isArray(measurements)||!measurements.length)return null;
+ const percent=(value:number|null)=>value==null?'Not measured':(value*100).toFixed(3)+'%';
+ return <details className="lod-quality-evidence" aria-label="Measured LOD geometry retention"><summary>LOD detail retention · measured</summary><p>The master stays unchanged. Lower sampled deviation means the LOD surface is closer to it.</p><table><thead><tr><th>Version</th><th>Triangles</th><th>95% deviation</th><th>Largest sampled deviation</th></tr></thead><tbody>{(measurements as Measurement[]).map(row=><tr key={row.level}><th>LOD {row.level}</th><td>{row.surface_error.target_triangles.toLocaleString()}</td><td>{percent(row.surface_error.symmetric_p95_relative_diagonal)}</td><td>{percent(row.surface_error.symmetric_sampled_max_relative_diagonal)}</td></tr>)}</tbody></table><small>Relative to the master bounding diagonal; {(measurements[0] as Measurement).surface_error.samples_per_direction.toLocaleString()} area-weighted samples per direction. Small features can be missed. This measures geometry, not artistic quality, texture fidelity or the exact worst-case error.</small></details>;
+}

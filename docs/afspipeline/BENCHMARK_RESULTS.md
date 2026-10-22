@@ -1,5 +1,9 @@
 # Benchmark evidence
 
+2026-10-22 LOD measurement slice (0.9.5 development): the retained real neural tower was processed without new inference. Area-weighted bidirectional surface sampling uses 8,192 points per direction, seed 43, exact BVH nearest points at those samples and a validator hash. LOD1/2/3 have 639,947 / 344,586 / 147,680 triangles. The larger directional p95 distances are 0.002785% / 0.012562% / 0.053226% of the master bounding diagonal; largest sampled deviations are 0.014652% / 0.046306% / 0.197851%. Source hashes and master are unchanged. Evidence: `../evidence/lod_quality_real_v095.json`. These are sampled geometric deviations, not global Hausdorff bounds, silhouette certification, calibrated physical dimensions or artistic scores. Native-to-GLB finishing loss is not measured by this LOD-to-export-master test.
+
+Research only: actual CPU Cycles 4096 normal/AO bake on the retained tower LOD3 completed in 72.78 seconds. The resulting GLB contains the normal texture; AO is separate. Common-camera before/after renders exist, but improvement is not established, UV overlap/ray coverage are untested, and the bake is not enabled in production. Pixel variance includes unused UV regions and cannot certify coverage. Evidence: `../evidence/lod_bake_research_v095.json`.
+
 No human-accepted adaptive art benchmark has completed. Two new real technical delivery paths completed; sample counts and rejected/interrupted attempts remain visible.
 
 ## Preserved tower baseline (2026-10-22)

@@ -1,0 +1,116 @@
+{
+  "status": "PASS_NATIVE_MEASURED_LOD_EVIDENCE",
+  "version": "0.9.5",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-quality-native\\2026-10-22T13-44-45-814Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "actual_library_and_production_LOD_measurements_match_real_report_and_survive_refresh_no_jobs",
+      "passed": true,
+      "asset_id": "e72d6c6dcd5647b2803280dc546d157a",
+      "artifact_id": "91c618de544945b589aa373b784e671e",
+      "levels": [
+        {
+          "level": 1,
+          "measurement": {
+            "schema_version": 1,
+            "validator_sha256": "7e4267683e7a3df4934a296595536cbf719feef87e263b75490b90d56b2ce8b5",
+            "method": "Area-weighted triangle samples / exact BVH nearest surface at sampled points",
+            "samples_per_direction": 8192,
+            "seed": 43,
+            "master_triangles": 984536,
+            "target_triangles": 639947,
+            "master_to_lod": {
+              "mean": 0.000009043278919935814,
+              "p95": 0.00003293661047791829,
+              "sampled_max": 0.00017331073468085378,
+              "rms": 0.000015031155822126482,
+              "normal_angle_mean_degrees": 0.9322294849258652
+            },
+            "lod_to_master": {
+              "mean": 0.000008887164067602946,
+              "p95": 0.00003089622878178488,
+              "sampled_max": 0.00011374988389434293,
+              "rms": 0.000014383527780402856,
+              "normal_angle_mean_degrees": 0.9068787644774099
+            },
+            "symmetric_p95_relative_diagonal": 0.00002784594932288173,
+            "symmetric_sampled_max_relative_diagonal": 0.0001465239399260575,
+            "coordinate_space": "Shared Blender world units; physical metres require calibrated source scale",
+            "limitations": [
+              "Sampled maximum is not the global Hausdorff maximum. Thin features can be missed.",
+              "Geometric face-normal deviation is not a texture/shader/artistic rating. No silhouette, UV or bake-coverage certification."
+            ]
+          }
+        },
+        {
+          "level": 2,
+          "measurement": {
+            "schema_version": 1,
+            "validator_sha256": "7e4267683e7a3df4934a296595536cbf719feef87e263b75490b90d56b2ce8b5",
+            "method": "Area-weighted triangle samples / exact BVH nearest surface at sampled points",
+            "samples_per_direction": 8192,
+            "seed": 43,
+            "master_triangles": 984536,
+            "target_triangles": 344586,
+            "master_to_lod": {
+              "mean": 0.00004305073899551859,
+              "p95": 0.00014848199134576132,
+              "sampled_max": 0.000547710107639432,
+              "rms": 0.0000668193299181177,
+              "normal_angle_mean_degrees": 3.931142895203786
+            },
+            "lod_to_master": {
+              "mean": 0.00004454052174455975,
+              "p95": 0.00014858136855764315,
+              "sampled_max": 0.00051381706725806,
+              "rms": 0.00006863549741797959,
+              "normal_angle_mean_degrees": 4.033472730010523
+            },
+            "symmetric_p95_relative_diagonal": 0.00012561672859307658,
+            "symmetric_sampled_max_relative_diagonal": 0.0004630563886099572,
+            "coordinate_space": "Shared Blender world units; physical metres require calibrated source scale",
+            "limitations": [
+              "Sampled maximum is not the global Hausdorff maximum. Thin features can be missed.",
+              "Geometric face-normal deviation is not a texture/shader/artistic rating. No silhouette, UV or bake-coverage certification."
+            ]
+          }
+        },
+        {
+          "level": 3,
+          "measurement": {
+            "schema_version": 1,
+            "validator_sha256": "7e4267683e7a3df4934a296595536cbf719feef87e263b75490b90d56b2ce8b5",
+            "method": "Area-weighted triangle samples / exact BVH nearest surface at sampled points",
+            "samples_per_direction": 8192,
+            "seed": 43,
+            "master_triangles": 984536,
+            "target_triangles": 147680,
+            "master_to_lod": {
+              "mean": 0.0001804729111726684,
+              "p95": 0.0005908448540139941,
+              "sampled_max": 0.0017226452473551035,
+              "rms": 0.00026873809696161417,
+              "normal_angle_mean_degrees": 10.046226521144039
+            },
+            "lod_to_master": {
+              "mean": 0.00019427105084449524,
+              "p95": 0.0006295653205597771,
+              "sampled_max": 0.0023402152583003044,
+              "rms": 0.0002970378849416624,
+              "normal_angle_mean_degrees": 10.003726167318488
+            },
+            "symmetric_p95_relative_diagonal": 0.0005322601129070205,
+            "symmetric_sampled_max_relative_diagonal": 0.0019785131056807986,
+            "coordinate_space": "Shared Blender world units; physical metres require calibrated source scale",
+            "limitations": [
+              "Sampled maximum is not the global Hausdorff maximum. Thin features can be missed.",
+              "Geometric face-normal deviation is not a texture/shader/artistic rating. No silhouette, UV or bake-coverage certification."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "scope": "Measured LOD surface evidence for a retained real tower; no new inference, artistic score or global worst-case/silhouette claim."
+}

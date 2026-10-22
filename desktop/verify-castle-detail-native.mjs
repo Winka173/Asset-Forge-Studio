@@ -1,7 +1,7 @@
-// Load the freshly generated real tower in the packaged viewer. No inference mocks.
+// Load a freshly generated real neural castle in the packaged viewer. No inference mocks.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';
-const root=path.resolve(import.meta.dirname,'..'),source=JSON.parse(fs.readFileSync(path.join(root,'.local/castle-quality-route/20261022T114653Z/report.json'),'utf8'));
+const root=path.resolve(import.meta.dirname,'..'),source=JSON.parse(fs.readFileSync(process.env.AFS_CASTLE_REPORT||path.join(root,'.local/castle-quality-route/20261022T114653Z/report.json'),'utf8'));
 const replay={run:source.run,artifact:{asset_id:source.asset_id,project_id:source.jobs[0].payload.project_id}};
 const run=path.join(root,'.local/castle-detail-native',new Date().toISOString().replaceAll(/[:.]/g,'-')),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
 fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(replay.run,'Library'),blender:null,setup_complete:true}));

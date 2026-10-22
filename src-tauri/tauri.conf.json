@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Asset Forge Studio",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "identifier": "com.assetforgestudio.desktop",
   "build": {
     "frontendDist": "../apps/web/dist",

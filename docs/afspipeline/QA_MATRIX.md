@@ -1,5 +1,9 @@
 # Acceptance matrix
 
+0.9.5 LOD slice VERIFIED: real retained-tower Blender API processing, reopened LOD exports, hash preservation and measured bidirectional surface reports (`lod_quality_real_v095.json`). Real Blender identical/coarsened/shifted geometry tests passed. The first packaged UI inspection exposed an old Library padding override and a completed standalone model remaining in the waiting animation; both were fixed and a fresh full Windows build/native smoke passed. Final affected native acceptance (`lod_quality_native_v095.json`) verifies actual card padding, three measured rows, visible model in Production, Library/Production persistence after refresh and no new inference. 140 backend tests passed in 264.85 seconds; frontend checks/build passed, final backend/source cache verified. No artistic quality, bake coverage or global worst-case deviation claim.
+
+Unity startup diagnosis: one actual failed Package Manager IPC stage was relaunched with its completed FBX unchanged, then cold reopened and imported into a clean project. Native reports revalidated under the correct isolated Library root (`unity_startup_recovery_real_v095.json`); the first diagnostic harness used the wrong DATA root and was corrected. Original failed SQL status remains failed. Compiler/content/license/OOM errors are not handled as transient IPC startup errors.
+
 Status vocabulary: VERIFIED, IMPLEMENTED_UNVERIFIED, BLOCKED, NOT_IMPLEMENTED.
 
 | Case | Current evidence / status |

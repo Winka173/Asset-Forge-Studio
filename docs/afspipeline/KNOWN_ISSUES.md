@@ -1,5 +1,8 @@
 # Known issues
 
+- LOD surface measurements are sampled geometric evidence only. Thin features, silhouette and texture fidelity are not certified; no automatic artistic threshold is inferred. The research 4K normal/AO bake is not production enabled: UV overlap, ray coverage and visible improvement remain unverified. Master-to-LOD measurements do not establish native-field-to-GLB loss.
+- A real Unity Package Manager IPC startup failure was reproduced during 0.9.5 verification. One same-stage relaunch is allowed only for the observed disconnected/cancelled-resolution signature, retaining a hash-bound failed log. Compiler/license/content/OOM errors are not retried by this rule; original failed records remain failed.
+
 - Qwen4B visual judgments can be wrong or inconsistent; no independently human-rated calibration set. Never claim zero failures.
 - Whole-castle SDXL/image-to-3D remains unreliable for exact structural requirements. The detailed neural route is now the default; the narrow authored castle is explicitly labeled Structural blockout and requires opt-in. Earlier automatic routing was an incorrect quality tradeoff. Arbitrary architecture, hybrid ornamentation and structural mesh edits remain unavailable.
 - SDXL here lacks verified image-to-image editing/geometry constraint fidelity; 50 steps is an existing pinned Maximum profile, not a universal optimum.

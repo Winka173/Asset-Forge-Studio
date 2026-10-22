@@ -1,0 +1,240 @@
+{
+  "status": "COMPLETED_RESEARCH_BAKE_NEEDS_REVIEW",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-bake-research\\20261022T131434Z",
+  "request": {
+    "master": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-quality-real\\20261022T131218Z\\Library\\jobs\\494f870a404a4817920e8a5b89430c66\\output\\LOD0.glb",
+    "lod": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-quality-real\\20261022T131218Z\\Library\\jobs\\494f870a404a4817920e8a5b89430c66\\output\\LOD3.glb",
+    "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-bake-research\\20261022T131434Z\\output",
+    "benchmark": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\lod-bake-research\\20261022T131434Z\\benchmark.json",
+    "texture_size": 4096,
+    "cage_extrusion_m": 0.002365630282236665,
+    "max_ray_distance_m": 0.0473126056447333,
+    "bounds_tolerance_m": 0.05914075705591663
+  },
+  "scope": "Retained actual generated tower; CPU geometry-to-LOD normal and AO bake, not AI texture synthesis. Visual improvement, coverage and production integration are not established by a completed subprocess.",
+  "qa": {
+    "status": "NEEDS_REVIEW",
+    "triangles": 147680,
+    "mesh_instances": 1,
+    "dimensions_xyz_m": [
+      0.4732717275619507,
+      1.0053001642227173,
+      0.4130210429430008
+    ],
+    "bounds_xyz_m": [
+      [
+        -0.2369815856218338,
+        -0.5033956170082092,
+        -0.2077336460351944
+      ],
+      [
+        0.23629014194011688,
+        0.5019045472145081,
+        0.2052873969078064
+      ]
+    ],
+    "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+    "meshes": [
+      {
+        "node": "geometry_0_LOD3",
+        "triangles": 147680,
+        "vertices": 187524,
+        "watertight": false,
+        "winding_consistent": true,
+        "watertight_after_position_weld_1e8": false,
+        "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+        "has_uv": true
+      }
+    ],
+    "materials": [
+      {
+        "name": "Material_0.002",
+        "base_color_texture": true,
+        "metallic_roughness_texture": true,
+        "normal_texture": true,
+        "ao_texture": false,
+        "emissive_texture": false,
+        "metallic_factor": 1,
+        "roughness_factor": 1
+      }
+    ],
+    "images": 3,
+    "checks": {
+      "container": "PASS",
+      "finite_nonempty_geometry": "PASS",
+      "external_resources": "PASS",
+      "uv_overlap": "NOT_TESTED",
+      "self_intersections": "NOT_TESTED",
+      "pbr_plausibility": "NOT_TESTED",
+      "dimensions_approved": "NOT_TESTED",
+      "unity_import": "NOT_TESTED",
+      "human_quality": "NOT_TESTED"
+    }
+  },
+  "bake": {
+    "status": "NEEDS_REVIEW",
+    "master_sha256": "f54fce23ee272614ab86118adc8d6f44aae9c04d4470222508f2c20db59874b0",
+    "lod_sha256": "e4c8113e288d716020c80908affa93ba73be44d760417dddae1c691a80fbce42",
+    "script_sha256": "5909ea7cef3e442810312acb4aed85eff6a06f02fec5807063f435fe49a41d3a",
+    "texture_size": 4096,
+    "normal_space": "tangent",
+    "ao": "actual Cycles geometry bake, separate texture",
+    "source": [
+      {
+        "name": "MASTER_geometry_0",
+        "triangles": 984536,
+        "vertices": 726603,
+        "non_manifold_edges": 421836,
+        "boundary_edges": 421836,
+        "loose_vertices": 0,
+        "uv_layers": 1,
+        "materials": [
+          "Material_0"
+        ],
+        "position_weld_analysis": {
+          "epsilon_local_m": 1.0028676986694336e-07,
+          "boundary_edges": 0,
+          "non_manifold_edges": 5513,
+          "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+        }
+      }
+    ],
+    "target": [
+      {
+        "name": "geometry_0_LOD3",
+        "triangles": 147680,
+        "vertices": 186907,
+        "non_manifold_edges": 187184,
+        "boundary_edges": 187184,
+        "loose_vertices": 0,
+        "uv_layers": 1,
+        "materials": [
+          "Material_0.002"
+        ],
+        "position_weld_analysis": {
+          "epsilon_local_m": 1.0053001642227172e-07,
+          "boundary_edges": 153372,
+          "non_manifold_edges": 153372,
+          "note": "analysis only; UV seams may explain raw boundary counts; does not prove no self-intersections"
+        }
+      }
+    ],
+    "before": [
+      "mobile_three_quarter_passes.exr",
+      "mobile_three_quarter_asset.png",
+      "mobile_three_quarter.png"
+    ],
+    "after": [
+      "mobile_three_quarter_passes.exr",
+      "mobile_three_quarter_asset.png",
+      "mobile_three_quarter.png"
+    ],
+    "framing": [
+      {
+        "resolution": "mobile",
+        "view": "three_quarter",
+        "status": "PASS"
+      },
+      {
+        "resolution": "mobile",
+        "view": "three_quarter",
+        "status": "PASS"
+      }
+    ],
+    "checks": {
+      "uv_overlap": "NOT_TESTED",
+      "bake_ray_misses": "NOT_TESTED",
+      "visual_improvement": "NEEDS_REVIEW",
+      "unity": "NOT_TESTED",
+      "human_approval": "NOT_TESTED"
+    },
+    "artifacts": [
+      {
+        "path": "baked.blend",
+        "bytes": 203199817,
+        "sha256": "d827531c5abe819053f1d8b9ccd8ee70276f9f792b0ddb2466fae5bc0e9bff90"
+      },
+      {
+        "path": "lod_ao.png",
+        "bytes": 10871229,
+        "sha256": "f57d5acd8adf60b074f9d93a9f854861570df3420db9a1b506b5928254a34ab2"
+      },
+      {
+        "path": "LOD_baked.glb",
+        "bytes": 60189192,
+        "sha256": "545b01042e092daaacdecd6becd588e922c6b941efa6cc3083d492a6fcfa866a"
+      },
+      {
+        "path": "lod_normal.png",
+        "bytes": 22144870,
+        "sha256": "12b641850feb173894d6b2d563c4fe5042aa987ffc9503bc3528a5bdbe3ee494"
+      },
+      {
+        "path": "request.json",
+        "bytes": 752,
+        "sha256": "de7cbbbd08283dd06c0d8cfd33215f4b2e223eaea66ad70ca15e16ae5503c6cd"
+      },
+      {
+        "path": "after/mobile_three_quarter.png",
+        "bytes": 770790,
+        "sha256": "f437faaa4c5ae9bcb2c87cbedd0af0fe6e9e4f2f3f10bc076079460c4e5a321b"
+      },
+      {
+        "path": "after/mobile_three_quarter_asset.png",
+        "bytes": 493117,
+        "sha256": "c7d786412182ecce67003a4a885c5d444641a6792e3da2b15118f4a0b7b04c71"
+      },
+      {
+        "path": "after/mobile_three_quarter_passes.exr",
+        "bytes": 2045029,
+        "sha256": "8edb24325b9669a77230493089ed4493525e6d20306897a37a05918a41347ee7"
+      },
+      {
+        "path": "before/mobile_three_quarter.png",
+        "bytes": 776087,
+        "sha256": "fdbe5c84015a2736abe4e1e8a93853dde9696531a3939addfe6a2d6fe24a2dc1"
+      },
+      {
+        "path": "before/mobile_three_quarter_asset.png",
+        "bytes": 493344,
+        "sha256": "14547b123fd45a3536c2526b999119c52f13cd83ec9ad25074558bbd77940e07"
+      },
+      {
+        "path": "before/mobile_three_quarter_passes.exr",
+        "bytes": 3182449,
+        "sha256": "2cbb90c29455219b0733280d28571f842c2b1b3765fc5a43acc0f502cff53c08"
+      }
+    ]
+  },
+  "normal_texture_attached": true,
+  "actual_map_statistics": {
+    "normal": {
+      "dimensions": [
+        4096,
+        4096
+      ],
+      "min": 0.0,
+      "max": 255.0,
+      "standard_deviation_per_channel": [
+        28.39504623413086,
+        29.102657318115234,
+        53.676536560058594
+      ]
+    },
+    "ao": {
+      "dimensions": [
+        4096,
+        4096
+      ],
+      "min": 0.0,
+      "max": 255.0,
+      "standard_deviation_per_channel": [
+        91.30857849121094,
+        91.30857849121094,
+        91.30857849121094
+      ]
+    }
+  },
+  "sources_preserved": true,
+  "seconds": 72.78100000000268
+}

@@ -101,3 +101,6 @@ html[data-afs-motion=reduced] .workspace-tools-overlay *,html[data-afs-motion=re
 .studio[data-interface=focused] .workspace-stats{display:none}.studio .home-hero .hero-empty{color:#b8c0ce}.studio .home-hero .hero-empty svg{color:#edbc70}
 
 .studio .native-checkpoint-recovery{padding:18px;margin:18px 0;border:0;border-radius:12px;background:#303d45}.native-checkpoint-recovery>strong{color:#d7eaff}.native-checkpoint-recovery>small{display:block;margin-top:14px;font-size:11px;line-height:1.6}.native-checkpoint-recovery .primary{width:100%;margin:8px 0}
+
+.studio .lod-quality-evidence{padding:18px;margin:18px 0;border-radius:12px;background:#2b3039}.lod-quality-evidence summary{cursor:pointer;color:#e2c695}.lod-quality-evidence table{width:100%;font-size:11px;border-collapse:collapse;margin:16px 0}.lod-quality-evidence :is(td,th){padding:10px 8px;text-align:left;border-bottom:1px solid #464b57}.lod-quality-evidence small{display:block;line-height:1.7;color:#b4bdcb}
+.studio .library-detail-preview>.lod-quality-evidence{padding:18px;margin:18px 24px;border-top:0}

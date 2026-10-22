@@ -9,6 +9,7 @@ import json
 import math
 import sys
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 
 import bmesh
 import bpy
@@ -245,6 +246,9 @@ def run(request):
     bpy.ops.wm.save_as_mainfile(filepath=str(output / 'master.blend'))
     export_glb(output / 'LOD0.glb', objects)
     if request.get('export_fbx', True): export_fbx(output / 'LOD0.fbx', objects)
+    from lod_quality import SurfaceReference
+    print('STAGE Measure LOD geometry detail retention against the unchanged master',flush=True)
+    surface_reference=SurfaceReference(objects)
     lod_stats = []
     for index, ratio in enumerate(request.get('lod_ratios', [0.65, 0.35, 0.15]), 1):
         if not 0 < ratio < 1: raise ValueError('LOD ratio must be between zero and one')
@@ -259,8 +263,10 @@ def run(request):
             select([clone]); bpy.ops.object.modifier_apply(modifier=modifier.name)
         export_glb(output / f'LOD{index}.glb', duplicates)
         if request.get('export_fbx', True): export_fbx(output / f'LOD{index}.fbx', duplicates)
-        lod_stats.append({'level': index, 'ratio': ratio, 'meshes': mesh_stats(duplicates), 'quality': 'NEEDS_REVIEW', 'baking': 'NOT_TESTED'})
+        surface_error=surface_reference.compare(duplicates)
+        lod_stats.append({'level': index, 'ratio': ratio, 'meshes': mesh_stats(duplicates), 'quality': 'NEEDS_REVIEW', 'baking': 'NOT_TESTED', 'surface_error':surface_error})
         for clone in duplicates: bpy.data.objects.remove(clone, do_unlink=True)
+    del surface_reference
     bpy.ops.mesh.primitive_cube_add(size=1, location=Vector(low).lerp(Vector(high), 0.5))
     collider = bpy.context.object; collider.name = 'COLLIDER_AABB'; collider.dimensions = Vector(high) - Vector(low)
     select([collider]); bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)

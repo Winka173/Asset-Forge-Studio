@@ -1,5 +1,8 @@
 # Decisions
 
+- 0.9.5: add measured LOD surface evidence without changing master geometry, ratios, quality lock or texture budgets. Normalize only the reported distances, never independently normalize models for comparison. Keep sampled error distinct from artistic/texture/silhouette certification. Actual bake completion alone cannot justify enabling normal/AO production processing.
+- A failed Unity Package Manager IPC startup may relaunch the same Editor stage once, preserving the original failed log and exact command fingerprint. No upstream AI/Blender regeneration or quality downgrade; permanent content/license failures remain visible.
+
 - The 2026-10-22 Adaptive 3D Production + AI Quality Control user specification supersedes the prior proposal of adding mandatory VLM gates everywhere.
 - Technical/mandatory structural validation is authoritative; uncertain aesthetic observations are advisory in Auto. Never turn uncertainty into artistic approval.
 - Reuse the existing coordinator, SQLite, scheduler, status dimensions, Library and revision/export transactions.
