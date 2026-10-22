@@ -1,0 +1,414 @@
+{
+  "scope": "Whole device, sampling began after worker startup; not full-worker exclusive CUDA or guaranteed full-run peak.",
+  "started_at_epoch": 1792680622.341485,
+  "samples": [
+    {
+      "at": 1792680622.3776078,
+      "whole_device_memory_mib_and_utilization": "8190, 21"
+    },
+    {
+      "at": 1792680623.4104173,
+      "whole_device_memory_mib_and_utilization": "13946, 7"
+    },
+    {
+      "at": 1792680624.450508,
+      "whole_device_memory_mib_and_utilization": "11360, 5"
+    },
+    {
+      "at": 1792680625.4853165,
+      "whole_device_memory_mib_and_utilization": "11360, 5"
+    },
+    {
+      "at": 1792680626.5246928,
+      "whole_device_memory_mib_and_utilization": "11360, 9"
+    },
+    {
+      "at": 1792680627.5595446,
+      "whole_device_memory_mib_and_utilization": "11360, 7"
+    },
+    {
+      "at": 1792680628.5954964,
+      "whole_device_memory_mib_and_utilization": "11360, 7"
+    },
+    {
+      "at": 1792680629.631627,
+      "whole_device_memory_mib_and_utilization": "11360, 7"
+    },
+    {
+      "at": 1792680630.6654708,
+      "whole_device_memory_mib_and_utilization": "11360, 7"
+    },
+    {
+      "at": 1792680631.6997533,
+      "whole_device_memory_mib_and_utilization": "11360, 7"
+    },
+    {
+      "at": 1792680632.741941,
+      "whole_device_memory_mib_and_utilization": "15458, 56"
+    },
+    {
+      "at": 1792680634.1469786,
+      "whole_device_memory_mib_and_utilization": "15806, 13"
+    },
+    {
+      "at": 1792680635.1824973,
+      "whole_device_memory_mib_and_utilization": "15911, 2"
+    },
+    {
+      "at": 1792680636.2210224,
+      "whole_device_memory_mib_and_utilization": "15930, 25"
+    },
+    {
+      "at": 1792680637.2911885,
+      "whole_device_memory_mib_and_utilization": "15943, 4"
+    },
+    {
+      "at": 1792680638.335986,
+      "whole_device_memory_mib_and_utilization": "15939, 99"
+    },
+    {
+      "at": 1792680639.3852272,
+      "whole_device_memory_mib_and_utilization": "8760, 33"
+    },
+    {
+      "at": 1792680640.4190462,
+      "whole_device_memory_mib_and_utilization": "8760, 30"
+    },
+    {
+      "at": 1792680641.454166,
+      "whole_device_memory_mib_and_utilization": "8889, 26"
+    },
+    {
+      "at": 1792680642.4909935,
+      "whole_device_memory_mib_and_utilization": "9112, 34"
+    },
+    {
+      "at": 1792680643.5259306,
+      "whole_device_memory_mib_and_utilization": "9056, 31"
+    },
+    {
+      "at": 1792680644.561446,
+      "whole_device_memory_mib_and_utilization": "9070, 30"
+    },
+    {
+      "at": 1792680645.5957649,
+      "whole_device_memory_mib_and_utilization": "9165, 29"
+    },
+    {
+      "at": 1792680646.628638,
+      "whole_device_memory_mib_and_utilization": "9370, 16"
+    },
+    {
+      "at": 1792680647.6625009,
+      "whole_device_memory_mib_and_utilization": "10124, 26"
+    },
+    {
+      "at": 1792680648.6951969,
+      "whole_device_memory_mib_and_utilization": "10189, 6"
+    },
+    {
+      "at": 1792680649.7316906,
+      "whole_device_memory_mib_and_utilization": "10189, 9"
+    },
+    {
+      "at": 1792680650.7674627,
+      "whole_device_memory_mib_and_utilization": "10157, 21"
+    },
+    {
+      "at": 1792680651.7997043,
+      "whole_device_memory_mib_and_utilization": "10025, 6"
+    },
+    {
+      "at": 1792680652.8328047,
+      "whole_device_memory_mib_and_utilization": "10031, 6"
+    },
+    {
+      "at": 1792680653.8643317,
+      "whole_device_memory_mib_and_utilization": "10032, 6"
+    },
+    {
+      "at": 1792680654.8987823,
+      "whole_device_memory_mib_and_utilization": "10496, 18"
+    },
+    {
+      "at": 1792680655.9395542,
+      "whole_device_memory_mib_and_utilization": "10501, 14"
+    },
+    {
+      "at": 1792680656.9761865,
+      "whole_device_memory_mib_and_utilization": "10228, 14"
+    },
+    {
+      "at": 1792680658.009519,
+      "whole_device_memory_mib_and_utilization": "10228, 14"
+    },
+    {
+      "at": 1792680659.0427833,
+      "whole_device_memory_mib_and_utilization": "10229, 16"
+    },
+    {
+      "at": 1792680660.0766108,
+      "whole_device_memory_mib_and_utilization": "10636, 14"
+    },
+    {
+      "at": 1792680661.1110356,
+      "whole_device_memory_mib_and_utilization": "10055, 6"
+    },
+    {
+      "at": 1792680662.1458588,
+      "whole_device_memory_mib_and_utilization": "10352, 19"
+    },
+    {
+      "at": 1792680663.17791,
+      "whole_device_memory_mib_and_utilization": "10352, 5"
+    },
+    {
+      "at": 1792680664.2116873,
+      "whole_device_memory_mib_and_utilization": "10195, 6"
+    },
+    {
+      "at": 1792680665.2457857,
+      "whole_device_memory_mib_and_utilization": "10198, 6"
+    },
+    {
+      "at": 1792680666.2864766,
+      "whole_device_memory_mib_and_utilization": "10207, 8"
+    },
+    {
+      "at": 1792680667.3220243,
+      "whole_device_memory_mib_and_utilization": "10199, 5"
+    },
+    {
+      "at": 1792680668.3547583,
+      "whole_device_memory_mib_and_utilization": "10199, 5"
+    },
+    {
+      "at": 1792680669.3890893,
+      "whole_device_memory_mib_and_utilization": "10199, 6"
+    },
+    {
+      "at": 1792680670.423165,
+      "whole_device_memory_mib_and_utilization": "10202, 6"
+    },
+    {
+      "at": 1792680671.4631665,
+      "whole_device_memory_mib_and_utilization": "10201, 6"
+    },
+    {
+      "at": 1792680672.49658,
+      "whole_device_memory_mib_and_utilization": "10201, 6"
+    },
+    {
+      "at": 1792680673.5315297,
+      "whole_device_memory_mib_and_utilization": "10201, 6"
+    },
+    {
+      "at": 1792680674.5662236,
+      "whole_device_memory_mib_and_utilization": "10201, 9"
+    },
+    {
+      "at": 1792680675.5970082,
+      "whole_device_memory_mib_and_utilization": "10201, 5"
+    },
+    {
+      "at": 1792680676.6315687,
+      "whole_device_memory_mib_and_utilization": "10201, 4"
+    },
+    {
+      "at": 1792680677.665072,
+      "whole_device_memory_mib_and_utilization": "10201, 6"
+    },
+    {
+      "at": 1792680678.6992748,
+      "whole_device_memory_mib_and_utilization": "10201, 6"
+    },
+    {
+      "at": 1792680679.7330937,
+      "whole_device_memory_mib_and_utilization": "10363, 22"
+    },
+    {
+      "at": 1792680680.7693534,
+      "whole_device_memory_mib_and_utilization": "10363, 20"
+    },
+    {
+      "at": 1792680681.8036282,
+      "whole_device_memory_mib_and_utilization": "10203, 6"
+    },
+    {
+      "at": 1792680682.8371918,
+      "whole_device_memory_mib_and_utilization": "10203, 9"
+    },
+    {
+      "at": 1792680683.870632,
+      "whole_device_memory_mib_and_utilization": "10203, 6"
+    },
+    {
+      "at": 1792680684.9043994,
+      "whole_device_memory_mib_and_utilization": "10591, 15"
+    },
+    {
+      "at": 1792680685.938646,
+      "whole_device_memory_mib_and_utilization": "10596, 16"
+    },
+    {
+      "at": 1792680686.9714756,
+      "whole_device_memory_mib_and_utilization": "10239, 17"
+    },
+    {
+      "at": 1792680688.0065637,
+      "whole_device_memory_mib_and_utilization": "10448, 17"
+    },
+    {
+      "at": 1792680689.0418637,
+      "whole_device_memory_mib_and_utilization": "10392, 21"
+    },
+    {
+      "at": 1792680690.0908585,
+      "whole_device_memory_mib_and_utilization": "10669, 16"
+    },
+    {
+      "at": 1792680691.1299922,
+      "whole_device_memory_mib_and_utilization": "11032, 25"
+    },
+    {
+      "at": 1792680692.167669,
+      "whole_device_memory_mib_and_utilization": "11044, 22"
+    },
+    {
+      "at": 1792680693.2136233,
+      "whole_device_memory_mib_and_utilization": "11079, 21"
+    },
+    {
+      "at": 1792680694.2474427,
+      "whole_device_memory_mib_and_utilization": "11065, 19"
+    },
+    {
+      "at": 1792680695.2879984,
+      "whole_device_memory_mib_and_utilization": "11079, 20"
+    },
+    {
+      "at": 1792680696.324765,
+      "whole_device_memory_mib_and_utilization": "10861, 16"
+    },
+    {
+      "at": 1792680697.3649776,
+      "whole_device_memory_mib_and_utilization": "10903, 19"
+    },
+    {
+      "at": 1792680698.418997,
+      "whole_device_memory_mib_and_utilization": "10883, 21"
+    },
+    {
+      "at": 1792680699.4590056,
+      "whole_device_memory_mib_and_utilization": "10931, 22"
+    },
+    {
+      "at": 1792680700.511346,
+      "whole_device_memory_mib_and_utilization": "11092, 21"
+    },
+    {
+      "at": 1792680701.548436,
+      "whole_device_memory_mib_and_utilization": "11137, 28"
+    },
+    {
+      "at": 1792680702.5839536,
+      "whole_device_memory_mib_and_utilization": "11137, 21"
+    },
+    {
+      "at": 1792680703.6204886,
+      "whole_device_memory_mib_and_utilization": "11129, 20"
+    },
+    {
+      "at": 1792680704.6664526,
+      "whole_device_memory_mib_and_utilization": "11135, 21"
+    },
+    {
+      "at": 1792680705.704967,
+      "whole_device_memory_mib_and_utilization": "11145, 19"
+    },
+    {
+      "at": 1792680706.74326,
+      "whole_device_memory_mib_and_utilization": "11134, 24"
+    },
+    {
+      "at": 1792680707.778147,
+      "whole_device_memory_mib_and_utilization": "11137, 22"
+    },
+    {
+      "at": 1792680708.812561,
+      "whole_device_memory_mib_and_utilization": "11137, 22"
+    },
+    {
+      "at": 1792680709.855851,
+      "whole_device_memory_mib_and_utilization": "11051, 10"
+    },
+    {
+      "at": 1792680710.8915787,
+      "whole_device_memory_mib_and_utilization": "11026, 19"
+    },
+    {
+      "at": 1792680711.926396,
+      "whole_device_memory_mib_and_utilization": "11021, 18"
+    },
+    {
+      "at": 1792680712.9616253,
+      "whole_device_memory_mib_and_utilization": "11041, 18"
+    },
+    {
+      "at": 1792680713.9985182,
+      "whole_device_memory_mib_and_utilization": "10916, 11"
+    },
+    {
+      "at": 1792680715.048568,
+      "whole_device_memory_mib_and_utilization": "10948, 14"
+    },
+    {
+      "at": 1792680716.0899205,
+      "whole_device_memory_mib_and_utilization": "11065, 20"
+    },
+    {
+      "at": 1792680717.123925,
+      "whole_device_memory_mib_and_utilization": "11080, 17"
+    },
+    {
+      "at": 1792680718.15742,
+      "whole_device_memory_mib_and_utilization": "11068, 16"
+    },
+    {
+      "at": 1792680719.1926823,
+      "whole_device_memory_mib_and_utilization": "11046, 17"
+    },
+    {
+      "at": 1792680720.224862,
+      "whole_device_memory_mib_and_utilization": "11051, 16"
+    },
+    {
+      "at": 1792680721.257556,
+      "whole_device_memory_mib_and_utilization": "11048, 17"
+    },
+    {
+      "at": 1792680722.2918181,
+      "whole_device_memory_mib_and_utilization": "11091, 24"
+    },
+    {
+      "at": 1792680723.3328023,
+      "whole_device_memory_mib_and_utilization": "11211, 21"
+    },
+    {
+      "at": 1792680724.39496,
+      "whole_device_memory_mib_and_utilization": "4801, 14"
+    },
+    {
+      "at": 1792680725.430065,
+      "whole_device_memory_mib_and_utilization": "4960, 22"
+    },
+    {
+      "at": 1792680726.4650915,
+      "whole_device_memory_mib_and_utilization": "4997, 10"
+    },
+    {
+      "at": 1792680727.5012572,
+      "whole_device_memory_mib_and_utilization": "4847, 20"
+    }
+  ]
+}

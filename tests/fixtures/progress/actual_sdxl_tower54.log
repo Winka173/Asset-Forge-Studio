@@ -1,0 +1,89 @@
+W1022 21:31:30.808000 32372 Lib\site-packages\torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.
+STAGE load_sdxl
+C:\Users\Winka\Tools\sdxl\venv\Lib\site-packages\diffusers\utils\deprecation_utils.py:23: FutureWarning: `torch_dtype` is deprecated and will be removed in version 1.0.0. Please use `dtype` instead.
+  deprecate("torch_dtype", "1.0.0", _TORCH_DTYPE_DEPRECATION_MESSAGE)
+
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]
+Loading pipeline components...:  29%|##8       | 2/7 [00:00<00:00, 14.32it/s]
+
+Loading weights:   0%|          | 0/517 [00:00<?, ?it/s][A
+
+Loading weights:   7%|7         | 37/517 [00:00<00:01, 361.85it/s][A
+
+Loading weights:  16%|#5        | 81/517 [00:00<00:01, 402.31it/s][A
+
+Loading weights:  26%|##5       | 132/517 [00:00<00:00, 449.66it/s][A
+
+Loading weights:  36%|###5      | 184/517 [00:00<00:00, 463.60it/s][A
+
+Loading weights:  45%|####4     | 231/517 [00:00<00:00, 437.29it/s][A
+
+Loading weights:  53%|#####3    | 275/517 [00:00<00:00, 405.93it/s][A
+Loading weights: 100%|##########| 517/517 [00:00<00:00, 783.63it/s]
+
+Loading pipeline components...:  57%|#####7    | 4/7 [00:01<00:00,  3.07it/s]
+
+Loading weights:   0%|          | 0/196 [00:00<?, ?it/s][A
+Loading weights: 100%|##########| 196/196 [00:00<00:00, 2178.18it/s]
+
+Loading pipeline components...:  86%|########5 | 6/7 [00:01<00:00,  4.43it/s]
+Loading pipeline components...: 100%|##########| 7/7 [00:01<00:00,  4.94it/s]
+Loading pipeline components...: 100%|##########| 7/7 [00:01<00:00,  4.69it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (89 > 77). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (89 > 77). Running this sequence through the model will result in indexing errors
+STAGE encode_prompt
+STAGE concept_denoising
+
+  0%|          | 0/50 [00:00<?, ?it/s]Concept denoising: 2%| step 1/50
+
+  2%|2         | 1/50 [00:02<02:03,  2.52s/it]Concept denoising: 4%| step 2/50
+
+  4%|4         | 2/50 [00:02<00:53,  1.11s/it]Concept denoising: 6%| step 3/50
+
+  6%|6         | 3/50 [00:02<00:33,  1.42it/s]Concept denoising: 8%| step 4/50
+
+  8%|8         | 4/50 [00:03<00:23,  1.94it/s]Concept denoising: 10%| step 5/50
+
+ 10%|#         | 5/50 [00:03<00:18,  2.43it/s]Concept denoising: 12%| step 6/50
+
+ 12%|#2        | 6/50 [00:03<00:15,  2.85it/s]Concept denoising: 14%| step 7/50
+
+ 14%|#4        | 7/50 [00:03<00:13,  3.21it/s]Concept denoising: 16%| step 8/50
+
+ 16%|#6        | 8/50 [00:04<00:11,  3.52it/s]Concept denoising: 18%| step 9/50
+
+ 18%|#8        | 9/50 [00:04<00:10,  3.76it/s]Concept denoising: 20%| step 10/50
+
+ 20%|##        | 10/50 [00:04<00:10,  3.94it/s]Concept denoising: 22%| step 11/50
+
+ 22%|##2       | 11/50 [00:04<00:09,  4.08it/s]Concept denoising: 24%| step 12/50
+
+ 24%|##4       | 12/50 [00:04<00:09,  4.18it/s]Concept denoising: 26%| step 13/50
+
+ 26%|##6       | 13/50 [00:05<00:08,  4.25it/s]Concept denoising: 28%| step 14/50
+
+ 28%|##8       | 14/50 [00:05<00:08,  4.30it/s]Concept denoising: 30%| step 15/50
+
+ 30%|###       | 15/50 [00:05<00:08,  4.33it/s]Concept denoising: 32%| step 16/50
+
+ 32%|###2      | 16/50 [00:05<00:07,  4.35it/s]Concept denoising: 34%| step 17/50
+
+ 34%|###4      | 17/50 [00:06<00:07,  4.36it/s]Concept denoising: 36%| step 18/50
+
+ 36%|###6      | 18/50 [00:06<00:07,  4.38it/s]Concept denoising: 38%| step 19/50
+
+ 38%|###8      | 19/50 [00:06<00:07,  4.40it/s]Concept denoising: 40%| step 20/50
+
+ 40%|####      | 20/50 [00:06<00:06,  4.41it/s]Concept denoising: 42%| step 21/50
+
+ 42%|####2     | 21/50 [00:06<00:06,  4.42it/s]Concept denoising: 44%| step 22/50
+
+ 44%|####4     | 22/50 [00:07<00:06,  4.43it/s]Concept denoising: 46%| step 23/50
+
+ 46%|####6     | 23/50 [00:07<00:06,  4.43it/s]Concept denoising: 48%| step 24/50
+
+ 48%|####8     | 24/50 [00:07<00:05,  4.43it/s]Concept denoising: 50%| step 25/50
+
+ 50%|#####     | 25/50 [00:07<00:05,  4.43it/s]Concept denoising: 52%| step 26/50
+
+ 52%|#####2    | 26/50 [00:08<00:05,  4.42it/s]Concept denoising: 54%| step 27/50

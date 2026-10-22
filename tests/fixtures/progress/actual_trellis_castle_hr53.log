@@ -1,0 +1,187 @@
+[WORKER] flex_gemm EXPLICIT_GEMM patch applied.
+[WORKER] flex_gemm Triton fallback patch applied.
+[SPARSE] Conv backend: flex_gemm; Attention backend: flash_attn
+[ATTENTION] Using backend: flash_attn
+Please wait...
+[INFO] Local DINOv3 found. Loading from: C:\Users\Winka\Tools\trellis2\code\MODELS\dinov3
+[INFO] Local RMBG-2.0 found. Loading from: C:\Users\Winka\Tools\trellis2\code\MODELS\RMBG-2.0
+C:\Users\Winka\Tools\trellis2\code\venv\Lib\site-packages\timm\models\layers\__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+C:\Users\Winka\Tools\trellis2\code\venv\Lib\site-packages\timm\models\registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+[TIMING] manual_seed: 0.05s
+[TIMING] image_cond_model.to(device): 1.69s
+[TIMING] get_cond(512): 0.12s
+[TIMING] sparse_structure_flow_model.to(device): 0.65s
+
+Sampling sparse structure:   0%|          | 0/32 [00:00<?, ?it/s][TIMING] Sampling sparse structure step 0: 1.30s
+
+Sampling sparse structure:   3%|3         | 1/32 [00:01<00:40,  1.30s/it][TIMING] Sampling sparse structure step 1: 1.46s
+
+Sampling sparse structure:   6%|6         | 2/32 [00:02<00:41,  1.39s/it][TIMING] Sampling sparse structure step 2: 1.37s
+
+Sampling sparse structure:   9%|9         | 3/32 [00:04<00:40,  1.38s/it][TIMING] Sampling sparse structure step 3: 1.47s
+
+Sampling sparse structure:  12%|#2        | 4/32 [00:05<00:39,  1.42s/it][TIMING] Sampling sparse structure step 4: 1.52s
+
+Sampling sparse structure:  16%|#5        | 5/32 [00:07<00:39,  1.46s/it][TIMING] Sampling sparse structure step 5: 1.33s
+
+Sampling sparse structure:  19%|#8        | 6/32 [00:08<00:36,  1.41s/it][TIMING] Sampling sparse structure step 6: 1.53s
+
+Sampling sparse structure:  22%|##1       | 7/32 [00:09<00:36,  1.45s/it][TIMING] Sampling sparse structure step 7: 1.43s
+
+Sampling sparse structure:  25%|##5       | 8/32 [00:11<00:34,  1.45s/it][TIMING] Sampling sparse structure step 8: 1.26s
+
+Sampling sparse structure:  28%|##8       | 9/32 [00:12<00:31,  1.39s/it][TIMING] Sampling sparse structure step 9: 2.03s
+
+Sampling sparse structure:  31%|###1      | 10/32 [00:14<00:34,  1.59s/it][TIMING] Sampling sparse structure step 10: 1.58s
+
+Sampling sparse structure:  34%|###4      | 11/32 [00:16<00:33,  1.58s/it][TIMING] Sampling sparse structure step 11: 0.93s
+
+Sampling sparse structure:  38%|###7      | 12/32 [00:17<00:27,  1.39s/it][TIMING] Sampling sparse structure step 12: 0.90s
+
+Sampling sparse structure:  41%|####      | 13/32 [00:18<00:23,  1.24s/it][TIMING] Sampling sparse structure step 13: 0.87s
+
+Sampling sparse structure:  44%|####3     | 14/32 [00:18<00:20,  1.13s/it][TIMING] Sampling sparse structure step 14: 0.91s
+
+Sampling sparse structure:  47%|####6     | 15/32 [00:19<00:18,  1.06s/it][TIMING] Sampling sparse structure step 15: 1.10s
+
+Sampling sparse structure:  50%|#####     | 16/32 [00:21<00:17,  1.07s/it][TIMING] Sampling sparse structure step 16: 1.56s
+
+Sampling sparse structure:  53%|#####3    | 17/32 [00:22<00:18,  1.22s/it][TIMING] Sampling sparse structure step 17: 1.12s
+
+Sampling sparse structure:  56%|#####6    | 18/32 [00:23<00:16,  1.19s/it][TIMING] Sampling sparse structure step 18: 0.92s
+
+Sampling sparse structure:  59%|#####9    | 19/32 [00:24<00:14,  1.11s/it][TIMING] Sampling sparse structure step 19: 0.80s
+
+Sampling sparse structure:  62%|######2   | 20/32 [00:25<00:12,  1.02s/it][TIMING] Sampling sparse structure step 20: 0.81s
+
+Sampling sparse structure:  66%|######5   | 21/32 [00:26<00:10,  1.04it/s][TIMING] Sampling sparse structure step 21: 0.83s
+
+Sampling sparse structure:  69%|######8   | 22/32 [00:27<00:09,  1.09it/s][TIMING] Sampling sparse structure step 22: 0.78s
+
+Sampling sparse structure:  72%|#######1  | 23/32 [00:27<00:07,  1.14it/s][TIMING] Sampling sparse structure step 23: 0.78s
+
+Sampling sparse structure:  75%|#######5  | 24/32 [00:28<00:06,  1.17it/s][TIMING] Sampling sparse structure step 24: 0.78s
+
+Sampling sparse structure:  78%|#######8  | 25/32 [00:29<00:05,  1.20it/s][TIMING] Sampling sparse structure step 25: 0.38s
+
+Sampling sparse structure:  81%|########1 | 26/32 [00:29<00:04,  1.44it/s][TIMING] Sampling sparse structure step 26: 0.38s
+
+Sampling sparse structure:  84%|########4 | 27/32 [00:30<00:03,  1.66it/s][TIMING] Sampling sparse structure step 27: 0.37s
+
+Sampling sparse structure:  88%|########7 | 28/32 [00:30<00:02,  1.87it/s][TIMING] Sampling sparse structure step 28: 0.37s
+
+Sampling sparse structure:  91%|######### | 29/32 [00:30<00:01,  2.06it/s][TIMING] Sampling sparse structure step 29: 0.38s
+
+Sampling sparse structure:  94%|#########3| 30/32 [00:31<00:00,  2.20it/s][TIMING] Sampling sparse structure step 30: 0.39s
+
+Sampling sparse structure:  97%|#########6| 31/32 [00:31<00:00,  2.29it/s][TIMING] Sampling sparse structure step 31: 0.43s
+
+Sampling sparse structure: 100%|##########| 32/32 [00:32<00:00,  2.31it/s]
+Sampling sparse structure: 100%|##########| 32/32 [00:32<00:00,  1.00s/it]
+[TIMING] sparse_structure sampling (all steps): 32.15s
+[TIMING] sparse_structure_flow_model.cpu(): 0.68s
+
+Sampling shape SLat (LR):   0%|          | 0/32 [00:00<?, ?it/s][TIMING] Sampling shape SLat (LR) step 0: 1.44s
+
+Sampling shape SLat (LR):   3%|3         | 1/32 [00:01<00:44,  1.44s/it][TIMING] Sampling shape SLat (LR) step 1: 1.26s
+
+Sampling shape SLat (LR):   6%|6         | 2/32 [00:02<00:40,  1.34s/it][TIMING] Sampling shape SLat (LR) step 2: 1.92s
+
+Sampling shape SLat (LR):   9%|9         | 3/32 [00:04<00:46,  1.60s/it][TIMING] Sampling shape SLat (LR) step 3: 1.49s
+
+Sampling shape SLat (LR):  12%|#2        | 4/32 [00:06<00:43,  1.56s/it][TIMING] Sampling shape SLat (LR) step 4: 1.61s
+
+Sampling shape SLat (LR):  16%|#5        | 5/32 [00:07<00:42,  1.58s/it][TIMING] Sampling shape SLat (LR) step 5: 1.59s
+
+Sampling shape SLat (LR):  19%|#8        | 6/32 [00:09<00:41,  1.58s/it][TIMING] Sampling shape SLat (LR) step 6: 1.61s
+
+Sampling shape SLat (LR):  22%|##1       | 7/32 [00:10<00:39,  1.59s/it][TIMING] Sampling shape SLat (LR) step 7: 1.56s
+
+Sampling shape SLat (LR):  25%|##5       | 8/32 [00:12<00:37,  1.58s/it][TIMING] Sampling shape SLat (LR) step 8: 1.68s
+
+Sampling shape SLat (LR):  28%|##8       | 9/32 [00:14<00:37,  1.61s/it][TIMING] Sampling shape SLat (LR) step 9: 1.50s
+
+Sampling shape SLat (LR):  31%|###1      | 10/32 [00:15<00:34,  1.58s/it][TIMING] Sampling shape SLat (LR) step 10: 1.69s
+
+Sampling shape SLat (LR):  34%|###4      | 11/32 [00:17<00:33,  1.61s/it][TIMING] Sampling shape SLat (LR) step 11: 1.86s
+
+Sampling shape SLat (LR):  38%|###7      | 12/32 [00:19<00:33,  1.69s/it][TIMING] Sampling shape SLat (LR) step 12: 1.78s
+
+Sampling shape SLat (LR):  41%|####      | 13/32 [00:20<00:32,  1.72s/it][TIMING] Sampling shape SLat (LR) step 13: 1.90s
+
+Sampling shape SLat (LR):  44%|####3     | 14/32 [00:22<00:31,  1.77s/it][TIMING] Sampling shape SLat (LR) step 14: 1.94s
+
+Sampling shape SLat (LR):  47%|####6     | 15/32 [00:24<00:30,  1.82s/it][TIMING] Sampling shape SLat (LR) step 15: 1.64s
+
+Sampling shape SLat (LR):  50%|#####     | 16/32 [00:26<00:28,  1.77s/it][TIMING] Sampling shape SLat (LR) step 16: 1.81s
+
+Sampling shape SLat (LR):  53%|#####3    | 17/32 [00:28<00:26,  1.78s/it][TIMING] Sampling shape SLat (LR) step 17: 1.44s
+
+Sampling shape SLat (LR):  56%|#####6    | 18/32 [00:29<00:23,  1.68s/it][TIMING] Sampling shape SLat (LR) step 18: 1.48s
+
+Sampling shape SLat (LR):  59%|#####9    | 19/32 [00:31<00:21,  1.62s/it][TIMING] Sampling shape SLat (LR) step 19: 1.72s
+
+Sampling shape SLat (LR):  62%|######2   | 20/32 [00:32<00:19,  1.65s/it][TIMING] Sampling shape SLat (LR) step 20: 1.59s
+
+Sampling shape SLat (LR):  66%|######5   | 21/32 [00:34<00:17,  1.63s/it][TIMING] Sampling shape SLat (LR) step 21: 1.41s
+
+Sampling shape SLat (LR):  69%|######8   | 22/32 [00:35<00:15,  1.56s/it][TIMING] Sampling shape SLat (LR) step 22: 0.58s
+
+Sampling shape SLat (LR):  72%|#######1  | 23/32 [00:36<00:11,  1.27s/it][TIMING] Sampling shape SLat (LR) step 23: 0.62s
+
+Sampling shape SLat (LR):  75%|#######5  | 24/32 [00:37<00:08,  1.07s/it][TIMING] Sampling shape SLat (LR) step 24: 0.64s
+
+Sampling shape SLat (LR):  78%|#######8  | 25/32 [00:37<00:06,  1.06it/s][TIMING] Sampling shape SLat (LR) step 25: 0.84s
+
+Sampling shape SLat (LR):  81%|########1 | 26/32 [00:38<00:05,  1.09it/s][TIMING] Sampling shape SLat (LR) step 26: 0.90s
+
+Sampling shape SLat (LR):  84%|########4 | 27/32 [00:39<00:04,  1.10it/s][TIMING] Sampling shape SLat (LR) step 27: 0.74s
+
+Sampling shape SLat (LR):  88%|########7 | 28/32 [00:40<00:03,  1.16it/s][TIMING] Sampling shape SLat (LR) step 28: 0.69s
+
+Sampling shape SLat (LR):  91%|######### | 29/32 [00:40<00:02,  1.24it/s][TIMING] Sampling shape SLat (LR) step 29: 0.75s
+
+Sampling shape SLat (LR):  94%|#########3| 30/32 [00:41<00:01,  1.26it/s][TIMING] Sampling shape SLat (LR) step 30: 0.83s
+
+Sampling shape SLat (LR):  97%|#########6| 31/32 [00:42<00:00,  1.24it/s][TIMING] Sampling shape SLat (LR) step 31: 0.72s
+
+Sampling shape SLat (LR): 100%|##########| 32/32 [00:43<00:00,  1.28it/s]
+Sampling shape SLat (LR): 100%|##########| 32/32 [00:43<00:00,  1.35s/it]
+
+Sampling shape SLat (HR):   0%|          | 0/32 [00:00<?, ?it/s][TIMING] Sampling shape SLat (HR) step 0: 14.18s
+
+Sampling shape SLat (HR):   3%|3         | 1/32 [00:14<07:19, 14.18s/it][TIMING] Sampling shape SLat (HR) step 1: 15.15s
+
+Sampling shape SLat (HR):   6%|6         | 2/32 [00:29<07:22, 14.75s/it][TIMING] Sampling shape SLat (HR) step 2: 18.17s
+
+Sampling shape SLat (HR):   9%|9         | 3/32 [00:47<07:53, 16.31s/it][TIMING] Sampling shape SLat (HR) step 3: 18.34s
+
+Sampling shape SLat (HR):  12%|#2        | 4/32 [01:05<07:59, 17.11s/it][TIMING] Sampling shape SLat (HR) step 4: 17.69s
+
+Sampling shape SLat (HR):  16%|#5        | 5/32 [01:23<07:47, 17.32s/it][TIMING] Sampling shape SLat (HR) step 5: 18.41s
+
+Sampling shape SLat (HR):  19%|#8        | 6/32 [01:41<07:40, 17.69s/it][TIMING] Sampling shape SLat (HR) step 6: 13.92s
+
+Sampling shape SLat (HR):  22%|##1       | 7/32 [01:55<06:51, 16.46s/it][TIMING] Sampling shape SLat (HR) step 7: 14.42s
+
+Sampling shape SLat (HR):  25%|##5       | 8/32 [02:10<06:19, 15.81s/it][TIMING] Sampling shape SLat (HR) step 8: 12.22s
+
+Sampling shape SLat (HR):  28%|##8       | 9/32 [02:22<05:37, 14.69s/it][TIMING] Sampling shape SLat (HR) step 9: 12.67s
+
+Sampling shape SLat (HR):  31%|###1      | 10/32 [02:35<05:09, 14.07s/it][TIMING] Sampling shape SLat (HR) step 10: 9.84s
+
+Sampling shape SLat (HR):  34%|###4      | 11/32 [02:45<04:28, 12.77s/it][TIMING] Sampling shape SLat (HR) step 11: 9.19s
+
+Sampling shape SLat (HR):  38%|###7      | 12/32 [02:54<03:53, 11.68s/it][TIMING] Sampling shape SLat (HR) step 12: 10.57s
+
+Sampling shape SLat (HR):  41%|####      | 13/32 [03:04<03:35, 11.35s/it][TIMING] Sampling shape SLat (HR) step 13: 14.02s
+
+Sampling shape SLat (HR):  44%|####3     | 14/32 [03:18<03:38, 12.15s/it][TIMING] Sampling shape SLat (HR) step 14: 10.79s
+
+Sampling shape SLat (HR):  47%|####6     | 15/32 [03:29<03:19, 11.74s/it][TIMING] Sampling shape SLat (HR) step 15: 10.44s
+
+Sampling shape SLat (HR):  50%|#####     | 16/32 [03:40<03:01, 11.35s/it][TIMING] Sampling shape SLat (HR) step 16: 10.64s
+
+Sampling shape SLat (HR):  53%|#####3    | 17/32 [03:50<02:47, 11.14s/it][TIMING] Sampling shape SLat (HR) step 17: 10.74s

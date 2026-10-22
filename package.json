@@ -1,6 +1,6 @@
 {
   "name": "asset-forge-studio-desktop",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "private": true,
   "scripts": {
     "desktop:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Mode Dev",

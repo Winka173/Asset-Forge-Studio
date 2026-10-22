@@ -1,0 +1,908 @@
+{
+  "status": "PASS_NATIVE_REAL_STAGE_PROGRESS",
+  "version": "0.9.9",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\live-stage-progress-native\\2026-10-22T15-01-05-135Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "real_subprocess_percent_retained_after_stage_header_visible_changing_native_meter_unchanged_Maximum_no_duplicates",
+      "passed": true
+    }
+  ],
+  "samples": [
+    {
+      "at": "2026-10-22T15:01:21.340Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading pipeline components...",
+        "percent": 0,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:21.596Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading pipeline components...",
+        "percent": 0,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:21.858Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading weights",
+        "percent": 0,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:22.121Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading weights",
+        "percent": 0,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:22.397Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading weights",
+        "percent": 48,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:22.661Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Loading weights",
+        "percent": 76,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:27.463Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 4,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:27.719Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 4,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:27.986Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 6,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:28.253Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 8,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:28.517Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 10,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:28.774Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 10,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:29.036Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 12,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:29.298Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 14,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:29.562Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 16,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:29.957Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 18,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:30.211Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 18,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:30.474Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 20,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:30.736Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 22,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:30.996Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 24,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:31.251Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 24,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:31.511Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 26,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:31.769Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 28,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:32.023Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 28,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:32.284Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 30,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:32.548Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 32,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:32.809Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 34,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:33.065Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 34,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:33.327Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 36,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:33.590Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 38,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:33.853Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 40,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:34.107Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 40,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:34.370Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 42,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:34.639Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 44,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:34.893Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 44,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:35.154Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 46,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:35.415Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 48,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:35.670Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 48,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:35.925Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 50,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:36.186Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 52,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:36.441Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 52,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:36.705Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 54,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:36.965Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 56,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:37.222Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 56,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:37.483Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 58,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:37.747Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 60,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:38.002Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 60,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:38.266Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 62,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:38.530Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 64,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:38.785Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 64,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:39.045Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 66,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:39.306Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 68,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:39.561Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 68,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:39.822Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 70,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:40.084Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 72,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:40.339Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 72,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:40.603Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 74,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:40.866Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 76,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:41.130Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 78,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:41.384Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 78,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:41.646Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 80,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:41.903Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 82,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:42.159Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 82,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:42.419Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 84,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:42.679Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 86,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:42.941Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 88,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:43.196Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 88,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:43.452Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 90,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:43.713Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 92,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:43.975Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 94,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:44.232Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 94,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:44.492Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 96,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:44.753Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 98,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:45.019Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:45.275Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:45.530Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:45.787Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:46.044Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:46.298Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:46.559Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:46.820Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:47.076Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:47.333Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:47.590Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:47.844Z",
+      "status": "RUNNING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "at": "2026-10-22T15:01:48.104Z",
+      "status": "VALIDATING",
+      "progress": {
+        "stage": "Concept denoising",
+        "percent": 100,
+        "scope": "current_stage_only"
+      }
+    }
+  ],
+  "scope": "Real SDXL Maximum50/1024 stage percentage in native Production; no simulated inference, fake timer percentage, full-3D or artistic claim.",
+  "job_id": "7bb829ca94c841f68e7668b6a83352a2",
+  "actual_native_meter": {
+    "value": 14,
+    "max": 100,
+    "label": "Current stage 14% / Concept denoising"
+  },
+  "actual_generation": {
+    "status": "GENERATED_NEEDS_REVIEW",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "3f9a8436c40c404fb5fa0a1aca40b42d",
+      "asset_id": "ae3826b9fbff4eb1be97b11330bcc169",
+      "name": "Archer Tower / actual progress concept",
+      "prompt": "One finely detailed stylized archer tower, ivory stone, blue slate roof, timber balcony, plain neutral studio background, full isolated asset.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+      "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+      "user_prompt": "One finely detailed stylized archer tower, ivory stone, blue slate roof, timber balcony, plain neutral studio background, full isolated asset.",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [],
+        "bilingual_noun_hints": [],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Live local engine progress / actual denoising",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "3f9a8436c40c404fb5fa0a1aca40b42d"
+      },
+      "seed": 44,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "One finely detailed stylized archer tower, ivory stone, blue slate roof, timber balcony, plain neutral studio background, full isolated asset.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 44,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "27634e6c9b62863d3b08b74be839c3f6eb0e77f387708972499e1760cbfa4c07",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 3
+      },
+      "effective_config_hash": "9c61ee097bbdd9762cea91ab0138de23da457a2eeacd9fd4b2c113b4ba23579a",
+      "quality_repair": null,
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\live-stage-progress-native\\2026-10-22T15-01-05-135Z\\Library\\jobs\\7bb829ca94c841f68e7668b6a83352a2\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\live-stage-progress-native\\2026-10-22T15-01-05-135Z\\Library\\jobs\\7bb829ca94c841f68e7668b6a83352a2\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "e611eac070afe77209b433057371ee93329a9855adbc2c276042df068cce7998",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "prompt_encoding": {
+      "chunks": 2,
+      "tokens_not_truncated": true,
+      "pooled": "mean across CLIP-2 chunks",
+      "experimental_long_prompt": true
+    },
+    "output_sha256": "83b118076a7a584d5033ee2fc1f20569b77ed21aa1655e6fcddd36e3d8187580",
+    "peak_allocated_bytes": 5596858880,
+    "peak_reserved_bytes": 7847542784,
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "duration_seconds": 34.54699999999866
+  }
+}

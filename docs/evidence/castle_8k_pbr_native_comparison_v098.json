@@ -1,0 +1,243 @@
+{
+  "status": "PASS_NATIVE_REAL_FINISHING_AB",
+  "version": "0.9.8",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\finishing-comparison-native\\2026-10-22T14-54-41-223Z",
+  "files": {
+    "golden": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+    "candidate": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\texture-finishing-research\\20261022T144938Z\\output\\raw.glb"
+  },
+  "hashes": {
+    "golden": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+    "candidate": "2a52b2ac0c26c3337605fc429c655302c3d974892dd352a57e8beaaf16ac19b2"
+  },
+  "errors": [],
+  "checks": [
+    {
+      "name": "actual_both_GLB_surface_counts_match_import_measurements",
+      "passed": true
+    },
+    {
+      "name": "real_reference_and_candidate_same_camera_textured_no_false_meshy_label_no_inference_sources_preserved",
+      "passed": true
+    }
+  ],
+  "scope": "Retained native source, unchanged original output and experimental derived finishing; actual shared-camera viewer, not Meshy or artistic approval.",
+  "artifacts": {
+    "golden": {
+      "id": "556d7eb156314efeb48b326170d610fa",
+      "role": "golden",
+      "name": "Baseline-original-finishing.glb",
+      "relative_path": "projects/9db7e395ae3b4b1f8096fd4d5513d5d2/assets/references/versions/2cff3a7a36334048834a0490b392b055/source.glb",
+      "sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+      "created_at": "2026-10-22T14:54:46.871519+00:00",
+      "metadata": {
+        "status": "NEEDS_REVIEW",
+        "triangles": 983534,
+        "mesh_instances": 1,
+        "dimensions_xyz_m": [
+          1.0034518837928772,
+          0.7962386012077332,
+          0.8598547577857971
+        ],
+        "bounds_xyz_m": [
+          [
+            -0.5018848180770874,
+            -0.39737850427627563,
+            -0.42972326278686523
+          ],
+          [
+            0.5015670657157898,
+            0.3988600969314575,
+            0.4301314949989319
+          ]
+        ],
+        "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+        "meshes": [
+          {
+            "node": "geometry_0",
+            "triangles": 983534,
+            "vertices": 718650,
+            "watertight": false,
+            "winding_consistent": true,
+            "watertight_after_position_weld_1e8": false,
+            "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+            "has_uv": true
+          }
+        ],
+        "materials": [
+          {
+            "name": "unnamed",
+            "base_color_texture": true,
+            "metallic_roughness_texture": true,
+            "normal_texture": false,
+            "ao_texture": false,
+            "emissive_texture": false,
+            "metallic_factor": 1,
+            "roughness_factor": 1
+          }
+        ],
+        "images": 2,
+        "surface_diagnostics": {
+          "schema_version": 1,
+          "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+          "geometry_count": 1,
+          "totals": {
+            "triangles": 983534,
+            "zero_area_triangles": 0,
+            "very_thin_triangles": 1
+          },
+          "faces_opposing_mean_vertex_normal": 2042,
+          "all_vertex_normals_finite": true,
+          "meshes": [
+            {
+              "triangles": 983534,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 1,
+              "triangle_quality_p01": 0.21079936233813087,
+              "faces_opposing_mean_vertex_normal": 2042,
+              "finite_vertex_normals": true,
+              "vertex_normals_source": "loaded GLB normals",
+              "surface_area_source_units_squared": 9.088614628709019,
+              "bounding_diagonal_source_units": 1.5428097088194621,
+              "geometry": "geometry_0"
+            }
+          ],
+          "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+          "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+          "limitations": [
+            "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+            "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+            "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+          ]
+        },
+        "checks": {
+          "container": "PASS",
+          "finite_nonempty_geometry": "PASS",
+          "external_resources": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "pbr_plausibility": "NOT_TESTED",
+          "dimensions_approved": "NOT_TESTED",
+          "unity_import": "NOT_TESTED",
+          "human_quality": "NOT_TESTED"
+        },
+        "source_filename": "Baseline-original-finishing.glb",
+        "origin": "user_import",
+        "license": "NEEDS_REVIEW",
+        "project_id": "9db7e395ae3b4b1f8096fd4d5513d5d2",
+        "asset_id": null
+      },
+      "project_id": "9db7e395ae3b4b1f8096fd4d5513d5d2",
+      "asset_id": null,
+      "url": "/api/artifacts/556d7eb156314efeb48b326170d610fa/file"
+    },
+    "candidate": {
+      "id": "95286cd8cb20412f998db2b09cd58a89",
+      "role": "candidate",
+      "name": "Derived-8K-native-PBR.glb",
+      "relative_path": "projects/9db7e395ae3b4b1f8096fd4d5513d5d2/assets/references/versions/9d196b7a5a5348fea53704c849dff0bc/source.glb",
+      "sha256": "2a52b2ac0c26c3337605fc429c655302c3d974892dd352a57e8beaaf16ac19b2",
+      "created_at": "2026-10-22T14:54:51.355768+00:00",
+      "metadata": {
+        "status": "NEEDS_REVIEW",
+        "triangles": 984160,
+        "mesh_instances": 1,
+        "dimensions_xyz_m": [
+          1.0035508871078491,
+          0.7962409257888794,
+          0.8597755432128906
+        ],
+        "bounds_xyz_m": [
+          [
+            -0.5018795728683472,
+            -0.3973808288574219,
+            -0.4297437071800232
+          ],
+          [
+            0.501671314239502,
+            0.3988600969314575,
+            0.43003183603286743
+          ]
+        ],
+        "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+        "meshes": [
+          {
+            "node": "geometry_0",
+            "triangles": 984160,
+            "vertices": 714311,
+            "watertight": false,
+            "winding_consistent": true,
+            "watertight_after_position_weld_1e8": false,
+            "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+            "has_uv": true
+          }
+        ],
+        "materials": [
+          {
+            "name": "unnamed",
+            "base_color_texture": true,
+            "metallic_roughness_texture": true,
+            "normal_texture": false,
+            "ao_texture": false,
+            "emissive_texture": false,
+            "metallic_factor": 1,
+            "roughness_factor": 1
+          }
+        ],
+        "images": 2,
+        "surface_diagnostics": {
+          "schema_version": 1,
+          "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+          "geometry_count": 1,
+          "totals": {
+            "triangles": 984160,
+            "zero_area_triangles": 0,
+            "very_thin_triangles": 7
+          },
+          "faces_opposing_mean_vertex_normal": 1965,
+          "all_vertex_normals_finite": true,
+          "meshes": [
+            {
+              "triangles": 984160,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 7,
+              "triangle_quality_p01": 0.21051325363413337,
+              "faces_opposing_mean_vertex_normal": 1965,
+              "finite_vertex_normals": true,
+              "vertex_normals_source": "loaded GLB normals",
+              "surface_area_source_units_squared": 9.088862003148718,
+              "bounding_diagonal_source_units": 1.542831157198708,
+              "geometry": "geometry_0"
+            }
+          ],
+          "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+          "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+          "limitations": [
+            "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+            "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+            "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+          ]
+        },
+        "checks": {
+          "container": "PASS",
+          "finite_nonempty_geometry": "PASS",
+          "external_resources": "PASS",
+          "uv_overlap": "NOT_TESTED",
+          "self_intersections": "NOT_TESTED",
+          "pbr_plausibility": "NOT_TESTED",
+          "dimensions_approved": "NOT_TESTED",
+          "unity_import": "NOT_TESTED",
+          "human_quality": "NOT_TESTED"
+        },
+        "source_filename": "Derived-8K-native-PBR.glb",
+        "origin": "user_import",
+        "license": "NEEDS_REVIEW",
+        "project_id": "9db7e395ae3b4b1f8096fd4d5513d5d2",
+        "asset_id": null
+      },
+      "project_id": "9db7e395ae3b4b1f8096fd4d5513d5d2",
+      "asset_id": null,
+      "url": "/api/artifacts/95286cd8cb20412f998db2b09cd58a89/file"
+    }
+  }
+}

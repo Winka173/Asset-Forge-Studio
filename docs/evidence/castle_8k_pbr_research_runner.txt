@@ -1,0 +1,32 @@
+"""Derived 8K PBR export research, explicitly different from the parent 4K finishing config."""
+import os,sys,json,time,subprocess
+from pathlib import Path
+from datetime import datetime,timezone
+ROOT=Path(__file__).resolve().parents[1];RUN=ROOT/'.local/texture-finishing-research'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ');RUN.mkdir(parents=True)
+os.environ['AFS_DATA']=str(ROOT/'.local');sys.path.insert(0,str(ROOT))
+from apps.api import jobs,store,host_resources
+from apps.api.inspection import inspect_glb
+source=ROOT/'.local/castle-quality-route/20261022T132736Z/Library/jobs/5eff3892f4154fe8a1091ce5d981cb4d'
+request=json.loads((source/'request.json').read_text('utf-8'));checkpoint=source/'output/mesh_checkpoint.json';native=source/'output/raw_master.npz'
+hashes={str(p):store.digest(p) for p in (source/'request.json',checkpoint,native)}
+delta=dict(texture_size=dict(parent=4096,derived=8192),projection=0,triangle_target=1_000_000,quality_default_changed=False)
+request.update(output=str(RUN/'output'),resume_mesh_checkpoint=str(checkpoint),resume_checkpoint_sha256=store.digest(checkpoint),research_derived_export=delta)
+text=(ROOT/'engines/trellis2_worker.py').read_text('utf-8');assert text.count("texture_size=req.get('texture_size', 2048)")==1
+text=text.replace("texture_size=req.get('texture_size', 2048)","texture_size=8192")
+anchor="            signature = inspect.signature(o_voxel.postprocess.to_glb).parameters";assert anchor in text
+text=text.replace(anchor,"            manifest['research_derived_export']=req['research_derived_export']\n"+anchor)
+worker=ROOT/'.local/texture-finishing-research-worker.py';worker.write_text(text,'utf-8');path=RUN/'request.json';path.write_text(json.dumps(request,indent=2),'utf-8')
+report=dict(status='RUNNING_RESEARCH_ONLY',run=str(RUN),source_hashes=hashes,worker_sha256=store.digest(worker),delta=delta,scope='Derived 8K native-PBR raster experiment, parent native checkpoint validated at its original 4K identity. Explicit copied-worker finishing override, not an exact-config resume, new AI detail, production capability or default change.')
+started=time.monotonic()
+try:
+    job=dict(id='texture-research-'+RUN.name,payload=dict(kind='inference',engine='trellis2_community',resume_mesh_checkpoint=str(checkpoint),effective_config=request['effective_config']))
+    with jobs.resource_slot('gpu'),host_resources.reserve(job,'gpu') as admission,(RUN/'worker.log').open('w',encoding='utf-8') as log:
+        report['admission']=admission
+        if not admission['allowed']:raise RuntimeError(admission['reason'])
+        result=subprocess.run([str(Path(request['engine_path'])/'venv/Scripts/python.exe'),'-B','-u',str(worker),'--request',str(path),'--allow-community-evaluation'],cwd=request['engine_path'],stdout=log,stderr=subprocess.STDOUT,timeout=1200)
+    if result.returncode:raise RuntimeError('Actual derived export failed; see worker.log')
+    generation=json.loads((RUN/'output/generation.json').read_text());assert generation['inference_reused'];assert all(store.digest(Path(p))==h for p,h in hashes.items())
+    report.update(status='DERIVED_8K_EXPORT_REQUIRES_COMPARISON',generation=generation,inspection=inspect_glb(RUN/'output/raw.glb'),sources_preserved=True)
+except Exception as exc:report.update(status='FAILED_RESEARCH',error=str(exc));raise
+finally:
+    report['seconds']=time.monotonic()-started;(RUN/'report.json').write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(dict(status=report['status'],run=str(RUN))),flush=True)

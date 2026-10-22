@@ -47,16 +47,8 @@ def listing():
         if value['status'] not in TERMINAL and log.exists():
             with log.open('rb') as stream:
                 stream.seek(max(0, log.stat().st_size - 12000)); tail = stream.read().decode('utf-8', errors='replace')
-            lines = re.split(r'[\r\n]', tail)
-            matches = [re.search(r'([^\r\n:]+):\s*(\d+)%\|', line) for line in lines]
-            matches = [m for m in matches if m]
-            if matches:
-                progress.update(stage=matches[-1][1].strip(), percent=int(matches[-1][2]))
-            stages = [line.removeprefix('STAGE ').strip() for line in lines if line.startswith('STAGE ')]
-            if stages: progress.update(stage=stages[-1], percent=None)
-            frames=re.findall(r'AFS_FRAME (\d+)/(\d+)',tail)
-            if frames and 'STAGE encode' not in tail:
-                done,total=map(int,frames[-1]);progress.update(stage=f'Blender frames {done}/{total}',percent=100*done/total if total else None)
+            from .stage_progress import parse
+            progress=parse(tail,value['status'])
         value['progress'] = progress
         if value['status']=='QUEUED':
             from .engine_health import waiting

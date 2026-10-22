@@ -8,7 +8,7 @@ fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspa
 const build=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/desktop_build.json'),'utf8').replace(/^\uFEFF/,''));assert.equal(build.version,process.env.AFS_EXPECTED_VERSION||'0.9.6');
 const exe=path.join(build.delivery_location,build.executable),server=net.createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let browser,page,child,closing=false;
-const report={status:'RUNNING',version:build.version,run,files,hashes,errors:[],checks:[],scope:'Retained native source, unchanged original output and experimental projected finishing; actual shared-camera viewer, not Meshy or artistic approval.'};
+const report={status:'RUNNING',version:build.version,run,files,hashes,errors:[],checks:[],scope:'Retained native source, unchanged original output and experimental derived finishing; actual shared-camera viewer, not Meshy or artistic approval.'};
 try{
  child=spawn(exe,[],{env:{...process.env,AFS_DESKTOP_CONFIG_DIR:config,WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:`--remote-debugging-port=${port}`},stdio:'ignore',windowsHide:false});
  for(let n=0;n<180;n++){try{browser=await chromium.connectOverCDP(`http://127.0.0.1:${port}`);break;}catch{assert.equal(child.exitCode,null);await sleep(1000);}}
@@ -17,7 +17,7 @@ try{
  const call=async(route,options={})=>{const r=await fetch(runtime.api_base+route,{...options,headers:{'X-AFS-Token':runtime.api_token,...options.headers}});assert(r.ok,await r.clone().text());return r.json();};
  const project=await call('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:process.env.AFS_COMPARISON_NAME||'Finishing fidelity A/B / retained tower'})});
  report.artifacts={};
- for(const role of ['golden','candidate']){const body=new FormData();body.append('file',new Blob([fs.readFileSync(files[role])]),role==='golden'?'Baseline-original-finishing.glb':'Experimental-projected-finishing.glb');const artifact=await call('/api/import/'+role+'?project_id='+project.id,{method:'POST',body});assert.equal(artifact.sha256,hashes[role]);report.artifacts[role]=artifact;}
+ for(const role of ['golden','candidate']){const body=new FormData();body.append('file',new Blob([fs.readFileSync(files[role])]),role==='golden'?'Baseline-original-finishing.glb':process.env.AFS_COMPARISON_FILE||'Experimental-derived-finishing.glb');const artifact=await call('/api/import/'+role+'?project_id='+project.id,{method:'POST',body});assert.equal(artifact.sha256,hashes[role]);report.artifacts[role]=artifact;}
  await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.getByRole('link',{name:'Compare',exact:true}).click();
  await page.waitForFunction(()=>Number(document.querySelector('.quality-lab #compare .viewer')?.dataset.loaded)===2&&Number(document.querySelector('.quality-lab #compare .viewer')?.dataset.textures)>0);
  assert((await page.locator('.model-labels').innerText()).includes('REFERENCE / BASELINE MODEL'));assert(!(await page.locator('.model-labels').innerText()).includes('MESHY'));

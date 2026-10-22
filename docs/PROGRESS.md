@@ -1,3 +1,13 @@
+# Windows 0.9.9 - actual engine percentage restored - 2026-10-22
+
+150 backend tests PASS (219.89 s), TypeScript/Vite, fresh Windows/generic native smoke, affected real SDXL native progress acceptance and backend/source-cache verification PASS. Fixed chronological log parsing: an earlier STAGE header no longer erases later real denoising percentages. Merged tqdm/SDXL lines and ANSI control codes no longer corrupt the displayed phase name. A newer unquantified stage clears the old percentage; frame counts are not reused during encode. No elapsed-time interpolation, generation setting or source change.
+
+Actual packaged SDXL Maximum50/1024 displayed changing denoising percentages in Production, then completed a real concept and removed the active-stage meter; refresh preserved one job/config hash. Captured real TRELLIS/SDXL prefixes cover parser regressions; these log-read tests do not fabricate successful outputs. First native harness incorrectly insisted all percentages belonged to denoising and stopped on real loader progress; corrected the harness and reran successfully. Evidence: live_stage_progress_native_v099.json/png. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe.
+
+Research-only 8K native-PBR derived castle export ran in 148.58 s, embedded two actual 8192 PNGs and loaded in packaged shared-camera viewer. File 168,331,816 B. Sampled whole-device peak 15,943/16,303 MiB (sampling started after startup); Torch peak 12,930,319,872 B allocated / 14,990,442,496 B reserved. No clear visual improvement at the inspected view, extremely little VRAM headroom and independently rerun remesh/UV confound texture-only attribution. Not enabled by default or presented as new AI detail/safe batch capability. Parent native/config/source remain immutable. Evidence: castle_8k_pbr_research.json and native comparison/resources. Further source-preserving shading research remains isolated, unvalidated and unintegrated.
+
+---
+
 # Windows 0.9.8 - real surface/shading observations - 2026-10-22
 
 147 backend tests PASS (223.04 s), TypeScript/Vite, fresh Windows/generic native smoke, affected Library/Production/Compare native acceptance and source-cache verification PASS. Actual GLB inspection now records zero-area/thin triangles and face/vertex-normal disagreement by unique local mesh, with validator hash and explicit limits. Artifact-scoped collapsed panels show actual measurements without changing artistic approval/export policy or inventing old measurements. Nonfinite normals reject technical inspection. Retained-tower CPU Blender/reopen, visible model, card padding, both workspace reports, refresh/source hash and no AI jobs pass. Compare actual castle baseline/projected measurements match imported GLBs.
