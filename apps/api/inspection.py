@@ -9,7 +9,8 @@ import trimesh
 from PIL import Image
 
 
-def glb_document(path):
+def glb_layout(path):
+    """Read JSON and BIN offsets without retaining a second full GLB binary copy."""
     size = Path(path).stat().st_size
     with open(path, "rb") as f:
         header = f.read(12)
@@ -18,7 +19,7 @@ def glb_document(path):
         magic, version, length = struct.unpack("<4sII", header)
         if magic != b"glTF" or version != 2 or length != size:
             raise ValueError("Expected valid GLB 2.0 with exact declared length")
-        chunks = []
+        doc = None; binary = None; index = 0
         while f.tell() < size:
             raw = f.read(8)
             if len(raw) != 8:
@@ -26,10 +27,17 @@ def glb_document(path):
             count, kind = struct.unpack("<II", raw)
             if count % 4 or f.tell() + count > size:
                 raise ValueError("Invalid GLB chunk bounds/alignment")
-            chunks.append((kind, f.read(count)))
-    if not chunks or chunks[0][0] != 0x4E4F534A:
-        raise ValueError("Missing JSON first chunk")
-    doc = json.loads(chunks[0][1])
+            if index == 0 and kind != 0x4E4F534A:raise ValueError("Missing JSON first chunk")
+            if kind == 0x4E4F534A:
+                if doc is not None:raise ValueError('Duplicate GLB JSON chunk')
+                doc = json.loads(f.read(count))
+            else:
+                if kind == 0x004E4942:
+                    if binary is not None or index != 1:raise ValueError('Invalid GLB BIN chunk order')
+                    binary = (f.tell(), count)
+                f.seek(count, 1)
+            index += 1
+    if not isinstance(doc, dict):raise ValueError('Missing GLB JSON object')
     if doc.get("asset", {}).get("version") != "2.0":
         raise ValueError("Only glTF 2.0 supported")
     if doc.get("extensionsRequired"):
@@ -37,12 +45,17 @@ def glb_document(path):
     for item in doc.get("buffers", []) + doc.get("images", []):
         if "uri" in item and not item["uri"].startswith("data:"):
             raise ValueError("GLB must embed all buffers/textures; external URI rejected")
-    return doc
+    return doc, binary
+
+
+def glb_document(path):return glb_layout(path)[0]
 
 
 def inspect_glb(path):
     from .surface_diagnostics import measure,summarize
-    doc = glb_document(path)
+    from .texture_diagnostics import measure as measure_textures
+    doc, binary = glb_layout(path)
+    textures = measure_textures(path, doc, binary)
     scene = trimesh.load(path, file_type="glb", force="scene", process=False)
     rows, all_bounds, surface_rows = [], [], {}
     for node in scene.graph.nodes_geometry:
@@ -53,6 +66,8 @@ def inspect_glb(path):
         vertices = trimesh.transform_points(mesh.vertices, transform)
         if not np.isfinite(vertices).all():
             raise ValueError("Mesh contains NaN/Inf coordinates")
+        uv = getattr(mesh.visual, 'uv', None)
+        if uv is not None and not np.isfinite(uv).all():raise ValueError('Mesh contains NaN/Inf texture coordinates')
         if key not in surface_rows:surface_rows[key]=measure(mesh)|dict(geometry=key)
         if not surface_rows[key]['finite_vertex_normals']:raise ValueError('Mesh contains NaN/Inf vertex normals')
         all_bounds.extend([vertices.min(axis=0), vertices.max(axis=0)])
@@ -86,8 +101,9 @@ def inspect_glb(path):
             "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
             "meshes": rows, "materials": materials, "images": len(doc.get("images", [])),
             "surface_diagnostics":summarize(list(surface_rows.values())),
+            "texture_diagnostics":textures,
             "checks": {"container": "PASS", "finite_nonempty_geometry": "PASS",
-                       "external_resources": "PASS", "uv_overlap": "NOT_TESTED",
+                       "external_resources": "PASS", "embedded_texture_integrity": "PASS", "uv_overlap": "NOT_TESTED",
                        "self_intersections": "NOT_TESTED", "pbr_plausibility": "NOT_TESTED",
                        "dimensions_approved": "NOT_TESTED", "unity_import": "NOT_TESTED",
                        "human_quality": "NOT_TESTED"}}

@@ -1,0 +1,155 @@
+{
+  "status": "PASS_NATIVE_REAL_TEXTURE_DIAGNOSTICS",
+  "version": "0.9.10",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\texture-diagnostics-native\\2026-10-22T15-28-37-415Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "actual_4K_embedded_PBR_Library_Production_selected_version_reinspection_persistence_corrupt_png_rejected_no_AI_unchanged_source",
+      "passed": true
+    }
+  ],
+  "scope": "Real retained tower CPU Blender, embedded 4K PBR decoding and selected-version reinspection in native Library/Production. Corrupted embedded PNG is an explicit negative fixture, not a successful output. No new AI or art approval.",
+  "project_id": "514897e63c9845e3af1e2de1e56cbf90",
+  "asset_id": "fa3c69bba47d4ed29e3ead6a9ac0e919",
+  "imported_texture_evidence": {
+    "schema_version": 1,
+    "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+    "status": "VALIDATED_EMBEDDED_IMAGES",
+    "images": [
+      {
+        "index": 0,
+        "name": null,
+        "width": 4096,
+        "height": 4096,
+        "mime_type": "image/png",
+        "encoded_bytes": 24596288,
+        "encoded_sha256": "11623617732eb9112d69b51fd005871fc1151c915b5c2a219e6091a010ba99ad",
+        "decoded_rgba_sha256": "9d29dcc2119771e793ac630c34e58ff86fa4e9699a8b46f7ab2639bef95892f9",
+        "storage": "embedded",
+        "decode": "PASS"
+      },
+      {
+        "index": 1,
+        "name": null,
+        "width": 4096,
+        "height": 4096,
+        "mime_type": "image/png",
+        "encoded_bytes": 5673364,
+        "encoded_sha256": "81813876bbba8e6fb396c9805bfb3f67e53ad0c3cd3ba3a042547c9b04bb2ffd",
+        "decoded_rgba_sha256": "57cb6bc2f8ac99bd3e34f71fbf2d5bf16c73049c51b9500b7520ec30c34ae21c",
+        "storage": "embedded",
+        "decode": "PASS"
+      }
+    ],
+    "bindings": [
+      {
+        "material_index": 0,
+        "material_name": "Material 1",
+        "channel": "base_color",
+        "texture_index": 0,
+        "image_index": 0,
+        "texcoord": 0,
+        "primitive_uses": 1,
+        "encoding": "sRGB",
+        "packed_channels": null
+      },
+      {
+        "material_index": 0,
+        "material_name": "Material 1",
+        "channel": "metallic_roughness",
+        "texture_index": 1,
+        "image_index": 1,
+        "texcoord": 0,
+        "primitive_uses": 1,
+        "encoding": "linear",
+        "packed_channels": "G=roughness, B=metallic"
+      }
+    ],
+    "checks": {
+      "image_decode": "PASS",
+      "embedded_image_bounds": "PASS",
+      "material_texture_references": "PASS",
+      "texture_coordinate_declarations": "PASS"
+    },
+    "limitations": [
+      "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+      "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+    ]
+  },
+  "negative_texture_response": {
+    "detail": "Embedded image 0 cannot decode: cannot identify image file <_io.BytesIO object at 0x0000016271FB3BA0>"
+  },
+  "job_id": "48c2495f5ccd4cd3ab1c91d05358c6fc",
+  "artifact_id": "53907852db0c466ba57171d64fd826ce",
+  "measurement": {
+    "schema_version": 1,
+    "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+    "status": "VALIDATED_EMBEDDED_IMAGES",
+    "images": [
+      {
+        "index": 0,
+        "name": "texture_000",
+        "width": 4096,
+        "height": 4096,
+        "mime_type": "image/png",
+        "encoded_bytes": 24596288,
+        "encoded_sha256": "11623617732eb9112d69b51fd005871fc1151c915b5c2a219e6091a010ba99ad",
+        "decoded_rgba_sha256": "9d29dcc2119771e793ac630c34e58ff86fa4e9699a8b46f7ab2639bef95892f9",
+        "storage": "embedded",
+        "decode": "PASS"
+      },
+      {
+        "index": 1,
+        "name": "texture_001",
+        "width": 4096,
+        "height": 4096,
+        "mime_type": "image/png",
+        "encoded_bytes": 5673364,
+        "encoded_sha256": "81813876bbba8e6fb396c9805bfb3f67e53ad0c3cd3ba3a042547c9b04bb2ffd",
+        "decoded_rgba_sha256": "57cb6bc2f8ac99bd3e34f71fbf2d5bf16c73049c51b9500b7520ec30c34ae21c",
+        "storage": "embedded",
+        "decode": "PASS"
+      }
+    ],
+    "bindings": [
+      {
+        "material_index": 0,
+        "material_name": "Material_0",
+        "channel": "base_color",
+        "texture_index": 0,
+        "image_index": 0,
+        "texcoord": 0,
+        "primitive_uses": 1,
+        "encoding": "sRGB",
+        "packed_channels": null
+      },
+      {
+        "material_index": 0,
+        "material_name": "Material_0",
+        "channel": "metallic_roughness",
+        "texture_index": 1,
+        "image_index": 1,
+        "texcoord": 0,
+        "primitive_uses": 1,
+        "encoding": "linear",
+        "packed_channels": "G=roughness, B=metallic"
+      }
+    ],
+    "checks": {
+      "image_decode": "PASS",
+      "embedded_image_bounds": "PASS",
+      "material_texture_references": "PASS",
+      "texture_coordinate_declarations": "PASS"
+    },
+    "limitations": [
+      "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+      "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+    ]
+  },
+  "selected_reinspection": {
+    "artifact_id": "1b738dc71dea473abd44e19ca43657a6",
+    "inspection_at": "2026-10-22T15:29:59.610608+00:00",
+    "sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6"
+  }
+}

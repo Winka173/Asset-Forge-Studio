@@ -138,6 +138,12 @@ def detail(asset_id:str):
     from .statuses import refresh_all,FIELDS
     model=refresh_all().get(asset_id) or studio.asset(asset_id)
     with store.connect() as db:artifacts=[store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE asset_id=?',(asset_id,))]
+    # Explicit reinspection augments the matching version's displayed evidence;
+    # it never changes source bytes, approval, publication or other versions.
+    inspection=model.get('latest_inspection') or {}
+    for artifact in artifacts:
+        if artifact['id']==inspection.get('artifact_id') and artifact['sha256']==inspection.get('sha256'):
+            artifact['metadata']={**artifact['metadata'],**inspection['report'],'inspection_at':inspection['at']}
     for reference_id in model.get('reference_ids',[]):
         if not any(a['id']==reference_id for a in artifacts):
             try:

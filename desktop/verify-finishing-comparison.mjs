@@ -27,6 +27,11 @@ try{
   for(let i=0;i<2;i++){const role=i===0?'golden':'candidate',panel=panels.nth(i),expected=report.artifacts[role].metadata.surface_diagnostics;assert(expected);await panel.locator('summary').click();assert((await panel.innerText()).includes(expected.totals.very_thin_triangles.toLocaleString('en-US')));assert((await panel.innerText()).includes(expected.faces_opposing_mean_vertex_normal.toLocaleString('en-US')));}
   await panels.first().scrollIntoViewIfNeeded();await page.screenshot({path:path.join(run,'actual-surface-diagnostics.png')});report.checks.push({name:'actual_both_GLB_surface_counts_match_import_measurements',passed:true});
  }
+ if(process.env.AFS_TEXTURE_CHECK==='1'){
+  const panels=page.getByLabel('Validated embedded textures',{exact:true});assert.equal(await panels.count(),2);
+  for(let i=0;i<2;i++){const role=i===0?'golden':'candidate',panel=panels.nth(i),expected=report.artifacts[role].metadata.texture_diagnostics;assert.equal(expected.images.length,2);await panel.locator('summary').click();assert((await panel.innerText()).includes(expected.images[0].width.toLocaleString('en-US')));assert((await panel.innerText()).includes('G=roughness, B=metallic'));}
+  await panels.first().scrollIntoViewIfNeeded();await page.screenshot({path:path.join(run,'actual-texture-diagnostics.png')});report.checks.push({name:'actual_embedded_texture_resolutions_and_PBR_bindings_visible_in_Compare',passed:true});
+ }
  assert.equal((await call('/api/jobs')).length,0);assert.equal(report.errors.length,0);
  for(const role of ['golden','candidate'])assert.equal(createHash('sha256').update(fs.readFileSync(files[role])).digest('hex'),hashes[role]);
  report.checks.push({name:'real_reference_and_candidate_same_camera_textured_no_false_meshy_label_no_inference_sources_preserved',passed:true});report.status='PASS_NATIVE_REAL_FINISHING_AB';

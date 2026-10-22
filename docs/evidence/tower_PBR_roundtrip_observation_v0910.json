@@ -1,0 +1,45 @@
+{
+  "source": {
+    "sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+    "channels": [
+      {
+        "channel": "base_color",
+        "pixel_channels": {
+          "R": "651e6e60d0593112037b6788b1b15a56f7c3ab92620440732907ad98b27c52f9",
+          "G": "cb9b4094562d53a70769c14ce5b3c07988fc151543fbb43d03158e6061adc4dc",
+          "B": "2eb5657c0e1f10999dbfc4bad4514f1d0ff1f88ff2926e942f30958a70f94908",
+          "A": "c37cb3d61ef26f40d078f83628997218e29b1fd9d3df4830197686bdbfe2e4db"
+        }
+      },
+      {
+        "channel": "metallic_roughness",
+        "pixel_channels": {
+          "G": "fb82f0235acd06b170b64fe43cde12ae67cc21781c3ccd89bce070d1e42d817a",
+          "B": "f38579ff3336cb40c1ff74e6abd35ef71237c322e5e404ff619861fd17550002"
+        }
+      }
+    ]
+  },
+  "processed": {
+    "sha256": "96a663a9e1e12696e850e09254242f8d766f895e6bf37bc293f0e3c15dcbc6e8",
+    "channels": [
+      {
+        "channel": "base_color",
+        "pixel_channels": {
+          "R": "651e6e60d0593112037b6788b1b15a56f7c3ab92620440732907ad98b27c52f9",
+          "G": "cb9b4094562d53a70769c14ce5b3c07988fc151543fbb43d03158e6061adc4dc",
+          "B": "2eb5657c0e1f10999dbfc4bad4514f1d0ff1f88ff2926e942f30958a70f94908",
+          "A": "c37cb3d61ef26f40d078f83628997218e29b1fd9d3df4830197686bdbfe2e4db"
+        }
+      },
+      {
+        "channel": "metallic_roughness",
+        "pixel_channels": {
+          "G": "fb82f0235acd06b170b64fe43cde12ae67cc21781c3ccd89bce070d1e42d817a",
+          "B": "f38579ff3336cb40c1ff74e6abd35ef71237c322e5e404ff619861fd17550002"
+        }
+      }
+    ]
+  },
+  "semantic_channels_equal": true
+}

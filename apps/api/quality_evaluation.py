@@ -8,7 +8,10 @@ from engines.quality import fingerprint
 VERSION=3
 
 
-def validator_hash():return store.digest(store.ROOT/'apps/api/quality_evaluation.py')
+def validator_hash():
+    # Cached technical passes must expire when a dependent inspector changes too.
+    return fingerprint({name:store.digest(store.ROOT/'apps/api'/name) for name in
+        ('quality_evaluation.py','inspection.py','surface_diagnostics.py','texture_diagnostics.py')})
 
 
 def compare_component_geometry(source,target,required,scale,tolerance):
@@ -85,7 +88,7 @@ def evaluate(item,candidate):
     model=studio.asset(item['asset_id'])
     cached=next((r for r in model.get('quality_evaluations',[]) if r['cache_key']==key),None)
     if cached:return cached
-    qa=inspect_glb(path);gates=[Gate(layer='technical',outcome='PASS',mandatory=True,tool='AFS glTF/trimesh inspector v1',
+    qa=inspect_glb(path);gates=[Gate(layer='technical',outcome='PASS',mandatory=True,tool='AFS glTF/trimesh inspector with embedded image validation',
         evidence=dict(artifact_sha256=candidate['sha256'],checks=qa['checks'],triangles=qa['triangles'],dimensions_xyz_m=qa['dimensions_xyz_m']),
         limitations=['Does not prove zero self-intersections or UV overlap. Nonwatertight foliage/planes are not universally rejected.'])]
     structure=Gate(layer='structure',outcome='NOT_EVALUATED',mandatory=False,tool='AFS named assembly validator v1',evidence={},limitations=['No verified named assembly contract for this route.'])

@@ -1,0 +1,215 @@
+{
+  "tower": {
+    "path": ".local\\native-checkpoint-real\\20261022T124320Z\\Library\\jobs\\770b27a74afa439998bc51e9dd320c70\\output\\raw.glb",
+    "sha256": "74c5b4dc86f1723198ab2a8a1cf771dbaf78010f24c96d21bd023b1c81d99cb6",
+    "seconds": 2.2809999999954016,
+    "texture_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+      "status": "VALIDATED_EMBEDDED_IMAGES",
+      "images": [
+        {
+          "index": 0,
+          "name": null,
+          "width": 4096,
+          "height": 4096,
+          "mime_type": "image/png",
+          "encoded_bytes": 24596288,
+          "encoded_sha256": "11623617732eb9112d69b51fd005871fc1151c915b5c2a219e6091a010ba99ad",
+          "decoded_rgba_sha256": "9d29dcc2119771e793ac630c34e58ff86fa4e9699a8b46f7ab2639bef95892f9",
+          "storage": "embedded",
+          "decode": "PASS"
+        },
+        {
+          "index": 1,
+          "name": null,
+          "width": 4096,
+          "height": 4096,
+          "mime_type": "image/png",
+          "encoded_bytes": 5673364,
+          "encoded_sha256": "81813876bbba8e6fb396c9805bfb3f67e53ad0c3cd3ba3a042547c9b04bb2ffd",
+          "decoded_rgba_sha256": "57cb6bc2f8ac99bd3e34f71fbf2d5bf16c73049c51b9500b7520ec30c34ae21c",
+          "storage": "embedded",
+          "decode": "PASS"
+        }
+      ],
+      "bindings": [
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "base_color",
+          "texture_index": 0,
+          "image_index": 0,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "sRGB",
+          "packed_channels": null
+        },
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "metallic_roughness",
+          "texture_index": 1,
+          "image_index": 1,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "linear",
+          "packed_channels": "G=roughness, B=metallic"
+        }
+      ],
+      "checks": {
+        "image_decode": "PASS",
+        "embedded_image_bounds": "PASS",
+        "material_texture_references": "PASS",
+        "texture_coordinate_declarations": "PASS"
+      },
+      "limitations": [
+        "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+        "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+      ]
+    },
+    "source_preserved": true
+  },
+  "castle": {
+    "path": ".local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+    "sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+    "seconds": 2.812000000005355,
+    "texture_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+      "status": "VALIDATED_EMBEDDED_IMAGES",
+      "images": [
+        {
+          "index": 0,
+          "name": null,
+          "width": 4096,
+          "height": 4096,
+          "mime_type": "image/png",
+          "encoded_bytes": 27503780,
+          "encoded_sha256": "b043f0fbc252d49e22e3550c9507e1d9e3e9bed93dab2695f44d4a7f46f243b8",
+          "decoded_rgba_sha256": "dfc5939975c80e0fa87f6b063ea26b5a093f921e41383e42f97e1e8d7b2ac89c",
+          "storage": "embedded",
+          "decode": "PASS"
+        },
+        {
+          "index": 1,
+          "name": null,
+          "width": 4096,
+          "height": 4096,
+          "mime_type": "image/png",
+          "encoded_bytes": 13477936,
+          "encoded_sha256": "a0d63dd6ca9d827c5ffab54e81559f246ed629adbd1d47a884827a376bb30175",
+          "decoded_rgba_sha256": "659f39d162645bc366f81b0e596c373de07588ed84d32b445d6f6b324e7d2009",
+          "storage": "embedded",
+          "decode": "PASS"
+        }
+      ],
+      "bindings": [
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "base_color",
+          "texture_index": 0,
+          "image_index": 0,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "sRGB",
+          "packed_channels": null
+        },
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "metallic_roughness",
+          "texture_index": 1,
+          "image_index": 1,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "linear",
+          "packed_channels": "G=roughness, B=metallic"
+        }
+      ],
+      "checks": {
+        "image_decode": "PASS",
+        "embedded_image_bounds": "PASS",
+        "material_texture_references": "PASS",
+        "texture_coordinate_declarations": "PASS"
+      },
+      "limitations": [
+        "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+        "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+      ]
+    },
+    "source_preserved": true
+  },
+  "castle_8k_research_only": {
+    "path": ".local\\texture-finishing-research\\20261022T144938Z\\output\\raw.glb",
+    "sha256": "2a52b2ac0c26c3337605fc429c655302c3d974892dd352a57e8beaaf16ac19b2",
+    "seconds": 6.235000000000582,
+    "texture_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+      "status": "VALIDATED_EMBEDDED_IMAGES",
+      "images": [
+        {
+          "index": 0,
+          "name": null,
+          "width": 8192,
+          "height": 8192,
+          "mime_type": "image/png",
+          "encoded_bytes": 91001580,
+          "encoded_sha256": "67e3dd3894a3d33c308498121ab1066a796d60bec4701c6d4bacc40cae59b1d5",
+          "decoded_rgba_sha256": "0477bccf29b1a9d15ebd16857798bd1d5f2adc24777dbdd7ed48a55c37c4aca4",
+          "storage": "embedded",
+          "decode": "PASS"
+        },
+        {
+          "index": 1,
+          "name": null,
+          "width": 8192,
+          "height": 8192,
+          "mime_type": "image/png",
+          "encoded_bytes": 42660692,
+          "encoded_sha256": "6e7ed58ca473b5a6ea87c14e6b1bea91c2211f4682ce45ba83bd3ec7f8e53b98",
+          "decoded_rgba_sha256": "383d417778bc03087f4c11ed141cefa505d535c5afd70f6fac9e6a1d242853d1",
+          "storage": "embedded",
+          "decode": "PASS"
+        }
+      ],
+      "bindings": [
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "base_color",
+          "texture_index": 0,
+          "image_index": 0,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "sRGB",
+          "packed_channels": null
+        },
+        {
+          "material_index": 0,
+          "material_name": "Material 1",
+          "channel": "metallic_roughness",
+          "texture_index": 1,
+          "image_index": 1,
+          "texcoord": 0,
+          "primitive_uses": 1,
+          "encoding": "linear",
+          "packed_channels": "G=roughness, B=metallic"
+        }
+      ],
+      "checks": {
+        "image_decode": "PASS",
+        "embedded_image_bounds": "PASS",
+        "material_texture_references": "PASS",
+        "texture_coordinate_declarations": "PASS"
+      },
+      "limitations": [
+        "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+        "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+      ]
+    },
+    "source_preserved": true
+  }
+}

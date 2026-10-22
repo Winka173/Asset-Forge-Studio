@@ -1,3 +1,13 @@
+# Windows 0.9.10 - embedded texture integrity - 2026-10-22
+
+162 backend tests PASS (232.36 s), TypeScript/Vite, fresh Windows/generic smoke, affected native Library/Production/Compare and backend cache/source checks PASS. GLB inspection now decodes actual embedded PNG/JPEGs, verifies byte bounds/MIME/references and declared UV shape/count, rejects loaded nonfinite UVs, and stores measured resolution/channel bindings/encoded and decoded hashes. The GLB reader skips BIN into offsets rather than retaining a full duplicate. QA cache identities include dependent inspectors. Existing valid image-free materials remain valid; no maps or artistic detail are invented.
+
+Explicit selected-version reinspection reuses Library inspection, saves evidence separately and preserves concurrent worker publication/master fields. Actual retained tower CPU Blender produced the real 4K PBR model; decoded files, selected-version inspection, source hash, refresh/no new jobs and deliberately corrupted-PNG rejection passed. Native Compare also displays both actual tower and castle texture measurements. First native harness misread the HTML details boolean attribute and hid its button; corrected the script and reran successfully. See TEXTURE_DIAGNOSTICS.md and evidence/texture_diagnostics_native_v0910.json, texture_compare_native_v0910.json.
+
+Read-only PBR roundtrip observation found identical basecolor RGBA and roughness/metallic G/B pixels for retained tower source/Blender LOD0. This does not certify UV mapping, render parity or all materials. Corner-normal castle research reduced the observed opposition count 2042 to 0, with equal measured triangle coordinates/UV and decoded pixels in this pair; visual difference is small and material/hierarchy roundtrip is not independently certified. It remains unintegrated research, not automatic repair or an art pass. 1536 inference was not forced while available RAM was below admission reserve. Separate audit found the standalone Enhance API ignores export_fbx; fix remains in progress. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe. No user Library/source deletion.
+
+---
+
 # Windows 0.9.9 - actual engine percentage restored - 2026-10-22
 
 150 backend tests PASS (219.89 s), TypeScript/Vite, fresh Windows/generic native smoke, affected real SDXL native progress acceptance and backend/source-cache verification PASS. Fixed chronological log parsing: an earlier STAGE header no longer erases later real denoising percentages. Merged tqdm/SDXL lines and ANSI control codes no longer corrupt the displayed phase name. A newer unquantified stage clears the old percentage; frame counts are not reused during encode. No elapsed-time interpolation, generation setting or source change.

@@ -87,6 +87,7 @@ class Bulk(BaseModel):
     action:Literal['archive','restore','category','tags','inspect','export']
     category:str|None=Field(default=None,max_length=200)
     tags:list[str]=Field(default_factory=list,max_length=50)
+    artifact_id:str|None=None
 
 
 def patch_metadata(identifier,updates):
@@ -103,6 +104,7 @@ def patch_metadata(identifier,updates):
 @router.post('/bulk')
 def bulk(body:Bulk):
     from .export_profiles import export_asset,export_history
+    if body.artifact_id and (body.action!='inspect' or len(body.asset_ids)!=1):raise HTTPException(400,'A selected model inspection requires exactly one asset')
     completed=[];errors=[]
     for identifier in dict.fromkeys(body.asset_ids):
         try:
@@ -118,12 +120,13 @@ def bulk(body:Bulk):
                 patch_metadata(identifier,{key:model[key] for key in ('category','tags') if key in model and key==('category' if body.action=='category' else 'tags')});completed.append(dict(asset_id=identifier))
             else:
                 with store.connect() as db:mine=[store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE asset_id=? AND role='candidate' ORDER BY created_at DESC",(identifier,))]
-                record=next((a for a in mine if a['metadata'].get('stage')=='blender_processed'),mine[0] if mine else None)
+                record=studio.scoped_artifact(body.artifact_id,model['project_id'],identifier) if body.artifact_id else next((a for a in mine if a['metadata'].get('stage')=='blender_processed'),mine[0] if mine else None)
                 if not record:raise HTTPException(409,'No real model exists for this asset')
                 path=store.safe_path(record['relative_path'])
+                if path.suffix.lower()!='.glb' or record['role'] not in ('candidate','master','processed'):raise HTTPException(409,'Select a real GLB model for inspection')
                 if store.digest(path)!=record['sha256']:raise HTTPException(409,'Model checksum changed')
                 if body.action=='inspect':
-                    report=inspect_glb(path);model['latest_inspection']=dict(at=store.now(),artifact_id=record['id'],sha256=record['sha256'],report=report);studio.save_asset(model);completed.append(dict(asset_id=identifier,report=report))
+                    report=inspect_glb(path);patch_metadata(identifier,dict(latest_inspection=dict(at=store.now(),artifact_id=record['id'],sha256=record['sha256'],report=report)));completed.append(dict(asset_id=identifier,report=report))
                 else:
                     if model.get('qa_status')!='passed' and record['metadata'].get('stage')!='blender_processed':raise HTTPException(409,'Technical postprocessing / QA is unfinished. Open Production before exporting this model.')
                     revision=next((r for r in model.get('revisions',[]) if r.get('artifact_id')==record['id']),None)

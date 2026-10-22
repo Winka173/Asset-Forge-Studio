@@ -1,0 +1,372 @@
+{
+  "status": "RESEARCH_ONLY_NOT_INTEGRATED",
+  "normal_operation": {
+    "status": "RESEARCH_EXPORT_REQUIRES_VALIDATION",
+    "source_sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+    "changes": [
+      {
+        "name": "geometry_0",
+        "loops": 2950602,
+        "reflected_loops": 28053,
+        "original_min_dot": -1.0,
+        "finite": true,
+        "positions_faces_uv_edited": false
+      }
+    ],
+    "scope": "Only per-corner shading normals changed; no hole/topology/art repair or production integration claim."
+  },
+  "measured": {
+    "reports": {
+      "source": {
+        "schema_version": 1,
+        "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+        "geometry_count": 1,
+        "totals": {
+          "triangles": 983534,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 1
+        },
+        "faces_opposing_mean_vertex_normal": 2042,
+        "all_vertex_normals_finite": true,
+        "meshes": [
+          {
+            "triangles": 983534,
+            "zero_area_triangles": 0,
+            "very_thin_triangles": 1,
+            "triangle_quality_p01": 0.21079936233813087,
+            "faces_opposing_mean_vertex_normal": 2042,
+            "finite_vertex_normals": true,
+            "vertex_normals_source": "loaded GLB normals",
+            "surface_area_source_units_squared": 9.088614628709019,
+            "bounding_diagonal_source_units": 1.5428097088194621,
+            "geometry": "geometry_0"
+          }
+        ],
+        "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+        "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+        "limitations": [
+          "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+          "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+          "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+        ],
+        "images": [
+          {
+            "dimensions": [
+              4096,
+              4096
+            ],
+            "full_pixel_sha256": "dfc5939975c80e0fa87f6b063ea26b5a093f921e41383e42f97e1e8d7b2ac89c",
+            "gb_sha256": "8721facfb1cb69305f8ab272e486a73a4948e4981fecd53928e8c4c80f52201a"
+          },
+          {
+            "dimensions": [
+              4096,
+              4096
+            ],
+            "full_pixel_sha256": "659f39d162645bc366f81b0e596c373de07588ed84d32b445d6f6b324e7d2009",
+            "gb_sha256": "3db963cc1d85ae9f5695cd38f8e7eff8b97a96d0e3c7edbfcabd3b2be0160ab6"
+          }
+        ]
+      },
+      "derived": {
+        "schema_version": 1,
+        "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+        "geometry_count": 1,
+        "totals": {
+          "triangles": 983534,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 1
+        },
+        "faces_opposing_mean_vertex_normal": 0,
+        "all_vertex_normals_finite": true,
+        "meshes": [
+          {
+            "triangles": 983534,
+            "zero_area_triangles": 0,
+            "very_thin_triangles": 1,
+            "triangle_quality_p01": 0.21079936233813087,
+            "faces_opposing_mean_vertex_normal": 0,
+            "finite_vertex_normals": true,
+            "vertex_normals_source": "loaded GLB normals",
+            "surface_area_source_units_squared": 9.088614628709019,
+            "bounding_diagonal_source_units": 1.5428097088194621,
+            "geometry": "geometry_0"
+          }
+        ],
+        "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+        "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+        "limitations": [
+          "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+          "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+          "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+        ],
+        "images": [
+          {
+            "dimensions": [
+              4096,
+              4096
+            ],
+            "full_pixel_sha256": "dfc5939975c80e0fa87f6b063ea26b5a093f921e41383e42f97e1e8d7b2ac89c",
+            "gb_sha256": "8721facfb1cb69305f8ab272e486a73a4948e4981fecd53928e8c4c80f52201a"
+          },
+          {
+            "dimensions": [
+              4096,
+              4096
+            ],
+            "full_pixel_sha256": "659f39d162645bc366f81b0e596c373de07588ed84d32b445d6f6b324e7d2009",
+            "gb_sha256": "3db963cc1d85ae9f5695cd38f8e7eff8b97a96d0e3c7edbfcabd3b2be0160ab6"
+          }
+        ]
+      }
+    },
+    "positions_max_abs_delta": 0.0,
+    "uv_max_abs_delta": 0.0,
+    "scope": "Read-only validation; per-triangle center/corner ordering may be ambiguous for symmetric coincident triangles; no equality claim from this alone."
+  },
+  "native": {
+    "status": "PASS_NATIVE_REAL_FINISHING_AB",
+    "version": "0.9.9",
+    "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\finishing-comparison-native\\2026-10-22T15-04-38-109Z",
+    "files": {
+      "golden": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+      "candidate": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\shading-repair-research\\20261022T150205Z\\output\\Derived_corner_normals.glb"
+    },
+    "hashes": {
+      "golden": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+      "candidate": "71e074dbb696a35cd2810fe768fbd02f7634b37ff4580c0c8fcaeec6dc32e6ee"
+    },
+    "errors": [],
+    "checks": [
+      {
+        "name": "actual_both_GLB_surface_counts_match_import_measurements",
+        "passed": true
+      },
+      {
+        "name": "real_reference_and_candidate_same_camera_textured_no_false_meshy_label_no_inference_sources_preserved",
+        "passed": true
+      }
+    ],
+    "scope": "Retained native source, unchanged original output and experimental derived finishing; actual shared-camera viewer, not Meshy or artistic approval.",
+    "artifacts": {
+      "golden": {
+        "id": "f686c7349b16429184aa357f78b09985",
+        "role": "golden",
+        "name": "Baseline-original-finishing.glb",
+        "relative_path": "projects/a1a211cc458b47a7a5b9c3f0276a94b1/assets/references/versions/fd6b661e20c644c0a453465a5fc72ede/source.glb",
+        "sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+        "created_at": "2026-10-22T15:04:42.937027+00:00",
+        "metadata": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 983534,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            1.0034518837928772,
+            0.7962386012077332,
+            0.8598547577857971
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.5018848180770874,
+              -0.39737850427627563,
+              -0.42972326278686523
+            ],
+            [
+              0.5015670657157898,
+              0.3988600969314575,
+              0.4301314949989319
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 983534,
+              "vertices": 718650,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "unnamed",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 983534,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 1
+            },
+            "faces_opposing_mean_vertex_normal": 2042,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 983534,
+                "zero_area_triangles": 0,
+                "very_thin_triangles": 1,
+                "triangle_quality_p01": 0.21079936233813087,
+                "faces_opposing_mean_vertex_normal": 2042,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "loaded GLB normals",
+                "surface_area_source_units_squared": 9.088614628709019,
+                "bounding_diagonal_source_units": 1.5428097088194621,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          },
+          "source_filename": "Baseline-original-finishing.glb",
+          "origin": "user_import",
+          "license": "NEEDS_REVIEW",
+          "project_id": "a1a211cc458b47a7a5b9c3f0276a94b1",
+          "asset_id": null
+        },
+        "project_id": "a1a211cc458b47a7a5b9c3f0276a94b1",
+        "asset_id": null,
+        "url": "/api/artifacts/f686c7349b16429184aa357f78b09985/file"
+      },
+      "candidate": {
+        "id": "50962c55783f4e40ab89717e6d6e1446",
+        "role": "candidate",
+        "name": "Derived-corner-normal-repair.glb",
+        "relative_path": "projects/a1a211cc458b47a7a5b9c3f0276a94b1/assets/references/versions/731abd956d1f4df2bf04a8464bd45f2a/source.glb",
+        "sha256": "71e074dbb696a35cd2810fe768fbd02f7634b37ff4580c0c8fcaeec6dc32e6ee",
+        "created_at": "2026-10-22T15:04:44.847820+00:00",
+        "metadata": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 983534,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            1.0034518837928772,
+            0.7962386012077332,
+            0.8598547577857971
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.5018848180770874,
+              -0.39737850427627563,
+              -0.42972326278686523
+            ],
+            [
+              0.5015670657157898,
+              0.3988600969314575,
+              0.4301314949989319
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 983534,
+              "vertices": 747301,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": true
+            }
+          ],
+          "materials": [
+            {
+              "name": "Material_0",
+              "base_color_texture": true,
+              "metallic_roughness_texture": true,
+              "normal_texture": false,
+              "ao_texture": false,
+              "emissive_texture": false,
+              "metallic_factor": 1,
+              "roughness_factor": 1
+            }
+          ],
+          "images": 2,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "b9467b9024615963c8eb0573c938c2a0b18afe06208b55c445483a4a6abea754",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 983534,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 1
+            },
+            "faces_opposing_mean_vertex_normal": 0,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 983534,
+                "zero_area_triangles": 0,
+                "very_thin_triangles": 1,
+                "triangle_quality_p01": 0.21079936233813087,
+                "faces_opposing_mean_vertex_normal": 0,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "loaded GLB normals",
+                "surface_area_source_units_squared": 9.088614628709019,
+                "bounding_diagonal_source_units": 1.5428097088194621,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          },
+          "source_filename": "Derived-corner-normal-repair.glb",
+          "origin": "user_import",
+          "license": "NEEDS_REVIEW",
+          "project_id": "a1a211cc458b47a7a5b9c3f0276a94b1",
+          "asset_id": null
+        },
+        "project_id": "a1a211cc458b47a7a5b9c3f0276a94b1",
+        "asset_id": null,
+        "url": "/api/artifacts/50962c55783f4e40ab89717e6d6e1446/file"
+      }
+    }
+  },
+  "assessment": "Measured mean-normal opposition removed in this pair with equal measured triangle positions, UVs and decoded pixels. Shared-camera visual difference is small. Not a general shading/hole repair, default change, art approval or production capability.",
+  "invariance_limitations": "Canonical triangle sorting can be ambiguous for coincident/symmetric triangles; material/hierarchy roundtrip not independently certified."
+}

@@ -123,3 +123,29 @@ def test_library_metadata_changes_preserve_latest_master_and_review_state(client
         result=client.post('/api/library/bulk',json=dict(asset_ids=[model['id']],action=action)).json()
         assert not result['errors'] and result['completed'][0]['asset_id']==model['id']
     assert studio.asset(model['id'])['archived'] is False and path.exists() and not jobs.listing()
+
+
+def test_selected_reinspection_is_version_scoped_and_preserves_concurrent_worker_updates(client,monkeypatch):
+    from apps.api import library
+    model,record,path=source(client);before=path.read_bytes()
+    second_path=store.DATA/'another-version.glb';second_path.write_bytes(trimesh.creation.box(extents=[6,4,2]).export(file_type='glb'))
+    second=store.add_artifact(second_path,'candidate','Another real version.glb',dict(project_id='runavelle',asset_id=model['id']))
+    actual_inspect=library.inspect_glb
+    def inspect_during_worker_completion(file):
+        library.patch_metadata(model['id'],dict(master_artifact_id=second['id'],published_artifact_id=second['id']))
+        return actual_inspect(file)
+    monkeypatch.setattr(library,'inspect_glb',inspect_during_worker_completion)
+    result=client.post('/api/library/bulk',json=dict(action='inspect',asset_ids=[model['id']],artifact_id=record['id'])).json()
+    assert not result['errors'] and result['completed'][0]['report']['dimensions_xyz_m']==[3,9,3]
+    current=studio.asset(model['id']);assert current['master_artifact_id']==current['published_artifact_id']==second['id']
+    detail=client.get('/api/production/assets/'+model['id']).json()
+    selected=next(a for a in detail['artifacts'] if a['id']==record['id']);other=next(a for a in detail['artifacts'] if a['id']==second['id'])
+    assert selected['metadata']['texture_diagnostics']['images']==[]
+    assert selected['metadata']['stage']=='blender_processed' and 'texture_diagnostics' not in other['metadata']
+    # Source artifact metadata remains immutable; the explicit inspection is separate.
+    assert 'texture_diagnostics' not in store.get_artifact(record['id'])['metadata']
+    assert client.get('/api/production/assets/'+model['id']).json()['artifacts']==detail['artifacts']
+    stranger=studio.create_asset(studio.AssetInput(project_id='runavelle',name='Unrelated asset'))
+    wrong=client.post('/api/library/bulk',json=dict(action='inspect',asset_ids=[stranger['id']],artifact_id=record['id'])).json()
+    assert wrong['errors'] and not wrong['completed']
+    assert path.read_bytes()==before and not jobs.listing()
