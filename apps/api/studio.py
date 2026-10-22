@@ -267,6 +267,7 @@ def studio_view(project_id: str = ''):
 def studio(project_id: str = ''):
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER
+    from .prompt_intent import capability as intent_capability
     selected = project(project_id) if project_id else None
     with store.connect() as db:
         artifacts = [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE project_id=? ORDER BY created_at', (project_id,))]
@@ -290,10 +291,11 @@ def studio(project_id: str = ''):
                 break
     return dict(projects=projects(), project=selected, assets=values, artifacts=artifacts,
                 jobs=[j for j in jobs.listing() if job_project(j) == project_id], draft=json.loads(row['payload']) if row else {},
-                capabilities=dict(text_to_concept=CONCEPT_ADAPTER.installed, concept_engine=CONCEPT_ADAPTER.probe(), text_conditioning=False, image_to_3d=any(a.installed for a in ADAPTERS.values())))
+                capabilities=dict(prompt_interpretation=intent_capability(),text_to_concept=CONCEPT_ADAPTER.installed, concept_engine=CONCEPT_ADAPTER.probe(), text_conditioning=False, image_to_3d=any(a.installed for a in ADAPTERS.values())))
 
 
 class ConceptInput(BaseModel):
+    interpreted_prompt: str | None = Field(default=None,max_length=100000)
     style_reference_ids: list[str] = Field(default_factory=list,max_length=5)
     asset_id: str
     request_id: str = Field(min_length=8,max_length=100)
@@ -325,7 +327,7 @@ def concept(body: ConceptInput):
     if overrides:inherited.append('Asset style overrides: '+json.dumps(overrides,ensure_ascii=False))
     style='; '.join(filter(None,[style,*inherited]))
     from .reference_direction import concept_direction
-    try:directed,reference_direction=concept_direction(body.prompt,body.style_reference_ids,value['project_id'])
+    try:directed,reference_direction=concept_direction(body.interpreted_prompt or body.prompt,body.style_reference_ids,value['project_id'])
     except ValueError as exc:raise HTTPException(409,str(exc))
     prompt=directed+('\nGame art direction: '+style if style else '')+'\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.'
     from engines.quality import resolve_concept,fingerprint

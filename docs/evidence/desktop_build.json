@@ -1,21 +1,32 @@
 ﻿{
-    "version":  "0.8.17",
-    "timestamp_utc":  "20261022T071606Z",
-    "git_commit":  "1cd798c979b31f8918a7479c0ecf5f8da47cebc4",
+    "version":  "0.8.18",
+    "timestamp_utc":  "20261022T074217Z",
+    "git_commit":  "d1af314f6036c520a62ac77233f122e6b3a31bfe",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/automation.py",
+                          " M apps/api/jobs.py",
                           " M apps/api/main.py",
+                          " M apps/api/production.py",
+                          " M apps/api/statuses.py",
                           " M apps/api/studio.py",
+                          " M apps/web/src/production.tsx",
                           " M apps/web/src/studio.tsx",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? apps/api/reference_direction.py",
-                          "?? tests/test_reference_direction.py"
+                          " M tests/conftest.py",
+                          "?? apps/api/prompt_intent.py",
+                          "?? apps/web/src/prompt-understanding.css",
+                          "?? apps/web/src/prompt-understanding.tsx",
+                          "?? docs/evidence/castle_reference_3d.json",
+                          "?? docs/evidence/castle_reference_3d.png",
+                          "?? engines/intent_adapter.py",
+                          "?? engines/intent_runtime.py",
+                          "?? tests/test_prompt_intent.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -24,7 +35,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T071606Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T074217Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -35,13 +46,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio_0.8.17_x64-setup.exe":  "cdd3f4bfe3dfa08d0bdba2866d11c3446a12f64f8b55a5a70a2a9b570ef115b7",
-                            "Asset Forge Studio.exe":  "9fa08fa312c6ce4a3469964e5cdb4e920cf1c0a724b7bdc3eb0f3fc0ab29687e",
-                            "afs-backend.exe":  "990ac274c5b15da44c2fbf9acef898b1810dd21471a1b72850755423ae576067"
+                            "Asset Forge Studio.exe":  "1c0158424a6743e9ac3f151342b03dd7e872bf20f3d5b71f167fb201314393ef",
+                            "Asset Forge Studio_0.8.18_x64-setup.exe":  "62da23f91e42b3f5084b3eb332d0be0edc638b30e3c8e9df5c68f89156b5bf6f",
+                            "afs-backend.exe":  "b3835abd309376d1fedfe443ef7a8767918cf1ce7ca269fc8d29128f57510eff"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T07-20-08-987Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T07-46-19-175Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.17_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.8.18_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

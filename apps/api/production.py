@@ -109,9 +109,9 @@ def overview():
             i['stage']=model.get('stage_status',i['stage']) if model.get('production_status')=='completed' else i['stage']
             i['status']=model.get('production_status',i['status'])
             i['needs_review']=model.get('art_review_status')=='not_reviewed' and model.get('production_status')=='completed'
-        counts={s:sum(i['status']==s for i in items) for s in ('running','generating','processing','validating','exporting','queued','paused','pausing','exported','completed','needs_attention','failed','blocked','draft')}
+        counts={s:sum(i['status']==s for i in items) for s in ('running','preparing','generating','processing','validating','exporting','queued','paused','pausing','exported','completed','needs_attention','failed','blocked','draft')}
         counts['completed']=sum(i['status'] in ('completed','exported') for i in items)
-        counts['running']=sum(i['status'] in ('generating','processing','validating','exporting') for i in items)
+        counts['running']=sum(i['status'] in ('preparing','generating','processing','validating','exporting') for i in items)
         counts['exported']=sum(i.get('export_status')=='exported' for i in items)
         counts['blocked']=sum(i.get('stage_status')=='blocked' for i in items)
         counts['needs_attention']=sum(bool(i.get('attention_required')) for i in items)

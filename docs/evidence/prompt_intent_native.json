@@ -1,0 +1,587 @@
+{
+  "status": "PASS_NATIVE_QWEN_CPU_INTENT",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\prompt-intent-native\\2026-10-22T07-46-37-204Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "actual_qwen_vision_language_cpu_auto_routing_visible_metadata_restart",
+      "passed": true,
+      "job_id": "6651efc4bea744ae8be2289fddc9e8ae",
+      "result": {
+        "schema_version": 2,
+        "status": "interpreted",
+        "model": "qwen3-vl:4b-instruct-q4_K_M",
+        "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+        "execution": "local_cpu_only",
+        "source_prompt_sha256": "e5b5a1c48a5401c097db6a808d4ccdba26dce90d19fc581e6cfe093db6da76a7",
+        "references": [
+          {
+            "artifact_id": "cf0176005c384bcb89630360e5450856",
+            "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+          }
+        ],
+        "chunks": [
+          {
+            "start": 0,
+            "end": 52,
+            "sha256": "e5b5a1c48a5401c097db6a808d4ccdba26dce90d19fc581e6cfe093db6da76a7",
+            "interpretation": {
+              "translated_prompt_en": "Create for me 1 castle with style similar to the reference image.",
+              "requested_subject_en": "castle",
+              "reference_role": "style",
+              "reference_description_en": "A fantasy castle tower with stone walls, wooden beams, blue-tiled roof, gargoyle statues, glowing blue torches, and a crystal spire. The style is 3D rendered with smooth surfaces, soft lighting, and fantasy architectural details.",
+              "style_traits": [
+                "Stone walls with weathered texture",
+                "Wooden beams and railings",
+                "Blue-tiled conical roof",
+                "Gargoyle statues on battlements",
+                "Glowing blue torches",
+                "Crystal spire top",
+                "Smooth 3D rendering with soft lighting",
+                "Fantasy architectural style"
+              ],
+              "warnings": []
+            },
+            "eval_count": 183,
+            "total_duration_ns": 25119720100
+          }
+        ],
+        "reference_role": "style",
+        "generation_prompt_en": "Create for me 1 castle with style similar to the reference image.\nReference visual direction (local VLM inference, not artist approved): Stone walls with weathered texture; Wooden beams and railings; Blue-tiled conical roof; Gargoyle statues on battlements; Glowing blue torches; Crystal spire top; Smooth 3D rendering with soft lighting; Fantasy architectural style",
+        "duration_seconds": 25.20300000000134,
+        "provenance": "inferred_local_vision_language_model",
+        "artistic_approval": false,
+        "qa_status": "not_run"
+      },
+      "ollama_process_samples": [
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:45.3385695+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:46.3527344+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:47.3668026+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:48.3806078+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:49.3878806+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:50.400873+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:51.4189646+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:52.4331682+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:53.4450472+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:54.4627435+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:55.47766+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:56.4966057+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:57.5131075+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:58.5279671+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:46:59.5371371+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:00.5541891+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:01.5705136+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:02.5915267+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:03.6105404+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:04.6254343+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        },
+        {
+          "models": [
+            {
+              "name": "qwen3-vl:4b-instruct-q4_K_M",
+              "model": "qwen3-vl:4b-instruct-q4_K_M",
+              "size": 4325407455,
+              "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+              "details": {
+                "parent_model": "",
+                "format": "gguf",
+                "family": "qwen3vl",
+                "families": [
+                  "qwen3vl",
+                  "clip"
+                ],
+                "parameter_size": "4.0B",
+                "quantization_level": "Q4_K_M"
+              },
+              "expires_at": "2026-10-22T14:47:05.633738+07:00",
+              "size_vram": 0,
+              "context_length": 8192,
+              "runner": "llamacpp"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "scope": "Actual packaged Create Auto vision/language interpretation on CPU; original request/ref hashes, shared CPU stage, 0 VRAM, visible inferred specification and native restart; GPU admission held to avoid another 3D generation."
+}

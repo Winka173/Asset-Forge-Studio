@@ -30,9 +30,11 @@ async def lifespan(app):
         yield
     finally:
         jobs.worker.close()
+        from engines.intent_runtime import close as close_intent_runtime
+        close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.8.17", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.8.18", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)

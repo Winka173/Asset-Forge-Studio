@@ -136,7 +136,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
+    if payload['kind'] in ('prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -289,6 +289,10 @@ class Worker:
         folder = store.DATA / 'jobs' / identifier; folder.mkdir(parents=True, exist_ok=True)
         try:
             if get(identifier)['status']=='QUEUED':transition(identifier, 'RUNNING')
+            if payload['kind']=='prompt_analysis':
+                from .prompt_intent import execute
+                execute(job,folder)
+                return
             if payload['kind']=='tool_update':
                 from .updates import execute
                 execute(job,folder,self.stop)

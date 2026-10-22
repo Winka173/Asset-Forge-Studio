@@ -1,0 +1,799 @@
+{
+  "status": "PASS_REAL_QWEN3_VL_CPU_INTENT",
+  "job_id": "95aa327d3b7549a785cb3094696c4487",
+  "asset_id": "47ece484d77349b0a1864bd9f35f1807",
+  "batch_id": "f3436b6f4d36465b98d5e3e52023f27a",
+  "result": {
+    "schema_version": 2,
+    "status": "interpreted",
+    "model": "qwen3-vl:4b-instruct-q4_K_M",
+    "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+    "execution": "local_cpu_only",
+    "source_prompt_sha256": "e5b5a1c48a5401c097db6a808d4ccdba26dce90d19fc581e6cfe093db6da76a7",
+    "references": [
+      {
+        "artifact_id": "f1b4b19277684cc1a484bdec1c0078a9",
+        "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+      }
+    ],
+    "chunks": [
+      {
+        "start": 0,
+        "end": 52,
+        "sha256": "e5b5a1c48a5401c097db6a808d4ccdba26dce90d19fc581e6cfe093db6da76a7",
+        "interpretation": {
+          "translated_prompt_en": "Create for me 1 castle with style similar to the reference image.",
+          "requested_subject_en": "castle",
+          "reference_role": "style",
+          "reference_description_en": "A fantasy castle tower with stone walls, wooden beams, blue-tiled roof, gargoyle statues, glowing blue torches, and a crystal spire. The style is 3D rendered with smooth surfaces, soft lighting, and fantasy architectural details.",
+          "style_traits": [
+            "Stone walls with weathered texture",
+            "Wooden beams and railings",
+            "Blue-tiled conical roof",
+            "Gargoyle statues on battlements",
+            "Glowing blue torches",
+            "Crystal spire top",
+            "Smooth 3D rendering with soft lighting",
+            "Fantasy architectural style"
+          ],
+          "warnings": []
+        },
+        "eval_count": 183,
+        "total_duration_ns": 23219687800
+      }
+    ],
+    "reference_role": "style",
+    "generation_prompt_en": "Create for me 1 castle with style similar to the reference image.\nReference visual direction (local VLM inference, not artist approved): Stone walls with weathered texture; Wooden beams and railings; Blue-tiled conical roof; Gargoyle statues on battlements; Glowing blue torches; Crystal spire top; Smooth 3D rendering with soft lighting; Fantasy architectural style",
+    "duration_seconds": 23.31199999999808,
+    "provenance": "inferred_local_vision_language_model",
+    "artistic_approval": false,
+    "qa_status": "not_run"
+  },
+  "duration_seconds": 26.812999999998283,
+  "ollama_process_samples": [
+    {
+      "models": []
+    },
+    {
+      "models": []
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:14.4927298+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:15.4996293+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:16.5114702+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:17.5258437+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:18.5434489+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:19.5476351+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:20.5785954+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:21.5829205+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:22.6031241+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:23.6194939+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:24.6240631+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:25.6439881+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:26.6599862+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:27.6734609+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:28.7013216+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:29.7151123+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:30.7302944+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:31.7621257+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:32.7927493+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": [
+        {
+          "name": "qwen3-vl:4b-instruct-q4_K_M",
+          "model": "qwen3-vl:4b-instruct-q4_K_M",
+          "size": 4325407455,
+          "digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen3vl",
+            "families": [
+              "qwen3vl",
+              "clip"
+            ],
+            "parameter_size": "4.0B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-22T14:41:33.8175951+07:00",
+          "size_vram": 0,
+          "context_length": 8192,
+          "runner": "llamacpp"
+        }
+      ]
+    },
+    {
+      "models": []
+    },
+    {
+      "models": []
+    },
+    {
+      "models": []
+    },
+    {
+      "models": []
+    }
+  ],
+  "original_prompt_preserved": true,
+  "next_job_kind": "concept",
+  "concept_job_id": "d17fad2402a54e6395669bbdc3ff58d1",
+  "concept_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\intent-acceptance\\Library\\jobs\\d17fad2402a54e6395669bbdc3ff58d1\\output\\concept.png",
+  "concept_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2",
+  "generation": {
+    "status": "GENERATED_NEEDS_REVIEW",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": "f3436b6f4d36465b98d5e3e52023f27a",
+      "batch_attempt": 0,
+      "project_id": "28cb9954d2574aa6ba8cf0121d868448",
+      "asset_id": "47ece484d77349b0a1864bd9f35f1807",
+      "name": "Castle / local VLM understanding concept",
+      "prompt": "Create for me 1 castle with style similar to the reference image.\nReference visual direction (local VLM inference, not artist approved): Stone walls with weathered texture; Wooden beams and railings; Blue-tiled conical roof; Gargoyle statues on battlements; Glowing blue torches; Crystal spire top; Smooth 3D rendering with soft lighting; Fantasy architectural style\nReference color palette only: brown, charcoal, gray, ivory. Design the subject requested in the prompt; do not reconstruct the reference object.\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.",
+      "user_prompt": "t\u1ea1o cho t\u00f4i 1 c\u0103n l\u00e2u \u0111\u00e0i c\u00f3 style t\u01b0\u01a1ng t\u1ef1 h\u00ecnh ref",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [
+          {
+            "artifact_id": "f1b4b19277684cc1a484bdec1c0078a9",
+            "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+            "palette": [
+              {
+                "rgb": [
+                  87,
+                  80,
+                  83
+                ],
+                "pixels": 902,
+                "label": "brown"
+              },
+              {
+                "rgb": [
+                  66,
+                  56,
+                  58
+                ],
+                "pixels": 846,
+                "label": "charcoal"
+              },
+              {
+                "rgb": [
+                  124,
+                  112,
+                  100
+                ],
+                "pixels": 760,
+                "label": "gray"
+              },
+              {
+                "rgb": [
+                  161,
+                  146,
+                  124
+                ],
+                "pixels": 520,
+                "label": "gray"
+              },
+              {
+                "rgb": [
+                  198,
+                  190,
+                  160
+                ],
+                "pixels": 415,
+                "label": "ivory"
+              }
+            ]
+          }
+        ],
+        "bilingual_noun_hints": [],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Local VLM real acceptance",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "28cb9954d2574aa6ba8cf0121d868448"
+      },
+      "seed": 42,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "Create for me 1 castle with style similar to the reference image.\nReference visual direction (local VLM inference, not artist approved): Stone walls with weathered texture; Wooden beams and railings; Blue-tiled conical roof; Gargoyle statues on battlements; Glowing blue torches; Crystal spire top; Smooth 3D rendering with soft lighting; Fantasy architectural style\nReference color palette only: brown, charcoal, gray, ivory. Design the subject requested in the prompt; do not reconstruct the reference object.\nSingle isolated game asset, three-quarter view, whole object visible, neutral plain background, coherent geometry, no labels or text.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 42,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "cac2fcc882ed0bbfc592a573fffb1c06f9e1e7271faa582c6e4bb488f4c8a4f0",
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [
+            {
+              "artifact_id": "f1b4b19277684cc1a484bdec1c0078a9",
+              "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+              "palette": [
+                {
+                  "rgb": [
+                    87,
+                    80,
+                    83
+                  ],
+                  "pixels": 902,
+                  "label": "brown"
+                },
+                {
+                  "rgb": [
+                    66,
+                    56,
+                    58
+                  ],
+                  "pixels": 846,
+                  "label": "charcoal"
+                },
+                {
+                  "rgb": [
+                    124,
+                    112,
+                    100
+                  ],
+                  "pixels": 760,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    161,
+                    146,
+                    124
+                  ],
+                  "pixels": 520,
+                  "label": "gray"
+                },
+                {
+                  "rgb": [
+                    198,
+                    190,
+                    160
+                  ],
+                  "pixels": 415,
+                  "label": "ivory"
+                }
+              ]
+            }
+          ],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        }
+      },
+      "effective_config_hash": "8d2048fb00325decdeebb34ca1a0a937baef32748b449d9ad360fd6bce29276a",
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\intent-acceptance\\Library\\jobs\\d17fad2402a54e6395669bbdc3ff58d1\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\intent-acceptance\\Library\\jobs\\d17fad2402a54e6395669bbdc3ff58d1\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "e611eac070afe77209b433057371ee93329a9855adbc2c276042df068cce7998",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "prompt_encoding": {
+      "chunks": 2,
+      "tokens_not_truncated": true,
+      "pooled": "mean across CLIP-2 chunks",
+      "experimental_long_prompt": true
+    },
+    "output_sha256": "ebb0377e15ad8a2cf15a2856d3cff691fbe2961b39d08aafab15f0010ab5cdd2",
+    "peak_allocated_bytes": 5596858880,
+    "peak_reserved_bytes": 7847542784,
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "duration_seconds": 23.29699999999866
+  }
+}

@@ -93,6 +93,7 @@ type StudioData = {
   draft: Partial<Draft>;
   capabilities: {
     text_to_concept: boolean;
+    prompt_interpretation?: {available:boolean;model:string;reason?:string;verification:string};
     text_conditioning: boolean;
     image_to_3d: boolean;
   };
@@ -114,7 +115,7 @@ type Draft = {
   quality: "Fast" | "Balanced" | "Maximum";
   seeds: string;
   inspirationGame?:string;
-  referenceUsage?: "source" | "palette_style";
+  referenceUsage?: "auto" | "source" | "palette_style";
   steps: number;
   profile: string;
   textureSize: number;
@@ -257,7 +258,7 @@ export function Studio() {
     [draftStatus, setDraftStatus] = useState("");
   useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx','video'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
   useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
-  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
+  const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,prompt_interpretation:true,review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
   useWorkflowUpdates(projectId,setWorkflow);
   useEffect(()=>{let alive=true;setWorkflowReady(false);if(!projectId)return;request<{settings?:typeof workflow}&Partial<typeof workflow>>(`/api/automation/projects/${projectId}`).then(value=>{if(alive){setWorkflow(previous=>({...previous,...(value.settings||value)}));setWorkflowReady(true);}}).catch(e=>{if(alive)setError(String(e));});return()=>{alive=false;};},[projectId]);
@@ -604,7 +605,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||'palette_style'):'source',workflow};
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -613,7 +614,7 @@ export function Studio() {
         setNotice(`${workflow.mode==='auto'?'Automatic':'Assisted'} local pipeline queued (${result.batch_id.slice(0,8)}). Progress and exports remain available after refresh.`);
         return;
       }
-      if (!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||'palette_style')==='palette_style'&&source.metadata.origin!=='sdxl_local')) {
+      if (!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) {
         if(!data.capabilities.text_to_concept)throw new Error('SDXL local chưa sẵn sàng. Nhập ảnh concept để tiếp tục.');
         if(!draft.prompt.trim())throw new Error('Nhập prompt để tạo concept.');
         const model=await ensureAsset();
@@ -1155,6 +1156,7 @@ export function Studio() {
                       ),
                     )}
                   </div>
+                  <div className="capability-note" role="note"><strong>Prompt understanding</strong><p>{data.capabilities.prompt_interpretation?.available?'Local Qwen3-VL is available. Auto mode adds a queued CPU interpretation stage before concept/3D; original text and image hashes are retained.':'Local vision/language model unavailable. Current fallback uses explicit image purpose and measured colors; it does not semantically understand the reference.'}</p><small>{data.capabilities.prompt_interpretation?.verification}</small></div>
                   <label className="studio-field">
                     Asset name
                     <input
@@ -1250,7 +1252,7 @@ export function Studio() {
                       </label>
                     </>
                   )}
-                  {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||'palette_style'} onChange={e=>change({referenceUsage:e.target.value as 'source'|'palette_style'})}><option value="palette_style" data-description="Creates a new concept from your prompt using measured reference colors. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject ? reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||'palette_style')==='palette_style'?'Prompt ? new SDXL concept ? 3D ? Blender. Reference provides measured colors only; full style fidelity needs review.':'Image ? 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
+                  {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new concept. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates a new concept from your prompt using measured reference colors. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / new SDXL concept / 3D / Blender. Reference provides measured colors only; full style fidelity needs review.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
                   <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
                   </div>}
@@ -1265,7 +1267,7 @@ export function Studio() {
                         busy ||
                         (!(candidate&&selectedAsset)&&(!workflowReady ||
                         (workflow.mode==='expert' && sourceNeedsApproval) ||
-                        ((!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||'palette_style')==='palette_style'&&source.metadata.origin!=='sdxl_local')) ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
+                        ((!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) ? (!draft.prompt.trim() || !data.capabilities.text_to_concept) : !data.capabilities.image_to_3d) ||
                         loadedProject !== projectId))
                       }
                       onClick={generate}
@@ -1288,7 +1290,7 @@ export function Studio() {
                       Save draft to library
                     </button>
                   </div>
-                  <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary>                  <div
+                  <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary><label className="studio-field"><span><input type="checkbox" checked={workflow.prompt_interpretation} onChange={e=>changeWorkflow({prompt_interpretation:e.target.checked})}/> Use local prompt understanding when available</span><small>Saved per game. CPU analysis translates the prompt and classifies image purpose before generation. Missing models use the visible deterministic fallback.</small></label>                  <div
                     className="studio-field"
                     role="group"
                     aria-label="Quality"

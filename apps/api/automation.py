@@ -29,6 +29,7 @@ class Workflow(BaseModel):
     max_active_assets:int=Field(default=2,ge=1,le=4)
     auto_resume:bool=False
     review_policy:Literal['auto','review_flagged','manual_approval']='auto'
+    prompt_interpretation:bool=True
 
 
 @router.get('/projects/{project_id}')
@@ -142,6 +143,12 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
                 item['resolved_prompt']=item['name'].strip();item['spec_provenance']['generation_prompt']=dict(kind='inferred',source='Original asset name; no original prompt text was replaced',value=item['resolved_prompt'])
             model['resolved_specification']=dict(generation_prompt=item.get('resolved_prompt') or item['prompt'],category=item.get('category'),dimensions={k:item[k] for k in ('target_width_m','target_depth_m','target_height_m')},provenance=item['spec_provenance'],quality=item['quality'],source_prompt_sha256=hashlib.sha256(item['prompt'].encode()).hexdigest(),project_style_snapshot=value['style_snapshot'],artistic_evaluation='not_available')
             studio.save_asset(model)
+            from engines.intent_adapter import available
+            if settings.get('prompt_interpretation',True) and available() and not item.get('processing_source') and not item.get('revision_id'):
+                item.setdefault('interpret_prompt',True)
+                item.setdefault('intent_reference_ids',list(dict.fromkeys(item.get('style_reference_ids',[])+item['reference_ids'])))
+                item.setdefault('intent_reference_usage','style' if item.get('style_reference_ids') else 'auto')
+                item['reference_ids']=[]
             source=next((a for a in snapshot['artifacts'] if a['id'] in item['reference_ids'] and a['role'] in ('concept','reference')),None)
             pinned=item.get('automation',{}).get('engines') or plan_engines(item,source)
             if item.get('automation',{}).get('attempt',item['attempt'])!=item['attempt']:item.pop('automation',None)
@@ -244,6 +251,8 @@ def advance(identifier):
             if any(d is None for d in dependencies):auto.update(status='blocked',stage='Needs Input',error='Unknown dependency ID');continue
             if any(d.get('automation',{}).get('status') not in ('exported','needs_review') for d in dependencies):auto.update(status='queued',stage='Waiting for dependency');continue
             try:
+                from .prompt_intent import admit
+                if admit(value,item,current,auto):active_assets.add(item['asset_id']);continue
                 from .revisions import execution_context,update_execution
                 revision=execution_context(item)
                 processing=bool(item.get('processing_source') or revision and revision['plan']['method']=='blender_transform')
@@ -273,7 +282,7 @@ def advance(identifier):
                             except (OSError,ValueError):continue
                         if not valid:
                             if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
-                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
+                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
                             active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
                         _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
                         selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
@@ -395,7 +404,7 @@ class Single(BaseModel):
     engine:Literal['auto','trellis2_community','triposg']='auto'
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     reference_id:str|None=None
-    reference_usage:Literal['source','palette_style']='source'
+    reference_usage:Literal['auto','source','palette_style']='source'
     workflow:Workflow|None=None
 
 
@@ -403,12 +412,15 @@ class Single(BaseModel):
 def single(body:Single):
     from . import batch
     model=studio.asset(body.asset_id)
+    from engines.intent_adapter import available as interpreter_available
+    effective_usage=body.reference_usage
+    if effective_usage=='auto' and not interpreter_available():effective_usage='palette_style' if body.reference_id and model['prompt'].strip() else 'source'
     if len(set(body.seeds))!=len(body.seeds) or any(seed<0 or seed>=2**32 for seed in body.seeds):raise HTTPException(400,'Use 1–5 distinct seeds in 0..4294967295')
     if body.reference_id:
         reference=studio.scoped_artifact(body.reference_id,model['project_id'])
         if reference['role'] not in ('concept','reference'):raise HTTPException(400,'A reference image is required')
-    if body.reference_usage=='palette_style' and (not body.reference_id or not model['prompt'].strip()):raise HTTPException(422,'Style reference needs a subject prompt and an image')
-    if body.reference_usage=='palette_style':
+    if effective_usage=='palette_style' and (not body.reference_id or not model['prompt'].strip()):raise HTTPException(422,'Style reference needs a subject prompt and an image')
+    if effective_usage=='palette_style':
         from engines.concept_adapter import CONCEPT_ADAPTER
         if not CONCEPT_ADAPTER.installed:raise HTTPException(409,'Creating a new subject from reference colors requires local SDXL. The image will not be silently reconstructed instead.')
     if model.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'This asset type requires its implemented dedicated pipeline')
@@ -420,7 +432,8 @@ def single(body:Single):
             from .manifest import ManifestItem
             row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
             row.update(attempt=0,started=False,version=1,quality_lock=body.quality=='Maximum',seeds=body.seeds)
-            if body.reference_usage=='palette_style':row.update(reference_ids=[],style_reference_ids=[body.reference_id],reference_usage=body.reference_usage)
+            if effective_usage=='palette_style':row.update(reference_ids=[],style_reference_ids=[body.reference_id],reference_usage=effective_usage)
+            row.update(intent_reference_usage='style' if effective_usage=='palette_style' else body.reference_usage,intent_reference_scope='palette_only' if body.reference_usage=='palette_style' else 'semantic')
             project=studio.project(model['project_id']);value=dict(id=identifier,project_id=model['project_id'],name=model['name'],mode={'Fast':'Fast Batch','Balanced':'Quality Batch','Maximum':'Maximum Quality Batch'}[body.quality],quality_lock=body.quality=='Maximum',master_prompt=model['prompt'],style_snapshot=project,warnings=[],items=[row],paused=True,created_at=store.now(),updated_at=store.now())
             db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,model['project_id'],json.dumps(value)));db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('auto-single:'+body.request_id,studio.request_digest(body),json.dumps(dict(batch_id=identifier))))
         result=start(identifier,workflow=body.workflow.model_dump() if body.workflow else None)

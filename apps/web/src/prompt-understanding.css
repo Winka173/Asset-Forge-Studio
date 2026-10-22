@@ -1,0 +1,9 @@
+.studio .prompt-understanding{margin:12px 18px;padding:14px 16px;background:#303641;border:0;border-radius:10px;min-width:0;color:#d5deed}
+.studio .prompt-understanding>summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer;font-size:10px;line-height:1.7}
+.studio .prompt-understanding>summary strong{font-size:12px;font-weight:550;flex:1;min-width:100px;overflow-wrap:anywhere;color:#f0e4cc}
+.studio .prompt-understanding>summary>span:last-child{padding:3px 9px;background:#4c596d;border-radius:6px;color:#e3ebf7;font-size:9px}
+.studio .prompt-understanding>div{padding:14px 0 0;display:flex;flex-direction:column;gap:12px}
+.studio .prompt-understanding p{margin:0;font-size:11px;line-height:1.8;overflow-wrap:anywhere}
+.studio .prompt-understanding small{font-size:10px;line-height:1.8;color:#afbdd0}
+.studio .prompt-understanding pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;background:#222730;padding:14px;border-radius:8px;font-size:10px;line-height:1.8}
+.studio .prompt-understanding details summary{font-size:11px;cursor:pointer}

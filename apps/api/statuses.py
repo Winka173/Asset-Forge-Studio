@@ -100,7 +100,7 @@ def refresh_all():
         if queued and paused:production='paused';stage='paused'
         if active:
             job=active[0];kind=job['payload']['kind'];stage='running'
-            production='validating' if job['status']=='VALIDATING' else 'processing' if kind in ('blender','animation_retime') else 'generating'
+            production='preparing' if kind=='prompt_analysis' else 'validating' if job['status']=='VALIDATING' else 'processing' if kind in ('blender','animation_retime') else 'generating'
             if job['status']=='VALIDATING':qa='running'
         elif failed and auto.get('status')!='exported':
             production='failed' if failed[0]['status']=='FAILED' else 'needs_attention';stage='failed' if production=='failed' else 'blocked'
