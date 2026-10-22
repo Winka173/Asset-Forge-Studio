@@ -8,6 +8,8 @@ import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,us
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
@@ -167,41 +169,14 @@ const activeStates = [
   "POSTPROCESSING",
   "VALIDATING",
 ];
-const icons: Record<string, string> = {
-  Home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
-  Create: "M12 3v18M3 12h18",
-  Library: "M3 5h7l2 3h9v12H3Z",
-  Production: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
-  Jobs: "M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1",
-  Compare: "M12 3v18M3 6h6v12H3ZM15 6h6v12h-6Z",
-  Settings:
-    "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2",
-  Cube: "m12 3 9 5v9l-9 5-9-5V8Zm0 10L3 8m9 5 9-5m-9 5v9",
-  Image: "M3 3h18v18H3ZM3 16l6-6 5 5 3-3 4 4M16 7h1",
-  Arrow: "M4 12h16m-6-6 6 6-6 6",
-  Check: "m5 12 4 4L19 6",
-  Star: "m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z",
-  Upload: "M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5",
-  Close: "m5 5 14 14M5 19 19 5",
-  Search: "M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm5 12 6 6",
-  Download: "M12 3v13m-5-5 5 5 5-5M3 17v4h18v-4",
+const icons: Record<string, LucideIcon> = {
+  Home: House, Create: Plus, Library: FolderOpen, Production: Layers, Jobs: Activity,
+  Compare: Columns2, Settings: Settings2, Cube: Box, Image: ImageIcon, Arrow: ArrowRight,
+  Check: Check, Star: Star, Upload: Upload, Close: X, Search: Search, Download: Download,
 };
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={icons[name] || icons.Cube} />
-    </svg>
-  );
+  const Glyph = icons[name] || Box;
+  return <Glyph size={size} strokeWidth={1.75} aria-hidden="true" />;
 }
 function State({ value }: { value: string }) {
   return (
@@ -323,6 +298,20 @@ export function Studio() {
   const [collapsed, setCollapsed] = useState(
     localStorage.getItem("afs.sidebar") === "collapsed",
   );
+  function toggleSidebar(next = !collapsed) {
+    setCollapsed(next);
+    localStorage.setItem("afs.sidebar", next ? "collapsed" : "expanded");
+  }
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey && event.key.toLowerCase() === "b" && !(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable=true]"))) {
+        event.preventDefault();
+        setCollapsed((value) => { localStorage.setItem("afs.sidebar", value ? "expanded" : "collapsed"); return !value; });
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
   projectRef.current = projectId;
   const project = data.project || data.projects.find((p) => p.id === projectId);
   const selectedAsset =
@@ -903,17 +892,16 @@ export function Studio() {
   }
   return (
     <div data-interface={interfacePreferences.mode} data-motion={interfacePreferences.motion} className={`studio${collapsed ? " sidebar-collapsed" : ""}`}>
-      <aside className="studio-sidebar">
-        <a href="#home" className="studio-brand">
-          <div className="brand-symbol">
-            <Icon name="Cube" size={25} />
-          </div>
-          <span>
-            Asset Forge<small>LOCAL STUDIO</small>
-          </span>
-        </a>
+      <aside className="studio-sidebar" data-collapsed={collapsed||undefined}>
+        <div className="sidebar-head">
+          <a href="#home" className="studio-brand" title="Asset Forge Studio">
+            <span className="brand-symbol"><Icon name="Cube" size={18} /></span>
+            <span className="brand-text">Asset Forge<small>Local Studio</small></span>
+          </a>
+        </div>
         <div className="project-switch">
-          <label htmlFor="project-switcher">WORKSPACE</label>
+          <label htmlFor="project-switcher">Workspace</label>
+          <button className="project-avatar" title={project?.name||'Workspace'} aria-label="Expand sidebar to switch workspace" onClick={()=>toggleSidebar(false)}>{(project?.name||'?').slice(0,1).toUpperCase()}</button>
           <Select
             id="project-switcher"
             disabled={!data.projects.length}
@@ -929,44 +917,47 @@ export function Studio() {
               <option value={projectId}>{projectId || "No projects"}</option>
             )}
           </Select>
-          <button className="project-new" onClick={() => editProject(false)}>
-            <Icon name="Create" size={13} /> New project
+          <button className="project-new" onClick={() => editProject(false)} title="New project">
+            <Icon name="Create" size={14} /> <span>New project</span>
           </button>
         </div>
-        <nav aria-label="Studio navigation">
-          {pages.filter(p=>!['Jobs','Compare','Settings'].includes(p)).map((p) => (
-            <a
-              key={p}
-              href={`#${p.toLowerCase()}`}
-              className={page === p ? "current" : ""}
-              aria-label={p}
-              aria-current={page === p ? "page" : undefined}
-              title={`${p} · Alt+${pages.indexOf(p) + 1}`}
-              aria-keyshortcuts={`Alt+${pages.indexOf(p) + 1}`}
-              onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:undefined}
-            >
-              <Icon name={p} size={18} />
-              <span>{p==='Home'?'Projects':p==='Jobs'?'Diagnostics':p}</span>
-              {p === "Jobs" && activeJobs.length > 0 && (
-                <span className="nav-count">{activeJobs.length}</span>
-              )}
-            </a>
-          ))}
-        </nav>
-        <div className="production-secondary-label">TOOLS &amp; SETTINGS</div>
-        <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p} aria-current={page===p?'page':undefined}><Icon name={p} size={18}/><span>{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
+        <div className="sidebar-scroll">
+          <nav aria-label="Studio navigation">
+            {pages.filter(p=>!['Jobs','Compare','Settings'].includes(p)).map((p) => (
+              <a
+                key={p}
+                href={`#${p.toLowerCase()}`}
+                className={page === p ? "current" : ""}
+                aria-label={p}
+                aria-current={page === p ? "page" : undefined}
+                title={`${p==='Home'?'Projects':p} · Alt+${pages.indexOf(p) + 1}`}
+                data-tooltip={p==='Home'?'Projects':p}
+                aria-keyshortcuts={`Alt+${pages.indexOf(p) + 1}`}
+                onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:undefined}
+              >
+                {page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}
+                <Icon name={p} size={18} />
+                <span className="nav-label">{p==='Home'?'Projects':p}</span>
+                {p === "Production" && activeJobs.length > 0 && (
+                  <span className="nav-count">{activeJobs.length}</span>
+                )}
+              </a>
+            ))}
+          </nav>
+          <div className="production-secondary-label">Tools &amp; settings</div>
+          <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p==='Jobs'?'Diagnostics':p} data-tooltip={p==='Jobs'?'Diagnostics':p} aria-current={page===p?'page':undefined}>{page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name={p} size={18}/><span className="nav-label">{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
+        </div>
         <div className="sidebar-bottom">
-          <div>
-            <span className="live-dot" /> Local workspace
+          <div className="sidebar-status">
+            <span className="live-dot" /> <span>Local workspace</span>
           </div>
-          <small>Weights & assets stay on this PC</small>
-          <p>
+          <p className="gpu-name" title={gpu?.name}>
             {gpu?.available
               ? gpu.name?.replace("NVIDIA GeForce ", "")
               : "GPU status unavailable"}
           </p>
           {gpu?.available && (
-            <div className="gpu-meter">
+            <div className="gpu-meter" title={`${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM`}>
               <span
                 style={{
                   width: `${Math.min(100, ((gpu.used_mib || 0) / (gpu.total_mib || 1)) * 100)}%`,
@@ -978,8 +969,8 @@ export function Studio() {
               </small>
             </div>
           )}
-          {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% / peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live / 2s sampling / whole GPU</small></div>}
-          <span className="studio-version">ASSET FORGE / LOCAL</span>
+          {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% · peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live · 2s sampling · whole GPU</small></div>}
+          <small className="studio-version">Weights &amp; assets stay on this PC</small>
         </div>
       </aside>
       <div className="studio-body">
@@ -989,20 +980,14 @@ export function Studio() {
               className="collapse-sidebar icon-button"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-expanded={!collapsed}
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              onClick={() => {
-                setCollapsed(!collapsed);
-                localStorage.setItem(
-                  "afs.sidebar",
-                  collapsed ? "expanded" : "collapsed",
-                );
-              }}
+              title={`${collapsed ? "Expand" : "Collapse"} sidebar · Ctrl+B`}
+              onClick={() => toggleSidebar()}
             >
-              <Icon name="Compare" size={16} />
+              {collapsed?<PanelLeftOpen size={18} aria-hidden="true"/>:<PanelLeftClose size={18} aria-hidden="true"/>}
             </button>
-            {project?.name || projectId || "Your workspace"}
-            <span>/</span>
-            <strong>{page}</strong>
+            <span className="crumb-project">{project?.name || projectId || "Your workspace"}</span>
+            <span className="crumb-sep" aria-hidden="true">/</span>
+            <strong>{page==="Home"?"Projects":page==="Jobs"?"Diagnostics":page}</strong>
           </div>
           <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
 
@@ -1016,6 +1001,7 @@ export function Studio() {
           </div>
         </header>
         <main className={`studio-main page-${page.toLowerCase()}`}>
+          <div className="page-transition" key={page}>
           {!projectId && page !== "Settings" && page !== "Production" && (projectsReady ? <section className="onboarding-workspace" aria-label="Create your first game project">
             <div className="onboarding-symbol"><Icon name="Cube" size={36}/></div>
             <div className="overline">YOUR STUDIO. YOUR WORLDS.</div>
@@ -2022,6 +2008,7 @@ export function Studio() {
               </div>
             </>
           )}
+        </div>
         </main>
       </div>
       {modal && (

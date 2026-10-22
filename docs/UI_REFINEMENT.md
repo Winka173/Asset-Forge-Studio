@@ -11,3 +11,7 @@ Validation includes actual small GLB round trips, ZIP contents/checksums, repeat
 The original PC 0.3.1 EXE/installer remain rollback files. New PC builds are produced from `release/pc-stable` with the original app identity and separate install name from Expansion. Both editions share the heavy GPU resource lock. Native tests use explicit isolated profile directories so an open user application is not closed or modified.
 
 The user rejected tinted backgrounds and colored card outlines. The final graphite revision removes those treatments from surfaces, candidates, quality controls, actions and custom menus. Real loaded-model screenshots are `evidence/ui_graphite_create_model.png` and `evidence/ui_graphite_select.png`.
+
+## Design system rewrite (2026-10-23)
+
+The layered global stylesheets (`style.css`, `refinement.css`, `create-flow.css`, `creative-system.css`) were replaced by `apps/web/src/styles/` — `tokens.css` (graphite surfaces, single amber accent, 4px spacing, radius/type/motion scales), `base.css` (elements and shared primitives), `shell.css` (collapsible sidebar with animated indicator, Ctrl+B, rail tooltips, topbar, overlays, custom select) and `app.css` (pages in `studio.tsx`). Component stylesheets were normalized onto the tokens. Fonts are bundled locally (Inter Variable, JetBrains Mono Variable); icons use lucide-react; motion uses `motion`. Class names, aria labels and native-automation selectors are unchanged.

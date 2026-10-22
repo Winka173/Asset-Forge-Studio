@@ -5,7 +5,6 @@ import { Select } from "./select";
 import { apiFetch, apiUrl } from "./api";
 import { useEffect, useState } from "react";
 import { CompareViewer } from "./viewer";
-import "./style.css";
 
 type Artifact = {
   id: string;
