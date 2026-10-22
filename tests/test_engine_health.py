@@ -13,6 +13,11 @@ def test_real_missing_environment_quarantines_exact_route_and_probe_is_idempoten
     image=io.BytesIO();Image.new('RGBA',(16,16),(30,60,90,128)).save(image,format='PNG')
     source=client.post('/api/import/reference',params=dict(project_id='runavelle',asset_id=model['id']),files=dict(file=('source.png',image.getvalue()))).json()
     monkeypatch.setattr(ADAPTERS['triposg'],'paths',lambda:(tmp_path/'absent-engine',tmp_path/'absent-env/python.exe'))
+    # This negative case cannot launch an engine (both executable/source are
+    # absent). Isolate its admission lock so a real user GPU job cannot make
+    # an environment-failure assertion spuriously observe QUEUED instead.
+    # Production and actual CUDA/native acceptance retain the machine lock.
+    monkeypatch.setattr(jobs,'WORKER_LOCK',tmp_path/'negative-environment-gpu.lock')
     payload=dict(kind='inference',engine='triposg',project_id='runavelle',asset_id=model['id'],artifact_id=source['id'],seed=42,steps=50,pipeline_type='512',texture_size=4096)
     for _ in range(2):
         job=jobs.enqueue(payload);jobs.worker.managed(job,'gpu')

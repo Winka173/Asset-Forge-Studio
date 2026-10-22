@@ -374,6 +374,8 @@ from .updates import router as updates_router
 app.include_router(updates_router)
 from .engine_health import router as engine_health_router
 app.include_router(engine_health_router)
+from .native_checkpoint import router as native_checkpoint_router
+app.include_router(native_checkpoint_router)
 
 WEB = store.ROOT / "apps/web/dist"
 if WEB.exists():

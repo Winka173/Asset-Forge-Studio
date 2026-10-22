@@ -1,3 +1,9 @@
+# Windows 0.9.4 - verified native mesh/PBR checkpoint recovery - 2026-10-22
+
+137 backend tests, frontend build, Windows packaging and generic smoke PASS. A real server-stop interrupted TRELLIS after the decoded native checkpoint; the recreated 6,702,958-triangle source NPZ matches the original tower byte-for-byte. The packaged app then resumed GLB finishing without diffusion, completed real Blender/QA/export/viewer, preserved hashes and art Not Reviewed across restart. Native acceptance PASS: native_checkpoint_desktop_v094.json; interruption source: native_checkpoint_interruption_real.json. Original sources and working user data preserved. Maximum default remains 32 steps; this explicit historical-profile replay uses 24. Also fixed concept v3 conditioning-lock enforcement and failed retry ancestors keeping completed standalone assets in loading state. Main app: use delivery_location from desktop_build.json (this build published to dist/windows/stable/latest).
+
+---
+
 # Windows 0.9.3 - detail-first routing and resource/export workspace - 2026-10-22
 
 Corrected the quality regression caused by selecting a simple authored castle by default. New castle requests use detailed local AI; Structural blockout requires an explicit choice and is labeled as simple geometry. A real short Vietnamese prompt plus the preserved tower style reference completed actual SDXL (one rejected scene, one targeted repair), TRELLIS.2 Maximum, Blender, local visual observations, technical QA and GLB-only export in 902.12 seconds. Native front/back/side/top/bottom viewer passes. This establishes working output, not artistic equivalence to the tower or Meshy. Original source and prior models remain unchanged. Cause-specific bounded recovery now uses existing persistent queue/state, not a second workflow.

@@ -94,6 +94,16 @@ class QualityRepairPlanner:
         elif cause=='PROCESS_TIMEOUT':plan['reason']='Timeout needs a validated checkpoint or an explicitly revised timeout/resource condition; no blind full inference retry'
         elif cause=='EMPTY_GEOMETRY':plan['reason']='Geometry generation must be investigated; texturing/export are not admitted. No unverified alternate engine or seed loop.'
         elif cause=='EXPORT_VALIDATION':plan['reason']='Retained master is available; inspect the failing Blender/export validator before retrying only that stage'
+        if budget['allowed'] and failed['status']!='CANCELLED' and cause in ('INTERRUPTED','TRANSIENT_IO','EXPORT_VALIDATION') and failed['payload'].get('engine')=='trellis2_community':
+            from .native_checkpoint import checkpoint_for
+            try:
+                checkpoint=checkpoint_for(failed)
+                plan.update(action='retry_stage',reason='Verified decoded geometry/PBR checkpoint retained; resume GLB finishing without diffusion',
+                    resume_mesh_checkpoint=checkpoint['source_job_id'],resume_checkpoint_sha256=checkpoint['sha256'],
+                    checkpoint_geometry=checkpoint['metadata']['geometry'])
+            except (ValueError,KeyError,OSError) as exc:
+                if (folder/'output/mesh_checkpoint.json').exists() or failed['payload'].get('resume_mesh_checkpoint'):
+                    plan.update(action='needs_attention',reason='Native checkpoint integrity could not be verified: '+str(exc))
         if plan['action']=='retry_stage':
             import psutil
             process=folder/'process.json'
@@ -139,6 +149,8 @@ def submit_stage_retry(plan,failed):
     import copy
     frozen=copy.deepcopy(plan);frozen.pop('executed_job_id',None)
     payload=failed['payload']|dict(retry_of=failed['id'],quality_repair=frozen)
+    if plan.get('resume_mesh_checkpoint'):
+        payload.update(resume_mesh_checkpoint=plan['resume_mesh_checkpoint'],resume_checkpoint_sha256=plan['resume_checkpoint_sha256'])
     key=plan['id'];digest=fingerprint(dict(plan_id=key,source_payload=failed['payload']))
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');prior=cached(db,key,digest)

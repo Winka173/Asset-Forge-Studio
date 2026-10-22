@@ -99,3 +99,5 @@ html[data-afs-motion=reduced] .workspace-tools-overlay *,html[data-afs-motion=re
 .asset-recovery-notice{grid-column:1/-1;margin:0;padding:16px;border-radius:10px;background:#252a34;color:#c6cfdf;font-size:12px;line-height:1.7}
 
 .studio[data-interface=focused] .workspace-stats{display:none}.studio .home-hero .hero-empty{color:#b8c0ce}.studio .home-hero .hero-empty svg{color:#edbc70}
+
+.studio .native-checkpoint-recovery{padding:18px;margin:18px 0;border:0;border-radius:12px;background:#303d45}.native-checkpoint-recovery>strong{color:#d7eaff}.native-checkpoint-recovery>small{display:block;margin-top:14px;font-size:11px;line-height:1.6}.native-checkpoint-recovery .primary{width:100%;margin:8px 0}

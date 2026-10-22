@@ -17,6 +17,8 @@ for key, value in {'HF_HUB_OFFLINE': '1', 'TRANSFORMERS_OFFLINE': '1', 'HF_HUB_D
                    'DO_NOT_TRACK': '1', 'PYTHONDONTWRITEBYTECODE': '1', 'TORCHDYNAMO_DISABLE': '1',
                    'OPENCV_IO_ENABLE_OPENEXR': '1'}.items(): os.environ[key] = value
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from engines import mesh_checkpoint
 
 
 def digest(path):
@@ -81,39 +83,59 @@ def main():
             phase_peaks['reserved'] = max(phase_peaks['reserved'], torch.cuda.max_memory_reserved(device))
             return native_reset(device)
         torch.cuda.reset_peak_memory_stats = tracked_reset
-        pipe = Trellis2ImageTo3DPipeline.from_pretrained(str(snapshot))
-        pipe.low_vram = True; pipe.cuda()
-        image = Image.open(req['image']).convert('RGBA')
-        if req.get('supplied_alpha_input', False):
-            if image.getextrema()[-1][0] == 255: raise ValueError('supplied_alpha_input requires a real non-opaque alpha mask')
-            conditioned = pipe.preprocess_image(image)
-        else:
-            if not req.get('allow_existing_rmbg_evaluation', False): raise ValueError('Provide approved alpha input or separately authorize bundled RMBG evaluation')
-            pipe.rembg_model.to(pipe.device)
-            segmented = pipe.rembg_model(image.convert('RGB'))
-            segmented.save(output / 'source_alpha.png')
-            pipe.rembg_model.cpu()
-            conditioned = pipe.preprocess_image(segmented)
-        conditioned.save(output / 'conditioning.png')
-        params = {'steps': req.get('steps', 12)}
         pipeline_type = req.get('pipeline_type', '512')
         if pipeline_type not in {'512', '1024_cascade'}: raise ValueError('Unsupported evaluated memory profile')
-        with torch.inference_mode():
-            mesh = pipe.run(conditioned, seed=req['seed'], preprocess_image=False,
-                            sparse_structure_sampler_params=params, shape_slat_sampler_params=params,
-                            tex_slat_sampler_params=params, pipeline_type=pipeline_type)[0]
-            # Retain un-decimated geometry and sparse PBR field for later re-export.
-            np.savez_compressed(output / 'raw_master.npz', vertices=mesh.vertices.detach().cpu().numpy(),
-                                faces=mesh.faces.detach().cpu().numpy(), attrs=mesh.attrs.detach().cpu().numpy(),
-                                coords=mesh.coords.detach().cpu().numpy())
-            manifest['raw_triangles'] = len(mesh.faces)
+        if req.get('resume_mesh_checkpoint'):
+            print('STAGE Restore validated native geometry and PBR checkpoint; diffusion is not rerun', flush=True)
+            checkpoint_path=Path(req['resume_mesh_checkpoint']).resolve()
+            if not checkpoint_path.is_relative_to(allowed_data):raise ValueError('Checkpoint must remain inside the active Library')
+            metadata,arrays=mesh_checkpoint.verify(checkpoint_path,req,manifest['source_sha256'],revision,req['resume_checkpoint_sha256'],load_arrays=True)
+            from types import SimpleNamespace
+            mesh=SimpleNamespace(**{key:torch.from_numpy(value).cuda() for key,value in arrays.items()},
+                voxel_size=metadata['voxel_size'])
+            layout={name:slice(*indices) for name,indices in metadata['attr_layout'].items()}
+            manifest.update(raw_triangles=metadata['geometry']['triangles'],inference_reused=True,
+                native_checkpoint=dict(path=str(checkpoint_path),sha256=req['resume_checkpoint_sha256'],native_sha256=metadata['native_sha256']),
+                resume_scope=metadata['resume_scope'])
+            del arrays
+        else:
+            pipe = Trellis2ImageTo3DPipeline.from_pretrained(str(snapshot))
+            pipe.low_vram = True; pipe.cuda()
+            image = Image.open(req['image']).convert('RGBA')
+            if req.get('supplied_alpha_input', False):
+                if image.getextrema()[-1][0] == 255: raise ValueError('supplied_alpha_input requires a real non-opaque alpha mask')
+                conditioned = pipe.preprocess_image(image)
+            else:
+                if not req.get('allow_existing_rmbg_evaluation', False): raise ValueError('Provide approved alpha input or separately authorize bundled RMBG evaluation')
+                pipe.rembg_model.to(pipe.device)
+                segmented = pipe.rembg_model(image.convert('RGB'))
+                segmented.save(output / 'source_alpha.png')
+                pipe.rembg_model.cpu()
+                conditioned = pipe.preprocess_image(segmented)
+            conditioned.save(output / 'conditioning.png')
+            params = {'steps': req.get('steps', 12)}
+            with torch.inference_mode():
+                mesh = pipe.run(conditioned, seed=req['seed'], preprocess_image=False,
+                                sparse_structure_sampler_params=params, shape_slat_sampler_params=params,
+                                tex_slat_sampler_params=params, pipeline_type=pipeline_type)[0]
+            print('STAGE Validate native geometry and sparse PBR before GLB finishing', flush=True)
+            metadata=mesh_checkpoint.save(output,dict(vertices=mesh.vertices.detach().cpu().numpy(),
+                faces=mesh.faces.detach().cpu().numpy(),attrs=mesh.attrs.detach().cpu().numpy(),coords=mesh.coords.detach().cpu().numpy()),
+                req,manifest['source_sha256'],revision,pipe.pbr_attr_layout,mesh.voxel_size)
+            manifest.update(raw_triangles=len(mesh.faces),inference_reused=False,
+                native_checkpoint=dict(path=str(output/'mesh_checkpoint.json'),sha256=digest(output/'mesh_checkpoint.json'),native_sha256=metadata['native_sha256']))
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding='utf-8')
+            layout=pipe.pbr_attr_layout
             for model in pipe.models.values(): model.cpu()
             pipe.image_cond_model.cpu()
             if pipe.rembg_model is not None: pipe.rembg_model.cpu()
-            torch.cuda.empty_cache()
+            del pipe
+        torch.cuda.empty_cache()
+        with torch.inference_mode():
+            print('STAGE GLB remesh, UV and native PBR finishing', flush=True)
             mesh.attrs = mesh.attrs.float()
             kwargs = dict(vertices=mesh.vertices, faces=mesh.faces, attr_volume=mesh.attrs, coords=mesh.coords,
-                          attr_layout=pipe.pbr_attr_layout, aabb=[[-0.5]*3, [0.5]*3],
+                          attr_layout=layout, aabb=[[-0.5]*3, [0.5]*3],
                           decimation_target=req.get('export_triangle_target', 1_000_000), texture_size=req.get('texture_size', 2048),
                           remesh=True, remesh_band=1, remesh_project=0)
             signature = inspect.signature(o_voxel.postprocess.to_glb).parameters

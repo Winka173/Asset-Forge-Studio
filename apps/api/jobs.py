@@ -343,7 +343,7 @@ class Worker:
                 effective=payload['effective_config']
                 if fingerprint(effective)!=payload['effective_config_hash']:
                     transition(identifier,'BLOCKED','EffectiveGenerationConfig hash mismatch; no automatic config changes');return
-                if payload['kind']=='concept' and effective.get('composition_policy')==2:
+                if payload['kind']=='concept' and effective.get('composition_policy',0)>=2:
                     if any(payload.get(k)!=effective.get(v) for k,v in [('prompt','input_prompt'),('negative_prompt','negative_prompt'),('steps','inference_steps'),('size','resolution'),('seed','seed')]):
                         transition(identifier,'BLOCKED','Concept execution differs from locked conditioning; no automatic config changes');return
                 if payload['kind']=='inference':
@@ -631,8 +631,12 @@ class Worker:
         request = {'image': str(source), 'output': str(folder / 'output'), 'seed': payload['seed'],
                    'effective_config':payload.get('effective_config'),'effective_config_hash':payload.get('effective_config_hash'),
                    'steps': payload['steps'], 'pipeline_type': payload['pipeline_type'], 'texture_size': payload['texture_size'],
-                   'export_triangle_target': 1_000_000, 'supplied_alpha_input': bool(source_record['metadata'].get('has_transparency')),
+                   'export_triangle_target': payload.get('effective_config',{}).get('geometry',{}).get('export_triangle_target',1_000_000), 'supplied_alpha_input': bool(source_record['metadata'].get('has_transparency')),
                    'input_review': 'NEEDS_REVIEW', 'request_path': str(request_path)}
+        if payload.get('resume_mesh_checkpoint'):
+            from .native_checkpoint import checkpoint_for
+            checkpoint=checkpoint_for(job)
+            request.update(resume_mesh_checkpoint=str(checkpoint['path']),resume_checkpoint_sha256=checkpoint['sha256'])
         events = []
         command, cwd, request = adapter.generate(request, events.append)
         request_path.write_text(json.dumps(request, indent=2), encoding='utf-8')

@@ -123,8 +123,10 @@ def overview():
         if not j['payload'].get('batch_id') and asset_id and asset_id not in seen:standalone.setdefault(asset_id,[]).append(j)
     loose=[]
     for asset_id,history in standalone.items():
-        current=next((j for j in history if j['status'] not in jobs.TERMINAL),history[0]);root=history[-1]
-        loose.append(job_summary(current)|dict(id=root['id'],display_name=models.get(asset_id,{}).get('name',asset_id),jobs=[job_summary(j) for j in history],production_status=models.get(asset_id,{}).get('production_status')))
+        retried={j['payload'].get('retry_of') for j in history}
+        leaves=[j for j in history if j['id'] not in retried]
+        current=next((j for j in leaves if j['status'] not in jobs.TERMINAL),leaves[0]);root=history[-1]
+        loose.append(job_summary(current)|dict(id=root['id'],display_name=models.get(asset_id,{}).get('name',asset_id),jobs=[job_summary(j) for j in leaves],production_status=models.get(asset_id,{}).get('production_status')))
     return dict(groups=groups,standalone=loose,paused=all_paused,gpu_concurrency=1,updated_at=store.now())
 
 

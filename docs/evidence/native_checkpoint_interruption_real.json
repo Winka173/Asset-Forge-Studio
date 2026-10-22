@@ -1,0 +1,327 @@
+{
+  "status": "VERIFIED_REAL_INTERRUPTED_NATIVE_CHECKPOINT",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\native-checkpoint-real\\20261022T124320Z",
+  "job_id": "f08277b3a77743ea9b34b9717ccfcd51",
+  "asset_id": "775132297d0548449ce5b65e566e8335",
+  "project_id": "8105d200db6e44d294bc769400d32c47",
+  "source_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+  "scope": "Historical tower profile replay (24 steps explicitly), not a reduction of the current 32-step Maximum default. Real server-stop at decoded geometry/PBR boundary; no simulated model success.",
+  "seconds": 695.015999999996,
+  "job": {
+    "id": "f08277b3a77743ea9b34b9717ccfcd51",
+    "status": "BLOCKED",
+    "created_at": "2026-10-22T12:43:32.643162+00:00",
+    "updated_at": "2026-10-22T12:54:56.730615+00:00",
+    "payload": {
+      "kind": "inference",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "8105d200db6e44d294bc769400d32c47",
+      "asset_id": "775132297d0548449ce5b65e566e8335",
+      "artifact_id": "9916cc1137ef4ceea45a7725ae0dd053",
+      "engine": "trellis2_community",
+      "prompt": "Reconstruct the supplied tower. Preserve the original replay profile.",
+      "project_style_snapshot": {
+        "name": "Native checkpoint recovery QA",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {
+          "game_id": "runavelle",
+          "version": 1,
+          "units": "meter",
+          "palette": {
+            "limestone": "#e4d7b5",
+            "oak": "#69442e",
+            "slate": "#263b59",
+            "bronze": "#99704a",
+            "banner": "#1b315f",
+            "mana": "#55e5ef"
+          },
+          "materials": [
+            "ivory limestone",
+            "chestnut oak",
+            "midnight blue slate",
+            "aged bronze",
+            "navy gold cloth",
+            "cyan mana"
+          ],
+          "golden_references": [],
+          "camera": {
+            "approval": "NEEDS_REVIEW",
+            "projection": "orthographic"
+          },
+          "license_policy": "commercial_required",
+          "constraints": {
+            "dimensions_m": null,
+            "door_orientation": "NEEDS_REVIEW",
+            "balconies": 2,
+            "symmetry": "NEEDS_REVIEW"
+          }
+        },
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "8105d200db6e44d294bc769400d32c47"
+      },
+      "steps": 24,
+      "pipeline_type": "1024_cascade",
+      "texture_size": 4096,
+      "auto_blender": true,
+      "benchmark_height_m": null,
+      "tournament_id": "2abd0991935b42b5b66a98a55a174c6d",
+      "purpose": "evaluation_only",
+      "quality": "Maximum",
+      "prompt_conditioning": "NOT_SUPPORTED_RECORDED_ONLY",
+      "auto_selection": "prefer proven textured engine, not measured universal quality ranking",
+      "seed": 43,
+      "effective_config": {
+        "schema_version": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "engine_id": "trellis2_community",
+        "engine_version": "local Windows StableProjectorz bundle, source hashes per run",
+        "checkpoint": {
+          "manifest_hash": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+          "files": {
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\config.json": "135ecd23e34a70b6fbed8b083fdecb319b7e3a54e3d849258bbe4ddcf1783bb5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\model.safetensors": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\dinov3\\preprocessor_config.json": "960c41d1f3a7778b936365769a2d90550b318a6c0a53a0296957adacfe5e0dd7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.json": "ebe9d3eade6d9cb7662efae109197e97d7ab58aebd5e8ede0c8991dfce88a06a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_gs_swin8_B_64l8gs32_fp16.safetensors": "38c84bcef5ce0af1f48b1b5558dabc7575a13346043c41a7e0610f1fa619a161",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.json": "293900795cb69cc972d1a20a4940ee12f7e007952c2ae92d128dda91b96ac317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_mesh_swin8_B_64l8m256c_fp16.safetensors": "3e87aba94b5786407eb06d0502c1ed0885a0027a3f2b8537bfe15b0a92c01859",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.json": "9b46a04602988b9cd83f1d0537de1cb93c4c1b6d35a0bbbcb07bb37bac66b766",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_dec_rf_swin8_B_64l8r16_fp16.safetensors": "737da6578d01948016b7c39786113af0d64a46f7922f6b8b5e698b84643be514",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.json": "7b7e2bd3e831bdd5a6129cea36424a47ad73c1b9ad109d1de54e0f14af4d28a2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_enc_swin8_B_64l8_fp16.safetensors": "21dceac6bee917ab6458ff52c9757ba89a779d03031c7bd17f9e7f0103bfd436",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.json": "c0a9bd57227f55cf75ff02562c27bb05c50174f06955f56a79dea2982fd7a8f9",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\slat_flow_img_dit_L_64l8p2_fp16.safetensors": "693fb2a58ad497bd222007301eeec49d14d60f8c12d2f2f00c221fa747b4c66c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.json": "646781293f1cda74720de85d1cef50a957fb4aebd9a4bd014e454e32f2330ac5",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_dec_conv3d_16l8_fp16.safetensors": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.json": "12efe92a0d7dcd790f251acb94a6950957ea4398268e2838ef7319c3f20b071e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_enc_conv3d_16l8_fp16.safetensors": "107874eeaa0feb82f51b19db5da7db534fb7e7f19e5a122b9ff1bc2e258bfc6d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.json": "bf69161da7ece9a87394dd4441f0cfa6d4261696a214a8f68388c81fa9a6b5b7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\ckpts\\ss_flow_img_dit_L_16l8_fp16.safetensors": "96dc6bfd4136fd950af564dd16b4ae533c9ba6af8f26c670646b2a9f2789b1db",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96\\pipeline.json": "2686b6c9b3b0a100b544d5f9dc7b3ecb15c9d98be9852d68e8731bd8dbe52a42",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.json": "5f1b856dffce79466fb18f5f0eefc08f08c673b24b3c05b20359c0b6d318a209",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_dec_next_dc_f16c32_fp16.safetensors": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.json": "5a960a5c419d70f8d4a7a6b6e52ae689cd948c88bd7ed92346adfbf82cd12007",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\shape_enc_next_dc_f16c32_fp16.safetensors": "f37c5ff5b983b68e9946060000f09bc131f3e84318a2c8b7430a81e4b4636c41",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.json": "7ebd6d367393f52fee9e92c2b3d727a9026a338549c6a6fa84c7ea122140ffdd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors": "07cd0596f634c5adc1890023d16023afc5eed02fb84b22bb23aff5bf0030fbbd",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.json": "ddbd7a1d34ce9a8e7af2f6ef9ae686d9ab49f69e62dacb98d8409b511cdbd5e2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_img2shape_dit_1_3B_512_bf16.safetensors": "ec5e0917ef9b7e25ad51dffc7d19687a42019871f94239f2fa7f86264c55b70f",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json": "31f4fdad9974930e5e9324ac9dfb6ef7de6b30cea51854ba515ef827a8d353b2",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors": "580401269059a339b8318ab9ced459a13ba63391721c83a6c383198c29e77686",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.json": "3093796257a62f838d2e5578ac4580ca3b7d88d10b87d348065d3fdfcc4c2077",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\slat_flow_imgshape2tex_dit_1_3B_512_bf16.safetensors": "8371aa1c5d13be79dcd5ddfd2cf3835e902e204dc34427169a1c702828e1a94d",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.json": "6cdfb636854f60ffcadd8c49244169cd449f34c5ccdb55b5ff7c04678f9c399e",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\ss_flow_img_dit_1_3B_64_bf16.safetensors": "ca01377c485bec418076d38ee80166d32dc776d744f2553b835cba1e97a7abf6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.json": "22074e4ab5b28e2b72d33a3fe61bf416134b89e12d0fc5c729f37da75da0c4d1",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_dec_next_dc_f16c32_fp16.safetensors": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.json": "22d78e219c9df19b00f7f97db5889bafdf18ee57fedf853cd888e5afbfa0ad6c",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\ckpts\\tex_enc_next_dc_f16c32_fp16.safetensors": "dd109f75f84b90fa411554ed6b0e4a87f430841163156fc0ebda2ebdc4752493",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\pipeline.json": "222c359ab1ed9bc6735a640a34f95d47f8681b9bc4aaa101bfb80274676253c6",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS.2-4B\\snapshots\\af44b45f2e35a493886929c6d786e563ec68364d\\texturing_pipeline.json": "64009974a391fe9c948b2943fd2846dc4526bc569c1d56dafb8f9e5c181fcac3",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\config.json": "77a82bab37d78a2be309161342c04e93a447bd7b8c5b2449a70824de0333b317",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\model.safetensors": "566ed80c3d95f87ada6864d4cbe2290a1c5eb1c7bb0b123e984f60f76b02c3a7",
+            "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\RMBG-2.0\\preprocessor_config.json": "8b1011d3f9341cc70dde093fbf4aabf089a3c7a900d2b1208107c7b806aa9a80"
+          }
+        },
+        "input_prompt": "Reconstruct the supplied tower. Preserve the original replay profile.",
+        "reference_hashes": [
+          "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+        ],
+        "project_style_hash": "26708fb81725091e686bc9a8378920c1bb5b58d20a090ad6f6188effedef1489",
+        "resolution": 1024,
+        "inference_steps": 24,
+        "guidance": {
+          "sparse_structure_sampler": {
+            "steps": 24,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.7,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 5.0
+          },
+          "shape_slat_sampler": {
+            "steps": 24,
+            "guidance_strength": 7.5,
+            "guidance_rescale": 0.5,
+            "guidance_interval": [
+              0.6,
+              1.0
+            ],
+            "rescale_t": 3.0
+          },
+          "tex_slat_sampler": {
+            "steps": 24,
+            "guidance_strength": 1.0,
+            "guidance_rescale": 0.0,
+            "guidance_interval": [
+              0.6,
+              0.9
+            ],
+            "rescale_t": 3.0
+          }
+        },
+        "seeds": [
+          43
+        ],
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "geometry": {
+          "pipeline_type": "1024_cascade",
+          "octree_depth": null,
+          "decode_chunk_size": null,
+          "export_triangle_target": 1000000
+        },
+        "texture": {
+          "size": 4096,
+          "pbr": "native basecolor/metallic-roughness"
+        },
+        "blender": {
+          "enabled": true,
+          "profile": "existing_quality_pipeline_v1",
+          "height_m": null,
+          "render_views": [
+            "front",
+            "three_quarter",
+            "side",
+            "back",
+            "top",
+            "gameplay"
+          ],
+          "render_resolutions": [
+            "mobile",
+            "pc1440"
+          ],
+          "bake": "not_requested"
+        },
+        "lod": {
+          "ratios": [
+            0.65,
+            0.35,
+            0.15
+          ]
+        },
+        "export": {
+          "formats": [
+            "glb",
+            "fbx"
+          ],
+          "preserve_master": true
+        },
+        "candidate_count": 1,
+        "qa": {
+          "mesh_validity": true,
+          "geometry_defects": true,
+          "dimensions": true,
+          "uv_texture_inventory": true,
+          "export_reopen": true,
+          "per_asset": true,
+          "human_concept_approval": true,
+          "human_master_approval": true,
+          "visual_parity": "NOT_TESTED"
+        },
+        "seed": 43
+      },
+      "effective_config_hash": "f3d274ed70756b7389f1a84d746dd1702698a93162325dfef7375c59d9a211c8",
+      "stage_events": [
+        {
+          "state": "RUNNING",
+          "at": "2026-10-22T12:51:58.324164+00:00",
+          "error": null
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-10-22T12:54:56.730615+00:00",
+          "error": "Server stopped; new attempt required"
+        }
+      ]
+    },
+    "error": "Server stopped; new attempt required"
+  },
+  "checkpoint": {
+    "path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\native-checkpoint-real\\20261022T124320Z\\Library\\jobs\\f08277b3a77743ea9b34b9717ccfcd51\\output\\mesh_checkpoint.json",
+    "sha256": "0f3d66475383fabd4c5a156197b547569996278b4924cad7e7857ff35ed068c8",
+    "source_job_id": "f08277b3a77743ea9b34b9717ccfcd51",
+    "metadata": {
+      "schema_version": 1,
+      "stage": "decoded_geometry_and_sparse_pbr",
+      "native_file": "raw_master.npz",
+      "native_sha256": "88643d2d2c9f363b5b1650d690ebae93c49f9a1f58c54b73b6b9da57dea015a8",
+      "source_sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e",
+      "model_revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+      "identity": {
+        "seed": 43,
+        "steps": 24,
+        "pipeline_type": "1024_cascade",
+        "texture_size": 4096,
+        "export_triangle_target": 1000000,
+        "effective_config_hash": "f3d274ed70756b7389f1a84d746dd1702698a93162325dfef7375c59d9a211c8"
+      },
+      "grid_size": 1024,
+      "voxel_size": 0.0009765625,
+      "attr_layout": {
+        "base_color": [
+          0,
+          3
+        ],
+        "metallic": [
+          3,
+          4
+        ],
+        "roughness": [
+          4,
+          5
+        ],
+        "alpha": [
+          5,
+          6
+        ]
+      },
+      "geometry": {
+        "vertices": 3288364,
+        "triangles": 6702958,
+        "pbr_voxels": 3288364,
+        "bounds_native": [
+          [
+            -0.23428207635879517,
+            -0.20313069224357605,
+            -0.4999438524246216
+          ],
+          [
+            0.2344629168510437,
+            0.20538705587387085,
+            0.5001547336578369
+          ]
+        ],
+        "checks": {
+          "finite_geometry": true,
+          "nonempty_geometry": true,
+          "valid_indices": true,
+          "finite_sparse_pbr": true,
+          "valid_sparse_coordinates": true
+        },
+        "limitations": [
+          "Not a topology, self-intersection, UV or artistic approval. Native coordinate system and sparse PBR remain unchanged."
+        ]
+      },
+      "resume_scope": "GLB remesh/UV/PBR finishing only; not mid-diffusion inference resume",
+      "artistic_approval": false
+    }
+  },
+  "baseline_native_sha256": "88643d2d2c9f363b5b1650d690ebae93c49f9a1f58c54b73b6b9da57dea015a8",
+  "baseline_native_bytes_equal": true,
+  "original_profile_steps": 24,
+  "current_maximum_default_steps": 32,
+  "owned_stage_duration_seconds": 178.43699999999808,
+  "wall_seconds_includes_shared_GPU_queue_wait": true
+}

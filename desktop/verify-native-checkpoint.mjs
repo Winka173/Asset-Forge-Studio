@@ -1,0 +1,41 @@
+// A real interrupted TRELLIS run is restored by the packaged UI. No model mocks.
+import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
+import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import crypto from 'node:crypto';import {spawn} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..'),sourceFile=process.env.AFS_CHECKPOINT_REPORT||path.join(root,'.local/native-checkpoint-real/20261022T124320Z/report.json');
+const source=JSON.parse(fs.readFileSync(sourceFile,'utf8'));assert.equal(source.status,'VERIFIED_REAL_INTERRUPTED_NATIVE_CHECKPOINT');
+const run=path.join(root,'.local/native-checkpoint-desktop',new Date().toISOString().replaceAll(/[:.]/g,'-')),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
+fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(source.run,'Library'),blender:null,setup_complete:true}));
+const build=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/desktop_build.json'),'utf8').replace(/^\uFEFF/,''));assert.equal(build.version,'0.9.4');
+const exe=path.join(build.delivery_location,build.executable),server=net.createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));let browser,page,child,runtime,closing=false;
+const report={status:'RUNNING',version:build.version,run,source_report:sourceFile,checks:[],errors:[],scope:'Actual interrupted geometry/PBR checkpoint and real GPU finishing, CPU Blender, viewer and GLB export. Not mid-diffusion resume or artistic approval.'};
+async function api(route,body){const r=await fetch(runtime.api_base+route,{headers:{'X-AFS-Token':runtime.api_token,...(body?{'Content-Type':'application/json'}:{})},...(body?{method:'POST',body:JSON.stringify(body)}:{})});assert(r.ok,`${route}: ${r.status} ${await r.clone().text()}`);return r.json();}
+async function close(){closing=true;await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close')).catch(()=>{});for(let n=0;n<180&&child.exitCode===null;n++)await sleep(200);assert.notEqual(child.exitCode,null);if(browser)await browser.close().catch(()=>{});browser=null;}
+async function launch(){closing=false;child=spawn(exe,[],{env:{...process.env,AFS_DESKTOP_CONFIG_DIR:config,WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:`--remote-debugging-port=${port}`},stdio:'ignore',windowsHide:false});for(let n=0;n<180;n++){try{browser=await chromium.connectOverCDP(`http://127.0.0.1:${port}`);break;}catch{assert.equal(child.exitCode,null);await sleep(1000);}}assert(browser);page=browser.contexts()[0].pages()[0];page.setDefaultTimeout(90000);page.on('pageerror',e=>{if(!closing)report.errors.push(e.message);});await page.locator('.studio-sidebar').waitFor({timeout:180000});runtime=await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_bootstrap'));}
+try{
+ await launch();const sourcePath=source.checkpoint.path,nativePath=path.join(path.dirname(sourcePath),'raw_master.npz'),hash=crypto.createHash('sha256').update(fs.readFileSync(nativePath)).digest('hex');assert.equal(hash,source.checkpoint.metadata.native_sha256);
+ await page.evaluate(s=>{localStorage.setItem('afs.project',s.project_id);localStorage.setItem('afs.production.selection','job/'+s.job_id);localStorage.setItem('afs.inspector.view','preview');},source);await page.reload();await page.getByRole('link',{name:'Production',exact:true}).click();
+ const recovery=page.getByRole('region',{name:'Native mesh checkpoint recovery'});await recovery.waitFor();await page.screenshot({path:path.join(run,'checkpoint-available.png')});
+ const response=page.waitForResponse(r=>r.url().endsWith('/resume-finishing')&&r.request().method()==='POST');await page.getByRole('button',{name:'Resume model finishing',exact:true}).click();const submitted=await response;assert(submitted.ok(),await submitted.text());const resumed=await submitted.json();assert.equal(resumed.payload.resume_mesh_checkpoint,source.job_id);
+ const body=submitted.request().postDataJSON();assert.equal((await api(`/api/production/jobs/${source.job_id}/resume-finishing`,body)).id,resumed.id);
+ console.log('NATIVE_FINISHING_QUEUED',resumed.id);
+ let finalDetail;
+ for(let n=0;n<1200;n++){
+   const detail=await api('/api/production/assets/'+source.asset_id),jobs=await api('/api/jobs'),child=jobs.find(j=>j.id===resumed.id);
+   if(['FAILED','BLOCKED','CANCELLED'].includes(child.status))throw Error(JSON.stringify(child));
+   const failure=detail.stages.find(j=>j.kind==='blender'&&['FAILED','BLOCKED'].includes(j.status));if(failure)throw Error(JSON.stringify(failure));
+   if(detail.artifacts.some(a=>a.metadata.stage==='blender_processed')&&detail.stages.some(j=>j.kind==='blender'&&j.status==='REVIEW_REQUIRED')){finalDetail=detail;break;}
+   await sleep(1000);
+ }
+ assert(finalDetail,'Actual finishing/Blender timed out');const jobs=await api('/api/jobs');assert.equal(jobs.length,3);assert.equal(jobs.filter(j=>j.payload.kind==='inference'&&!j.payload.resume_mesh_checkpoint).length,1);
+ const generation=JSON.parse(fs.readFileSync(path.join(source.run,'Library/jobs',resumed.id,'output/generation.json'),'utf8')),log=fs.readFileSync(path.join(source.run,'Library/jobs',resumed.id,'worker.log'),'utf8');
+ assert.equal(generation.inference_reused,true);assert(log.includes('Restore validated native geometry'));assert(!/Sampling (sparse|shape|texture)/.test(log));assert.equal(generation.native_checkpoint.native_sha256,hash);assert.equal(crypto.createHash('sha256').update(fs.readFileSync(nativePath)).digest('hex'),hash);
+ const blocked=await fetch(runtime.api_base+`/api/production/jobs/${source.job_id}/resume-finishing`,{method:'POST',headers:{'X-AFS-Token':runtime.api_token,'Content-Type':'application/json'},body:JSON.stringify({request_id:'deny-new-after-finishing-complete'})});assert.equal(blocked.status,409);
+ const overview=await api('/api/production');assert.equal(overview.standalone.length,1);assert.equal(overview.standalone[0].id,source.job_id);assert(!overview.standalone[0].jobs.some(j=>j.id===source.job_id));
+ await page.getByRole('link',{name:'Library',exact:true}).click();await page.locator('.library-card-open').filter({hasText:'Archer Tower / checkpoint recovery'}).first().click();await page.waitForFunction(()=>Number(document.querySelector('.library-detail-viewport .viewer')?.dataset.loaded)>0&&Number(document.querySelector('.library-detail-viewport .viewer')?.dataset.textures)>0);
+ const exportResponse=page.waitForResponse(r=>r.url().includes('/api/export-profiles/assets/')&&r.request().method()==='POST');await page.getByRole('button',{name:'Export model',exact:true}).click();const er=await exportResponse;assert(er.ok(),await er.text());const delivery=await er.json();for(const f of delivery.files){const data=fs.readFileSync(path.join(delivery.export_directory,f.name));assert.equal(crypto.createHash('sha256').update(data).digest('hex'),f.sha256);if(f.name.endsWith('.glb'))assert.equal(data.toString('ascii',0,4),'glTF');}
+ await sleep(300);await page.screenshot({path:path.join(run,'restored-real-tower-export.png')});
+ report.checks.push({name:'real_checkpoint_GPU_finishing_no_new_diffusion_validated_Blender_GLb_and_native_viewer',passed:true,source_job:source.job_id,resumed_job:resumed.id,native_sha256:hash,geometry:source.checkpoint.metadata.geometry,generation,delivery});
+ await close();await launch();assert.equal((await api('/api/jobs')).length,3);assert.equal((await api('/api/production/assets/'+source.asset_id)).asset.art_review_status,'not_reviewed');assert.equal(crypto.createHash('sha256').update(fs.readFileSync(nativePath)).digest('hex'),hash);await close();assert.equal(report.errors.length,0);report.status='PASS_NATIVE_CHECKPOINT_FINISHING_AND_RESTART';
+}catch(error){report.status='FAILED';report.error=String(error);if(page)await page.screenshot({path:path.join(run,'failure.png')}).catch(()=>{});process.exitCode=1;}
+finally{if(browser)await close().catch(()=>{});fs.writeFileSync(path.join(run,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,run,error:report.error}));}
