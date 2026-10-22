@@ -217,7 +217,7 @@ def available_sources(asset, record, path):
     with store.connect() as db:
         native = [store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE project_id=? AND asset_id=? AND role='engine_package' ORDER BY created_at DESC", (asset['project_id'], asset['id']))]
     for entry in native:
-        if Path(entry['relative_path']).suffix == '.unitypackage':
+        if Path(entry['relative_path']).suffix == '.unitypackage' and entry['metadata'].get('parent_id')==record['id']:
             from . import jobs
             try:
                 job = jobs.get(entry['metadata'].get('job_id',''))

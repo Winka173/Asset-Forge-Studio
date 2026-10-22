@@ -32,13 +32,15 @@ class UnityImport(BaseModel):
     artifact_id: str
     request_id: str=Field(min_length=8,max_length=100)
     render_gpu: bool=True
-    profile: Literal['6000.4.8f1:Built-in']='6000.4.8f1:Built-in'
+    profile: Literal['6000.4.8f1:Built-in','6000.4.8f1:Built-in:Animation']='6000.4.8f1:Built-in'
     commercial: bool=False
 
 
 @router.post('/assets/{identifier}/unity-import',status_code=201)
 def unity_import(identifier:str,body:UnityImport):
     from engines.unity_editor import effective_config
+    if body.profile.endswith(':Animation'):
+        from engines.unity_animation import effective_config
     from engines.quality import fingerprint
     value=studio.asset(identifier);record=studio.scoped_artifact(body.artifact_id,value['project_id'],identifier)
     project=studio.project(value['project_id']);profile=project.get('engine_profiles',{}).get('unity',{})
@@ -50,12 +52,23 @@ def unity_import(identifier:str,body:UnityImport):
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=studio.cached(db,body.request_id,request_hash)
         if previous:return previous
-        payload=dict(kind='unity_import',engine='unity_editor',project_id=value['project_id'],asset_id=identifier,artifact_id=record['id'],use_gpu=body.render_gpu,
-            effective_config=config,effective_config_hash=fingerprint(config),depends_on=[record['metadata']['job_id']],timeout_seconds=900,
+        payload=dict(kind='unity_import',engine='unity_animation' if body.profile.endswith(':Animation') else 'unity_editor',project_id=value['project_id'],asset_id=identifier,artifact_id=record['id'],use_gpu=body.render_gpu,
+            effective_config=config,effective_config_hash=fingerprint(config),depends_on=[record['metadata']['job_id']] if record['metadata'].get('job_id') else [],timeout_seconds=900,
             purpose='technical_engine_import_evaluation',target_game_project=None)
         queued=jobs.enqueue(payload,db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_hash,json.dumps(queued)))
     return queued
+
+
+@router.get('/assets/{identifier}/animation-unity')
+def animation_unity(identifier:str,artifact_id:str):
+    from engines.unity_animation import effective_config
+    value=studio.asset(identifier);record=studio.scoped_artifact(artifact_id,value['project_id'],identifier)
+    if record['role']!='candidate':raise HTTPException(400,'Choose a model candidate')
+    try:config=effective_config(record);supported=True;reason=None
+    except (ValueError,KeyError,OSError) as exc:config=None;supported=False;reason=str(exc)
+    related=[{k:j.get(k) for k in ('id','status','error','progress')} for j in jobs.listing() if j['payload'].get('engine')=='unity_animation' and j['payload'].get('asset_id')==identifier and j['payload'].get('artifact_id')==artifact_id]
+    return dict(supported=supported,reason=reason,version='6000.4.8f1',profile='Existing single untextured Generic clip',jobs=related)
 
 
 def file_ref(record,verify=False):

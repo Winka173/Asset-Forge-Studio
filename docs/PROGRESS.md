@@ -1,3 +1,11 @@
+# Unity animation work - 2026-10-22 (Asia/Saigon)
+
+Version 0.8.12 adds an explicit, limited existing-animation Unity profile in Library/Production. It reuses the shared CPU scheduler and imports a single untextured Generic skinned clip through Blender FBX, validates real deformation/metric scale/weights, cold-reopens Unity, and tests package import in a second empty project. The authoritative GLB is preserved and default GLB Only does not invoke Unity. Package availability is bound to the exact source version. All 87 backend tests, packaged Windows smoke and native paused-queue/restart/real-Unity/package/export/version-scope acceptance passed. See UNITY_ANIMATION.md and evidence/unity_animation_native.json.
+
+Auto-rigging, humanoid retargeting, new motion generation, textured-animation material parity, root-motion/foot-contact quality and player performance remain open. This technical slice does not close artistic acceptance or broader engine/map/VFX work.
+
+---
+
 # Current work - 2026-10-22 (Asia/Saigon)
 
 The shipped 0.8.10 baseline includes one admitted Production row per asset, real outside pipeline progress, intentional generation attempts with idempotent retries, persistent all-project notifications and validated local Blender/Unity tool discovery. Actual Runavelle 349-file native tests exercise admission and restart without starting 349 GPU jobs. Map versions retain immutable source plans and version-specific real Unity captures.

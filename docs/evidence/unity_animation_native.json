@@ -1,0 +1,110 @@
+{
+  "status": "PASS_NATIVE_EXISTING_ANIMATION_UNITY_PACKAGE_AND_VERSION_SCOPING",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\unity-animation-native\\2026-10-22T04-25-49-753Z",
+  "executable": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.12\\20261022T042154Z\\Asset Forge Studio.exe",
+  "checks": [
+    {
+      "name": "native_retimed_clip_UI_shared_CPU_queue_restart_Unity_import_cold_reopen_clean_package_import_exact_version_export_no_regeneration",
+      "passed": true,
+      "job_id": "5faa12a9bb83434e9bb18f8cc2325808",
+      "source_sha256": "d6e69165bd215cc8778eff3d898fe43bcb0568b12b7589bc5d4524958083d295",
+      "unity_reports": [
+        {
+          "unity_version": "6000.4.8f1",
+          "effective_config_hash": "f510ad2850b60049937c7e2ee08b98ba4d13dfa1d0c3403387bf527718100756",
+          "cold_reopen": false,
+          "clean_package_import": false,
+          "root_motion_quality": "not_evaluated",
+          "foot_contact_quality": "not_evaluated",
+          "artistic_approval": "not_given",
+          "dimensions_xyz_m": [
+            1.902116,
+            2.476142,
+            2
+          ],
+          "source_motion_m": 0.4168651,
+          "playable_graph_motion_m": 0.1695803,
+          "clip_duration_seconds": 1.666667,
+          "bone_count": 19,
+          "weighted_vertices": 312,
+          "min_weight_sum": 0.9999999,
+          "max_weight_sum": 1,
+          "sampled_motion_m": 0.4168653,
+          "samples": 6,
+          "failures": [],
+          "checks_passed": true
+        },
+        {
+          "unity_version": "6000.4.8f1",
+          "effective_config_hash": "f510ad2850b60049937c7e2ee08b98ba4d13dfa1d0c3403387bf527718100756",
+          "cold_reopen": true,
+          "clean_package_import": false,
+          "root_motion_quality": "not_evaluated",
+          "foot_contact_quality": "not_evaluated",
+          "artistic_approval": "not_given",
+          "dimensions_xyz_m": [
+            1.902116,
+            2.476142,
+            2
+          ],
+          "source_motion_m": 0.4168651,
+          "playable_graph_motion_m": 0.1695803,
+          "clip_duration_seconds": 1.666667,
+          "bone_count": 19,
+          "weighted_vertices": 312,
+          "min_weight_sum": 0.9999999,
+          "max_weight_sum": 1,
+          "sampled_motion_m": 0.4168653,
+          "samples": 6,
+          "failures": [],
+          "checks_passed": true
+        },
+        {
+          "unity_version": "6000.4.8f1",
+          "effective_config_hash": "f510ad2850b60049937c7e2ee08b98ba4d13dfa1d0c3403387bf527718100756",
+          "cold_reopen": true,
+          "clean_package_import": true,
+          "root_motion_quality": "not_evaluated",
+          "foot_contact_quality": "not_evaluated",
+          "artistic_approval": "not_given",
+          "dimensions_xyz_m": [
+            1.902116,
+            2.476142,
+            2
+          ],
+          "source_motion_m": 0.4168651,
+          "playable_graph_motion_m": 0.1695803,
+          "clip_duration_seconds": 1.666667,
+          "bone_count": 19,
+          "weighted_vertices": 312,
+          "min_weight_sum": 0.9999999,
+          "max_weight_sum": 1,
+          "sampled_motion_m": 0.4168653,
+          "samples": 6,
+          "failures": [],
+          "checks_passed": true
+        }
+      ],
+      "fbx_qa": {
+        "status": "PASS_FBX_DEFORMATION",
+        "samples": 6,
+        "max_point_cloud_error": 0.0021557898726314306,
+        "tolerance": 0.004952283382415772,
+        "source_vertices": 412,
+        "source_dimensions": [
+          1.9021157026290894,
+          1.9999998807907104,
+          2.4761416912078857
+        ],
+        "source_motion_m": 0.4168651517610891,
+        "scope": "Six frame point-cloud comparison; vertex order is not assumed, not exhaustive animation proof"
+      },
+      "resources": {
+        "duration_seconds": 17.78100000000086,
+        "worker_tree_peak_rss_bytes": 1840586752
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Actual existing retimed clip, native Unity package via UI/shared CPU queue, cold reopen and clean-project import"
+}

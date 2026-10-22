@@ -1,21 +1,16 @@
 ﻿{
-    "version":  "0.8.11",
-    "timestamp_utc":  "20261022T035535Z",
-    "git_commit":  "84efbbecf1640c4511f27811956c41e8ea8b4395",
+    "version":  "0.8.12",
+    "timestamp_utc":  "20261022T042154Z",
+    "git_commit":  "4aa54e7eea7baf2701f4229762f4ae8f8b2a0c2f",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/automation.py",
+                          " M apps/api/export_profiles.py",
                           " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/api/notifications.py",
-                          " M apps/api/production.py",
-                          " M apps/api/revisions.py",
-                          " M apps/api/statuses.py",
-                          " M apps/web/src/asset-management.css",
+                          " M apps/api/universal.py",
                           " M apps/web/src/asset-management.tsx",
-                          " M apps/web/src/library.tsx",
-                          " M apps/web/src/select-help.ts",
+                          " M docs/PROGRESS.md",
                           " M docs/evidence/desktop_build.json",
                           " M docs/evidence/desktop_smoke.json",
                           " M package-lock.json",
@@ -23,10 +18,14 @@
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? desktop/verify-animation-revision.mjs",
-                          "?? engines/animation_clip.py",
-                          "?? scripts/blender_animation_qa.py",
-                          "?? tests/test_animation.py"
+                          "?? apps/web/src/animation-unity.tsx",
+                          "?? desktop/verify-unity-animation.mjs",
+                          "?? docs/UNITY_ANIMATION.md",
+                          "?? docs/evidence/unity_animation_native.json",
+                          "?? engines/unity_animation.py",
+                          "?? integrations/unity/Packages/com.assetforge.animation/",
+                          "?? scripts/blender_animation_fbx.py",
+                          "?? tests/test_unity_animation.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -35,7 +34,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T035535Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261022T042154Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -46,14 +45,14 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "586f79d2b74e489d92ecdda189fe381d2f737595ef1f3e344efed7be65172452",
-                            "Asset Forge Studio_0.8.11_x64-setup.exe":  "0f785810efc6dbf6bd6a8b3c2d195724532b538d58ac3298b1852f4ab416fef2",
-                            "afs-backend.exe":  "e03c79a62c914fd3f92c4be122089e194bd83a29027af87d53532f3e9293862a"
+                            "Asset Forge Studio_0.8.12_x64-setup.exe":  "5d2fb0263aa4ea75f54600e8f25e173cd427bc26447763612c6b46c3eec105f0",
+                            "Asset Forge Studio.exe":  "a1eec653ade1b5d0ec970cb99a1efb0192796d2af6be341d14b181534ee687c1",
+                            "afs-backend.exe":  "6acf68dbf417319482d086122737c39c78fa63bc19a1f658635029bce5a46ae7"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T03-57-33-805Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-22T04-24-12-054Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.8.11_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.8.12_x64-setup.exe",
     "previous_latest_kept_running":  true,
-    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.11\\20261022T035535Z"
+    "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\0.8.12\\20261022T042154Z"
 }
