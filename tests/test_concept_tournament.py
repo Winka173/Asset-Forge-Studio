@@ -75,3 +75,23 @@ def test_requested_colour_outranks_anchor_palette(tmp_path):
     assert requested_hues('tôi muốn boss 1 con rồng khổng lồ đỏ') == [(345, 15)]
     ranked = rank(choices, anchor, 'tôi muốn model là boss 1 con rồng khổng lồ đỏ, phù hợp với các công trình này')
     assert ranked[0][0]['id'] == 'red' and ranked[0][1]['requested_colour_match'] > 0.9
+
+
+def test_character_sheets_are_ineligible_but_a_held_shield_is_not(tmp_path):
+    canvas = np.full((512, 512, 3), 110, dtype=np.uint8)
+    for x0 in (60, 200, 340):  # three equal figures: a turnaround sheet
+        canvas[120:420, x0:x0 + 100] = (40, 60, 140)
+    Image.fromarray(canvas).save(tmp_path / 'sheet.png')
+    knight = np.full((512, 512, 3), 110, dtype=np.uint8); knight[110:430, 180:300] = (40, 60, 140); knight[200:360, 320:390] = (150, 110, 60)  # body + held shield
+    Image.fromarray(knight).save(tmp_path / 'knight.png')
+    ranked = dict((a['id'], m) for a, m in rank([(dict(id='sheet'), tmp_path / 'sheet.png'), (dict(id='knight'), tmp_path / 'knight.png')]))
+    assert ranked['sheet']['eligible'] is False and 'separate figures' in ranked['sheet']['reason']
+    assert ranked['knight']['eligible'] is True and ranked['knight']['second_figure_ratio'] < 0.5
+
+
+def test_when_nothing_is_eligible_the_least_bad_concept_wins(monkeypatch):
+    from apps.api import concept_rank
+    scores = {'a-sheet': dict(eligible=False, score=-1.2), 'm-no-subject': dict(eligible=False, score=-9.0), 'z-tight': dict(eligible=False, score=-0.03)}
+    monkeypatch.setattr(concept_rank, 'measure', lambda path, anchor=None, hues=(): scores[path])
+    ranked = concept_rank.rank([(dict(id=k), k) for k in scores])
+    assert [a['id'] for a, _ in ranked] == ['z-tight', 'a-sheet', 'm-no-subject']

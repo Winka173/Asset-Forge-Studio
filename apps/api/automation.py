@@ -206,7 +206,8 @@ def recover_checkpoint(job):
 
 
 def snapshot_item_state(value,item,all_jobs,artifacts):
-    current=leaves([j for j in all_jobs if j['payload'].get('batch_id')==value['id'] and j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt']])
+    # The post-delivery rig job is a side branch: it never counts as delivery work, a failure or an admission slot.
+    current=leaves([j for j in all_jobs if j['payload'].get('batch_id')==value['id'] and j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt'] and j['payload'].get('kind')!='rig'])
     return current
 
 
@@ -222,7 +223,7 @@ def advance(identifier):
             if job['payload'].get('batch_id')==identifier and recover_checkpoint(job):job['status']='REVIEW_REQUIRED';job['error']=None
         from .production import eligible
         from .engine_health import waiting,RouteWaiting
-        active_assets={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and
+        active_assets={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==identifier and j['status'] not in jobs.TERMINAL and j['payload'].get('kind')!='rig' and
             (j['status']!='QUEUED' or eligible(j['payload']) and not waiting(j['payload'],j['id']))}
         reserve=settings['disk_reserve_gb']*1024**3
         roots={store.DATA,store.WORKSPACE}
@@ -242,7 +243,13 @@ def advance(identifier):
             auto['checkpoints']={j['id']:dict(stage=j['payload']['kind'],state=j['status'],updated_at=j['updated_at']) for j in current}
             if running:
                 auto.update(status='running' if any(j['status']!='QUEUED' for j in running) else 'queued',stage=running[0].get('progress',{}).get('stage') or running[0]['payload']['kind']);continue
-            if auto.get('status')=='exported':continue
+            if auto.get('status')=='exported':
+                # Delivered characters/creatures get an experimental rigged copy; never blocks or changes the delivery.
+                winner=(auto.get('candidate_selection') or {}).get('artifact_id')
+                if winner and not auto.get('rig_job_id'):
+                    from . import rigging
+                    if rigging.wanted(item,studio.project(value['project_id'])):auto['rig_job_id']=rigging.enqueue(value,item,winner)['id']
+                continue
             if auto.get('retry_required'):continue  # Permanent delivery/config errors wait for explicit Retry.
             from .production import global_paused
             if item.get('production_paused') or global_paused():
@@ -334,6 +341,23 @@ def advance(identifier):
                             # Requested colours come from what the user wrote (original + literal translation), never from the planned design.
                             request_text=' '.join([item['prompt'],*[c.get('interpretation',{}).get('translated_prompt_en','') for c in (item.get('prompt_interpretation') or {}).get('chunks',[])]])
                             ranked=rank([(v[2],store.safe_path(v[2]['relative_path'])) for v in generated],anchor and anchor['path'],request_text)
+                            # Bounded tournament repair: a requested colour nobody drew, or no concept inside the frame, earns up to two
+                            # extra concepts with a targeted directive before Auto decides with what it has.
+                            from .concept_rank import requested_hues,HUE_NAMES
+                            hues=requested_hues(request_text);best=ranked[0][1]
+                            extra=[j for j in current if j['payload']['kind']=='concept' and (j['payload'].get('quality_repair') or {}).get('kind')=='tournament']
+                            colour_miss=bool(hues) and best.get('eligible') and best.get('requested_colour_match',1)<0.15
+                            if (colour_miss or not best.get('eligible')) and len(extra)<2:
+                                directives=(['The subject is predominantly '+' and '.join(HUE_NAMES[h] for h in hues)+'.'] if colour_miss else [])+([] if best.get('eligible') else ['Zoomed out: the entire subject fits inside the frame with wide empty margins on every side.'])
+                                studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+f':tournament-repair:{len(extra)}',prompt=item.get('resolved_prompt') or item['prompt'],
+                                    style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),directives=directives,
+                                    quality=item['quality'],seed=1009+len(extra)*7919,batch_id=identifier,batch_attempt=item['attempt'],
+                                    quality_repair=dict(kind='tournament',issues=(['requested_colour'] if colour_miss else [])+([] if best.get('eligible') else ['framing']))))
+                                active_assets.add(item['asset_id']);auto.update(status='queued',stage='Extra concept: '+' / '.join(d.split(':')[0].rstrip('.') for d in directives));continue
+                            if colour_miss:
+                                from .concept_guard import record_decision
+                                record_decision(auto,dict(stage='concept_colour',decision='Continued with the best-framed concept although the requested colour is weak',
+                                    reason=f"Requested colour match {best.get('requested_colour_match')} after {len(extra)} extra concepts",kept_artifact_ids=[ranked[0][0]['id']]))
                             if not ranked[0][1]['eligible']:
                                 # Auto production decides instead of waiting: the best-ranked concept continues, with the reason recorded.
                                 from .concept_guard import record_decision

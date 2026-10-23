@@ -203,3 +203,17 @@ def test_guard_also_covers_a_none_role_when_an_image_was_supplied(tmp_path, monk
     monkeypatch.setattr(local_semantics, 'request', lambda path, payload=None, timeout=3: dict(done=True, done_reason='stop', message=dict(content=_json.dumps(next(answers)))))
     result = intent_adapter.interpret('tôi muốn model là boss 1 con rồng khổng lồ đỏ, phù hợp với các công trình này', [reference], {}, 'auto', lambda message: None)
     assert result['reference_role'] == 'style' and 'dragon' in result['generation_prompt_en']
+
+
+def test_incomplete_planning_keeps_the_english_translation_instead_of_untranslated_text(tmp_path, monkeypatch):
+    import json as _json
+    from engines import intent_adapter, local_semantics
+    monkeypatch.setattr(intent_adapter, 'model', lambda: dict(name='fixture', digest='fixture'))
+    monkeypatch.setattr(local_semantics, 'probe', lambda: dict(models=[dict(name='fixture', digest='fixture')]))
+    interpretation = dict(translated_prompt_en='A giant red dragon, final boss', requested_subject_en='giant red dragon', reference_role='none', reference_description_en='',
+                          style_traits=[], appearance=dict(colors=[], materials=[], surface_treatment='', rendering_aesthetic=''), warnings=[])
+    replies = iter([dict(done=True, done_reason='stop', message=dict(content=_json.dumps(interpretation))),
+                    dict(done=True, done_reason='length', message=dict(content='{')), dict(done=True, done_reason='length', message=dict(content='{'))])
+    monkeypatch.setattr(local_semantics, 'request', lambda path, payload=None, timeout=3: next(replies))
+    result = intent_adapter.interpret('Một con rồng đỏ khổng lồ, boss cuối màn', [], {}, 'auto', lambda message: None)
+    assert result['generation_prompt_en'].startswith('A giant red dragon') and 'rồng' not in result['generation_prompt_en']

@@ -71,7 +71,7 @@ def job_summary(j):
 
 
 def item_summary(i,group,all_jobs,all_paused=False,model=None):
-    related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id'] and j['payload'].get('batch_id')==group['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0)]
+    related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id'] and j['payload'].get('batch_id')==group['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0) and j['payload'].get('kind')!='rig']
     revisions=(model or {}).get('revisions',[])
     if revisions:
         revision_jobs=[j for j in all_jobs if j['id'] in revisions[-1].get('job_ids',[])]

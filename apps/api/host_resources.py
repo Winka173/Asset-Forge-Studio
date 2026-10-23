@@ -68,7 +68,7 @@ def estimate(payload):
     if cached and time.monotonic()-cached[0]<2:return cached[1]
     # Conservative planning allowances, not hard engine requirements or guarantees.
     # Full TRELLIS allowance covers the retained 15.7M-triangle castle experiment.
-    floor=32 if kind=='inference' and engine=='trellis2_community' and not value['finishing_only'] else 10 if kind=='inference' and value['finishing_only'] else 24 if kind=='inference' else 12 if kind=='concept' else 8 if kind in ('blender','unity_import','world_unity','cinematic_render') else 6 if kind in ('prompt_analysis','concept_layout','style_profile','sprite_cutout','model_visual_check','batch_semantics','animation_retime') else 4
+    floor=32 if kind=='inference' and engine=='trellis2_community' and not value['finishing_only'] else 10 if kind=='inference' and value['finishing_only'] else 24 if kind=='inference' else 12 if kind=='concept' else 8 if kind in ('rig','blender','unity_import','world_unity','cinematic_render') else 6 if kind in ('prompt_analysis','concept_layout','style_profile','sprite_cutout','model_visual_check','batch_semantics','animation_retime') else 4
     if kind=='inference':
         from engines.adapters import ADAPTERS
         adapter=ADAPTERS.get(engine)

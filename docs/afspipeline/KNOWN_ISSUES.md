@@ -28,3 +28,5 @@
 - 2026-10-23: Hue-preserving harmonization is applied to 2D sprites only. Its effect on TRELLIS.2 textures is unmeasured, so 3D concepts are not harmonized.
 - 2026-10-23: Fixed a patching defect where `\b` in several regexes was written as a backspace character: English colour words (concept ranking) and English "match / same style" phrases (reference-role guard) never matched; only Vietnamese did. All sources were scanned for control characters and English regression tests added.
 - 2026-10-23: Characters still hold weapons/shields fused to the hand mesh. Generating held items as separate companion assets (socket-ready) is planned, not implemented.
+- 2026-10-23: UniRig rigs bleed skin weights where clothing or held props touch the body (a raised arm drags the skirt), bone names are generic (bone_0..N, no Unity Humanoid/Mixamo map) and no engine import or animation playback is tested. The rigged copy is a starting point for an animator, not a production rig.
+- 2026-10-23: An A-pose and held weapons compete in SDXL concepts (A-pose concepts often drop the sword/shield). Generating held items as separate socket-ready assets is the planned fix.

@@ -109,3 +109,16 @@ def test_exhausted_concept_repairs_continue_with_least_defective_concept_without
     assert auto.get('status')!='blocked' and auto['auto_decisions'][0]['stage']=='concept_layout'
     assert auto['auto_decisions'][0]['artistic_approval'] is False
     assert not any(j['payload']['kind']=='concept' for j in jobs.listing())  # no extra repair beyond the limit
+
+
+def test_a_corner_watermark_alone_does_not_reject_a_concept(context,monkeypatch):
+    value,item=context
+    item.update(prompt='Original tower',interpret_prompt=True,reference_ids=[],quality='Maximum')
+    path=store.DATA/'concept_text.png';Image.new('RGB',(32,32),'navy').save(path)
+    image=store.add_artifact(path,'concept','Concept with watermark',dict(project_id='runavelle',asset_id=item['asset_id']))
+    monkeypatch.setattr(concept_guard,'receipt',lambda job:dict(source_artifact_id=image['id'],source_sha256=image['sha256'],screening_policy=job['payload']['screening_policy'],
+        suitable_single_asset_image=False,issues=['border_or_text']))
+    assert concept_guard.filter_choices(value,item,jobs.listing(),[image],{}) is None
+    for check in [j for j in jobs.listing() if j['payload']['kind']=='concept_layout']:
+        for state in ('RUNNING','GENERATED','VALIDATING','REVIEW_REQUIRED'):jobs.transition(check['id'],state)
+    assert [c['id'] for c in concept_guard.filter_choices(value,item,jobs.listing(),[image],{})]==[image['id']]

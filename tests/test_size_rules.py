@@ -29,3 +29,25 @@ def test_prompt_analysis_refines_a_rule_or_default_size():
                 spec_provenance={k: dict(kind='defaulted', source='category') for k in ('target_width_m', 'target_depth_m', 'target_height_m')})
     assert apply(item, 'giant red dragon boss') and item['target_height_m'] == 12.8
     assert apply(item, 'swordsman with a shield') and item['target_height_m'] == 1.8  # an earlier rule size is refined, not frozen
+
+
+def test_batch_size_overview_is_read_only(tmp_path, monkeypatch, qa_project):
+    from fastapi.testclient import TestClient
+    from apps.api import store, jobs, batch
+    from apps.api.main import app
+    monkeypatch.setattr(store, 'DATA', tmp_path); qa_project(); client = TestClient(app)
+    manifest = '# SHARED_SUPPLY_BARREL — Supply_Barrel\nSupply_Barrel. A wooden barrel.\n\n# BLD_TEST_Castle — Grand Castle\nGrand Castle. A large castle.\n'
+    value = client.post('/api/batches/import', files=dict(file=('two.md', manifest.encode())), data=dict(project_id='runavelle')).json()
+    before = batch.batch(value['id'])
+    rows = client.get(f"/api/size-rules/batch/{value['id']}").json()
+    assert {r['name']: r['dims']['h'] for r in rows} == {'Supply_Barrel': 1.0, 'Grand Castle': 22}
+    assert all(r['kind'] == 'inferred' for r in rows) and batch.batch(value['id']) == before and not jobs.listing()
+
+
+@pytest.mark.parametrize('text,hint', [
+    ('Một con rồng đỏ khổng lồ, boss cuối màn', 'giant boss red dragon'), ('Một kiếm sĩ với khiên, giáp thép xanh navy', 'swordsman with shield'),
+    ('thùng gỗ cũ', 'wooden crate'), ('cung thủ với cung và kiếm', 'archer with bow and sword'), ('A red dragon', ''),
+])
+def test_untranslated_vietnamese_gets_an_english_subject_hint(text, hint):
+    from apps.api.size_rules import english_hint
+    assert english_hint(text) == hint

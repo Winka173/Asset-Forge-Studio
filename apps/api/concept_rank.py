@@ -8,7 +8,10 @@ import numpy as np
 from PIL import Image
 
 # 2: colours named in the request outrank similarity to the style anchor's palette.
-POLICY_VERSION = 2
+# 3: several separate large figures are ineligible; small detached items are penalised.
+# 4: ineligible concepts are still scored (with defect penalties) so the fallback picks the least-bad one.
+# 5: frame contact from deviation against a locally smoothed side, not the side median (vignettes).
+POLICY_VERSION = 5
 import re
 # Hue ranges (degrees) for colour words in Vietnamese and English requests.
 HUES = [((345, 15), r'\b(?:red|crimson|scarlet|ruby)\b|đỏ'), ((15, 40), r'\borange\b|\bcam\b'), ((40, 65), r'\b(?:yellow|gold(?:en)?)\b|vàng'),
@@ -59,25 +62,36 @@ def measure(path, anchor_path=None, hues=()):
     rgb = _rgb(path)
     box, _ = subject_box(rgb)
     if box is None:
-        return dict(policy=POLICY_VERSION, eligible=False, reason='No foreground subject detected')
+        return dict(policy=POLICY_VERSION, eligible=False, reason='No foreground subject detected', score=-9.0)
     x0, y0, x1, y1 = box['bbox']; size = rgb.shape[0]
     # Flat subject regions crossing the frame have no gradient at the border, so also look for a side whose pixels
     # split away from that side's dominant background colour.
     sides = [rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]]
-    split = [float((np.linalg.norm(s - np.median(s, axis=0), axis=-1) > 0.12).mean()) for s in sides]
+    # Deviation from a locally smoothed side: a subject crossing the border (even once, at a corner) breaks the curve,
+    # while the smooth vignettes of portrait renders follow it (measured: median distance flagged centred knights).
+    def abrupt(side, window=31):
+        padded = np.pad(side, ((window // 2, window // 2), (0, 0)), mode='edge')
+        smooth = np.stack([np.convolve(padded[:, c], np.ones(window) / window, mode='valid') for c in range(3)], axis=-1)
+        return float((np.abs(side - smooth).max(axis=-1) > 0.08).mean())
+    split = [abrupt(s) for s in sides]
     touches = sum(d > 0.02 or f > 0.03 for d, f in zip(box['edge_density'], split))
     occupancy = (x1 - x0 + 1) * (y1 - y0 + 1) / size / size
     border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
     background_noise = float(np.linalg.norm(border - np.median(border, axis=0), axis=-1).mean())
     result = dict(policy=POLICY_VERSION, occupancy=round(occupancy, 4), touches_frame_edges=touches,
                   background_noise=round(background_noise, 4), bbox=box['bbox'])
-    if touches:
-        return result | dict(eligible=False, reason='Subject touches the frame edge; image-to-3D would lose the cropped part')
-    if occupancy < 0.06:
-        return result | dict(eligible=False, reason='Subject too small for reliable reconstruction')
+    largest, second, small = components(rgb, box['bbox'])
+    result.update(second_figure_ratio=round(second / max(largest, 1), 3), detached_items=small)
+    # Every concept is fully measured so Auto can pick the least-bad one when none is eligible (a sheet must never
+    # win over a tightly framed single figure just because both are ineligible).
+    reasons, penalty = [], 0.0
+    if touches: reasons.append('Subject touches the frame edge; image-to-3D would lose the cropped part'); penalty += 0.3 * touches
+    if occupancy < 0.06: reasons.append('Subject too small for reliable reconstruction'); penalty += 0.5
+    # Measured: turnaround sheets show a second figure at 0.80-0.98 of the first; a held shield separates at ~0.36.
+    if second >= 0.5 * largest: reasons.append('Several separate figures (character sheet or item set); not one image-to-3D source'); penalty += 1.0
     framing = 1.0 - min(1.0, abs(occupancy - 0.45) / 0.45)
     clean = max(0.0, 1.0 - background_noise / 0.15)
-    score = 0.35 * framing + 0.25 * clean
+    score = 0.35 * framing + 0.25 * clean - 0.04 * min(small, 5)  # icon rows / scattered props become 3D junk
     palette_weight = 0.4
     if hues:
         # Share of saturated object pixels inside the requested hue ranges.
@@ -101,6 +115,7 @@ def measure(path, anchor_path=None, hues=()):
         score += palette_weight * palette
     else:
         score += palette_weight * 0.5  # neutral when there is no anchor to compare against
+    if reasons: return result | dict(eligible=False, reason=reasons[0], reasons=reasons, score=round(score - penalty, 4))
     return result | dict(eligible=True, score=round(score, 4))
 
 
@@ -109,3 +124,34 @@ def rank(choices, anchor_path=None, request_text=''):
     hues = requested_hues(request_text)
     measured = [(artifact, measure(path, anchor_path, hues)) for artifact, path in choices]
     return sorted(measured, key=lambda m: (not m[1]['eligible'], -m[1].get('score', 0), m[0]['id']))
+
+
+HUE_NAMES = {(345, 15): 'red', (15, 40): 'orange', (40, 65): 'golden yellow', (75, 160): 'green', (160, 200): 'teal', (200, 250): 'blue', (250, 300): 'purple', (300, 345): 'pink'}
+
+
+def components(rgb, bbox=None):
+    """(largest area, second-largest area, small detached items) of the dilated foreground at 256 px.
+
+    A character sheet or item set shows several large figures; icon rows show many small detached items. Both are
+    unusable single-object image-to-3D sources, independent of what the VLM reports.
+    """
+    from PIL import Image as _Image, ImageFilter
+    mask = foreground(rgb)[0]
+    if bbox is not None:
+        x0, y0, x1, y1 = bbox
+        # Grey-on-grey subjects defeat colour-distance masks (only mortar lines survive): no verdict without coverage.
+        if mask[y0:y1 + 1, x0:x1 + 1].mean() < 0.35: return 1, 0, 0
+    mask = np.asarray(_Image.fromarray(mask.astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(5))) > 0  # bridge thin gaps (sword hilts, wing struts)
+    h, w = mask.shape; labels = np.zeros((h, w), np.int32); sizes = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if labels[y0, x0]: continue
+        sizes.append(0); label = len(sizes); stack = [(y0, x0)]; labels[y0, x0] = label
+        while stack:
+            y, x = stack.pop(); sizes[-1] += 1
+            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+                if 0 <= ny < h and 0 <= nx < w and mask[ny, nx] and not labels[ny, nx]:
+                    labels[ny, nx] = label; stack.append((ny, nx))
+    sizes.sort(reverse=True)
+    if not sizes: return 0, 0, 0
+    small = sum(1 for s in sizes[1:] if s >= 0.002 * h * w and s < 0.15 * sizes[0])
+    return sizes[0], (sizes[1] if len(sizes) > 1 else 0), small

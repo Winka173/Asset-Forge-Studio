@@ -73,6 +73,8 @@ class ProjectInput(BaseModel):
     style_anchor_scale: float | None = Field(default=None, ge=0.1, le=1.0)
     # profile: materials/colours/rendering as text (no shape transfer); image: IP-Adapter image conditioning.
     style_anchor_mode: Literal['profile', 'image'] | None = None
+    # Characters/creatures get an experimental rigged copy after delivery unless this is False.
+    auto_rig: bool | None = None
     art_bible: dict = Field(default_factory=dict)
     palette: list[str] = Field(default_factory=list, max_length=32)
     material_language: str = Field(default='', max_length=10000)
@@ -372,9 +374,14 @@ def concept(body: ConceptInput):
     prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
+    # Native SDXL aspect buckets: a standing character fills a square frame top to bottom (measured: every policy-7
+    # swordsman touched the frame), so full-body characters render in portrait and wide creatures in landscape.
+    from engines.concept_prompt import rig_class,subject_anchor
+    shape=rig_class(subject_anchor(base)) if body.framing=='asset_3d' and COMPOSITION_POLICY>=8 else None
+    width,height={'humanoid':(832,1216),'creature':(1216,832)}.get(shape,(size,size)) if size==1024 else {'humanoid':(640,896),'creature':(896,640)}.get(shape,(size,size))
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
     except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc
-    effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY,framing=body.framing)
+    effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY,framing=body.framing,width=width,height=height)
     from .style_anchor import resolve as resolve_anchor,locked as locked_anchor
     style_anchor=None if profile_style else resolve_anchor(value['project_id'],project(value['project_id']),body.style_reference_ids)
     if style_anchor:effective.update(style_anchor=locked_anchor(style_anchor))
@@ -387,7 +394,7 @@ def concept(body: ConceptInput):
         admit(dict(kind='concept',asset_id=value['id'],effective_config=effective))
         result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
             prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,style_anchor=style_anchor,
-            steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective),quality_repair=body.quality_repair),db=db)
+            steps=steps,size=size,width=width,height=height,effective_config=effective,effective_config_hash=fingerprint(effective),quality_repair=body.quality_repair),db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_digest(body),json.dumps(result)))
         value.update(prompt=body.prompt,updated_at=store.now())
         db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(value),value['id']))

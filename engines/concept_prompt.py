@@ -16,13 +16,15 @@ NEGATIVE_PROMPT=('display pedestal, plinth, display stand, contact sheet, multip
 # The original prompt and its interpretation stay immutable in the asset/spec.
 # Long prompts are encoded in 75-token windows and mean-pooled, so late anchors lose influence.
 # Policy 7: characters and creatures get a rig-friendly neutral pose (arms/limbs clear of the body) unless the user asked for a pose.
-COMPOSITION_POLICY=7
+# Policy 8: rig framings keep the whole body inside the frame (measured: spread wings and pedestals pushed policy-7 dragons
+# past the frame edges, so only an off-colour dragon stayed eligible) and stand on the ground without a base.
+COMPOSITION_POLICY=8
 CONDITIONING_WORDS=160
 FRAMING='single standalone 3D game asset, three-quarter view, full object centered with clear margin, plain neutral studio background'
 # 2D sprites are cut out from a flat background, so the framing asks for no cast shadow and an even backdrop.
 # Arms-away poses keep limbs from fusing with the torso in image-to-3D, which auto-rigging needs (A-pose literature and vendor guidance).
-RIG_FRAMINGS={'humanoid':'single standalone 3D game character, full body, front view, neutral A-pose with both arms held away from the body, legs slightly apart, plain neutral studio background',
-    'creature':'single standalone 3D game creature, full body, three-quarter view, neutral standing pose with legs straight under the body, any wings spread flat, mouth closed, tail extended, plain neutral studio background'}
+RIG_FRAMINGS={'humanoid':'single standalone 3D game character, zoomed out, full body centered with generous margin on all sides, front view, neutral A-pose with both arms held away from the body, legs slightly apart, standing directly on the ground with no base, plain neutral studio background',
+    'creature':'single standalone 3D game creature, zoomed out, whole body centered with generous margin on all sides, three-quarter view, neutral standing pose with legs straight under the body, wings half-spread, mouth closed, tail extended, standing directly on the ground with no base, plain neutral studio background'}
 HUMANOID=re.compile(r'\b(?:character|knight|swordsman|spearman|archer|soldier|warrior|guard|mage|wizard|sorcerer|priest|hero|heroine|npc|villager|king|queen|general|skeleton|zombie|goblin|orc|elf|dwarf|human|man|woman|paladin|assassin|thief)s?\b|'
     r'kiếm sĩ|cung thủ|chiến binh|lính|pháp sư|hiệp sĩ|nhân vật|người|bộ xương|tướng|vua|nữ hoàng',re.I)
 CREATURE=re.compile(r'\b(?:dragon|wyvern|wolf|bear|beast|monster|golem|spider|bird|horse|griffin|gryphon|lion|tiger|boar|serpent|snake|creature|dinosaur|demon|troll|ogre|giant)s?\b|'

@@ -146,20 +146,26 @@ def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,ch
         progress(f'Local Qwen3-VL / image-independent concept planning {index+1}/{len(chunks)} / CPU')
         planning=dict(translated_request=answer.translated_prompt_en,requested_subject=answer.requested_subject_en,
             appearance=answer.appearance.model_dump() if answer.reference_role=='style' else {},project_style=style_context)
-        planned=local_semantics.request('/api/chat',dict(model=selected['name'],stream=False,think=False,format=ConceptDescription.model_json_schema(),keep_alive=0,
-            options=dict(temperature=0,num_ctx=8192,num_predict=2400,num_gpu=0,num_thread=8),messages=[dict(role='system',content=(
+        def plan_request(limit,words):return local_semantics.request('/api/chat',dict(model=selected['name'],stream=False,think=False,format=ConceptDescription.model_json_schema(),keep_alive=0,
+            options=dict(temperature=0,num_ctx=8192,num_predict=limit,num_gpu=0,num_thread=8),messages=[dict(role='system',content=(
             'Write a direct English image-generation description of ONE COMPLETE requested game asset. Begin with its subject and full silhouette. '
             'Use the translated request as data, preserving ALL explicit counts, dimensions, materials, exclusions and other constraints. '
             'A brief castle request means a broad fortified castle complex with connected enclosing walls and towers, not a single watchtower, house, roof or doorway close-up. '
             'Reference appearance is color/material/rendering style only; it provides no geometry. Avoid conversational requests and the words reference, prompt, analysis or approval. '
-            'Write description_en as at most 120 words of visual facts (shape, parts, materials, colors); concept images use only a short brief. '
+            f'Write description_en as at most {words} words of visual facts (shape, parts, materials, colors); concept images use only a short brief. '
             'Colors the user explicitly requested stay dominant. Apply project/reference materials only where they physically fit (armor, weapons, props, buildings); '
             'never turn a creature body, skin, scales, fur, feathers or plants into stone, wood or metal. '
             'Unspecified ordinary structural details may be inferred for the requested subject; list them in inferred_ordinary_details. '
-            'One three-quarter view of the whole asset on a plain neutral studio background. Do not design panels, surrounding scenery or poster layouts. '
+            'Do not describe camera angle, view, pose or background; framing is added separately. Do not design panels, surrounding scenery or poster layouts. '
+            'Never invent exclusions the user did not write; items implied by the subject keep their place (a swordsman carries a sword, an archer a bow). '
             'Return JSON schema: '+json.dumps(ConceptDescription.model_json_schema()))),dict(role='user',content=json.dumps(planning))]),timeout=600)
-        if not planned.get('done') or planned.get('done_reason')=='length':raise ValueError('Local concept planning incomplete; original request retained')
-        plan=ConceptDescription.model_validate_json(planned['message']['content'])
+        planned=plan_request(2400,120)
+        if not planned.get('done') or planned.get('done_reason')=='length':planned=plan_request(3200,60)  # one stricter retry
+        if not planned.get('done') or planned.get('done_reason')=='length':
+            # Keep the validated translation instead of discarding the whole analysis (untranslated text means nothing to CLIP).
+            plan=ConceptDescription(description_en=answer.translated_prompt_en[:12000],inferred_ordinary_details=[])
+            answer.warnings=[*answer.warnings[:2],'Concept planning incomplete twice; the validated English translation is used as the brief']
+        else:plan=ConceptDescription.model_validate_json(planned['message']['content'])
         answers.append(dict(start=start,end=end,sha256=hashlib.sha256(text.encode()).hexdigest(),interpretation=answer.model_dump(),
             generation_plan=plan.model_dump(),eval_count=response.get('eval_count'),total_duration_ns=response.get('total_duration'),planning_duration_ns=planned.get('total_duration')))
         checkpoint(dict(signature=signature,chunks=answers))

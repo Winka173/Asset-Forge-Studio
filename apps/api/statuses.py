@@ -63,7 +63,7 @@ def refresh_all():
     all_paused=global_paused()
     for identifier,model in models.items():
         pair=grouped.get(identifier);g,i=pair if pair else ({},{})
-        related=[j for j in all_jobs if j['payload'].get('asset_id')==identifier and (not pair or j['payload'].get('batch_id')==g['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0))]
+        related=[j for j in all_jobs if j['payload'].get('asset_id')==identifier and j['payload'].get('kind')!='rig' and (not pair or j['payload'].get('batch_id')==g['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0))]
         if model.get('asset_type')=='vfx' and model.get('settings',{}).get('current_fx_recipe_id'):
             current_recipe=model['settings']['current_fx_recipe_id']
             current_record=next((a for a in artifacts if a['id']==current_recipe),None)

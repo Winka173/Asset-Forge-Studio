@@ -158,3 +158,21 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .batch-heading > .batch-history { flex: 0 0 auto; display: grid; grid-template-columns: auto minmax(220px, 280px); align-items: center; gap: var(--sp-3); }
 .batch-heading > .batch-history > label { color: var(--text-3); font-size: var(--fs-sm); }
 .batch-heading > .batch-history .afs-select { width: 100%; }
+
+/* Scale lineup: every selected asset to scale, per size band, with a 1.8 m human. */
+.batch-scale-lineup { margin: var(--sp-2) 0; }
+.batch-scale-lineup > summary span { color: var(--text-3); font-size: var(--fs-sm); margin-left: var(--sp-2); }
+.scale-lineup { display: grid; gap: var(--sp-3); padding-top: var(--sp-2); }
+.scale-lineup-note { margin: 0; color: var(--text-3); font-size: var(--fs-sm); }
+.scale-lineup-band h4 { margin: 0 0 var(--sp-1); font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; }
+.scale-lineup-band h4 span { color: var(--text-3); font-weight: 400; }
+.scale-lineup-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface-2); }
+.scale-lineup svg { display: block; }
+.scale-lineup-ground { stroke: var(--border); stroke-width: 1; }
+.scale-lineup-human rect, .scale-lineup-human circle { fill: var(--text-3); }
+.scale-lineup-item { cursor: pointer; outline: none; }
+.scale-lineup-item rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.scale-lineup-item[data-kind="explicit"] rect { stroke-dasharray: none; }
+.scale-lineup-item[data-kind="unknown"] rect, .scale-lineup-item[data-kind="defaulted"] rect { stroke: var(--warning); fill: none; }
+.scale-lineup-item:hover rect, .scale-lineup-item:focus-visible rect { fill: var(--accent); fill-opacity: 0.35; }
+.scale-lineup-item text { fill: var(--text-3); font-size: 10px; }

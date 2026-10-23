@@ -7,6 +7,7 @@ import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
+import { ScaleLineup } from "./scale-lineup";
 
 type Reference = { id: string; name: string; role: string; url: string };
 type Version = {
@@ -807,6 +808,9 @@ export function BatchStudio({
               </div>
             <details className="batch-delivery-settings"><summary>Export settings <span>GLB Only by default</span></summary><BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/></details>
             <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate all</span><span>No GPU starts until Generate</span></div>
+            <details className="batch-scale-lineup"><summary>Scale lineup <span>sizes are set automatically after prompt analysis</span></summary>
+              <ScaleLineup batchId={batch.id} refreshKey={batch.items.map(i=>`${i.asset_id}:${i.target_height_m}:${i.selected}`).join('|')} onSelect={id=>{const item=batch.items.find(i=>i.asset_id===id);if(item)edit(item);}}/>
+            </details>
             <details className="batch-technical-summary"><summary>Advanced production details</summary>            <div className="batch-production-summary"><div><strong>{batch.items.reduce((sum,item)=>sum+item.candidates,0)} candidates</strong><span>Configured across {batch.items.length} independent assets</span></div><div><strong>{batch.preflight?.estimated_jobs != null ? `${batch.preflight.estimated_jobs} estimated jobs` : 'Job estimate pending'}</strong><span>1 heavy GPU task at a time · bounded CPU overlap</span></div><div><strong>Automatic production</strong><span>Technical QA and delivery are automatic. Artistic review stays optional.</span></div></div>
 </details>
             {batch.import_diagnostics && <details className="batch-import-diagnostics"><summary>Import report · {batch.import_diagnostics.status || 'Parsed'}</summary><div><span>Detected: {batch.import_diagnostics.detected_format || 'Unknown'}</span><span>Parser: {batch.import_diagnostics.parser_method || 'Deterministic'}</span><span>Local AI: {batch.import_diagnostics.local_ai_used ? 'Used' : 'Not used'}</span><span>Parsed: {batch.import_diagnostics.parsed_count ?? batch.items.length}{batch.import_diagnostics.expected_count ? ` / ${batch.import_diagnostics.expected_count} expected` : ''}</span><span>Primary: {batch.import_diagnostics.primary_count ?? '—'} · Future: {batch.import_diagnostics.future_count ?? '—'}</span></div>{batch.import_diagnostics.source_file?.sha256 && <code>SHA256: {batch.import_diagnostics.source_file.sha256}</code>}{(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url) && <a href={apiUrl(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url)} download>Download original source</a>}{batch.import_diagnostics.warnings?.map((warning,index)=><p key={`w${index}`}>{warning}</p>)}{batch.import_diagnostics.errors?.map((message,index)=><p className="error-text" key={`e${index}`}>{message}</p>)}</details>}

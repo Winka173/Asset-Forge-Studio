@@ -149,3 +149,7 @@ button.library-card-open:hover:not(:disabled) { background: transparent; border:
 .sprite-gallery img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--r-sm); background: repeating-conic-gradient(#3a3c42 0 25%, #2c2e33 0 50%) 0 0 / 16px 16px; }
 .sprite-gallery figcaption { display: grid; gap: var(--sp-1); font-size: var(--fs-sm); color: var(--text-2); }
 .sprite-gallery figcaption span { display: flex; flex-wrap: wrap; gap: var(--sp-2); color: var(--text-3); }
+
+/* Experimental auto-rigged copy next to the delivered model. */
+.library-rigged { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3); border: 1px dashed var(--info); border-radius: var(--r-md); background: var(--info-soft); }
+.library-rigged span { flex: 1 1 260px; color: var(--text-2); font-size: var(--fs-sm); }

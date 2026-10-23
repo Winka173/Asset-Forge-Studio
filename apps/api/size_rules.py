@@ -111,3 +111,46 @@ def apply(item, subject):
             item[key] = value; changed = True
             provenance[key] = dict(kind='inferred', source=f"{SOURCE}: {found['label']}" + (f" x{found['scale_factor']:g}" if found['scale_factor'] != 1 else ''), value=value, provisional=True)
     return changed
+
+
+@router.get('/batch/{batch_id}')
+def batch_sizes(batch_id: str):
+    """Read-only sizes for a whole batch: stored targets with provenance, or the type rule a start would apply."""
+    from .batch import batch
+    from engines.concept_prompt import subject_anchor
+    rows = []
+    for item in batch(batch_id)['items']:
+        dims = {axis: item.get(key) for axis, key in (('w', 'target_width_m'), ('d', 'target_depth_m'), ('h', 'target_height_m'))}
+        provenance = (item.get('spec_provenance') or {}).get('target_height_m', {})
+        if dims['h'] is None:
+            found = suggest(item['name'] + ' ' + subject_anchor(item.get('prompt') or ''))
+            dims, provenance = (found['dims'], dict(kind='inferred', source=f"{SOURCE}: {found['label']} (preview)")) if found else (dims, dict(kind='unknown'))
+        rows.append(dict(asset_id=item['asset_id'], name=item['name'], selected=item.get('selected', True), dims=dims, kind=provenance.get('kind'), source=provenance.get('source')))
+    return rows
+
+
+VI_NOUNS = {'kiếm sĩ': 'swordsman', 'cung thủ': 'archer', 'chiến binh': 'warrior', 'hiệp sĩ': 'knight', 'pháp sư': 'mage', 'lính': 'soldier', 'bộ xương': 'skeleton',
+            'yêu tinh': 'goblin', 'người lùn': 'dwarf', 'tháp canh': 'watchtower', 'lâu đài': 'castle', 'rồng': 'dragon', 'sói': 'wolf', 'ngựa': 'horse', 'khiên': 'shield',
+            'kiếm': 'sword', 'cung': 'bow', 'giáo': 'spear', 'rìu': 'axe', 'búa': 'hammer', 'thùng gỗ': 'wooden crate', 'thùng': 'barrel', 'cây': 'tree', 'nhà': 'house', 'giếng': 'well'}
+VI_COLOURS = {'đỏ': 'red', 'xanh dương': 'blue', 'xanh lam': 'blue', 'xanh lá': 'green', 'vàng': 'golden', 'tím': 'purple', 'hồng': 'pink', 'đen': 'black',
+              'trắng': 'white', 'cam': 'orange', 'nâu': 'brown', 'bạc': 'silver', 'xám': 'grey'}
+VI_MODIFIERS = {'khổng lồ': 'giant', 'nhỏ': 'small', 'boss': 'boss', 'trùm': 'boss', 'cổ đại': 'ancient'}
+
+
+def english_hint(text):
+    """Deterministic English subject phrase for untranslated Vietnamese requests ('rồng đỏ khổng lồ' -> 'giant red dragon')."""
+    lower = (text or '').lower()
+    def found(table):
+        # Longest match first at each position; overlapping shorter matches ('kiếm' inside 'kiếm sĩ') are skipped.
+        hits = sorted((m.start(), -len(k), k) for k in table for m in re.finditer(re.escape(k), lower))
+        spans, out = [], []
+        for start, negative, k in hits:
+            end = start - negative
+            if any(start < e and end > s for s, e in spans): continue
+            spans.append((start, end)); out.append(table[k])
+        return out
+    nouns = found(VI_NOUNS)
+    if not nouns: return ''
+    words = [*dict.fromkeys(found(VI_MODIFIERS))][:2] + [*dict.fromkeys(found(VI_COLOURS))][:2] + [nouns[0]]
+    rest = [n for n in nouns[1:] if n != nouns[0]]
+    return ' '.join(words) + (' with ' + ' and '.join(rest[:2]) if rest else '')

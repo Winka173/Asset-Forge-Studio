@@ -38,10 +38,13 @@ def execute(job,folder):
             usage=payload.get('reference_usage','auto')
             from engines.intent_adapter import MATCH_PHRASES
             # Without the model, only an explicit wish to match the image (or style words) makes it a style reference.
+            from .size_rules import english_hint
+            # CLIP cannot read Vietnamese: lead with a deterministic English subject ('giant red dragon'); the original stays after it.
+            hint=english_hint(text)
             role='none' if not references else usage if usage in ('source','style') else 'style' if re.search(r'style|phong cách|màu|giống',text,re.I) or MATCH_PHRASES.search(text) else 'source'
             result=dict(schema_version=4,status='not_evaluated',model=None,model_digest=None,execution='deterministic_fallback',
                 source_prompt_sha256=payload['source_prompt_sha256'],references=[dict(artifact_id=r['id'],sha256=r['sha256']) for r in references],
-                chunks=[],reference_role=role,generation_prompt_en=text,provenance='defaulted_original_text',artistic_approval=False,qa_status='not_run',
+                chunks=[],reference_role=role,generation_prompt_en=(hint+'. '+text) if hint else text,provenance='defaulted_original_text'+('_with_english_subject_hint' if hint else ''),artistic_approval=False,qa_status='not_run',
                 warnings=['Local interpretation unavailable; original request preserved: '+str(exc)[:500]])
     if jobs.get(identifier)['status']=='CANCELLED':return
     target=folder/'intent.json';temporary=folder/'intent.json.part'

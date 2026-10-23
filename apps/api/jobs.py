@@ -330,6 +330,10 @@ class Worker:
                 from .sprite import execute
                 execute(job,folder)
                 return
+            if payload['kind']=='rig':
+                from .rigging import execute
+                execute(job,folder)
+                return
             if payload['kind']=='model_visual_check':
                 from .model_guard import execute
                 execute(job,folder)

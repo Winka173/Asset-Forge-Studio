@@ -90,7 +90,7 @@ def main():
                 return values
             print('STAGE concept_denoising', flush=True)
             image = pipe(prompt_embeds=embeds, pooled_prompt_embeds=pooled, negative_prompt_embeds=neg_embeds,
-                         negative_pooled_prompt_embeds=neg_pooled, height=req.get('size',1024), width=req.get('size',1024),
+                         negative_pooled_prompt_embeds=neg_pooled, height=req.get('height', req.get('size',1024)), width=req.get('width', req.get('size',1024)),
                          num_inference_steps=req['steps'], guidance_scale=req.get('guidance_scale',7),
                          generator=torch.Generator(device='cpu').manual_seed(req['seed']), callback_on_step_end=progress,
                          **(dict(ip_adapter_image=anchor_image) if anchor_image is not None else {})).images[0]

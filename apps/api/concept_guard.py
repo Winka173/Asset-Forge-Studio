@@ -102,7 +102,9 @@ def filter_choices(value,item,current,choices,auto):
         result=receipt(reports[-1])
         if result['source_sha256']!=image['sha256'] or result['source_artifact_id']!=image['id']:raise ValueError('Concept layout bound to a different image')
         if result.get('screening_policy')!=POLICY_VERSION:raise ValueError('Concept screening policy changed; recheck the source before 3D')
-        if result['suitable_single_asset_image'] is not False or set(result.get('issues',[]))=={'uncertain_source'}:allowed.append(image)
+        # Soft issues: a corner watermark is removed with the background before image-to-3D (measured: it rejected both red
+        # dragons that matched the request); full borders are still caught by the frame-edge check in the tournament.
+        if result['suitable_single_asset_image'] is not False or set(result.get('issues',[]))<={'uncertain_source','border_or_text'}:allowed.append(image)
         else:rejected.append(result)
     rejected_ids={r['source_artifact_id'] for r in rejected}
     if rejected_ids:

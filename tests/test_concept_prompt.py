@@ -17,7 +17,7 @@ def test_policy_four_front_loads_subject_framing_and_style():
 def test_policy_four_keeps_every_description_word():
     prompt, _ = compose(LONG, '', None, policy=4)
     assert LONG.strip() in prompt
-    assert COMPOSITION_POLICY == 7
+    assert COMPOSITION_POLICY == 8
 
 
 def test_policy_three_output_is_unchanged_for_locked_configs():
@@ -82,3 +82,16 @@ def test_english_regexes_survive_escaping():
     assert requested_hues('a giant red dragon') == [(345, 15)] and requested_hues('navy blue knight') == [(200, 250)]
     assert MATCH_PHRASES.search('A knight that matches these buildings') and MATCH_PHRASES.search('same style as this')
     assert not MATCH_PHRASES.search('turn this watchtower photo into a model')
+
+
+def test_full_body_characters_render_in_portrait_and_creatures_in_landscape(tmp_path, monkeypatch, qa_project):
+    from fastapi.testclient import TestClient
+    from apps.api import store, jobs, studio
+    from apps.api.main import app
+    from engines.concept_adapter import CONCEPT_ADAPTER
+    monkeypatch.setattr(store, 'DATA', tmp_path); qa_project(); client = TestClient(app)
+    monkeypatch.setattr(type(CONCEPT_ADAPTER), 'installed', property(lambda self: True))
+    for name, prompt, expected in (('Knight', 'A knight with a shield', (832, 1216)), ('Dragon', 'A giant red dragon', (1216, 832)), ('Barrel', 'A wooden barrel', (1024, 1024))):
+        asset = client.post('/api/assets', json=dict(project_id='runavelle', name=name, prompt=prompt)).json()
+        job = studio.concept(studio.ConceptInput(asset_id=asset['id'], request_id=f'aspect-{name}-0001', prompt=prompt, quality='Maximum'))
+        assert (job['payload']['width'], job['payload']['height']) == expected and job['payload']['effective_config']['width'] == expected[0]
