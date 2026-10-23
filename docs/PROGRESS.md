@@ -1,3 +1,17 @@
+# Windows 0.9.18 - separate physical/commit admission; two real native deliveries - 2026-10-23
+
+219 backend tests PASS (204.38 s), 14 targeted memory tests PASS, TypeScript/Vite, fresh Windows/PyInstaller/Tauri/NSIS, generic native smoke, affected actual GPU acceptance and backend/source cache PASS. Current UI comes from the independent agent's committed work; root did not redesign it. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe with adjacent afs-backend.exe; installer Asset Forge Studio_0.9.18_x64-setup.exe.
+
+New native castle prompt plus original tower style reference completed the actual Qwen -> SDXL -> composition repair -> TRELLIS.2 -> Blender -> PBR/technical QA -> Qwen render screen -> automatic GLB path in 994.44 s, no human artistic approval. Native 15.73M master hash matches the retained earlier castle; final 76,381,424 B GLB/manifest persisted through restart without regeneration. Roof color/framing and imperfect VLM observations remain open artistic limits; technical delivery is not Meshy parity. See CASTLE_FULL_NATIVE_0917.md and evidence/castle_full_native_v0917.*.
+
+This real run exposed a next-job false wait: Windows private commit had been folded into the physical-RAM allowance. Added documented Windows GetPerformanceInfo counters and separate RSS/commit observations, margins, pending claims and shortages while keeping the 32 GiB full-TRELLIS physical floor, 2 GiB headroom and quality unchanged. Legacy mixed records split only when original same-profile samples/headers prove both peaks; original observation retained, otherwise conservative. Unknown claims/counter failures remain blocked, owned orphan workers remain protected, older ledger readers receive a conservative compatibility budget. Actual same-profile check now admits at 34 GiB physical / 39.67 GiB commit including reserve; old check demanded the commit budget as physical memory. See WINDOWS_MEMORY_ADMISSION.md.
+
+Final native 0.9.18 restores a declared legacy observation fixture in the isolated QA Library, proves recovery from actual castle samples, generates a second real Archer asset using the source image at Maximum32/1024/4K, runs Blender/PBR QA, delivers 66,589,200 B GLB plus manifest, and closes/reopens. 729.02 s total, 210.61 s inference worker; no completed job regenerated and old castle files/hashes unchanged. Optional Qwen concept planning did not complete on this Source request; report explicitly records not_evaluated/defaulted_original_text, not successful AI interpretation. Four genuine stage jobs, art remains not_reviewed. Evidence: evidence/host_commit_native_v0918.json/png and actual before/after admission report. Source prompts, native masters and personal Library remain intact.
+
+Separate paired-seed material-binding concept research remains evaluation-only. No production prompt/pooling/default change or new quality assertion follows from preliminary images.
+
+---
+
 # Windows 0.9.17 - missing-normal QA stall fixed; real castle engine comparison - 2026-10-23
 
 210 backend tests PASS (202.41 s), 19 related geometry/texture/QA tests PASS, TypeScript/Vite, fresh PyInstaller/Tauri/NSIS, generic native smoke and affected native import/viewer/restart acceptance PASS. Packaged backend/source cache verified. Reuses the UI agent's committed d81c617 redesign without root UI edits. Latest executable: dist/windows/stable/latest/Asset Forge Studio.exe and adjacent afs-backend.exe; installer Asset Forge Studio_0.9.17_x64-setup.exe.

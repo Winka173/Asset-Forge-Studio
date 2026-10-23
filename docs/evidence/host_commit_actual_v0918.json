@@ -1,0 +1,116 @@
+{
+  "status": "PASS_ACTUAL_WINDOWS_RESIDENT_AND_COMMIT_ADMISSION",
+  "scope": "Same completed real native castle, same profile/configuration. Original 0.9.17 mixed-budget block versus corrected physical and measured Windows-commit admission. No new queued job/inference or artificial successful model.",
+  "before": {
+    "schema_version": 1,
+    "allowed": false,
+    "reason": "Waiting for RAM / stage allowance 37.7 GiB + 2 GiB reserve; 38.3 GiB available after existing claims",
+    "reason_code": "HOST_RAM_ADMISSION",
+    "at": "2026-10-23T02:52:26.459794+00:00",
+    "checked_at_epoch": 1792723946.459795,
+    "available_bytes": 41106792448,
+    "unrealized_reserved_bytes": 0,
+    "usable_bytes": 41106792448,
+    "headroom_bytes": 2147483648,
+    "allowance": {
+      "profile_key": "host-memory:v1:1cd5d4af2bea9602cdbf5cef545e992d5b8f596a35b3ba6ae49ae3efa066e993",
+      "profile": {
+        "kind": "inference",
+        "engine": "trellis2_community",
+        "checkpoint": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+        "quality": "Maximum",
+        "pipeline_type": "1024_cascade",
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "texture_size": 4096,
+        "finishing_only": false,
+        "use_gpu": false
+      },
+      "bytes": 40447933030,
+      "planning_floor_gib": 32,
+      "observed": {
+        "schema_version": 1,
+        "peak_bytes": 34238427136,
+        "allowance_bytes": 40447933030,
+        "job_id": "ad503db14d4f4188bf485bc6295e1560",
+        "at": "2026-10-23T02:43:43.643369+00:00",
+        "scope": "Worker tree RSS / Windows private bytes when available, plus planning margin; shared pages may be counted per process."
+      },
+      "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+    },
+    "active_claims": [],
+    "quality_settings_changed": false
+  },
+  "after": {
+    "schema_version": 2,
+    "allowed": true,
+    "reason": null,
+    "reason_code": null,
+    "at": "2026-10-23T03:00:11.628807+00:00",
+    "checked_at_epoch": 1792724411.6288078,
+    "available_bytes": 40784666624,
+    "unrealized_reserved_bytes": 0,
+    "usable_bytes": 40784666624,
+    "headroom_bytes": 2147483648,
+    "allowance": {
+      "profile_key": "host-memory:v1:1cd5d4af2bea9602cdbf5cef545e992d5b8f596a35b3ba6ae49ae3efa066e993",
+      "profile": {
+        "kind": "inference",
+        "engine": "trellis2_community",
+        "checkpoint": "3a21b64e5df529f4f41c8ac7b12921dce137f53b75de950af24df203d856b309",
+        "quality": "Maximum",
+        "pipeline_type": "1024_cascade",
+        "precision": "fp16 model defaults; upstream float32/upcast operations preserved",
+        "texture_size": 4096,
+        "finishing_only": false,
+        "use_gpu": false
+      },
+      "bytes": 34359738368,
+      "commit_bytes": 40447933030,
+      "planning_floor_gib": 32,
+      "observed": {
+        "schema_version": 2,
+        "peak_bytes": 34238427136,
+        "rss_peak_bytes": 26592927744,
+        "private_peak_bytes": 34238427136,
+        "physical_allowance_bytes": 31655608729,
+        "commit_allowance_bytes": 40447933030,
+        "allowance_bytes": 40447933030,
+        "job_id": "ad503db14d4f4188bf485bc6295e1560",
+        "at": "2026-10-23T03:00:11.625811+00:00",
+        "scope": "Resident RSS and private committed bytes measured separately; each allowance keeps 15% + 1 GiB margin. No quality-setting changes.",
+        "recovered_from": "Retained same-job resources.json samples and matching job profile",
+        "legacy_observation": {
+          "schema_version": 1,
+          "peak_bytes": 34238427136,
+          "allowance_bytes": 40447933030,
+          "job_id": "ad503db14d4f4188bf485bc6295e1560",
+          "at": "2026-10-23T02:43:43.643369+00:00",
+          "scope": "Worker tree RSS / Windows private bytes when available, plus planning margin; shared pages may be counted per process."
+        }
+      },
+      "basis": "Separate resident-RAM and system-commit allowances. Legacy mixed estimates remain conservative unless original samples prove both. Not a guarantee against external allocations."
+    },
+    "active_claims": [],
+    "quality_settings_changed": false,
+    "commit": {
+      "status": "measured",
+      "limit_bytes": 102661619712,
+      "used_bytes": 38202662912,
+      "available_bytes": 64458956800,
+      "method": "Windows GetPerformanceInfo; committed pages, separate from resident physical RAM"
+    },
+    "usable_commit_bytes": 64458956800,
+    "unrealized_commit_reserved_bytes": 0
+  },
+  "config_hash": "35039236ae7722cb213118da95148044f103b3adb8138453a6a173b5cd1cb59c",
+  "jobs_preserved": [
+    "18b3baaf3c12439c960c9c069302bbc2",
+    "1bc588b6db1f41d9861d13ece76365d4",
+    "312defe68698408ba23efd7e043d065b",
+    "4225700938844f1897f74c91eb7e1a9a",
+    "71ad40e346e74b1bbaf9e15535a5613b",
+    "ad503db14d4f4188bf485bc6295e1560",
+    "b5b7c32fc28b4aa4bcf872d1dfb5233f",
+    "c80689c682eb4335a3ecfc487921cfdc"
+  ]
+}
