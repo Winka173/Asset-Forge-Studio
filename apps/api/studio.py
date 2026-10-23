@@ -326,6 +326,8 @@ class ConceptInput(BaseModel):
     interpreted_prompt: str | None = Field(default=None,max_length=100000)
     # Kept verbatim in the concept conditioning (framing/repair instructions); only the description is bounded.
     directives: list[str] = Field(default_factory=list,max_length=12)
+    # Extra negative terms for this request (e.g. held items generated as separate assets).
+    negative_terms: list[str] = Field(default_factory=list,max_length=12)
     style_reference_ids: list[str] = Field(default_factory=list,max_length=5)
     asset_id: str
     request_id: str = Field(min_length=8,max_length=100)
@@ -372,6 +374,7 @@ def concept(body: ConceptInput):
     suffix=directed[len(base):] if directed.startswith(base) else ''
     from engines.concept_prompt import compose,COMPOSITION_POLICY
     prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing)
+    if body.negative_terms:negative=', '.join(dict.fromkeys(t.strip() for t in body.negative_terms if t.strip()))+', '+negative
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     # Native SDXL aspect buckets: a standing character fills a square frame top to bottom (measured: every policy-7

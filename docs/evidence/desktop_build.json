@@ -1,39 +1,18 @@
 ﻿{
     "version":  "0.9.19",
-    "timestamp_utc":  "20261023T162039Z",
-    "git_commit":  "bc2d89e551c6e26e631f1f8468892b922bc010b7",
+    "timestamp_utc":  "20261023T194224Z",
+    "git_commit":  "bd51301480d543b892762bda7a19abe5c332ceb6",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/automation.py",
                           " M apps/api/concept_guard.py",
-                          " M apps/api/concept_rank.py",
-                          " M apps/api/host_resources.py",
-                          " M apps/api/jobs.py",
-                          " M apps/api/production.py",
-                          " M apps/api/prompt_intent.py",
-                          " M apps/api/size_rules.py",
-                          " M apps/api/statuses.py",
                           " M apps/api/studio.py",
-                          " M apps/web/src/batch-studio.tsx",
-                          " M apps/web/src/batch.css",
-                          " M apps/web/src/library.css",
-                          " M apps/web/src/library.tsx",
                           " M docs/afspipeline/DECISIONS.md",
                           " M docs/afspipeline/KNOWN_ISSUES.md",
-                          " M engines/concept_prompt.py",
-                          " M engines/intent_adapter.py",
-                          " M engines/sdxl_worker.py",
-                          " M tests/test_concept_prompt.py",
-                          " M tests/test_concept_tournament.py",
-                          " M tests/test_quality_repair.py",
-                          " M tests/test_size_rules.py",
-                          " M tests/test_style_profile.py",
-                          "?? apps/api/rigging.py",
-                          "?? apps/web/src/scale-lineup.tsx",
-                          "?? engines/unirig_worker.py",
+                          "?? apps/api/held_items.py",
                           "?? prompt/",
-                          "?? tests/test_rigging.py"
+                          "?? tests/test_held_items.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -42,7 +21,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261023T162039Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261023T194224Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -53,11 +32,11 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "659f459c6825c37b4cde5493f9af60d020aae287c5d68567fd852d6546d3ae40",
-                            "Asset Forge Studio_0.9.19_x64-setup.exe":  "7e4d567bddf53371e3a3e457d668ce9c03b1058c7c2bbf9d38964d22efc33f25",
-                            "afs-backend.exe":  "3a7d5ebbc22b3491ec2b6786f0e40f74c4ad43fc09bb42dc777f358529ac59a7"
+                            "Asset Forge Studio.exe":  "9fafccffd3f88aa8705869a650c8320a22ea994e268770734697950ff1e9a066",
+                            "Asset Forge Studio_0.9.19_x64-setup.exe":  "c7546c48cde1fceb7375aae4caef8cb481dc4074b87caf6e0e53c9efc836e267",
+                            "afs-backend.exe":  "cf3b3cc1d4dc41ab2902001feb9be8466f73ec7604f1407234014dbe137e6c02"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-23T16-26-41-252Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-23T19-47-56-137Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
     "installer":  "Asset Forge Studio_0.9.19_x64-setup.exe",

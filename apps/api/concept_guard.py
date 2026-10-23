@@ -3,6 +3,7 @@ import json
 import hashlib
 from fastapi import HTTPException
 from . import store,studio,jobs
+from .held_items import concept_conditioning as hand_conditioning
 
 
 def retry_blocked(value,item,request_id):
@@ -21,7 +22,7 @@ def retry_blocked(value,item,request_id):
     if any(j['payload']['kind']=='inference' for j in current):raise HTTPException(409,'3D generation already exists; use a versioned revision instead')
     count=sum(j['payload']['kind']=='concept' for j in current)
     prompt=repair_prompt(item)
-    job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=key,prompt=item['prompt'],interpreted_prompt=prompt,directives=[REPAIR_FRAMING],
+    job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=key,prompt=item['prompt'],interpreted_prompt=prompt,directives=[REPAIR_FRAMING,*hand_conditioning(item)[0]],negative_terms=hand_conditioning(item)[1],
         style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,batch_id=value['id'],batch_attempt=item['attempt']))
     auto.pop('error',None);auto.pop('concept_selection',None)
     auto.update(status='queued',stage='New concept requested; original prompt and quality preserved')
@@ -119,7 +120,7 @@ def filter_choices(value,item,current,choices,auto):
     plan=planner.concept(value,item,current,[latest])
     if count<=limit and plan['action']=='repair_concept':
         job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=plan['id'],
-            prompt=item['prompt'],interpreted_prompt=repair_prompt(item),directives=[REPAIR_FRAMING,*plan['instructions']],style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
+            prompt=item['prompt'],interpreted_prompt=repair_prompt(item),directives=[REPAIR_FRAMING,*plan['instructions'],*hand_conditioning(item)[0]],negative_terms=hand_conditioning(item)[1],style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
             batch_id=value['id'],batch_attempt=item['attempt'],quality_repair=plan))
         plan['executed_job_id']=job['id']
         auto.update(status='queued',stage=f'Concept layout repair {count}/{limit}; quality preserved');return None
