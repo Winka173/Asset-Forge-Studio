@@ -1,6 +1,6 @@
 ﻿/* Filled action families use color to communicate purpose, not decorative outlines. */
 .studio .batch-studio .batch-row-actions { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:8px; max-width:340px; }
-.studio .batch-studio .batch-row-actions>button { min-height:40px; padding:8px 12px; background:var(--surface-3); border-color:var(--border-strong); color:var(--text); font-size:12px; line-height:1.4; border-radius:var(--r-md); box-shadow:0 2px 3px #0002; }
+.studio .batch-studio .batch-row-actions>button { background:var(--surface-3); border-color:var(--border-strong); color:var(--text); box-shadow:0 2px 3px #0002; }
 .studio .batch-studio .batch-row-actions>.batch-review-button,.studio .batch-studio .batch-row-actions>.batch-inspect-action { background:var(--surface-3); border-color:var(--border-strong); color:var(--text); }
 .studio .batch-studio .batch-row-actions>.batch-deliver-action { background:var(--surface-2); border-color:var(--border-strong); color:var(--text); }
 .studio .batch-studio .batch-row-actions>button:hover:not(:disabled) { background:var(--surface-3); border-color:var(--border-strong); color:var(--text); }

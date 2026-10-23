@@ -1,4 +1,4 @@
-.studio .generation-preview{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:420px;width:100%;padding:32px 24px;color:var(--text);background:radial-gradient(ellipse at 50% 38%,#303844 0%,#20252e 42%,#1b1e25 78%);overflow:hidden;text-align:center}
+.studio .generation-preview{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:20px;min-height:100%;width:100%;padding:32px 24px;color:var(--text);background:radial-gradient(ellipse at 50% 38%,#303844 0%,#20252e 42%,#1b1e25 78%);overflow:visible;text-align:center}
 .generation-preview-art{position:relative;width:clamp(160px,28vw,270px);flex:none;aspect-ratio:320/300}
 .generation-preview-halo{position:absolute;inset:12%;border-radius:50%;background:var(--accent-soft);filter:blur(30px);animation:afs-build-glow 5s ease-in-out infinite}
 .generation-preview-mesh{position:relative;width:100%;height:100%;overflow:visible;stroke:var(--accent);stroke-width:1.2;stroke-linejoin:round}
@@ -20,10 +20,10 @@
 @keyframes afs-build-layer{0%,100%{opacity:.35;translate:0 -5px}50%{opacity:1;translate:0 3px}}
 @keyframes afs-build-scan{0%,100%{translate:0 -70px;opacity:0}15%,85%{opacity:.85}50%{translate:0 90px}}
 @keyframes afs-build-glow{0%,100%{opacity:.35}50%{opacity:1}}
-@media(prefers-reduced-motion:reduce){.generation-preview *{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.generation-preview *{animation:none}}
 @media(max-height:850px){.studio .generation-preview{min-height:320px;padding:24px;gap:12px}.generation-preview-art{width:160px}}
 
 .studio .generation-preview[data-state=blocked] .generation-preview-art,.studio .generation-preview[data-state=paused] .generation-preview-art{opacity:.45}
 .studio .generation-preview[data-state=blocked] .generation-preview-art *,.studio .generation-preview[data-state=paused] .generation-preview-art *,.studio .generation-preview[data-state=waiting] .generation-preview-art *{animation:none}
 .studio .generation-preview[data-state=blocked] .generation-preview-eyebrow{color:var(--accent)}
-.studio .generation-preview-reference img{max-width:42px!important;max-height:42px!important}
+.studio .generation-preview-reference img{max-width:42px;max-height:42px}

@@ -1250,7 +1250,7 @@ export function Studio() {
                   <div className="create-input-recap"><div><strong>{draft.name.trim()||'New asset'}</strong><p>{draft.mode==='Image'?(source?.name||'Reference image'):draft.prompt}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <label className="studio-field result-count-field">Results to choose from<Select aria-label="Result count" value={draft.seeds.split(',').filter(s=>s.trim()).length} onChange={e=>{const count=Number(e.target.value);const value=Number(draft.seeds.split(',')[0]);const first=Number.isInteger(value)&&value>=0&&value<=4294967295?value:42;change({seeds:Array.from({length:count},(_,i)=>String((first+i)%4294967296)).join(',')});}}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select><small>One by default. Extra seeds share the GPU queue; source candidates stay in History.</small></label>
                   <div className="generate-actions">
-                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
                     <button
                       className="primary generate-button"
                       disabled={
@@ -1617,7 +1617,7 @@ export function Studio() {
                             <Icon name="Library" size={15} />
                             Save to library
                           </button>
-                          <button
+                          <button className="btn-success"
                             disabled={!candidate || busy}
                             onClick={() => {
                               setReviewer("");
@@ -1646,7 +1646,7 @@ export function Studio() {
                           >
                             Variations
                           </button>
-                          <button
+                          <button className="btn-accent"
                             disabled={!candidate || busy}
                             title="Blender post-process + LOD; preserves source"
                             onClick={() =>
@@ -1671,7 +1671,7 @@ export function Studio() {
                           </button>
                           <button
                             disabled={!candidate || busy}
-                            className="accent-outline"
+                            className="accent-outline btn-info"
                             onClick={() => {
                               setExportFiles([]); setExportDirectory("");
                               setModal("export");
@@ -2563,7 +2563,7 @@ function JobHistory({
                     Cancel
                   </button>
                 ) : ["FAILED", "CANCELLED", "BLOCKED"].includes(job.status) ? (
-                  <button
+                  <button className="btn-info"
                     disabled={busy}
                     onClick={() =>
                       run(async () => {

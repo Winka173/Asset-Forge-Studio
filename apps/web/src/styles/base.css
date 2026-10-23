@@ -52,7 +52,7 @@ button {
   min-height: var(--control-h); padding: 0 var(--sp-4);
   border: 1px solid var(--border-strong); border-radius: var(--r-md);
   background: var(--surface-2); color: var(--text);
-  font-size: var(--fs-base); font-weight: 500; line-height: 1.2; white-space: nowrap;
+  font-size: var(--fs-base); font-weight: 500; line-height: 1.25; white-space: normal; text-align: center; padding-top: 6px; padding-bottom: 6px;
   cursor: pointer; user-select: none;
   transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur-fast) var(--ease), opacity var(--dur) var(--ease);
 }
@@ -73,8 +73,20 @@ button.quiet-button:hover:not(:disabled), button.text-button:hover:not(:disabled
 button.text-button { color: var(--accent); padding: 0 var(--sp-2); }
 button.text-button:hover:not(:disabled) { color: var(--accent-hover); background: var(--accent-soft); }
 button.icon-button { min-width: 32px; min-height: 32px; padding: 0; width: 32px; height: 32px; }
-button[class*="danger"] { color: var(--danger); }
-button[class*="danger"]:hover:not(:disabled) { background: var(--danger-soft); border-color: rgb(240 107 107 / 0.4); }
+button.primary:disabled { background: var(--surface-3); border-color: var(--border-strong); color: var(--text-3); opacity: 1; }
+/* Semantic tones: destructive, caution, positive and informational actions read differently at a glance. */
+button:is(.btn-danger, [class*="danger"]) { --tone: var(--danger); --tone-soft: var(--danger-soft); }
+button.btn-warning { --tone: var(--warning); --tone-soft: var(--warning-soft); }
+button.btn-success { --tone: var(--success); --tone-soft: var(--success-soft); }
+button.btn-info { --tone: var(--info); --tone-soft: var(--info-soft); }
+button.btn-accent { --tone: var(--accent); --tone-soft: var(--accent-soft); }
+button:is(.btn-danger, .btn-warning, .btn-success, .btn-info, .btn-accent, [class*="danger"]) {
+  color: var(--tone); background: var(--tone-soft); border-color: color-mix(in srgb, var(--tone) 28%, transparent);
+}
+button:is(.btn-danger, .btn-warning, .btn-success, .btn-info, .btn-accent, [class*="danger"]):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tone) 22%, transparent); border-color: color-mix(in srgb, var(--tone) 50%, transparent); color: var(--tone);
+}
+button:is(.btn-danger, .btn-warning, .btn-success, .btn-info, .btn-accent, [class*="danger"]):disabled { color: var(--text-3); background: var(--surface-2); border-color: var(--border); opacity: 0.7; }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea {
   width: 100%; min-height: var(--control-h); padding: 0 var(--sp-3);
@@ -123,6 +135,8 @@ details[open] > summary::before { transform: rotate(45deg); }
 summary:hover { background: var(--surface-2); }
 details > :not(summary) { margin-left: var(--sp-4); margin-right: var(--sp-4); }
 details > :not(summary):last-child { margin-bottom: var(--sp-4); }
+details > summary + * { margin-top: var(--sp-3); }
+details > :not(summary) + :not(summary) { margin-top: var(--sp-4); }
 details[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 details[open] > :not(summary) { animation: afs-fade-in var(--dur-slow) var(--ease); }
 

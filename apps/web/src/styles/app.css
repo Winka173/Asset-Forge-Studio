@@ -157,8 +157,10 @@ button.generate-button:hover:not(:disabled)::after { opacity: 1; animation: afs-
 .preview-empty p { max-width: 360px; }
 .empty-cube { display: grid; place-items: center; width: 112px; height: 112px; border-radius: var(--r-xl); background: var(--surface-2); color: var(--accent); animation: afs-float 6s ease-in-out infinite; }
 .preview-toolbar { position: absolute; bottom: var(--sp-4); left: var(--sp-4); right: var(--sp-4); z-index: 3; display: flex; justify-content: center; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
-.preview-toolbar .segmented, .preview-toolbar > .afs-select { background: rgb(22 23 26 / 0.85); backdrop-filter: blur(10px); }
-.preview-toolbar > .afs-select { width: auto; min-width: 130px; }
+.preview-toolbar .segmented, .preview-toolbar .afs-select-trigger { background: rgb(22 23 26 / 0.85); backdrop-filter: blur(10px); }
+.preview-toolbar .afs-select-help-button { display: none; }
+.preview-toolbar > .afs-select { width: auto; flex: 0 0 auto; }
+.preview-toolbar .afs-select-trigger { width: auto; min-width: 128px; }
 .result-panel { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border-top: 1px solid var(--border); }
 .result-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
 .result-heading > .afs-select { max-width: 45%; }
@@ -308,3 +310,34 @@ button.job-main:hover:not(:disabled) { background: none; }
 /* Production uses the full canvas width; its internals live in production.css. */
 .studio-main.page-production { max-width: none; }
 .production-empty { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
+
+/* Library asset detail header */
+.library-management-heading { align-items: flex-end; margin: 0; }
+.library-management-heading > div:first-child { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); min-width: 0; }
+.library-management-heading h1 { margin: 0; overflow-wrap: anywhere; }
+.library-review-navigation { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.library-review-navigation > span { padding: 0 var(--sp-1); color: var(--text-2); font-variant-numeric: tabular-nums; }
+.library-management-heading > div:first-child > small { font-family: var(--font-mono); }
+.asset-management-actions { display: flex; align-items: flex-start; gap: var(--sp-2); flex-wrap: wrap; margin: 0; }
+.asset-management-actions button { flex: 0 0 auto; min-width: 0; }
+.library-detail-preview > details { margin: 0 var(--sp-4) var(--sp-2); }
+.library-detail-preview > details:last-child { margin-bottom: var(--sp-4); }
+.library-detail-inspector { display: flex; flex-direction: column; gap: var(--sp-3); padding-right: var(--sp-1); }
+.library-detail-inspector > * { margin-top: 0; margin-bottom: 0; }
+
+.library-asset-detail { display: flex; flex-direction: column; gap: var(--sp-5); }
+.library-asset-detail > * { margin-top: 0; margin-bottom: 0; }
+:is(.library-detail-inspector, .production-inspector) details, details.asset-requirements { padding: 0; }
+:is(.library-detail-inspector, .production-inspector) summary { min-height: 40px; padding-top: var(--sp-2); padding-bottom: var(--sp-2); }
+
+/* Stage indicators rendered as spans (World / Video studios) */
+[aria-label$="stages"] > span, [aria-label$="steps"] > span { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-full); color: var(--text-3); font-size: var(--fs-sm); background: var(--surface-1); }
+span[data-current="true"] { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+:is(.video-studio, .world-studio) .afs-select { min-width: 0; }
+
+/* Production asset header: status line first, actions in one aligned row below. */
+.production-context-action { flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); background: var(--surface-2); }
+.production-context-action > .production-current-stage { flex: 1 1 100%; }
+.production-context-action .afs-quick-export { min-width: 0; }
+.production-context-action .afs-quick-export > small { max-width: 220px; }
+.production-context-action button { min-height: var(--control-h); }

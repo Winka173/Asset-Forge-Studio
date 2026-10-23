@@ -778,14 +778,14 @@ export function BatchStudio({
               <div className="batch-run-actions batch-production-actions">
                 <button className={(selectedItems.length>0&&selectedItems.length<batch.items.length?'secondary':'primary')+' batch-generate-all'} disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={()=>batch.items.some(i=>i.started)?onSubmitted?.(batch.id):runAll()}><Glyph kind="play"/>{batch.items.some(i=>i.started)?'Open Production':`Generate All (${batch.items.length})`}</button>
                 {batch.items.some(i=>i.started)&&<><button
-                  className="secondary"
+                  className="secondary btn-success"
                   disabled={busy}
                   onClick={() => control(batch.paused ? "resume" : "pause")}
                 >
                   {batch.paused ? "Resume batch" : "Pause batch"}
                 </button>
-                <button className="secondary" disabled={busy} onClick={()=>control('cancel')}>Cancel Batch</button>
-                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry Failed</button>
+                <button className="secondary btn-danger" disabled={busy} onClick={()=>control('cancel')}>Cancel Batch</button>
+                <button className="secondary btn-info" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry Failed</button>
                 <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}>Skip Failed</button></>}
                 <button
                   className={selectedItems.length>0&&selectedItems.length<batch.items.length?'primary':'secondary'}
@@ -1130,7 +1130,7 @@ export function BatchStudio({
               <div className="batch-panel-title">
                 <h2>Export what exists.</h2>
               </div>
-              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export Selected</button><button className="secondary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export All Completed</button></div>
+              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export Selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export All Completed</button></div>
               <p>
                 ZIP chỉ chứa output thật đã tạo. Asset lỗi hoặc chưa có mesh
                 không được biến thành model hoàn thành.
