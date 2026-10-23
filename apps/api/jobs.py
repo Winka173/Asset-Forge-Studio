@@ -151,7 +151,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
+    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -320,6 +320,14 @@ class Worker:
             if get(identifier)['status']=='QUEUED':transition(identifier, 'RUNNING')
             if payload['kind']=='concept_layout':
                 from .concept_guard import execute
+                execute(job,folder)
+                return
+            if payload['kind']=='style_profile':
+                from .style_profile import execute
+                execute(job,folder)
+                return
+            if payload['kind']=='sprite_cutout':
+                from .sprite import execute
                 execute(job,folder)
                 return
             if payload['kind']=='model_visual_check':

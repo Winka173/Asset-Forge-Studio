@@ -123,7 +123,16 @@ def evaluate(item,candidate):
     gates.append(structure)
     gates.append(Gate(layer='visual',outcome='NOT_EVALUATED' if not visual or visual.get('evaluation_status')=='NOT_EVALUATED' else 'FLAGGED_UNCERTAIN',mandatory=False,
         tool=(visual or {}).get('model') or 'Local visual evaluator unavailable',evidence=visual or {},limitations=['Uncalibrated VLM observations are not an artistic pass. No fixed numerical art score is used.']))
-    gates.append(Gate(layer='game_integration',outcome='NOT_EVALUATED',mandatory=False,tool='No target Editor run for this artifact',evidence={},limitations=['No Unity/Unreal, target-camera or performance acceptance is implied.']))
+    from engines.concept_prompt import rig_class,subject_anchor
+    subject=((item.get('prompt_interpretation') or {}).get('chunks') or [{}])[0].get('interpretation',{}).get('requested_subject_en') or subject_anchor(item.get('resolved_prompt') or item.get('prompt',''))
+    kind=rig_class(subject);integration={}
+    if kind:
+        # Characters/creatures will almost always be animated next: record measured rig-readiness evidence (non-blocking).
+        from .rig_readiness import measure as rig_measure
+        integration['rig_readiness']=rig_measure(path,kind)
+    flagged=kind=='humanoid' and not integration['rig_readiness'].get('limbs_clear')
+    gates.append(Gate(layer='game_integration',outcome='FLAGGED_UNCERTAIN' if flagged else 'NOT_EVALUATED',mandatory=False,tool='AFS rig-readiness heuristics' if kind else 'No target Editor run for this artifact',evidence=integration,
+        limitations=['No Unity/Unreal, target-camera or performance acceptance is implied.']+(['Arms are not clear of the torso; auto-rigging will likely need cleanup.'] if flagged else [])))
     report=dict(schema_version=VERSION,validator_sha256=validator,cache_key=key,spec_hash=spec_hash,parent_spec_hash=item.get('structural_parent_spec_hash'),artifact_id=candidate['id'],artifact_sha256=candidate['sha256'],at=store.now(),
         gates=[g.model_dump() for g in gates],eligible=all(g.outcome=='PASS' for g in gates if g.mandatory),artistic_approval=False)
     with store.connect() as db:

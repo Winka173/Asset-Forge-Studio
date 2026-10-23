@@ -7,7 +7,8 @@ from . import intent_adapter,local_semantics
 
 # 4: the checked subject falls back to the manifest heading instead of a generic "game asset".
 # 5: subject-neutral framing question (no roof/wall wording that implies a building).
-POLICY_VERSION=5
+# 6: several separate objects (a set or lineup) count as multiple_views_or_panels.
+POLICY_VERSION=6
 
 
 class ObservedLayout(BaseModel):
@@ -59,6 +60,7 @@ def assess(path,subject,prompt,progress):
     selected=intent_adapter.model();started=time.monotonic();progress('Local concept layout check / Qwen3-VL / CPU')
     system=('Check only if this generated image is a usable SINGLE image-to-3D source. '
         'Fail multiple separate rendered views, inset panels, contact sheets or turnarounds. '
+        'Also use multiple_views_or_panels when the image shows several separate objects (a set, collection, lineup or scattered items) instead of one asset. '
         'One connected castle with several towers is ONE asset and is allowed. '
         'For a requested CASTLE, a lone watchtower, small house or close-up entrance without a fortified castle complex is plainly_different. '
         'Fail if the main asset is cropped, absent or plainly a different requested subject. '

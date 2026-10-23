@@ -141,3 +141,11 @@ button.library-card-open:hover:not(:disabled) { background: transparent; border:
 .library-management-heading .afs-quick-export > small { display: none; }
 .library-management-filters > input { flex: 1 1 200px; min-width: 180px; }
 .library-management-filters > .afs-select { flex: 0 1 160px; min-width: 130px; }
+
+/* 2D sprite options in the asset detail (transparent PNGs on a checkerboard). */
+.sprite-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-3); padding: var(--sp-3); overflow: auto; height: 100%; align-content: start; }
+.sprite-gallery figure { margin: 0; display: grid; gap: var(--sp-2); padding: var(--sp-2); border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface-2); }
+.sprite-gallery figure[data-usable="false"] { border-color: var(--warning); }
+.sprite-gallery img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--r-sm); background: repeating-conic-gradient(#3a3c42 0 25%, #2c2e33 0 50%) 0 0 / 16px 16px; }
+.sprite-gallery figcaption { display: grid; gap: var(--sp-1); font-size: var(--fs-sm); color: var(--text-2); }
+.sprite-gallery figcaption span { display: flex; flex-wrap: wrap; gap: var(--sp-2); color: var(--text-3); }

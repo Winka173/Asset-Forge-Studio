@@ -17,7 +17,7 @@ def test_policy_four_front_loads_subject_framing_and_style():
 def test_policy_four_keeps_every_description_word():
     prompt, _ = compose(LONG, '', None, policy=4)
     assert LONG.strip() in prompt
-    assert COMPOSITION_POLICY == 6
+    assert COMPOSITION_POLICY == 7
 
 
 def test_policy_three_output_is_unchanged_for_locked_configs():
@@ -63,3 +63,22 @@ def test_directives_survive_description_bounding():
 def test_repair_framing_is_subject_neutral():
     from apps.api.concept_guard import REPAIR_FRAMING
     assert 'roof' not in REPAIR_FRAMING and 'wall' not in REPAIR_FRAMING
+
+
+def test_characters_and_creatures_get_a_rig_friendly_pose_but_buildings_and_posed_requests_do_not():
+    from engines.concept_prompt import rig_class
+    assert rig_class('Giant red dragon, full silhouette') == 'creature' and rig_class('Stone golem boss') == 'creature'
+    assert rig_class('A knight with a shield') == 'humanoid' and rig_class('Kiếm sĩ với khiên') == 'humanoid' and rig_class('Bone Spearman') == 'humanoid'
+    for text in ('Archer tower T3', 'Statue of a knight', 'A wooden supply barrel', 'A knight swinging his sword', 'Rồng đang bay'):
+        assert rig_class(text) is None, text
+    head = compose('A knight with a shield. Blue tabard.', 'warm stone', 'Maximum')[0].split('\n', 1)[0]
+    assert 'A-pose with both arms held away from the body' in head and 'three-quarter view' not in head
+    assert 'A-pose' not in compose('A knight with a shield.', '', None, policy=6)[0]  # locked older policy unchanged
+
+
+def test_english_regexes_survive_escaping():
+    from apps.api.concept_rank import requested_hues
+    from engines.intent_adapter import MATCH_PHRASES
+    assert requested_hues('a giant red dragon') == [(345, 15)] and requested_hues('navy blue knight') == [(200, 250)]
+    assert MATCH_PHRASES.search('A knight that matches these buildings') and MATCH_PHRASES.search('same style as this')
+    assert not MATCH_PHRASES.search('turn this watchtower photo into a model')

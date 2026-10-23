@@ -62,7 +62,8 @@ def test_short_prompt_enrichment_preserves_explicit_values_and_original(client):
     model=client.post('/api/assets',json=dict(project_id='runavelle',name='Tiny prompt',prompt='Stone tower height 9 m')).json()
     result=client.post('/api/automation/single',json=dict(asset_id=model['id'],request_id='short-prompt-test123',quality='Maximum')).json()
     current=studio.asset(model['id']);spec=current['resolved_specification'];assert current['prompt']=='Stone tower height 9 m' and spec['dimensions']['target_height_m']==9 and spec['provenance']['target_height_m']['kind']=='explicit'
-    assert spec['provenance']['target_width_m']['kind']=='defaulted' and current['original_prompt']==current['prompt']
+    width=spec['provenance']['target_width_m']  # tower type rule, proportional to the explicit 9 m height (4 m x 9/12)
+    assert width['kind']=='inferred' and width['provisional'] and spec['dimensions']['target_width_m']==3.0 and current['original_prompt']==current['prompt']
     assert batch.batch(result['batch_id'])['items'][0]['confirmed'] is False
     automation.startup_recovery();assert batch.batch(result['batch_id'])['paused']
 

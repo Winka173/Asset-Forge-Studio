@@ -48,6 +48,8 @@ def validate(payload,folder):
     native=folder/'editor_project/Assets/AFS/FX'
     for name in ['AFS_Effect.prefab','AFS_EffectPreview.unity','Runtime/AFSSlashEffect.cs','Runtime/AFSSlash.shader','recipe.json','Effect.mat','Steel.mat']:
         if not (native/name).is_file() or (native/name).stat().st_size==0:raise ValueError('Missing editable FX output: '+name)
+    recipe=json.loads((native/'recipe.json').read_text(encoding='utf-8-sig'))
+    if recipe.get('accent_color') and recipe.get('accent_strength',0)>0 and not (native/'Accent.mat').is_file():raise ValueError('Missing editable FX output: Accent.mat')
     frames=reports[0].get('renders',[])
     if len(frames)!=payload['effective_config']['frames']:raise ValueError('FX frame sequence incomplete')
     hashes=[]

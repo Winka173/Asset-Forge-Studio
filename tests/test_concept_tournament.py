@@ -63,3 +63,15 @@ def test_style_anchor_lock_has_no_machine_paths(monkeypatch):
     assert style_anchor.resolve('runavelle', dict(style_anchor_artifact_id='x'), ()) is None
     anchor = dict(artifact_id='a', path='C:/x.png', sha256='s', adapter_dir='C:/hub', weight_name='w', scale=0.35)
     assert style_anchor.locked(anchor) == dict(artifact_id='a', sha256='s', weight_name='w', scale=0.35)
+
+
+def test_requested_colour_outranks_anchor_palette(tmp_path):
+    from apps.api.concept_rank import requested_hues
+    anchor = _image(tmp_path / 'anchor.png', (180, 120, 330, 400), colour=(40, 60, 140))          # navy style anchor
+    red = _image(tmp_path / 'red.png', (150, 120, 360, 400), colour=(190, 40, 35))               # requested red dragon
+    navy = _image(tmp_path / 'navy.png', (150, 120, 360, 400), colour=(40, 60, 140))             # anchor-coloured dragon
+    choices = [(dict(id='red'), red), (dict(id='navy'), navy)]
+    assert rank(choices, anchor)[0][0]['id'] == 'navy'  # without a colour request the palette decides
+    assert requested_hues('tôi muốn boss 1 con rồng khổng lồ đỏ') == [(345, 15)]
+    ranked = rank(choices, anchor, 'tôi muốn model là boss 1 con rồng khổng lồ đỏ, phù hợp với các công trình này')
+    assert ranked[0][0]['id'] == 'red' and ranked[0][1]['requested_colour_match'] > 0.9

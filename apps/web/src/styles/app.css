@@ -407,3 +407,28 @@ button.dashboard-row .production-dot { margin-top: 0; }
 .triangle-budget-label { color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; }
 .triangle-budget-row { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: var(--sp-2); }
 .triangle-budget-row .afs-select-help-button { display: none; }
+
+/* Style profile extracted from the project's style anchor (Settings → Project). */
+.style-profile-card { display: grid; gap: var(--sp-2); margin-top: var(--sp-2); padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface-2); }
+.style-profile-swatches { display: flex; height: 18px; overflow: hidden; border-radius: var(--r-sm); }
+.style-profile-swatches > span { min-width: 6px; }
+.style-profile-materials { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); margin: 0; padding: 0; list-style: none; color: var(--text-2); font-size: var(--fs-sm); }
+.style-profile-materials small { color: var(--text-3); }
+.style-profile-rendering { margin: 0; color: var(--text-2); font-size: var(--fs-sm); }
+.fx-accent { display: flex; align-items: center; gap: var(--sp-2); }
+.fx-accent input[type="color"] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--border); border-radius: var(--r-sm); background: none; }
+
+/* Size & scale preview (Create): new object next to familiar references on a 1 m grid. */
+.size-preview { display: grid; gap: var(--sp-3); }
+.size-preview-scene { height: 320px; border: 1px solid var(--border); border-radius: var(--r-md); background: radial-gradient(circle at 50% 30%, var(--surface-2), var(--surface-1)); overflow: hidden; }
+.size-preview-scene canvas { display: block; width: 100%; height: 100%; }
+.size-preview-controls { display: grid; gap: var(--sp-2); }
+.size-preview-dims { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); align-items: end; }
+.size-preview-dims label { display: grid; gap: var(--sp-1); font-size: var(--fs-sm); color: var(--text-2); }
+.size-preview-dims input[type="number"] { width: 96px; }
+.size-preview-lock { display: flex !important; align-items: center; gap: var(--sp-1); }
+.size-preview-refs { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.size-preview-refs button { padding: 2px var(--sp-2); border: 1px solid var(--border); border-radius: var(--r-full); background: none; color: var(--text-2); font-size: var(--fs-sm); }
+.size-preview-refs button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+.size-preview-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); }
+@media (max-width: 640px) { .size-preview-scene { height: 240px; } }

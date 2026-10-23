@@ -36,7 +36,9 @@ def execute(job,folder):
         except (OSError,ValueError,TimeoutError) as exc:
             import re
             usage=payload.get('reference_usage','auto')
-            role='none' if not references else usage if usage in ('source','style') else 'style' if re.search(r'style|phong cách|màu|giống',text,re.I) else 'source'
+            from engines.intent_adapter import MATCH_PHRASES
+            # Without the model, only an explicit wish to match the image (or style words) makes it a style reference.
+            role='none' if not references else usage if usage in ('source','style') else 'style' if re.search(r'style|phong cách|màu|giống',text,re.I) or MATCH_PHRASES.search(text) else 'source'
             result=dict(schema_version=4,status='not_evaluated',model=None,model_digest=None,execution='deterministic_fallback',
                 source_prompt_sha256=payload['source_prompt_sha256'],references=[dict(artifact_id=r['id'],sha256=r['sha256']) for r in references],
                 chunks=[],reference_role=role,generation_prompt_en=text,provenance='defaulted_original_text',artistic_approval=False,qa_status='not_run',
@@ -78,6 +80,11 @@ def admit(value,item,current,auto):
         result['generation_prompt_en']='\n'.join(r['interpretation']['translated_prompt_en'] for r in result['chunks']) or item['prompt']
         result['style_application']='Measured palette only by explicit user selection; semantic traits were not applied'
     item['prompt_interpretation']=result
+    # The interpreted subject ('giant red dragon boss') sizes provisional dimensions better than the raw prompt.
+    subject=(result.get('chunks') or [{}])[0].get('interpretation',{}).get('requested_subject_en')
+    if subject:
+        from .size_rules import apply as apply_size_rule
+        if apply_size_rule(item,subject):studio.patch_resolved_specification(item['asset_id'],dict(dimensions={k:item.get(k) for k in ('target_width_m','target_depth_m','target_height_m')}))
     refs=item.get('intent_reference_ids',[])
     item['reference_ids']=refs if result['reference_role']=='source' else []
     item['style_reference_ids']=refs if result['reference_role']=='style' else []

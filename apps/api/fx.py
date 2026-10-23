@@ -25,6 +25,9 @@ class Recipe(BaseModel):
     segments:int=Field(default=48,ge=12,le=128)
     particle_count:int=Field(default=12,ge=0,le=24)
     seed:int=Field(default=42,ge=0,le=2147483647)
+    # Optional project accent for the secondary sparks; the trail keeps the element colour (fire stays fire).
+    accent_color:str|None=Field(default=None,pattern=r'^#[0-9a-fA-F]{6}$')
+    accent_strength:float=Field(default=.25,ge=0,le=.5)
 
 class Build(BaseModel):
     recipe:Recipe
@@ -57,6 +60,10 @@ def plan(body:Plan):
     if matches:values['element']=matches[0];provenance['element']=dict(kind='explicit',source='Recognized element in original prompt')
     duration=re.search(r'\b(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s|gi\u00e2y)\b',body.prompt,re.I)
     if duration:values['duration']=float(duration[1]);provenance['duration']=dict(kind='explicit',source='Duration in original prompt')
+    if 'accent_color' not in values:
+        from .style_profile import accent_colour
+        accent=accent_colour(body.project_id,studio.project(body.project_id))
+        if accent:values['accent_color']=accent;provenance['accent_color']=dict(kind='inferred',source='Most saturated colour of the project style palette')
     allowed=set(Recipe.model_fields)-{'schema_version','project_id','prompt','name'}
     if set(body.overrides)-allowed:raise HTTPException(422,'Unsupported effect override')
     for key,value in body.overrides.items():values[key]=value;provenance[key]=dict(kind='explicit',source='Advanced effect setting')

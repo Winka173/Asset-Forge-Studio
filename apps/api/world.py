@@ -19,12 +19,17 @@ class Preview(BaseModel):
     width_m:float=Field(default=256,ge=64,le=512)
     depth_m:float=Field(default=256,ge=64,le=512)
     seed:int=Field(default=42,ge=0,le=4294967295)
+    # Any project image (e.g. a character this map must suit); only its colours are used, never its shape.
+    style_reference_id:str|None=None
 
 
 @router.post('/preview-plan')
 def preview(body:Preview):
     studio.project(body.project_id)
     plan=template(body.project_id,body.name,body.prompt,body.width_m,body.depth_m,body.seed)
+    from .style_profile import terrain_colours
+    seeded=terrain_colours(body.project_id,studio.project(body.project_id),[body.style_reference_id] if body.style_reference_id else ())
+    if seeded:plan=plan.model_copy(update=seeded|dict(assumptions=plan.assumptions+['Terrain colours seeded from '+('the chosen reference image' if body.style_reference_id else 'the project style palette')+' ('+', '.join(seeded)+'); still provisional until plan approval']))
     _,_,_,qa=terrain(plan)
     return dict(plan=plan.model_dump(),qa=qa,planner='explicit deterministic template; prompt stored as context, not interpreted by AI',enqueued_jobs=0)
 

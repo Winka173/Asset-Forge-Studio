@@ -1,7 +1,8 @@
 """Image conditioning is separate from source text and evaluator instructions."""
 import re
 
-NEGATIVE_PROMPT=('contact sheet, split screen, grid, collage, multiple views, turnaround, '
+# Without an image anchor SDXL often draws a set of items; measured: the extra terms turned a potion lineup into one bottle.
+NEGATIVE_PROMPT=('display pedestal, plinth, display stand, contact sheet, multiple objects, set of items, assortment, collection, scattered objects, duplicates, item lineup, icon sheet, pattern, wallpaper, split screen, grid, collage, multiple views, turnaround, '
     'orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, '
     'landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective')
 
@@ -14,9 +15,31 @@ NEGATIVE_PROMPT=('contact sheet, split screen, grid, collage, multiple views, tu
 # leading sentences within CONDITIONING_WORDS (~3 CLIP windows); a 1,766-word planner rewrite drowned a tree the same way.
 # The original prompt and its interpretation stay immutable in the asset/spec.
 # Long prompts are encoded in 75-token windows and mean-pooled, so late anchors lose influence.
-COMPOSITION_POLICY=6
+# Policy 7: characters and creatures get a rig-friendly neutral pose (arms/limbs clear of the body) unless the user asked for a pose.
+COMPOSITION_POLICY=7
 CONDITIONING_WORDS=160
 FRAMING='single standalone 3D game asset, three-quarter view, full object centered with clear margin, plain neutral studio background'
+# 2D sprites are cut out from a flat background, so the framing asks for no cast shadow and an even backdrop.
+# Arms-away poses keep limbs from fusing with the torso in image-to-3D, which auto-rigging needs (A-pose literature and vendor guidance).
+RIG_FRAMINGS={'humanoid':'single standalone 3D game character, full body, front view, neutral A-pose with both arms held away from the body, legs slightly apart, plain neutral studio background',
+    'creature':'single standalone 3D game creature, full body, three-quarter view, neutral standing pose with legs straight under the body, any wings spread flat, mouth closed, tail extended, plain neutral studio background'}
+HUMANOID=re.compile(r'\b(?:character|knight|swordsman|spearman|archer|soldier|warrior|guard|mage|wizard|sorcerer|priest|hero|heroine|npc|villager|king|queen|general|skeleton|zombie|goblin|orc|elf|dwarf|human|man|woman|paladin|assassin|thief)s?\b|'
+    r'kiếm sĩ|cung thủ|chiến binh|lính|pháp sư|hiệp sĩ|nhân vật|người|bộ xương|tướng|vua|nữ hoàng',re.I)
+CREATURE=re.compile(r'\b(?:dragon|wyvern|wolf|bear|beast|monster|golem|spider|bird|horse|griffin|gryphon|lion|tiger|boar|serpent|snake|creature|dinosaur|demon|troll|ogre|giant)s?\b|'
+    r'rồng|sói|gấu|quái|quái vật|nhện|chim|ngựa|sư tử|hổ|rắn|ác quỷ|khổng lồ',re.I)
+BUILDING=re.compile(r'\b(?:tower|castle|keep|house|hut|wall|gate|shrine|temple|well|fountain|barracks|building|bridge|statue|tile|fence|cliff|platform)s?\b|tháp|lâu đài|nhà|tường|cổng|đền|giếng|cầu|tượng',re.I)
+POSED=re.compile(r'\b(?:pose|posing|attacking|swinging|flying|running|jumping|sitting|kneeling|leaping|casting|roaring|charging)\b|tư thế|đang |vung|bay |chạy|nhảy|ngồi|quỳ',re.I)
+
+
+def rig_class(text):
+    """humanoid / creature for animation-ready framing; None for props, buildings, or when the user specified a pose."""
+    if not text or POSED.search(text) or BUILDING.search(text):return None  # 'archer tower' is a building, never a rig pose
+    creature,humanoid=CREATURE.search(text),HUMANOID.search(text)
+    if creature and (not humanoid or creature.start()<humanoid.start()):return 'creature'
+    return 'humanoid' if humanoid else None
+
+
+FRAMINGS={'asset_3d':FRAMING,'sprite_2d':'single 2D game sprite of one object, centered, full object visible with clear margin, flat even light grey background, no cast shadow, no ground'}
 
 
 def _clean(description):
@@ -70,7 +93,7 @@ def short_style(style,max_words=18):
     return ' '.join(style.replace(';',',').split()[:max_words]).rstrip(',;:')
 
 
-def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directives=()):
+def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directives=(),framing='asset_3d'):
     """Directives (reference colours, subject hints, repair instructions) are kept verbatim; only the description is bounded."""
     directives=[d.strip() for d in directives if d and d.strip()]
     if policy<6 and directives:description='\n'.join([description,*directives]);directives=[]  # earlier policies appended them to the text
@@ -87,5 +110,6 @@ def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directiv
             name=_heading(description).rstrip(',;:.!? ');restated=name and _restated(name,description)
             if restated:description=f'{name}. {restated}'
         description='\n'.join([_bounded(description),*directives])
-    head=f'{anchor}, {FRAMING}'+(f', {short_style(style)}' if style else '')+'.'
+    rig=rig_class(anchor) if policy>=7 and framing=='asset_3d' else None
+    head=f'{anchor}, {RIG_FRAMINGS[rig] if rig else FRAMINGS[framing]}'+(f', {short_style(style)}' if style else '')+'.'
     return (head+'\n'+description+('\nVisual style: '+style if style else '')+detail),NEGATIVE_PROMPT

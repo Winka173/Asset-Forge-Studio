@@ -81,7 +81,7 @@ def item_summary(i,group,all_jobs,all_paused=False,model=None):
     auto=i.get('automation',{});status=auto.get('status') or ('running' if any(j['status'] not in jobs.TERMINAL for j in related) else 'draft')
     active=any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related)
     paused=group['paused'] or i.get('production_paused') or all_paused
-    if (group.get('production_cancelled') or i.get('skipped')) and status not in ('exported','completed'):status='cancelled'
+    if (i.get('production_cancelled',group.get('production_cancelled')) or i.get('skipped')) and status not in ('exported','completed'):status='cancelled'
     if paused and i.get('started') and status!='cancelled' and status not in ('exported','completed','failed','blocked'):status='pausing' if active else 'paused'
     running=next((j for j in related if j['status'] not in jobs.TERMINAL|{'QUEUED'}),None)
     stage=(running.get('progress') or {}).get('stage') if running else None

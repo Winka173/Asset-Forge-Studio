@@ -108,7 +108,7 @@ def refresh_all():
             reasons.append(dict(kind='engine_or_qa',message=failed[0].get('error') or 'Retry the failed stage or change the engine.'))
         elif auto.get('status') in ('blocked','failed'):
             production='failed' if auto['status']=='failed' else 'needs_attention';stage='blocked';reasons.append(dict(kind='manual_approval' if 'Review' in auto.get('stage','') or 'approval' in auto.get('stage','').lower() else 'input_or_dependency',message=auto.get('error') or auto.get('stage')))
-        if (i.get('skipped') or g.get('production_cancelled')) and production!='completed':production='cancelled';stage='skipped'
+        if (i.get('skipped') or i.get('production_cancelled',g.get('production_cancelled'))) and production!='completed':production='cancelled';stage='skipped'
         if production=='completed':stage='completed';qa='passed';reasons=[]
         if model.get('asset_type') in ('vfx','map_environment') and not active and not queued and not failed:
             native=next((j for j in related if j['payload']['kind']==('fx_unity' if model.get('asset_type')=='vfx' else 'world_unity') and j['status']=='REVIEW_REQUIRED'),None)

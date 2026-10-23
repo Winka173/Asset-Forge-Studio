@@ -71,6 +71,8 @@ class ProjectInput(BaseModel):
     # Approved image that steers concept style for every asset in the project (IP-Adapter when installed).
     style_anchor_artifact_id: str | None = None
     style_anchor_scale: float | None = Field(default=None, ge=0.1, le=1.0)
+    # profile: materials/colours/rendering as text (no shape transfer); image: IP-Adapter image conditioning.
+    style_anchor_mode: Literal['profile', 'image'] | None = None
     art_bible: dict = Field(default_factory=dict)
     palette: list[str] = Field(default_factory=list, max_length=32)
     material_language: str = Field(default='', max_length=10000)
@@ -145,7 +147,7 @@ def draft(identifier: str, body: Draft):
 
 class AssetInput(BaseModel):
     project_id: str
-    asset_type: Literal['static_3d','map_environment'] = 'static_3d'
+    asset_type: Literal['static_3d','map_environment','sprite_2d'] = 'static_3d'
     name: str = Field(min_length=1, max_length=200)
     prompt: str = Field(default='', max_length=100000)
     reference_ids: list[str] = Field(default_factory=list, max_length=50)
@@ -292,7 +294,7 @@ def studio(project_id: str = ''):
         exports = [dict(id=r['id'], **json.loads(r['payload'])) for r in db.execute('SELECT * FROM asset_exports')]
         row = db.execute('SELECT payload FROM drafts WHERE project_id=?', (project_id,)).fetchone()
     for value in values:
-        value['versions'] = [a for a in artifacts if a['asset_id'] == value['id'] and (a['role'] == 'candidate' or (value.get('asset_type')=='map_environment' and a['role'] in ['world_plan','engine_package']))]
+        value['versions'] = [a for a in artifacts if a['asset_id'] == value['id'] and (a['role'] == 'candidate' or (value.get('asset_type')=='map_environment' and a['role'] in ['world_plan','engine_package']) or (value.get('asset_type')=='sprite_2d' and a['role']=='sprite' and a['metadata'].get('size')==512))]
         value['exports'] = [output_files(e) for e in exports if e.get('asset_id') == value['id']]
         thumbnail = next((a for a in artifacts if a['id'] in value['reference_ids']), None)
         value['thumbnail_url'] = thumbnail['url'] if thumbnail else None
@@ -300,6 +302,9 @@ def studio(project_id: str = ''):
         if value.get('asset_type')=='map_environment':
             preview=next((a for a in reversed(artifacts) if a['asset_id']==value['id'] and a['name']=='world_overview.png' and a['role']=='preview'),None)
             if preview:value.update(thumbnail_url=preview['url'],thumbnail_kind='unity_map_preview')
+        if value.get('asset_type')=='sprite_2d':
+            sprite=next((a for a in reversed(artifacts) if a['asset_id']==value['id'] and a['role']=='sprite' and a['metadata'].get('size')==512 and a['metadata'].get('usable')),None)
+            if sprite:value.update(thumbnail_url=sprite['url'],thumbnail_kind='sprite')
         for version in reversed(value['versions']):
             job_id = version['metadata'].get('job_id')
             fitted = store.DATA / 'jobs' / job_id / 'output/fit_three_quarter.png' if job_id else None
@@ -327,13 +332,16 @@ class ConceptInput(BaseModel):
     seed: int = Field(default=42,ge=0,le=4294967295)
     batch_id: str | None = None
     batch_attempt: int = Field(default=0,ge=0)
+    # sprite_2d: flat even backdrop and no cast shadow so the deterministic cutout can isolate the object.
+    framing: Literal['asset_3d','sprite_2d'] = 'asset_3d'
 
 
 @router.post('/studio/concept',status_code=201)
 def concept(body: ConceptInput):
     from engines.concept_adapter import CONCEPT_ADAPTER
     value=asset(body.asset_id);config=project(value['project_id'])
-    if value.get('asset_type','static_3d')!='static_3d':raise HTTPException(409,'This asset type uses its own output route; no universal concept-to-3D substitution')
+    kind=value.get('asset_type','static_3d')
+    if (kind,body.framing) not in (('static_3d','asset_3d'),('sprite_2d','sprite_2d')):raise HTTPException(409,'This asset type uses its own output route; no universal concept-to-3D substitution')
     if body.batch_id:
         from .batch import batch
         parent=batch(body.batch_id)
@@ -349,6 +357,11 @@ def concept(body: ConceptInput):
     overrides=value.get('settings',{}).get('style_overrides',{})
     if overrides:inherited.append('Asset style overrides: '+json.dumps(overrides,ensure_ascii=False))
     style='; '.join(filter(None,[style,*inherited]))
+    # Profile mode: the anchor contributes materials/colours/rendering as text only, never its silhouette.
+    from .style_profile import concept_style
+    palette_only=bool(body.batch_id) and any(i['asset_id']==value['id'] and i.get('intent_reference_scope')=='palette_only' for i in parent['items'])
+    profile_style=None if palette_only else concept_style(value['project_id'],project(value['project_id']),body.style_reference_ids)
+    if profile_style and profile_style['text']:style='; '.join(filter(None,[style,profile_style['text']]))
     from .reference_direction import concept_direction
     base=body.interpreted_prompt or body.prompt
     try:directed,reference_direction=concept_direction(base,body.style_reference_ids,value['project_id'])
@@ -356,15 +369,16 @@ def concept(body: ConceptInput):
     # Reference colours/subject hints are appended by concept_direction; they must survive description bounding.
     suffix=directed[len(base):] if directed.startswith(base) else ''
     from engines.concept_prompt import compose,COMPOSITION_POLICY
-    prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives])
+    prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
     except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc
-    effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY)
+    effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY,framing=body.framing)
     from .style_anchor import resolve as resolve_anchor,locked as locked_anchor
-    style_anchor=resolve_anchor(value['project_id'],project(value['project_id']),body.style_reference_ids)
+    style_anchor=None if profile_style else resolve_anchor(value['project_id'],project(value['project_id']),body.style_reference_ids)
     if style_anchor:effective.update(style_anchor=locked_anchor(style_anchor))
+    if profile_style:effective.update(style_profile=profile_style['identity'])
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))

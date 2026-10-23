@@ -22,7 +22,8 @@ def test_actual349_dry_plan_and_bounded_automatic_queue(client):
     assert dry['plan']['total']==349 and dry['plan']['future']==37 and jobs.listing()==[]
     assert all(i['spec_provenance'] for i in dry['items'])
     assert dry['items'][0]['spec_provenance']['target_width_m']['kind']=='explicit'
-    assert dry['items'][-1]['spec_provenance']['target_width_m']['kind']=='defaulted'
+    last=dry['items'][-1]['spec_provenance']['target_width_m']  # a recognised type gets a provisional type-based size, otherwise the category default
+    assert last['kind']=='defaulted' or (last['kind']=='inferred' and last['source'].startswith('Asset-type size rule') and last['provisional'])
     response=client.post(prefix+'/run-all',json={});assert response.status_code==200,response.text[:500]
     assert 0<len(jobs.listing())<=2
     persisted=batch.batch(value['id']);assert sum(i['started'] for i in persisted['items'])==349
@@ -166,3 +167,12 @@ def test_explicit_regeneration_replans_legacy_attempt_without_mutating_history(c
     assert current['prompt']==legacy['prompt'] and current['asset_id']==legacy['asset_id']
     assert current['asset_generation_spec']['route']=='procedural_castle'
     assert jobs.get(old['id'])['status']=='CANCELLED'
+
+
+def test_single_uses_confirmed_size_preview_dimensions(client):
+    model=client.post('/api/assets',json=dict(project_id='runavelle',name='Barrel',prompt='A wooden supply barrel')).json()
+    body=dict(asset_id=model['id'],request_id='size-preview-single',quality='Fast',engine='trellis2_community',seeds=[42],target_width_m=0.8,target_depth_m=0.8,target_height_m=1.1)
+    group=client.post('/api/automation/single',json=body).json()['batch_id']
+    item=batch.batch(group)['items'][0]
+    assert (item['target_width_m'],item['target_depth_m'],item['target_height_m'])==(0.8,0.8,1.1)
+    assert item['spec_provenance']['target_height_m']['kind']=='explicit' and 'Size & scale' in item['spec_provenance']['target_height_m']['source']

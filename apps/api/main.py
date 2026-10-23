@@ -342,6 +342,12 @@ def job_file(identifier: str, name: str):
 
 from .studio import router as studio_router
 app.include_router(studio_router)
+from .style_profile import router as style_profile_router
+app.include_router(style_profile_router)
+from .sprite import router as sprite_router
+app.include_router(sprite_router)
+from .size_rules import router as size_rules_router
+app.include_router(size_rules_router)
 from .batch import router as batch_router
 app.include_router(batch_router)
 from .batch_semantics import router as batch_semantics_router

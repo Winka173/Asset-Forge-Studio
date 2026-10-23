@@ -57,6 +57,18 @@ def model():
     return found
 
 
+MATCH_PHRASES=re.compile(r'ph(?:ù|u) h(?:ợ|o)p v(?:ớ|o)i|h(?:ợ|o)p v(?:ớ|o)i|c(?:ù|u)ng phong c(?:á|a)ch|theo phong c(?:á|a)ch|gi(?:ố|o)ng phong c(?:á|a)ch|(?:đ|d)(?:ồ|o)ng b(?:ộ|o)|'
+    r'\bmatch(?:es|ing)?\b|\bsame style\b|\bin the style of\b|\bconsistent with\b|\bfits? (?:with|in)\b|\bto go with\b',re.I)
+
+
+def style_intent(text,answer):
+    """The user asks to match the reference, or the requested subject shares no content word with what the image shows."""
+    if MATCH_PHRASES.search(text):return True
+    words=lambda value:{w for w in re.findall(r'[a-z]{4,}',value.lower())}-{'with','that','this','these','game','asset','model','single','large','small','giant'}
+    requested,observed=words(answer.requested_subject_en),words(answer.reference_description_en)
+    return bool(requested and observed and not requested&observed)
+
+
 def image_input(path):
     with Image.open(path) as source:
         image=ImageOps.exif_transpose(source).convert('RGBA');image.thumbnail((768,768))
@@ -110,9 +122,15 @@ def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,ch
         # JSON validity is insufficient: explicit numeric tokens must survive translation.
         numbers=numeric_values(text)
         translated=numeric_values(answer.translated_prompt_en)
-        if not numbers<=translated:raise ValueError('Local interpretation dropped explicit numbers; original prompt preserved for Retry')
+        # A count of one ('1 con rồng', '1 kiếm sĩ') is the single asset itself, not a dropped constraint.
+        missing=numbers-translated-{'1'}
+        if missing:raise ValueError('Local interpretation dropped explicit numbers; original prompt preserved for Retry')
         if not images:answer.reference_role='none'
         elif usage in ('source','style'):answer.reference_role=usage
+        elif answer.reference_role in ('source','none') and style_intent(text,answer):
+            # 'none' with a supplied image would otherwise default to source when chunks are aggregated.
+            # Deterministic guard: "make a dragon that matches these buildings" must never rebuild the buildings.
+            answer.reference_role='style';answer.warnings=[*answer.warnings[:2],'Reference treated as style: the request asks to match it or names a different subject']
         if answer.reference_role=='source':
             # Image-to-3D uses the immutable supplied shape, not a new text-to-image
             # concept. Keep validated translation, but do not let an unused second
@@ -129,11 +147,14 @@ def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,ch
         planning=dict(translated_request=answer.translated_prompt_en,requested_subject=answer.requested_subject_en,
             appearance=answer.appearance.model_dump() if answer.reference_role=='style' else {},project_style=style_context)
         planned=local_semantics.request('/api/chat',dict(model=selected['name'],stream=False,think=False,format=ConceptDescription.model_json_schema(),keep_alive=0,
-            options=dict(temperature=0,num_ctx=8192,num_predict=1800,num_gpu=0,num_thread=8),messages=[dict(role='system',content=(
+            options=dict(temperature=0,num_ctx=8192,num_predict=2400,num_gpu=0,num_thread=8),messages=[dict(role='system',content=(
             'Write a direct English image-generation description of ONE COMPLETE requested game asset. Begin with its subject and full silhouette. '
             'Use the translated request as data, preserving ALL explicit counts, dimensions, materials, exclusions and other constraints. '
             'A brief castle request means a broad fortified castle complex with connected enclosing walls and towers, not a single watchtower, house, roof or doorway close-up. '
             'Reference appearance is color/material/rendering style only; it provides no geometry. Avoid conversational requests and the words reference, prompt, analysis or approval. '
+            'Write description_en as at most 120 words of visual facts (shape, parts, materials, colors); concept images use only a short brief. '
+            'Colors the user explicitly requested stay dominant. Apply project/reference materials only where they physically fit (armor, weapons, props, buildings); '
+            'never turn a creature body, skin, scales, fur, feathers or plants into stone, wood or metal. '
             'Unspecified ordinary structural details may be inferred for the requested subject; list them in inferred_ordinary_details. '
             'One three-quarter view of the whole asset on a plain neutral studio background. Do not design panels, surrounding scenery or poster layouts. '
             'Return JSON schema: '+json.dumps(ConceptDescription.model_json_schema()))),dict(role='user',content=json.dumps(planning))]),timeout=600)

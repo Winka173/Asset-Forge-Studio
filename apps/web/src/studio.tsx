@@ -8,6 +8,8 @@ import {WorkspaceTools,InterfaceSettings,ProjectRecoverySettings,useInterfacePre
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
+import { StyleProfileCard } from "./style-profile";
+import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
@@ -127,6 +129,12 @@ type Draft = {
   autoBlender: boolean;
   height: number | null;
   triangleBudget?: number | null;
+  // "sprite": transparent 2D PNGs from a styled concept instead of a 3D model.
+  output?: "3d" | "sprite";
+  // Size & scale preview (metres); sizeConfirmed sends them as explicit targets.
+  width?: number | null;
+  depth?: number | null;
+  sizeConfirmed?: boolean;
 };
 const initialDraft: Draft = {
   mode: "Text",
@@ -357,6 +365,7 @@ export function Studio() {
     data.assets.find((a) => a.id === assetId) ||
     data.assets.find((a) => a.id === draft.assetId);
   const versions = selectedAsset?.versions || [];
+  const suggestedSize = useSuggestedDims(draft.prompt);
   const candidate =
     versions.find((v) => v.id === versionId) ||
     versions.filter((v) => v.role === "candidate").at(-1);
@@ -632,18 +641,36 @@ export function Studio() {
     location.hash = `create/${created.id}`;
     return created;
   }
+  // 2D sprite: its own asset type (a 3D asset never switches route), up to 4 options, cut out on CPU after each concept.
+  async function generateSprite() {
+    await run(async () => {
+      if(!data.capabilities.text_to_concept)throw new Error('Local SDXL is not ready, so sprites cannot be drawn yet.');
+      if(!draft.prompt.trim())throw new Error('Describe the sprite to create.');
+      const seeds=draft.seeds.split(',').map(value=>Number(value.trim())).filter(value=>Number.isInteger(value)&&value>=0).slice(0,4);
+      const existing=data.assets.find(a=>a.id===draft.assetId&&a.asset_type==='sprite_2d');
+      const model=existing??await request<Asset>("/api/assets",{project_id:projectId,name:draft.name.trim()||autoAssetName(draft.prompt)||"Untitled sprite",prompt:draft.prompt,reference_ids:[],settings:draft,category:"Sprites",asset_type:"sprite_2d"});
+      if(existing)await request(`/api/assets/${existing.id}`,{name:draft.name.trim()||existing.name,prompt:draft.prompt,reference_ids:[],settings:draft});
+      const body={asset_id:model.id,quality:draft.quality,seeds:seeds.length?seeds:[42,43,44]};
+      const requestId='sprite-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(body)+draft.prompt)))).map(value=>value.toString(16).padStart(2,'0')).join('').slice(0,40);
+      const result=await request<{options:{concept_job_id:string}[]}>('/api/sprites/generate',{...body,request_id:requestId});
+      change({assetId:model.id});await reload();
+      localStorage.setItem('afs.production.selection','job/'+result.options[0].concept_job_id);navigate('Production');
+      setNotice(`Drawing ${result.options.length} sprite option${result.options.length>1?'s':''} in the project style. Transparent PNGs appear in the Library when each cutout passes its checks.`);
+    });
+  }
   function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx','cinematic'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   async function generate() {
     if(candidate&&selectedAsset){refineSelected();return;}
+    if(draft.output==="sprite"){await generateSprite();return;}
     await run(async () => {
       if(workflow.mode!=='expert'){
         if(!workflowReady)throw new Error('Wait for project workflow settings to load.');
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -1154,6 +1181,11 @@ export function Studio() {
               <div className={`create-workspace create-single-flow step-${createStep}`}>
                 <section className="create-controls" aria-label={createStep===1?'Asset description':'Generation settings'}>
                   {createStep===1&&<div className="create-input-step">
+                  <div className="segmented create-output" role="radiogroup" aria-label="Output">
+                    {([["3d","3D model"],["sprite","2D sprite"]] as const).map(([value,label])=>(
+                      <button key={value} type="button" role="radio" aria-checked={(draft.output||"3d")===value} className={(draft.output||"3d")===value?"selected":""} onClick={()=>change({output:value})}>{label}</button>
+                    ))}
+                  </div>
                   <label className="studio-field prompt-field">
                     Describe your asset
                     <textarea
@@ -1235,6 +1267,15 @@ export function Studio() {
                       <Icon name="Arrow" size={17} />
                     </button>
                   </div>
+                  {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
+                    const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);
+                      return spec?.target_height_m&&glb?[{id:a.id,label:a.name,url:apiUrl(glb.url),dims:{w:spec.target_width_m??1,d:spec.target_depth_m??1,h:spec.target_height_m}}]:[];}).slice(0,12);
+                    return <details className="advanced create-size"><summary>Size &amp; scale <span>{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"confirmed":"suggested, not applied"}`}</span></summary>
+                      <SizePreview value={dims} prompt={draft.prompt} confirmed={!!draft.sizeConfirmed} libraryReferences={libraryReferences}
+                        modelUrl={candidate?.metadata.stage==="blender_processed"?apiUrl(candidate.url):undefined}
+                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:false})}
+                        onConfirm={next=>{change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true});setNotice(`Size set to ${next.w} × ${next.d} × ${next.h} m. The delivered model is scaled to this height.`);}}/>
+                    </details>;})()}
                   <details className="advanced create-advanced"><summary>Advanced options <span>Optional · defaults keep maximum quality</span></summary>
                   <label className="studio-field">Asset name <input value={draft.name} onChange={(e) => change({ name: e.target.value })} placeholder={autoAssetName(draft.prompt)||"Named from your prompt"} maxLength={160}/></label>
                   {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new asset strategy. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates the requested new subject using reference colors and a supported local strategy. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / supported local strategy / Blender / GLB. The reference does not replace the requested subject; style fidelity remains reviewable.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
@@ -1912,8 +1953,32 @@ export function Studio() {
                           </option>
                         ))}
                     </Select>
-                    <small>Pick an approved asset image. Every new concept in this game is generated in its style (local IP-Adapter, strength 0.35).</small>
+                    <small>Pick an approved asset image. Every new concept in this game follows its style.</small>
                   </label>
+                  {(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id && (
+                    <label className="studio-field">
+                      Style transfer
+                      <Select
+                        aria-label="Style transfer"
+                        value={(project as Project & {style_anchor_mode?: string | null})?.style_anchor_mode || "profile"}
+                        onChange={(e) =>
+                          run(async () => {
+                            await request(`/api/projects/${projectId}`, { ...project, style_anchor_mode: e.target.value });
+                            await reload();
+                            setNotice(e.target.value === "profile" ? "Concepts now take only materials, colours and rendering style from the anchor." : "Concepts now use the anchor image directly.");
+                          })
+                        }
+                      >
+                        <option value="profile" data-description="The anchor is analyzed once locally into materials, colours and rendering style. Its shape never carries over to other assets.">Materials and colours only</option>
+                        <option value="image" data-description="The image itself steers concepts (IP-Adapter 0.35). Closer look, but shape cues such as roofs or doors can carry over.">Image (may copy shape cues)</option>
+                      </Select>
+                      <StyleProfileCard
+                        projectId={projectId}
+                        anchorId={(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id || ""}
+                        mode={(project as Project & {style_anchor_mode?: string | null})?.style_anchor_mode || "profile"}
+                      />
+                    </label>
+                  )}
                   <button
                     className="danger-button"
                     disabled={!project}

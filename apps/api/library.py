@@ -31,6 +31,10 @@ def thumbnail_source(artifacts):
             path=store.safe_path(a['relative_path'])
             if path.is_file():return path,'generated_model',a['sha256']
     for a in reversed(artifacts):
+        if a['role']=='sprite' and a['metadata'].get('size')==512 and a['metadata'].get('usable'):
+            path=store.safe_path(a['relative_path'])
+            if path.is_file():return path,'generated_sprite',a['sha256']
+    for a in reversed(artifacts):
         job=a['metadata'].get('job_id')
         if job and a['metadata'].get('stage')=='blender_processed':
             path=store.DATA/'jobs'/job/'output/fit_three_quarter.png'
@@ -79,7 +83,7 @@ def thumbnail(asset_id:str):
     if not target.exists():
         from PIL import Image
         with Image.open(source) as image:
-            image.thumbnail((640,640));temporary=cache/(checksum+'.'+uuid.uuid4().hex+'.part');image.convert('RGB').save(temporary,format='WEBP',quality=88);temporary.replace(target)
+            image.thumbnail((640,640));temporary=cache/(checksum+'.'+uuid.uuid4().hex+'.part');image.convert('RGBA' if image.mode in ('RGBA','LA','P') else 'RGB').save(temporary,format='WEBP',quality=88);temporary.replace(target)
     return FileResponse(target,media_type='image/webp',headers={'X-AFS-Preview-Kind':kind})
 
 

@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public static class AFSFxBuilder {
-    [Serializable] class Recipe {public string element,name;public float duration,radius,trail_lifetime,intensity;public int segments,particle_count,seed;}
+    [Serializable] class Recipe {public string element,name,accent_color;public float duration,radius,trail_lifetime,intensity,accent_strength;public int segments,particle_count,seed;}
     [Serializable] class Request {public string outputPath,configHash;public int frames,width,height;}
     static Request request;static Recipe recipe;static readonly List<string> errors=new List<string>();
     const string Root="Assets/AFS/FX";
@@ -22,7 +22,7 @@ public static class AFSFxBuilder {
         var shader=AssetDatabase.LoadAssetAtPath<Shader>(Root+"/Runtime/AFSSlash.shader");Check(shader&&shader.isSupported,"Runtime slash shader must compile on actual GPU");if(!shader)throw new Exception("Slash shader missing");
         var material=new Material(shader){name="AFS_"+recipe.element+"_Emission"};AssetDatabase.CreateAsset(material,Root+"/Effect.mat");
         var solid=new Material(Shader.Find("Standard")){name="AFS_Steel"};solid.color=new Color(.33f,.4f,.45f);solid.SetFloat("_Metallic",.8f);solid.SetFloat("_Glossiness",.65f);AssetDatabase.CreateAsset(solid,Root+"/Steel.mat");
-        var root=new GameObject(recipe.name);var fx=root.AddComponent<AFSSlashEffect>();fx.element=recipe.element;fx.duration=recipe.duration;fx.radius=recipe.radius;fx.trailLifetime=recipe.trail_lifetime;fx.intensity=recipe.intensity;fx.segments=recipe.segments;fx.particleCount=recipe.particle_count;fx.seed=recipe.seed;fx.effectMaterial=material;fx.solidMaterial=solid;fx.playing=true;
+        var root=new GameObject(recipe.name);var fx=root.AddComponent<AFSSlashEffect>();fx.element=recipe.element;if(!string.IsNullOrEmpty(recipe.accent_color)&&ColorUtility.TryParseHtmlString(recipe.accent_color,out var accent)){fx.accent=accent;fx.accentStrength=recipe.accent_strength;if(recipe.accent_strength>0){var accentMaterial=new Material(shader){name="AFS_Accent"};accentMaterial.SetColor("_Color",accent*Mathf.Lerp(1f,2f,recipe.accent_strength*2f));AssetDatabase.CreateAsset(accentMaterial,Root+"/Accent.mat");fx.accentMaterial=accentMaterial;}}fx.duration=recipe.duration;fx.radius=recipe.radius;fx.trailLifetime=recipe.trail_lifetime;fx.intensity=recipe.intensity;fx.segments=recipe.segments;fx.particleCount=recipe.particle_count;fx.seed=recipe.seed;fx.effectMaterial=material;fx.solidMaterial=solid;fx.playing=true;
         // AddComponent calls OnEnable before recipe assignment; recreate only the preview children.
         foreach(Transform child in root.transform.Cast<Transform>().ToArray())UnityEngine.Object.DestroyImmediate(child.gameObject);
         fx.enabled=false;fx.enabled=true;fx.Seek(.32f);

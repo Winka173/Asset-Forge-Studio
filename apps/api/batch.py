@@ -393,6 +393,9 @@ def control(identifier:str,body:Control):
         value['paused']=body.action!='resume'
         if body.action=='cancel':value['production_cancelled']=True
         elif body.action=='resume':value['production_cancelled']=False
+        # Per-asset record: a later explicit Generate/Regenerate of one asset must not keep showing it as cancelled.
+        if body.action in ('cancel','resume'):
+            for item in value['items']:item['production_cancelled']=body.action=='cancel'
         save(value)
         if body.action=='cancel':
             for job in jobs.listing():
@@ -413,7 +416,8 @@ def item_action(identifier:str,asset_id:str,body:Control):
         elif body.action=='skip':item['skipped']=True
         elif body.action=='regenerate':
             if any(j['payload'].get('batch_id')==identifier and j['payload'].get('asset_id')==asset_id and j['status'] not in jobs.TERMINAL for j in jobs.listing()):raise HTTPException(409,'Finish or cancel the active asset stages before regenerating. Existing checkpoints are preserved.')
-            item.update(attempt=item['attempt']+1,started=True,skipped=False,planner_version=1)
+            item.update(attempt=item['attempt']+1,started=True,skipped=False,planner_version=1,production_cancelled=False)
+            if value.get('production_cancelled'):value['production_cancelled']=any(i.get('production_cancelled') for i in value['items'])
             item.pop('asset_generation_spec',None)
             if item.get('automation'):
                 item['automation']=dict(enabled=True,engines=item['automation']['engines'],attempt=item['attempt'],status='queued',stage='pending',checkpoints={},human_approved=False)

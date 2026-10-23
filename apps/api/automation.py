@@ -114,6 +114,11 @@ def resolve_specs(item,project,snapshot):
             if suggestions and len(set(suggestions))==1:value,kind,origin=suggestions[0],'inferred','Validated local semantic suggestions; not artist approved'
             else:value,kind,origin=defaults[i],'defaulted','Conservative provisional '+category+' scale; gameplay dimensions unverified'
         item[key]=float(value);provenance[key]=dict(kind=kind,source=origin,value=float(value),provisional=True)
+    item['spec_provenance']=provenance
+    # Type-based provisional size (castle, dragon, barrel...) instead of a coarse category default; refined after prompt analysis.
+    from .size_rules import apply as apply_size_rule
+    from engines.concept_prompt import subject_anchor
+    apply_size_rule(item,item['name']+' '+subject_anchor(text));provenance=item['spec_provenance']
     provenance.setdefault('category',dict(kind='explicit' if explicit_category else 'inferred',source='Manifest category' if explicit_category else 'Deterministic name / prompt / source-ID rule',value=category))
     for key,value in (('units',project.get('units','m')),('palette',project.get('palette',[])),('material_language',project.get('material_language','')),('default_style',project.get('default_style',''))):
         provenance.setdefault(key,dict(kind='inherited' if value else 'defaulted',source='Project Art Bible / settings' if value else 'Unspecified; no invented style requirement',value=value))
@@ -162,8 +167,9 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
             if item.get('automation',{}).get('attempt',item['attempt'])!=item['attempt']:item.pop('automation',None)
             item.setdefault('automation',dict(status='queued',stage='pending',checkpoints={}))
             item['automation'].update(engines=pinned,enabled=True,attempt=item['attempt'],engine_policy='Pin compatible installed engines at start; textured TRELLIS.2 first based on actual local export evidence; no numeric artistic score',human_approved=False)
-            item['selected']=True
+            item['selected']=True;item['production_cancelled']=False  # an explicit Generate supersedes an earlier cancel
             if not item.get('skipped'):item['started']=True
+        if value.get('production_cancelled'):value['production_cancelled']=any(i.get('production_cancelled') for i in value['items'])
         info=dict(total=len(ids),future=sum(i.get('source_status')=='FUTURE' for i in value['items'] if i['asset_id'] in ids),candidate_jobs=sum(i['candidates']*len(i['automation']['engines']) for i in value['items'] if i['asset_id'] in ids),source_hashes_preserved=True)
         if dry_run:return dict(dry_run=True,plan=info,items=[{k:i.get(k) for k in ('asset_id','source_asset_id','source_status','spec_provenance','automation')} for i in value['items'] if i['asset_id'] in ids])
         prior=value.get('automation',{})
@@ -309,6 +315,12 @@ def advance(identifier):
                             except (OSError,ValueError):continue
                         if not valid:
                             if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
+                            # One shared, shape-free style analysis per anchor before the first concepts of any asset.
+                            from .style_profile import ensure as ensure_style
+                            # An explicit 'palette only' choice uses measured colours alone; no material/rendering profile is added.
+                            style_state='none' if item.get('intent_reference_scope')=='palette_only' else ensure_style(value['project_id'],studio.project(value['project_id']),item.get('style_reference_ids',[]),item.get('priority',0))[0]
+                            if style_state=='pending':
+                                auto.update(status='queued',stage='Analyze style reference (materials, colours; no shape)');active_assets.add(item['asset_id']);continue
                             concept_count=item.get('concept_candidates') or CONCEPT_CANDIDATES[item['quality']]
                             for index in range(concept_count):
                                 studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept'+(f':{index}' if index else ''),prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),quality=item['quality'],seed=42+index*7919,batch_id=identifier,batch_attempt=item['attempt']))
@@ -319,7 +331,9 @@ def advance(identifier):
                             from .concept_rank import rank,POLICY_VERSION
                             from .style_anchor import resolve as resolve_anchor
                             anchor=resolve_anchor(value['project_id'],studio.project(value['project_id']),item.get('style_reference_ids',[]))
-                            ranked=rank([(v[2],store.safe_path(v[2]['relative_path'])) for v in generated],anchor and anchor['path'])
+                            # Requested colours come from what the user wrote (original + literal translation), never from the planned design.
+                            request_text=' '.join([item['prompt'],*[c.get('interpretation',{}).get('translated_prompt_en','') for c in (item.get('prompt_interpretation') or {}).get('chunks',[])]])
+                            ranked=rank([(v[2],store.safe_path(v[2]['relative_path'])) for v in generated],anchor and anchor['path'],request_text)
                             if not ranked[0][1]['eligible']:
                                 # Auto production decides instead of waiting: the best-ranked concept continues, with the reason recorded.
                                 from .concept_guard import record_decision
@@ -466,6 +480,10 @@ class Single(BaseModel):
     reference_id:str|None=None
     reference_usage:Literal['auto','source','palette_style']='source'
     workflow:Workflow|None=None
+    # Real-world size confirmed in the Size & scale preview; height drives uniform normalization, width/depth are recorded targets.
+    target_width_m:float|None=Field(default=None,gt=0,le=1000)
+    target_depth_m:float|None=Field(default=None,gt=0,le=1000)
+    target_height_m:float|None=Field(default=None,gt=0,le=1000)
 
 
 @router.post('/single',status_code=201)
@@ -489,6 +507,9 @@ def single(body:Single):
             from .manifest import ManifestItem
             row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),triangle_budget=body.triangle_budget,game_texture_size=body.game_texture_size,quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
             row.update(attempt=0,started=False,version=1,quality_lock=body.quality=='Maximum',seeds=body.seeds)
+            for key in ('target_width_m','target_depth_m','target_height_m'):
+                if getattr(body,key) is not None:
+                    row[key]=getattr(body,key);row.setdefault('spec_provenance',{})[key]=dict(kind='explicit',source='Size & scale preview (user confirmed)',value=getattr(body,key))
             if effective_usage=='palette_style':row.update(reference_ids=[],style_reference_ids=[body.reference_id],reference_usage=effective_usage)
             row.update(intent_reference_usage='style' if effective_usage=='palette_style' else body.reference_usage,intent_reference_scope='palette_only' if body.reference_usage=='palette_style' else 'semantic')
             project=studio.project(model['project_id']);value=dict(id=identifier,project_id=model['project_id'],name=model['name'],mode={'Fast':'Fast Batch','Balanced':'Quality Batch','Maximum':'Maximum Quality Batch'}[body.quality],quality_lock=body.quality=='Maximum',master_prompt=model['prompt'],style_snapshot=project,warnings=[],items=[row],paused=True,created_at=store.now(),updated_at=store.now())

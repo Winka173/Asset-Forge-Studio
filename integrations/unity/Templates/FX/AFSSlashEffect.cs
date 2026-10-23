@@ -12,7 +12,11 @@ public class AFSSlashEffect : MonoBehaviour {
     public Material effectMaterial,solidMaterial;
     public float previewTime;
     Mesh trail;MeshFilter filter;Transform weapon;readonly List<Transform> particles=new List<Transform>();
-    public Color Tint(){switch(element){case "ice":return new Color(.23f,.77f,1);case "lightning":return new Color(.52f,.38f,1);case "wind":return new Color(.55f,.95f,.8f);case "earth":return new Color(.82f,.5f,.2f);case "poison":return new Color(.45f,.95f,.15f);default:return new Color(1,.29f,.035f);}}
+    // Optional project accent: the trail keeps the element colour (measured: blending fire with cyan washed it to pale peach);
+    // only the secondary sparks use the accent material.
+    public Color accent=Color.clear;public float accentStrength;public Material accentMaterial;
+    public Color Tint(){return ElementTint();}
+    Color ElementTint(){switch(element){case "ice":return new Color(.23f,.77f,1);case "lightning":return new Color(.52f,.38f,1);case "wind":return new Color(.55f,.95f,.8f);case "earth":return new Color(.82f,.5f,.2f);case "poison":return new Color(.45f,.95f,.15f);default:return new Color(1,.29f,.035f);}}
     void OnEnable(){Ensure();Seek(previewTime);}
     void Update(){if(Application.isPlaying&&playing){previewTime=Mathf.Repeat(previewTime+Time.deltaTime,duration);Seek(previewTime);}}
     void OnDestroy(){if(trail){if(Application.isPlaying)Destroy(trail);else DestroyImmediate(trail);}}
@@ -23,7 +27,7 @@ public class AFSSlashEffect : MonoBehaviour {
         filter.sharedMesh=trail;
         filter.GetComponent<MeshRenderer>().sharedMaterial=effectMaterial;
         if(!weapon){weapon=transform.Find("AFS_PreviewSword");if(!weapon){weapon=new GameObject("AFS_PreviewSword").transform;weapon.SetParent(transform,false);var blade=GameObject.CreatePrimitive(PrimitiveType.Cube);blade.name="Blade";blade.transform.SetParent(weapon,false);blade.transform.localPosition=new Vector3(0,.65f,0);blade.transform.localScale=new Vector3(.075f,1.3f,.035f);blade.GetComponent<Renderer>().sharedMaterial=solidMaterial;var guard=GameObject.CreatePrimitive(PrimitiveType.Cube);guard.name="Guard";guard.transform.SetParent(weapon,false);guard.transform.localScale=new Vector3(.42f,.06f,.08f);guard.GetComponent<Renderer>().sharedMaterial=solidMaterial;}}
-        if(particles.Count==0){for(int i=0;i<Mathf.Clamp(particleCount,0,24);i++){Transform p=transform.Find("AFS_Accent_"+i);if(!p){var go=GameObject.CreatePrimitive(element=="ice"||element=="earth"?PrimitiveType.Cube:PrimitiveType.Sphere);go.name="AFS_Accent_"+i;p=go.transform;p.SetParent(transform,false);var collider=go.GetComponent<Collider>();if(collider){if(Application.isPlaying)Destroy(collider);else DestroyImmediate(collider);}}p.GetComponent<Renderer>().sharedMaterial=element=="earth"?solidMaterial:effectMaterial;particles.Add(p);}}
+        if(particles.Count==0){for(int i=0;i<Mathf.Clamp(particleCount,0,24);i++){Transform p=transform.Find("AFS_Accent_"+i);if(!p){var go=GameObject.CreatePrimitive(element=="ice"||element=="earth"?PrimitiveType.Cube:PrimitiveType.Sphere);go.name="AFS_Accent_"+i;p=go.transform;p.SetParent(transform,false);var collider=go.GetComponent<Collider>();if(collider){if(Application.isPlaying)Destroy(collider);else DestroyImmediate(collider);}}p.GetComponent<Renderer>().sharedMaterial=element=="earth"?solidMaterial:accentMaterial&&accentStrength>0?accentMaterial:effectMaterial;particles.Add(p);}}
     }
     void Pose(float seconds,out Vector3 root,out Quaternion rotation){
         float phase=Mathf.Repeat(seconds,duration)/duration*3;int attack=Mathf.FloorToInt(phase);float u=phase-attack;float move=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.08f,.62f,u));
