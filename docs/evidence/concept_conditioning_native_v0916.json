@@ -1,0 +1,802 @@
+{
+  "status": "PASS_NATIVE_CONCEPT_CONDITIONING",
+  "version": "0.9.16",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-conditioning-native\\2026-10-23T02-11-46-106Z",
+  "errors": [],
+  "checks": [
+    {
+      "name": "real_local_concept_measured_windows_correct_code_identity_idempotency_restart_manual_resume_both_actual_guards_no_extra_PNG_art_not_reviewed",
+      "passed": true
+    }
+  ],
+  "scope": "Real Maximum50/1024 local concept and persisted measured encoding. Negative fixtures edit only queued contracts inside this isolated QA SQLite library; no installed model/tokenizer/runtime/weights are edited. No artistic or full-3D claim.",
+  "job_id": "0cd4181afcde4074ad485b55f786f76a",
+  "actual_generation": {
+    "status": "GENERATED_NEEDS_REVIEW",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4",
+      "asset_id": "844853bc4e71469e999ec8497047157f",
+      "name": "Archer Tower / pinned local concept concept",
+      "prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+      "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+      "user_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [],
+        "bilingual_noun_hints": [],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Concept conditioning / actual local QA",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4"
+      },
+      "seed": 43,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 43,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "ffebb7dfebe8ac8246dad778201a5601d88556ed67f7df8f9965ef32ffc0765e",
+        "conditioning": {
+          "schema_version": 1,
+          "policy": {
+            "id": "sdxl_clip_windows_mean_v1",
+            "content_tokens": 75,
+            "sequence_tokens": 77,
+            "max_windows": 64,
+            "hidden_states": "penultimate",
+            "pooled": "mean_all_clip2_windows",
+            "padding": "bos_content_eos_pad",
+            "negative_padding": "empty_windows",
+            "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+          },
+          "code_sha256": {
+            "sdxl_worker.py": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+            "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+          },
+          "model_config_sha256": {
+            "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+            "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+            "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+            "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+            "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+            "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+            "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+            "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+            "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+            "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+            "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+            "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+            "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+            "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+          },
+          "runtime_versions": {
+            "python": "3.11.5",
+            "torch": "2.11.0+cu128",
+            "diffusers": "0.41.0",
+            "transformers": "5.20.2",
+            "accelerate": "1.15.0",
+            "tokenizers": "0.23.3",
+            "safetensors": "0.8.0",
+            "numpy": "2.4.6",
+            "pillow": "12.3.0"
+          }
+        },
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 3
+      },
+      "effective_config_hash": "4601e1d8bfd69e7f641b63d089e29f8431f19e810e8893fb23d1e5c9d97d18d0",
+      "quality_repair": null,
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-conditioning-native\\2026-10-23T02-11-46-106Z\\Library\\jobs\\0cd4181afcde4074ad485b55f786f76a\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-conditioning-native\\2026-10-23T02-11-46-106Z\\Library\\jobs\\0cd4181afcde4074ad485b55f786f76a\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "conditioning_verification": {
+      "status": "verified",
+      "policy_id": "sdxl_clip_windows_mean_v1",
+      "identity": {
+        "schema_version": 1,
+        "policy": {
+          "id": "sdxl_clip_windows_mean_v1",
+          "content_tokens": 75,
+          "sequence_tokens": 77,
+          "max_windows": 64,
+          "hidden_states": "penultimate",
+          "pooled": "mean_all_clip2_windows",
+          "padding": "bos_content_eos_pad",
+          "negative_padding": "empty_windows",
+          "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+        },
+        "code_sha256": {
+          "sdxl_worker.py": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+          "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+        },
+        "model_config_sha256": {
+          "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+          "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+          "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+          "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+          "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+          "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+          "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+        },
+        "runtime_versions": {
+          "python": "3.11.5",
+          "torch": "2.11.0+cu128",
+          "diffusers": "0.41.0",
+          "transformers": "5.20.2",
+          "accelerate": "1.15.0",
+          "tokenizers": "0.23.3",
+          "safetensors": "0.8.0",
+          "numpy": "2.4.6",
+          "pillow": "12.3.0"
+        }
+      }
+    },
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "prompt_encoding": {
+      "schema_version": 2,
+      "policy_id": "sdxl_clip_windows_mean_v1",
+      "chunks": 2,
+      "tokens_not_truncated": true,
+      "pooled": "mean across CLIP-2 chunks",
+      "experimental_long_prompt": true,
+      "measured": {
+        "positive": {
+          "clip_l": {
+            "content_tokens": 97,
+            "content_tokens_by_window": [
+              75,
+              22
+            ],
+            "empty_windows": 0,
+            "token_ranges": [
+              [
+                0,
+                75
+              ],
+              [
+                75,
+                97
+              ]
+            ]
+          },
+          "clip_g": {
+            "content_tokens": 97,
+            "content_tokens_by_window": [
+              75,
+              22
+            ],
+            "empty_windows": 0,
+            "token_ranges": [
+              [
+                0,
+                75
+              ],
+              [
+                75,
+                97
+              ]
+            ]
+          }
+        },
+        "negative": {
+          "clip_l": {
+            "content_tokens": 61,
+            "content_tokens_by_window": [
+              61,
+              0
+            ],
+            "empty_windows": 1,
+            "token_ranges": [
+              [
+                0,
+                61
+              ],
+              null
+            ]
+          },
+          "clip_g": {
+            "content_tokens": 61,
+            "content_tokens_by_window": [
+              61,
+              0
+            ],
+            "empty_windows": 1,
+            "token_ranges": [
+              [
+                0,
+                61
+              ],
+              null
+            ]
+          }
+        }
+      },
+      "prompt_sha256": "2b4f77a9faa6812335223adf787335970020274ffc3525ee0a9f182325f628bf",
+      "negative_prompt_sha256": "8086fa7d6d4781cdfc637672b05d3a524cfb264fbbcdd83c6a3fb7a0d8d9e9dd",
+      "character_spans": "not_available; ranges are tokenizer content-token offsets, not source character/provenance spans",
+      "limitation": "Retaining tokens and measuring empty windows does not prove prompt/style/artistic fidelity."
+    },
+    "output_sha256": "e4a09e0f763193307d6a9da2828ff742ade157b49b097b499bba10fa3c710483",
+    "peak_allocated_bytes": 5596858880,
+    "peak_reserved_bytes": 7847542784,
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5070 Ti",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "duration_seconds": 23.625
+  },
+  "negative_jobs": [
+    {
+      "id": "808697977c164ab3ad67189e20587f2a",
+      "status": "BLOCKED",
+      "created_at": "2026-10-23T02:12:17.932370+00:00",
+      "updated_at": "2026-10-23T02:12:22.920129+00:00",
+      "payload": {
+        "kind": "concept",
+        "batch_id": null,
+        "batch_attempt": 0,
+        "project_id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4",
+        "asset_id": "844853bc4e71469e999ec8497047157f",
+        "name": "Archer Tower / pinned local concept concept",
+        "prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "user_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.",
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        },
+        "project_style_snapshot": {
+          "name": "Concept conditioning / actual local QA",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {},
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4"
+        },
+        "seed": 43,
+        "steps": 50,
+        "size": 1024,
+        "effective_config": {
+          "schema_version": 1,
+          "stage": "concept",
+          "engine_id": "sdxl_local",
+          "engine_version": "SDXL base 1.0 / cached revision 46216598",
+          "checkpoint": {
+            "manifest_hash": "b93e4ecb036163f66d354cf9b8a8c5fba9a22707ae885780577378440cf3b6fe",
+            "files": {
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+            }
+          },
+          "input_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "reference_hashes": [],
+          "resolution": 1024,
+          "inference_steps": 50,
+          "guidance": 7,
+          "seed": 43,
+          "precision": "fp16 with upstream VAE float32 upcast",
+          "geometry": null,
+          "texture": null,
+          "blender": null,
+          "lod": null,
+          "export": {
+            "format": "png"
+          },
+          "candidate_count": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "project_style_hash": "ffebb7dfebe8ac8246dad778201a5601d88556ed67f7df8f9965ef32ffc0765e",
+          "conditioning": {
+            "schema_version": 1,
+            "policy": {
+              "id": "sdxl_clip_windows_mean_v1",
+              "content_tokens": 75,
+              "sequence_tokens": 77,
+              "max_windows": 64,
+              "hidden_states": "penultimate",
+              "pooled": "mean_all_clip2_windows",
+              "padding": "bos_content_eos_pad",
+              "negative_padding": "empty_windows",
+              "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+            },
+            "code_sha256": {
+              "sdxl_worker.py": "0000000000000000000000000000000000000000000000000000000000000000",
+              "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+            },
+            "model_config_sha256": {
+              "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+              "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+              "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+              "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+              "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+              "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+              "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+              "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+              "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+              "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+              "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+              "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+              "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+              "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+            },
+            "runtime_versions": {
+              "python": "3.11.5",
+              "torch": "2.11.0+cu128",
+              "diffusers": "0.41.0",
+              "transformers": "5.20.2",
+              "accelerate": "1.15.0",
+              "tokenizers": "0.23.3",
+              "safetensors": "0.8.0",
+              "numpy": "2.4.6",
+              "pillow": "12.3.0"
+            }
+          },
+          "qa": {
+            "image_validity": true,
+            "human_concept_approval": true,
+            "automatic_3d_generation": false
+          },
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "composition_policy": 3
+        },
+        "effective_config_hash": "826990e8e733cb7271e1415511e82db2b1a8e0fa0fee3c5a2d4ef32da3d6f315",
+        "quality_repair": null,
+        "recovery_notice": {
+          "at": "2026-10-23T02:12:20.665472+00:00",
+          "reason": "AFS reopened. Pending GPU work waits for manual Resume; no mid-inference resume is claimed."
+        },
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-23T02:12:22.867487+00:00",
+            "error": null
+          },
+          {
+            "state": "BLOCKED",
+            "at": "2026-10-23T02:12:22.920129+00:00",
+            "error": "Concept conditioning identity changed: code_sha256; saved quality settings retained"
+          }
+        ]
+      },
+      "error": "Concept conditioning identity changed: code_sha256; saved quality settings retained",
+      "progress": {
+        "stage": "BLOCKED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    },
+    {
+      "id": "e4560d3c2b8847d48e66a4681e04cf4b",
+      "status": "BLOCKED",
+      "created_at": "2026-10-23T02:12:17.964778+00:00",
+      "updated_at": "2026-10-23T02:12:31.400721+00:00",
+      "payload": {
+        "kind": "concept",
+        "batch_id": null,
+        "batch_attempt": 0,
+        "project_id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4",
+        "asset_id": "844853bc4e71469e999ec8497047157f",
+        "name": "Archer Tower / pinned local concept concept",
+        "prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "user_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.",
+        "reference_direction": {
+          "method": "measured_palette_only",
+          "references": [],
+          "bilingual_noun_hints": [],
+          "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+        },
+        "project_style_snapshot": {
+          "name": "Concept conditioning / actual local QA",
+          "description": "",
+          "cover_artifact_id": null,
+          "art_bible": {},
+          "palette": [],
+          "material_language": "",
+          "default_style": "",
+          "units": "m",
+          "target_height_m": null,
+          "export_settings": {},
+          "target_engines": [],
+          "engine_profiles": {},
+          "id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4"
+        },
+        "seed": 43,
+        "steps": 50,
+        "size": 1024,
+        "effective_config": {
+          "schema_version": 1,
+          "stage": "concept",
+          "engine_id": "sdxl_local",
+          "engine_version": "SDXL base 1.0 / cached revision 46216598",
+          "checkpoint": {
+            "manifest_hash": "9c52768c4e28fb3d2844bced40cecad5e5aac5cf39d3f6798287b17b3be80e00",
+            "files": {
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "0000000000000000000000000000000000000000000000000000000000000000",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+              "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+            }
+          },
+          "input_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+          "reference_hashes": [],
+          "resolution": 1024,
+          "inference_steps": 50,
+          "guidance": 7,
+          "seed": 43,
+          "precision": "fp16 with upstream VAE float32 upcast",
+          "geometry": null,
+          "texture": null,
+          "blender": null,
+          "lod": null,
+          "export": {
+            "format": "png"
+          },
+          "candidate_count": 1,
+          "quality": "Maximum",
+          "quality_lock": true,
+          "project_style_hash": "ffebb7dfebe8ac8246dad778201a5601d88556ed67f7df8f9965ef32ffc0765e",
+          "conditioning": {
+            "schema_version": 1,
+            "policy": {
+              "id": "sdxl_clip_windows_mean_v1",
+              "content_tokens": 75,
+              "sequence_tokens": 77,
+              "max_windows": 64,
+              "hidden_states": "penultimate",
+              "pooled": "mean_all_clip2_windows",
+              "padding": "bos_content_eos_pad",
+              "negative_padding": "empty_windows",
+              "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+            },
+            "code_sha256": {
+              "sdxl_worker.py": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+              "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+            },
+            "model_config_sha256": {
+              "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+              "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+              "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+              "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+              "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+              "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+              "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+              "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+              "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+              "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+              "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+              "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+              "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+              "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+            },
+            "runtime_versions": {
+              "python": "3.11.5",
+              "torch": "2.11.0+cu128",
+              "diffusers": "0.41.0",
+              "transformers": "5.20.2",
+              "accelerate": "1.15.0",
+              "tokenizers": "0.23.3",
+              "safetensors": "0.8.0",
+              "numpy": "2.4.6",
+              "pillow": "12.3.0"
+            }
+          },
+          "qa": {
+            "image_validity": true,
+            "human_concept_approval": true,
+            "automatic_3d_generation": false
+          },
+          "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+          "composition_policy": 3
+        },
+        "effective_config_hash": "03b19b7ab69b06096deebb2779bee7d14bd5fadd404dda9bb7213f21f9575067",
+        "quality_repair": null,
+        "recovery_notice": {
+          "at": "2026-10-23T02:12:20.665472+00:00",
+          "reason": "AFS reopened. Pending GPU work waits for manual Resume; no mid-inference resume is claimed."
+        },
+        "stage_events": [
+          {
+            "state": "RUNNING",
+            "at": "2026-10-23T02:12:23.223277+00:00",
+            "error": null
+          },
+          {
+            "state": "BLOCKED",
+            "at": "2026-10-23T02:12:31.400721+00:00",
+            "error": "Concept checkpoint weights changed after admission; no generation started"
+          }
+        ]
+      },
+      "error": "Concept checkpoint weights changed after admission; no generation started",
+      "progress": {
+        "stage": "BLOCKED",
+        "percent": null,
+        "scope": "current_stage_only"
+      }
+    }
+  ],
+  "actual_weight_guard": {
+    "status": "BLOCKED_QUALITY_LOCK",
+    "engine": "sdxl_local",
+    "request": {
+      "kind": "concept",
+      "batch_id": null,
+      "batch_attempt": 0,
+      "project_id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4",
+      "asset_id": "844853bc4e71469e999ec8497047157f",
+      "name": "Archer Tower / pinned local concept concept",
+      "prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+      "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+      "user_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.",
+      "reference_direction": {
+        "method": "measured_palette_only",
+        "references": [],
+        "bilingual_noun_hints": [],
+        "limitations": "No image-semantic style transfer, material recognition or verified prompt fidelity. Original prompt is retained."
+      },
+      "project_style_snapshot": {
+        "name": "Concept conditioning / actual local QA",
+        "description": "",
+        "cover_artifact_id": null,
+        "art_bible": {},
+        "palette": [],
+        "material_language": "",
+        "default_style": "",
+        "units": "m",
+        "target_height_m": null,
+        "export_settings": {},
+        "target_engines": [],
+        "engine_profiles": {},
+        "id": "f10fcfffe7cb4e4dae4c8cc1896cd1d4"
+      },
+      "seed": 43,
+      "steps": 50,
+      "size": 1024,
+      "effective_config": {
+        "schema_version": 1,
+        "stage": "concept",
+        "engine_id": "sdxl_local",
+        "engine_version": "SDXL base 1.0 / cached revision 46216598",
+        "checkpoint": {
+          "manifest_hash": "9c52768c4e28fb3d2844bced40cecad5e5aac5cf39d3f6798287b17b3be80e00",
+          "files": {
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder\\model.fp16.safetensors": "0000000000000000000000000000000000000000000000000000000000000000",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\text_encoder_2\\model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\unet\\diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae\\diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+            "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b\\vae_1_0\\diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+          }
+        },
+        "input_prompt": "One complete finely detailed stylized archer tower, ivory limestone walls, midnight blue slate roof, timber balcony, carved stone relief, full isolated game asset on a plain neutral studio background.\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, rich coherent material variation and carefully finished textures. Preserve the requested stylization.\nA single standalone 3D game asset, zoomed out, three-quarter view, full object centered with clear margin, plain neutral studio background.",
+        "reference_hashes": [],
+        "resolution": 1024,
+        "inference_steps": 50,
+        "guidance": 7,
+        "seed": 43,
+        "precision": "fp16 with upstream VAE float32 upcast",
+        "geometry": null,
+        "texture": null,
+        "blender": null,
+        "lod": null,
+        "export": {
+          "format": "png"
+        },
+        "candidate_count": 1,
+        "quality": "Maximum",
+        "quality_lock": true,
+        "project_style_hash": "ffebb7dfebe8ac8246dad778201a5601d88556ed67f7df8f9965ef32ffc0765e",
+        "conditioning": {
+          "schema_version": 1,
+          "policy": {
+            "id": "sdxl_clip_windows_mean_v1",
+            "content_tokens": 75,
+            "sequence_tokens": 77,
+            "max_windows": 64,
+            "hidden_states": "penultimate",
+            "pooled": "mean_all_clip2_windows",
+            "padding": "bos_content_eos_pad",
+            "negative_padding": "empty_windows",
+            "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+          },
+          "code_sha256": {
+            "sdxl_worker.py": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+            "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+          },
+          "model_config_sha256": {
+            "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+            "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+            "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+            "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+            "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+            "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+            "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+            "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+            "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+            "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+            "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+            "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+            "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+            "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+          },
+          "runtime_versions": {
+            "python": "3.11.5",
+            "torch": "2.11.0+cu128",
+            "diffusers": "0.41.0",
+            "transformers": "5.20.2",
+            "accelerate": "1.15.0",
+            "tokenizers": "0.23.3",
+            "safetensors": "0.8.0",
+            "numpy": "2.4.6",
+            "pillow": "12.3.0"
+          }
+        },
+        "qa": {
+          "image_validity": true,
+          "human_concept_approval": true,
+          "automatic_3d_generation": false
+        },
+        "negative_prompt": "contact sheet, split screen, grid, collage, multiple views, turnaround, orthographic sheet, inset image, diagram, poster, decorative border, text, caption, watermark, logo, landscape, scenery, forest, clouds, sky, cropped, cut off, blurry, low quality, broken perspective",
+        "composition_policy": 3
+      },
+      "effective_config_hash": "03b19b7ab69b06096deebb2779bee7d14bd5fadd404dda9bb7213f21f9575067",
+      "quality_repair": null,
+      "recovery_notice": {
+        "at": "2026-10-23T02:12:20.665472+00:00",
+        "reason": "AFS reopened. Pending GPU work waits for manual Resume; no mid-inference resume is claimed."
+      },
+      "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-conditioning-native\\2026-10-23T02-11-46-106Z\\Library\\jobs\\e4560d3c2b8847d48e66a4681e04cf4b\\output",
+      "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\concept-conditioning-native\\2026-10-23T02-11-46-106Z\\Library\\jobs\\e4560d3c2b8847d48e66a4681e04cf4b\\request.json",
+      "weights": "C:\\Users\\Winka\\.cache\\huggingface\\hub\\models--stabilityai--stable-diffusion-xl-base-1.0\\snapshots\\462165984030d82259a11f4367a4eed129e94a7b"
+    },
+    "script_sha256": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+    "network": "OFFLINE",
+    "model_revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "purpose": "concept_preview_requires_user_approval",
+    "license": "CreativeML Open RAIL++-M; code Apache-2.0; use restrictions apply",
+    "conditioning_verification": {
+      "status": "verified",
+      "policy_id": "sdxl_clip_windows_mean_v1",
+      "identity": {
+        "schema_version": 1,
+        "policy": {
+          "id": "sdxl_clip_windows_mean_v1",
+          "content_tokens": 75,
+          "sequence_tokens": 77,
+          "max_windows": 64,
+          "hidden_states": "penultimate",
+          "pooled": "mean_all_clip2_windows",
+          "padding": "bos_content_eos_pad",
+          "negative_padding": "empty_windows",
+          "scheduler": "DPMSolverMultistepScheduler/dpmsolver++/karras"
+        },
+        "code_sha256": {
+          "sdxl_worker.py": "7ebfc3819f2d15c6e37567104ecf62055ad3d4603b6ff12937cd2f0724e0986d",
+          "concept_conditioning.py": "45d216a768b9bac50a5ee24024c691d4e579f92899564ce2ec596c69450e728a"
+        },
+        "model_config_sha256": {
+          "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+          "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+          "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+          "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+          "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+          "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+          "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264"
+        },
+        "runtime_versions": {
+          "python": "3.11.5",
+          "torch": "2.11.0+cu128",
+          "diffusers": "0.41.0",
+          "transformers": "5.20.2",
+          "accelerate": "1.15.0",
+          "tokenizers": "0.23.3",
+          "safetensors": "0.8.0",
+          "numpy": "2.4.6",
+          "pillow": "12.3.0"
+        }
+      }
+    },
+    "weight_sha256": {
+      "text_encoder/model.fp16.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+      "text_encoder_2/model.fp16.safetensors": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+      "unet/diffusion_pytorch_model.fp16.safetensors": "83e012a805b84c7ca28e5646747c90a243c65c8ba4f070e2d7ddc9d74661e139",
+      "vae/diffusion_pytorch_model.fp16.safetensors": "bcb60880a46b63dea58e9bc591abe15f8350bde47b405f9c38f4be70c6161e68",
+      "vae_1_0/diffusion_pytorch_model.fp16.safetensors": "eb6516ab7e1104d5d1a174a4d65c57835ae38061531d0a2192103aecfb790cc1"
+    },
+    "quality_guard_blocked": true,
+    "error": "Concept checkpoint weights changed after admission; no generation started",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Winka\\AppData\\Local\\Temp\\_MEI366002\\engines\\sdxl_worker.py\", line 44, in main\n    verify_weights(req, report['weight_sha256'])\n  File \"C:\\Users\\Winka\\AppData\\Local\\Temp\\_MEI366002\\engines\\concept_conditioning.py\", line 84, in verify_weights\n    raise ConditioningError('Concept checkpoint weights changed after admission; no generation started')\nconcept_conditioning.ConditioningError: Concept checkpoint weights changed after admission; no generation started\n",
+    "duration_seconds": 7.389999999999873
+  }
+}

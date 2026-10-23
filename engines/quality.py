@@ -30,6 +30,8 @@ def checkpoints(engine):
 
 def resolve_concept(prompt,seed,steps,size,project,quality):
     from .concept_adapter import CONCEPT_ADAPTER
+    from .concept_conditioning import identity
+    source, _ = CONCEPT_ADAPTER.paths()
     paths=sorted(CONCEPT_ADAPTER.weights().rglob('*.safetensors'))
     hashes=_hash_checkpoints(tuple((str(p),p.stat().st_size,p.stat().st_mtime_ns) for p in paths))
     return dict(schema_version=1,stage='concept',engine_id='sdxl_local',engine_version=CONCEPT_ADAPTER.version,
@@ -37,6 +39,7 @@ def resolve_concept(prompt,seed,steps,size,project,quality):
         resolution=size,inference_steps=steps,guidance=7,seed=seed,precision='fp16 with upstream VAE float32 upcast',
         geometry=None,texture=None,blender=None,lod=None,export=dict(format='png'),candidate_count=1,
         quality=quality,quality_lock=quality=='Maximum',project_style_hash=fingerprint(project),
+        conditioning=identity(CONCEPT_ADAPTER.weights(),source/'venv',store.ROOT/'engines'),
         qa=dict(image_validity=True,human_concept_approval=True,automatic_3d_generation=False))
 
 

@@ -1,3 +1,13 @@
+# Windows 0.9.16 - frozen concept conditioning identity - 2026-10-23
+
+207 backend tests PASS during build, targeted conditioning/reference tests 22 PASS, TypeScript/Vite, PyInstaller/Tauri/NSIS, generic native launch and final affected native acceptance PASS. Source/backend cache verified. New concept admissions pin the actual worker/helper, tokenizer/model configs, runtime versions and existing window/pooling policy. Execution verifies the saved identity and the already measured real checkpoint hashes; drift blocks without changing quality or registering output. Legacy requests explicitly remain unpinned and retain their original algorithm. Measured token windows/hashes are diagnostic, not artistic approval or character-span provenance. See CONCEPT_CONDITIONING_LOCK.md.
+
+Actual castle replay with legacy and new locked requests produced the exact retained PNG in both cases: 28.27 / 27.25 seconds, sampled whole-GPU peaks 10272 / 10428 MiB, 410 positive / 61 negative tokens, six windows with five empty negative windows. No pooling/default change. Final native test generated a real Maximum concept, checked idempotency, closed/reopened Windows with manual Resume, then rejected declared stale-worker and stale-weight expectation fixtures before inference. Installed source/weights and the positive PNG remain unchanged; art stays not_reviewed. Three earlier harness failures were ambiguous selectors, retained and corrected before the passing complete rerun. Evidence: evidence/concept_conditioning_native_v0916.json/png and replay report/runner. No new 3D or improved castle art claim.
+
+Root did not modify the independent agent's UI work. Built UI is the abd140d snapshot; further working UI edits belong to that agent. Latest executable: dist/windows/stable/latest/Asset Forge Studio.exe with adjacent afs-backend.exe. Separate two-seed castle TRELLIS v1 / Hi3DGen geometry research is underway; neither engine is promoted based merely on successful execution. Meshy/image-only comparison and user artistic approval remain open.
+
+---
+
 # Windows 0.9.15 - measured PBR preservation before delivery - 2026-10-23
 
 185 full backend tests PASS (222.63 s), 21 targeted PBR tests PASS (3.74 s, overlapping the suite), TypeScript/Vite, fresh Windows/PyInstaller/Tauri/NSIS/generic native smoke, final affected native acceptance and backend/source cache PASS. Preserves the independently redesigned UI from ccaa0a1; root did not change its layout/theme. Latest executable: dist/windows/stable/latest/Asset Forge Studio.exe with its adjacent afs-backend.exe.

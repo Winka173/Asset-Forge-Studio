@@ -350,6 +350,13 @@ class Worker:
                 if payload['kind']=='concept' and effective.get('composition_policy',0)>=2:
                     if any(payload.get(k)!=effective.get(v) for k,v in [('prompt','input_prompt'),('negative_prompt','negative_prompt'),('steps','inference_steps'),('size','resolution'),('seed','seed')]):
                         transition(identifier,'BLOCKED','Concept execution differs from locked conditioning; no automatic config changes');return
+                if payload['kind']=='concept' and effective.get('conditioning') is not None:
+                    from engines.concept_adapter import CONCEPT_ADAPTER
+                    from engines.concept_conditioning import verify_request
+                    source, _ = CONCEPT_ADAPTER.paths()
+                    try:verify_request(payload, CONCEPT_ADAPTER.weights(), source/'venv', store.ROOT/'engines')
+                    except (OSError, ValueError) as exc:
+                        transition(identifier,'BLOCKED',str(exc));return
                 if payload['kind']=='inference':
                     actual=dict(engine=payload['engine'],steps=payload['steps'],seed=payload['seed'],pipeline=payload['pipeline_type'],
                                 texture=payload['texture_size'] if payload['engine']!='triposg' else None,blender=payload['auto_blender'])
@@ -635,7 +642,13 @@ class Worker:
                     gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,power.draw,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
                     samples.append(dict(seconds=time.monotonic()-started,all_gpu_memory_mib_power_w_utilization_percent=gpu.stdout.strip()));self.stop.wait(.5)
             if get(identifier)['status']=='CANCELLED':return
-            if process.returncode:raise RuntimeError(f'Local concept engine exit {process.returncode}; inspect worker.log')
+            if process.returncode:
+                result_path = folder/'output/generation.json'
+                if result_path.is_file():
+                    result = json.loads(result_path.read_text(encoding='utf-8'))
+                    if result.get('quality_guard_blocked') is True:
+                        transition(identifier,'BLOCKED',result['error']);return
+                raise RuntimeError(f'Local concept engine exit {process.returncode}; inspect worker.log')
             transition(identifier,'GENERATED');transition(identifier,'VALIDATING')
             inspection=CONCEPT_ADAPTER.verify_outputs(folder/'output')
             generation=json.loads((folder/'output/generation.json').read_text())

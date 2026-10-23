@@ -345,7 +345,8 @@ def concept(body: ConceptInput):
     prompt,negative=compose(directed,style,body.quality)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
-    effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
+    try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
+    except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc
     effective.update(negative_prompt=negative,composition_policy=3)
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
