@@ -5,6 +5,7 @@ import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
+import { TriangleBudgetField } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
 
 type Reference = { id: string; name: string; role: string; url: string };
@@ -16,6 +17,7 @@ type Version = {
 };
 type ManifestItem = {
   asset_id: string;
+  triangle_budget?: number | null;
   source_asset_id?: string;
   source_status?: string;
   source_line_start?: number;
@@ -555,6 +557,7 @@ export function BatchStudio({
         quality: editing.quality,
         preferred_engine: editing.preferred_engine,
         candidates: editing.candidates,
+        triangle_budget: editing.triangle_budget ?? null,
         target_outputs: outputsText.split(',').map(s => s.trim()).filter(Boolean),
         confirmed: editing.confirmed && dimensionsValid(editing),
         selected: editing.selected,
@@ -1344,6 +1347,7 @@ export function BatchStudio({
                   />
                 </label>
               </div>
+              <TriangleBudgetField value={editing.triangle_budget} prompt={`${editing.name} ${editing.prompt}`} onChange={(triangle_budget) => setEditing({ ...editing, triangle_budget })} />
               <label className="studio-field">
                 Preferred engine
                 <Select

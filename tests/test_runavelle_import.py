@@ -69,7 +69,9 @@ def test_actual_large_file_api_lossless_review_selection_queue(source,tmp_path,m
         job=next(j for j in queued if j['payload']['asset_id']==item['asset_id'])
         assert job['status']=='QUEUED' and job['payload']['kind']=='concept'
         assert job['payload']['user_prompt']==item['prompt']
-        assert job['payload']['prompt'].startswith(item['prompt'])  # existing project/style suffix is separate
+        # Composition policy 4 front-loads subject/framing; the complete original text still follows unchanged.
+        assert item['prompt'].strip() in job['payload']['prompt']
+        assert '_' not in job['payload']['prompt'].split(',')[0] and not job['payload']['prompt'].startswith('#')
     assert client.post(prefix+'/run',json=dict(selected_ids=ids)).status_code==200
     assert len(jobs.listing())==3  # request refresh/retry does not duplicate independent concepts
     invalid=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='x'*(MAX_MANIFEST_CHARACTERS+1)))

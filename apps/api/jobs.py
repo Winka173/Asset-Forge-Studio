@@ -111,7 +111,7 @@ def ensure_blender(job):
         return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,
             batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
             effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),
-            export_fbx=export_fbx,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
+            export_fbx=export_fbx,game_triangle_budget=payload.get('triangle_budget'),render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
 
 
 def retry(identifier):
@@ -436,6 +436,12 @@ class Worker:
                                 'job_id': identifier, 'stage': 'blender_processed',
                                 'lod_surface_quality':[{k:row[k] for k in ('level','ratio','surface_error')} for row in report['lods']],
                                 'license': artifact['metadata'].get('license', 'NEEDS_REVIEW')})
+            game=folder/'output/GAME.glb'
+            if game.exists():
+                info=json.loads((folder/'output/game_ready.json').read_text(encoding='utf-8'))
+                store.add_artifact(game,'candidate',artifact['name']+f" / game-ready {info['triangle_budget']:,} tris",
+                    inspect_glb(game)|{'parent_id':processed['id'],'parent_sha256':processed.get('sha256'),'project_id':processed.get('project_id'),'asset_id':processed.get('asset_id'),
+                    'job_id':identifier,'stage':'game_ready','game_ready':info,'license':artifact['metadata'].get('license','NEEDS_REVIEW')})
             if processed.get('asset_id'):
                 from .fidelity import evaluate
                 evaluate(processed['asset_id'],processed['id'],inspections['LOD0.glb'])

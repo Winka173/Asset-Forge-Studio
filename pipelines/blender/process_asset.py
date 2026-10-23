@@ -185,6 +185,24 @@ def render_views(objects, output, cfg, resolutions, selected_views):
             scene.render.filepath = str(output / (stem + '.png'))
             bpy.ops.render.render(write_still=True); files.append(stem + '.png')
             scene.render.film_transparent = True
+    # Asset-fitted views for visual QA and thumbnails. The fixed-scale benchmark renders above stay comparable across
+    # assets, but a 2 m prop occupies only a few pixels in them, which leaves local visual review effectively blind.
+    low, high = bounds(objects); center = (Vector(low) + Vector(high)) / 2; extent = max(Vector(high) - Vector(low))
+    width, height = cfg['resolutions'].get('mobile', cfg['resolutions'][resolutions[0]])
+    scene.render.resolution_x = width; scene.render.resolution_y = height
+    camera_data.ortho_scale = extent * 1.2 * max(1.0, width / height)
+    for extra in extras:
+        if extra.type == 'MESH': extra.hide_render = True
+    scene.render.film_transparent = False; scene.render.image_settings.file_format = 'PNG'
+    for view_name in selected_views:
+        direction = Vector(cfg['views'][view_name]).normalized()
+        camera.location = center + direction * cfg['camera_distance_m']
+        camera.rotation_euler = (center - camera.location).to_track_quat('-Z', 'Y').to_euler()
+        scene.render.filepath = str(output / f'fit_{view_name}.png')
+        bpy.ops.render.render(write_still=True); files.append(f'fit_{view_name}.png')
+    for extra in extras:
+        if extra.type == 'MESH': extra.hide_render = False
+    camera_data.ortho_scale = cfg['ortho_scale_m']; scene.render.film_transparent = True
     return files, framing
 
 
@@ -266,6 +284,30 @@ def run(request):
         surface_error=surface_reference.compare(duplicates)
         lod_stats.append({'level': index, 'ratio': ratio, 'meshes': mesh_stats(duplicates), 'quality': 'NEEDS_REVIEW', 'baking': 'NOT_TESTED', 'surface_error':surface_error})
         for clone in duplicates: bpy.data.objects.remove(clone, do_unlink=True)
+    # Game-ready derivative: only when an explicit triangle budget is below the master; the master files above stay untouched.
+    budget = request.get('game_triangle_budget')
+    master_triangles = sum(max(0, len(p.vertices)-2) for obj in objects for p in obj.data.polygons)
+    game_ready = {'triangle_budget': budget, 'source_triangles': master_triangles, 'status': 'NOT_REQUESTED' if not budget else 'MASTER_WITHIN_BUDGET'}
+    if budget and master_triangles > budget:
+        print('STAGE Build game-ready derivative within the triangle budget', flush=True)
+        ratio = budget / master_triangles
+        duplicates = []
+        for obj in objects:
+            clone = obj.copy(); clone.data = obj.data.copy(); clone.name = f'{obj.name}_GAME'
+            bpy.context.scene.collection.objects.link(clone); duplicates.append(clone)
+            # Neural meshes arrive unwelded (UV-split vertices); collapse decimation on them tears holes. Welding coincident
+            # positions keeps per-loop UVs, so seams survive while the surface decimates as one connected shell.
+            weld = bmesh.new(); weld.from_mesh(clone.data)
+            bmesh.ops.remove_doubles(weld, verts=weld.verts, dist=max(max(clone.dimensions), 1e-6) * 1e-6)
+            weld.to_mesh(clone.data); weld.free()
+            modifier = clone.modifiers.new('budget_decimation', 'DECIMATE'); modifier.use_collapse_triangulate = True
+            triangles = sum(max(0, len(p.vertices)-2) for p in clone.data.polygons)
+            modifier.ratio = min(1.0, max(ratio, 8 / max(triangles, 1)))
+            select([clone]); bpy.ops.object.modifier_apply(modifier=modifier.name)
+        export_glb(output / 'GAME.glb', duplicates)
+        game_ready.update(status='DERIVED', ratio=ratio, meshes=mesh_stats(duplicates), surface_error=surface_reference.compare(duplicates), quality='NEEDS_REVIEW')
+        for clone in duplicates: bpy.data.objects.remove(clone, do_unlink=True)
+    (output / 'game_ready.json').write_text(json.dumps(game_ready, indent=2), encoding='utf-8')
     del surface_reference
     bpy.ops.mesh.primitive_cube_add(size=1, location=Vector(low).lerp(Vector(high), 0.5))
     collider = bpy.context.object; collider.name = 'COLLIDER_AABB'; collider.dimensions = Vector(high) - Vector(low)

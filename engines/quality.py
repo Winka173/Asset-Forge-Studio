@@ -76,7 +76,9 @@ def resolve(options, reference, project):
         input_prompt=options.get('prompt') or '',reference_hashes=[reference['sha256']],project_style_hash=fingerprint(project),
         resolution=512 if engine=='triposg' or pipeline=='512' else 1024,inference_steps=steps,guidance=guidance,
         seeds=options.get('seeds',[42]),precision='fp16 model defaults; upstream float32/upcast operations preserved',
-        geometry=dict(pipeline_type=pipeline,octree_depth=9 if engine=='triposg' else None,decode_chunk_size=10000 if engine=='triposg' else None,export_triangle_target=1000000),
+        geometry=dict(pipeline_type=pipeline,octree_depth=9 if engine=='triposg' else None,decode_chunk_size=10000 if engine=='triposg' else None,
+                      # An explicit budget above the default only raises master detail; it never lowers the locked 1 M export.
+                      export_triangle_target=max(1000000,int(options.get('triangle_budget') or 0)) if engine=='trellis2_community' else 1000000),
         texture=dict(size=texture if engine!='triposg' else None,pbr='native basecolor/metallic-roughness' if engine!='triposg' else 'not_available'),
         blender=dict(enabled=options.get('auto_blender',True),profile='existing_quality_pipeline_v1',height_m=options.get('benchmark_height_m') or project.get('target_height_m'),
                      render_views=['front','three_quarter','side','back','top','gameplay'],render_resolutions=['mobile','pc1440'],bake='not_requested'),

@@ -403,3 +403,7 @@ button.dashboard-row .production-dot { margin-top: 0; }
   .create-stepper button { padding-right: var(--sp-2); }
   .collection-heading h2 > span { display: none; }
 }
+.triangle-budget > small .text-button { min-height: 0; height: auto; padding: 0 2px; vertical-align: baseline; font-size: inherit; }
+.triangle-budget-label { color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; }
+.triangle-budget-row { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: var(--sp-2); }
+.triangle-budget-row .afs-select-help-button { display: none; }

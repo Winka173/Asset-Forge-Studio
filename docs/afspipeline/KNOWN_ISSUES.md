@@ -20,3 +20,5 @@
 - Bounded cause-specific repair budgets are implemented and tested for interrupted/transient admission, no-progress concept conditioning and negative dependency/OOM/timeout cases. A real concept repair completed a neural castle, but no real GPU OOM repair, general geometry repair or broad endurance claim is established. General modular/hybrid routes, independent VLM calibration, representative hero/boss benchmarks and new target-game acceptance remain incomplete; do not mark all P0/P1/P2 complete.
 
 - Fixed in 0.9.1: terminal concept blockers and quarantined/paused queued stages no longer occupy the logical admission window. Regression tests use injected negative conditions with real SQLite/coordinator logic; this is not a 349-output endurance benchmark.
+
+- 2026-10-23: LOD1–3 still decimate unwelded neural meshes (same tearing seen before the game-ready fix). Game-ready textures stay at source resolution (a 40 k GLB is ~33 MB with 4K maps). Style consistency across assets needs reference-image conditioning; not installed (disk headroom).

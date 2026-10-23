@@ -296,7 +296,10 @@ def studio(project_id: str = ''):
             if preview:value.update(thumbnail_url=preview['url'],thumbnail_kind='unity_map_preview')
         for version in reversed(value['versions']):
             job_id = version['metadata'].get('job_id')
-            if job_id and (store.DATA / 'jobs' / job_id / 'output/mobile_three_quarter.png').is_file():
+            fitted = store.DATA / 'jobs' / job_id / 'output/fit_three_quarter.png' if job_id else None
+            if fitted and fitted.is_file():
+                value['thumbnail_url'] = f'/api/jobs/{job_id}/files/output/fit_three_quarter.png'
+            elif job_id and (store.DATA / 'jobs' / job_id / 'output/mobile_three_quarter.png').is_file():
                 value['thumbnail_url'] = f'/api/jobs/{job_id}/files/output/mobile_three_quarter.png'
                 value['thumbnail_kind'] = 'model_render'
                 break
@@ -341,13 +344,13 @@ def concept(body: ConceptInput):
     from .reference_direction import concept_direction
     try:directed,reference_direction=concept_direction(body.interpreted_prompt or body.prompt,body.style_reference_ids,value['project_id'])
     except ValueError as exc:raise HTTPException(409,str(exc))
-    from engines.concept_prompt import compose
+    from engines.concept_prompt import compose,COMPOSITION_POLICY
     prompt,negative=compose(directed,style,body.quality)
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
     except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc
-    effective.update(negative_prompt=negative,composition_policy=3)
+    effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY)
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
@@ -391,6 +394,7 @@ class Generate(BaseModel):
     texture_size: Literal[2048, 4096] | None = None
     auto_blender: bool = True
     benchmark_height_m: float | None = Field(default=None, gt=0, le=1000)
+    triangle_budget: int | None = Field(default=None, ge=500, le=5_000_000)
     batch_id: str | None = None
     batch_attempt: int = Field(default=0,ge=0)
     quality_lock: bool | None = None
@@ -442,7 +446,7 @@ def generate(body: Generate):
                    steps=body.steps or (50 if engine == 'triposg' else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
                    texture_size=body.texture_size or (2048 if quality == 'Fast' else 4096),
-                   auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'),
+                   auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget,
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')
     from engines.quality import resolve, fingerprint

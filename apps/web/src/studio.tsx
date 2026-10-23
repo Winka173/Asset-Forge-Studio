@@ -7,6 +7,7 @@ import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
+import { TriangleBudgetField } from "./triangle-budget";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
@@ -125,6 +126,7 @@ type Draft = {
   textureSize: number;
   autoBlender: boolean;
   height: number | null;
+  triangleBudget?: number | null;
 };
 const initialDraft: Draft = {
   mode: "Text",
@@ -641,7 +643,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,triangle_budget:draft.triangleBudget??undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -687,6 +689,7 @@ export function Studio() {
         texture_size: draft.textureSize,
         auto_blender: draft.autoBlender,
         benchmark_height_m: draft.height,
+        triangle_budget: draft.triangleBudget ?? undefined,
       };
       const key = `afs.request.${projectId}`;
       const previous = JSON.parse(localStorage.getItem(key) || "null");
@@ -1234,6 +1237,7 @@ export function Studio() {
                   <details className="advanced create-advanced"><summary>Advanced options <span>Optional · defaults keep maximum quality</span></summary>
                   <label className="studio-field">Asset name <input value={draft.name} onChange={(e) => change({ name: e.target.value })} placeholder={autoAssetName(draft.prompt)||"Named from your prompt"} maxLength={160}/></label>
                   {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new asset strategy. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates the requested new subject using reference colors and a supported local strategy. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / supported local strategy / Blender / GLB. The reference does not replace the requested subject; style fidelity remains reviewable.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
+                  <TriangleBudgetField value={draft.triangleBudget} prompt={draft.prompt} onChange={triangleBudget=>change({triangleBudget})}/>
                   <label className="studio-field result-count-field">Results to choose from<Select aria-label="Result count" value={draft.seeds.split(',').filter(s=>s.trim()).length} onChange={e=>{const count=Number(e.target.value);const value=Number(draft.seeds.split(',')[0]);const first=Number.isInteger(value)&&value>=0&&value<=4294967295?value:42;change({seeds:Array.from({length:count},(_,i)=>String((first+i)%4294967296)).join(',')});}}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select><small>One by default. Extra seeds share the GPU queue; source candidates stay in History.</small></label>
                   <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
                   <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary><label className="studio-field">Architecture generation<Select aria-label="Architecture generation strategy" value={workflow.architecture_strategy||'ai_detail'} onChange={e=>changeWorkflow({architecture_strategy:e.target.value as 'ai_detail'|'procedural_blockout'})}><option value="ai_detail" data-description="Default quality route: generate a detailed concept when needed, then use local image-to-3D with native textures. Simple primitive assembly is never substituted. Artistic fidelity still needs review.">Detailed AI model (default)</option><option value="procedural_blockout" data-description="Optional structural layout study: simple authored castle components and procedural materials. Lower visual detail than the AI tower baseline. This is not a finished high-quality art asset.">Structural blockout (simple geometry)</option></Select><small>Detailed AI preserves the high-detail generation route. Blockout is a separate, explicitly chosen layout tool.</small></label><label className="studio-field"><span><input type="checkbox" checked={workflow.prompt_interpretation} onChange={e=>changeWorkflow({prompt_interpretation:e.target.checked})}/> Use local prompt understanding when available</span><small>Saved per game. CPU analysis translates the prompt and classifies image purpose before generation. Missing models use the visible deterministic fallback.</small></label>                  <div

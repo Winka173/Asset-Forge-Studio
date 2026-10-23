@@ -49,7 +49,9 @@ def filter_candidates(value,item,current,candidates,auto):
     for candidate in candidates:
         renders=[]
         for view in ('three_quarter','back','side'):
-            path=store.DATA/'jobs'/candidate['metadata']['job_id']/'output'/f'mobile_{view}_asset.png'
+            folder=store.DATA/'jobs'/candidate['metadata']['job_id']/'output'
+            # Prefer asset-fitted views; fixed benchmark framing leaves small assets only a few pixels tall.
+            path=folder/f'fit_{view}.png' if (folder/f'fit_{view}.png').is_file() else folder/f'mobile_{view}_asset.png'
             if not path.is_file():raise ValueError('Actual Blender views missing; cannot perform local render review')
             renders.append(dict(view=view,relative_path=path.relative_to(store.DATA).as_posix(),sha256=store.digest(path)))
         from .quality_evaluation import evaluator_key

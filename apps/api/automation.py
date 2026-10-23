@@ -316,7 +316,7 @@ def advance(identifier):
                     if not inference:
                         batch.save(batch.stored(value))
                         for engine in auto['engines']:
-                            studio.generate(studio.Generate(asset_id=item['asset_id'],artifact_id=source['id'],request_id=prefix+':'+engine,engine=engine,quality=item['quality'],prompt=item.get('resolved_prompt') or item['prompt'],seeds=item.get('seeds') or [42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m'],batch_id=identifier,batch_attempt=item['attempt'],quality_lock=item['quality_lock']))
+                            studio.generate(studio.Generate(asset_id=item['asset_id'],artifact_id=source['id'],request_id=prefix+':'+engine,engine=engine,quality=item['quality'],prompt=item.get('resolved_prompt') or item['prompt'],seeds=item.get('seeds') or [42+n for n in range(item['candidates'])],auto_blender=True,benchmark_height_m=item['target_height_m'],batch_id=identifier,batch_attempt=item['attempt'],quality_lock=item['quality_lock'],triangle_budget=item.get('triangle_budget')))
                         active_assets.add(item['asset_id']);auto.update(status='queued',stage='image-to-3D');continue
                     for job in inference:jobs.ensure_blender(job)
                 processed=[a for a in artifacts if a.get('asset_id')==item['asset_id'] and a['metadata'].get('stage') in ('blender_processed','animation_processed') and any(j['id']==a['metadata'].get('job_id') for j in current)]
@@ -436,6 +436,7 @@ class Single(BaseModel):
     quality:Literal['Fast','Balanced','Maximum']='Maximum'
     engine:Literal['auto','trellis2_community','triposg']='auto'
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
+    triangle_budget:int|None=Field(default=None,ge=500,le=5_000_000)
     reference_id:str|None=None
     reference_usage:Literal['auto','source','palette_style']='source'
     workflow:Workflow|None=None
@@ -460,7 +461,7 @@ def single(body:Single):
             if prior:return dict(batch_id=prior['batch_id'],asset_id=body.asset_id,batch=batch.detail(batch.batch(prior['batch_id'])))
             identifier=uuid.uuid4().hex
             from .manifest import ManifestItem
-            row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
+            row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),triangle_budget=body.triangle_budget,quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
             row.update(attempt=0,started=False,version=1,quality_lock=body.quality=='Maximum',seeds=body.seeds)
             if effective_usage=='palette_style':row.update(reference_ids=[],style_reference_ids=[body.reference_id],reference_usage=effective_usage)
             row.update(intent_reference_usage='style' if effective_usage=='palette_style' else body.reference_usage,intent_reference_scope='palette_only' if body.reference_usage=='palette_style' else 'semantic')

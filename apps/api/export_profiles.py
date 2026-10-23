@@ -201,6 +201,11 @@ def _source(asset, artifact_id=None):
         record = record or next((r for r in meshes if r['metadata'].get('stage') == 'blender_processed' and 'LOD0' in r['name']), None)
         record = record or next(iter(meshes), None)
         if not record:raise HTTPException(409, 'No completed GLB exists for this asset. Generation is not started by export.')
+    if record['metadata'].get('stage') == 'blender_processed':
+        # Deliver the budgeted game-ready derivative of this exact processed version when one exists; the master stays in the Library.
+        with store.connect() as db:
+            children = [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE project_id=? AND asset_id=? ORDER BY created_at DESC', (asset['project_id'], asset['id']))]
+        record = next((r for r in children if r['metadata'].get('stage') == 'game_ready' and r['metadata'].get('parent_id') == record['id']), record)
     path = _record_path(record)
     if path.suffix.lower() != '.glb':raise HTTPException(422, 'Select an actual GLB candidate or master.')
     try:qa = inspect_glb(path)

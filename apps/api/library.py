@@ -33,7 +33,8 @@ def thumbnail_source(artifacts):
     for a in reversed(artifacts):
         job=a['metadata'].get('job_id')
         if job and a['metadata'].get('stage')=='blender_processed':
-            path=store.DATA/'jobs'/job/'output/mobile_three_quarter.png'
+            path=store.DATA/'jobs'/job/'output/fit_three_quarter.png'
+            if not path.is_file():path=store.DATA/'jobs'/job/'output/mobile_three_quarter.png'
             if path.is_file():return path,'generated_model',a['sha256']
     for a in artifacts:
         if a['role'] in ('reference','concept'):
