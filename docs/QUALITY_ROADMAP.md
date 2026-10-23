@@ -4,6 +4,22 @@ The user authorized implementation of the proposed quality improvements and aske
 
 ## Old-task audit
 
+2026-10-23 update: fresh packaged castle prompt + tower style reference completed
+real Qwen/SDXL/bounded concept repair/TRELLIS.2/Blender/QA/automatic GLB delivery
+and restart. A second actual Source Archer asset then completed in the same
+isolated Library without modifying the castle delivery. Separate physical RAM
+and Windows commit admission fixes the reproduced false next-job wait. See
+CASTLE_FULL_NATIVE_0917.md and WINDOWS_MEMORY_ADMISSION.md. The 0.9.19 Source
+interpretation slice removes only unused new-concept planning; final native
+evidence is recorded separately. No personal Library contamination.
+
+Real two-seed v1/Hi3DGen castle geometry and 50 common-light clay frames are now
+available, with mixed advantages and no PBR/production promotion. Eight paired
+SDXL material/pooling images expose seed-dependent style compliance: blue roofs
+at seed43 under two variants, warm roofs still at seed44. Keep existing defaults;
+this is not a universal prompt-fidelity repair or artistic/Meshy pass. See
+CASTLE_ENGINE_GEOMETRY_20261023.md and CASTLE_MATERIAL_CONDITIONING_RESEARCH.md.
+
 | Area | Evidence / current result | Remaining work |
 |---|---|---|
 | Single and Batch automation | Stable 0.6.0: real short text to SDXL, TRELLIS.2, Blender, QA and automatic GLB; shared scheduler | Stronger prompt fidelity and broader production stress coverage |

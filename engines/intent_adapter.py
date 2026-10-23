@@ -113,6 +113,15 @@ def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,ch
         if not numbers<=translated:raise ValueError('Local interpretation dropped explicit numbers; original prompt preserved for Retry')
         if not images:answer.reference_role='none'
         elif usage in ('source','style'):answer.reference_role=usage
+        if answer.reference_role=='source':
+            # Image-to-3D uses the immutable supplied shape, not a new text-to-image
+            # concept. Keep validated translation, but do not let an unused second
+            # LLM call discard a completed interpretation or invent replacement shape.
+            answers.append(dict(start=start,end=end,sha256=hashlib.sha256(text.encode()).hexdigest(),
+                interpretation=answer.model_dump(),generation_plan=dict(description_en=answer.translated_prompt_en,inferred_ordinary_details=[]),
+                concept_planning=dict(status='skipped',reason='Supplied source image reconstruction; no new concept required'),
+                eval_count=response.get('eval_count'),total_duration_ns=response.get('total_duration'),planning_duration_ns=None))
+            checkpoint(dict(signature=signature,chunks=answers));continue
         # The image-aware interpreter must not design geometry from a style ref.
         # A separate text-only planning call never sees reference pixels or the
         # reference object's description. This prevents a tower overriding castle.

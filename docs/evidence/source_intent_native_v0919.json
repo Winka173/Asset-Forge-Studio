@@ -1,0 +1,77 @@
+{
+  "status": "PASS_NATIVE_REAL_SOURCE_INTERPRETATION_NO_UNUSED_PLAN",
+  "version": "0.9.19",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\source-intent-native\\2026-10-23T03-37-26-814Z",
+  "errors": [],
+  "scope": "Real local CPU Qwen Source interpretation in the actual packaged shared queue, immutable reference/prompt, no unused new-concept call, checkpoint/restart. A declared helper owns only the existing global GPU mutex so the admitted real inference job stays queued; it consumes no GPU and fabricates no inference/model. Batch is explicitly paused before releasing mutex. Full real Archer geometry/Blender/export was separately verified in 0.9.18.",
+  "project_id": "5d78bd81014d4cc8803865b827f36271",
+  "asset_id": "64057a564dc64409992a5eee080cea96",
+  "batch_id": "5843dc683ada4b88b800a7466897c429",
+  "seconds_to_geometry_admission": 39.629,
+  "actual_interpretation": {
+    "schema_version": 4,
+    "status": "interpreted",
+    "model": "qwen3-vl:4b-instruct-q4_K_M",
+    "model_digest": "84f7ed8042fa7cdbd902f7dcb7d0370e032095047cc3244179f263b77b5bc318",
+    "execution": "local_cpu_only",
+    "source_prompt_sha256": "25ed3a61eba208020b9ed1a6dba112cab6c23fa5295d4f0f7f4e8f51685cdc0d",
+    "references": [
+      {
+        "artifact_id": "cd122ea3f30a41cda09806d5babec298",
+        "sha256": "96af7cf51b171f770b9d9cb6af07c3f7d537f01920af7dff5ed9408ee172948e"
+      }
+    ],
+    "chunks": [
+      {
+        "start": 0,
+        "end": 100,
+        "sha256": "25ed3a61eba208020b9ed1a6dba112cab6c23fa5295d4f0f7f4e8f51685cdc0d",
+        "interpretation": {
+          "translated_prompt_en": "Reconstruct 1 archer tower from this source image. Preserve its geometry and materials, height 10 m.",
+          "requested_subject_en": "archer tower",
+          "reference_role": "source",
+          "reference_description_en": "",
+          "style_traits": [],
+          "appearance": {
+            "colors": [
+              "blue",
+              "brown",
+              "gray"
+            ],
+            "materials": [
+              "stone",
+              "wood",
+              "metal",
+              "stone tiles"
+            ],
+            "surface_treatment": "smooth and slightly textured",
+            "rendering_aesthetic": "cartoonish 3D rendering"
+          },
+          "warnings": []
+        },
+        "generation_plan": {
+          "description_en": "Reconstruct 1 archer tower from this source image. Preserve its geometry and materials, height 10 m.",
+          "inferred_ordinary_details": []
+        },
+        "concept_planning": {
+          "status": "skipped",
+          "reason": "Supplied source image reconstruction; no new concept required"
+        },
+        "eval_count": 136,
+        "total_duration_ns": 23769053300,
+        "planning_duration_ns": null
+      }
+    ],
+    "reference_role": "source",
+    "generation_prompt_en": "Reconstruct 1 archer tower from this source image. Preserve its geometry and materials, height 10 m.",
+    "duration_seconds": 27.89099999999962,
+    "provenance": "inferred_local_vision_language_model",
+    "artistic_approval": false,
+    "qa_status": "not_run"
+  },
+  "job_ids": [
+    "0eb82cd405664daeab3bb45da17a3651",
+    "7ffd00e728964bafaf60a8df44f2cd92"
+  ],
+  "intent_sha256": "b9d280d12441406e8597a70b6844aaa35a1724a6c8707773626096439e37eb23"
+}

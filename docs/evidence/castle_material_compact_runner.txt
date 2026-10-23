@@ -1,0 +1,57 @@
+"""Controlled local prompt research only. No product defaults or source rewrite."""
+import os,sys,json,time,subprocess
+from pathlib import Path
+from datetime import datetime,timezone
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+RUN=ROOT/'.local/castle-compact-conditioning'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ');RUN.mkdir(parents=True)
+os.environ['AFS_DATA']=str(RUN/'Library')
+from apps.api import jobs,store,host_resources
+from engines.quality import resolve_concept,fingerprint
+import psutil
+parent=ROOT/'.local/castle-full-native/2026-10-23T02-33-48-138Z/Library/jobs/18b3baaf3c12439c960c9c069302bbc2'
+original=json.loads((parent/'request.json').read_text('utf-8'))
+derived=('One castle, midnight blue slate roofs, ivory limestone walls, chestnut oak doors, bronze gates, navy gold flags, cyan mana, two balconies. '
+ 'Connected fortified towers and keep, carved stone, detailed stylized 3D game art. Orthographic three-quarter view, full castle and flags, clear margins, isolated neutral background.')
+tracked=[parent/'request.json',parent/'output/concept.png',ROOT/'engines/sdxl_worker.py',ROOT/'engines/concept_conditioning.py']
+hashes={str(p):store.digest(p) for p in tracked}
+report=dict(status='RUNNING_RESEARCH_ONLY',run=str(RUN),source_hashes=hashes,variants=[],
+ scope='Same offline SDXL weights, unchanged frozen pooling/sampler,50/1024, same negative, paired seeds43/44. Compact derived image description, with original user/project constraints retained separately. Compared to existing baseline images in castle-material-conditioning/20261023T032006Z. This deliberately removes many inferred ordinary descriptive clauses, not explicit user source. Combined prompt/length edit, not causal isolation of one phrase. No production default, source/installed model edit, new 3D, colorimetry or artistic score claim.',
+ original_user_prompt='tạo cho tôi 1 lâu đài, style giống hình ảnh ref này',derived_constraint_provenance=dict(subject='explicit user castle',materials='inherited unchanged Runavelle material vocabulary',palette='inherited semantic material names; original hex codes retained in source metadata, no colorimetry guarantee',geometry='retained derived ordinary castle elements; two balconies inherited from Art Bible; not explicit user geometry',framing='existing whole-object studio composition requirement',negative='unchanged original negative conditioning'))
+try:
+ for seed in (43,44):
+  for mode,prompt in [('compact_materials',derived)]:
+   name=f'{mode}-{seed}';folder=store.DATA/'jobs'/name;folder.mkdir(parents=True)
+   req=dict(original,prompt=prompt,seed=seed,output=str(folder/'output'))
+   effective=resolve_concept(prompt,seed,req['steps'],req['size'],req.get('project_style_snapshot'),'Maximum')
+   effective['negative_prompt']=req['negative_prompt'];req.update(effective_config=effective,effective_config_hash=fingerprint(effective),research_prompt_delta=mode)
+   path=folder/'request.json';path.write_text(json.dumps(req,indent=2),'utf-8')
+   case=dict(mode=mode,seed=seed,job_id=name,samples=[]);report['variants'].append(case);process=None;started=time.monotonic()
+   job=dict(id=name,payload=dict(kind='concept',engine='sdxl_local',effective_config=effective))
+   try:
+    with jobs.resource_slot('gpu'),host_resources.reserve(job,'gpu') as admission,(folder/'worker.log').open('w',encoding='utf-8') as log:
+     case['admission']=admission
+     if not admission['allowed']:raise RuntimeError(admission['reason'])
+     process=subprocess.Popen([str(Path.home()/'Tools/sdxl/venv/Scripts/python.exe'),'-B','-u',str(ROOT/'engines/sdxl_worker.py'),'--request',str(path)],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+     (folder/'process.json').write_text(json.dumps(dict(pid=process.pid)),'utf-8')
+     while process.poll() is None:
+      gpu=subprocess.run(['nvidia-smi','--query-gpu=memory.used,memory.total,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+      vals=[float(v.strip()) for v in gpu.stdout.strip().split(',')]
+      sample=dict(seconds=time.monotonic()-started,gpu_used_mib=vals[0],gpu_total_mib=vals[1],gpu_utilization_percent=vals[2],available_RAM_bytes=psutil.virtual_memory().available)
+      try:
+       owner=psutil.Process(process.pid);sample['worker_tree_rss_bytes']=sum(p.memory_info().rss for p in [owner,*owner.children(recursive=True)])
+      except psutil.Error:pass
+      case['samples'].append(sample)
+      if time.monotonic()-started>600:raise TimeoutError('Bounded actual SDXL research timeout')
+      time.sleep(1)
+     if process.returncode:raise RuntimeError('Actual worker failed; see retained log')
+    generation=json.loads((folder/'output/generation.json').read_text('utf-8'));case['generation']=generation
+    assert generation['status']=='GENERATED_NEEDS_REVIEW' and generation['conditioning_verification']['status']=='verified'
+    if mode=='baseline' and seed==43:assert generation['output_sha256']==hashes[str(parent/'output/concept.png')]
+    case['status']='REAL_IMAGE_NEEDS_VISUAL_REVIEW'
+   finally:
+    if process and process.poll() is None:jobs.kill_tree(process)
+    case['seconds']=time.monotonic()-started
+    (RUN/'report.json').write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(dict(case=name,run=str(RUN),status=case.get('status'),seconds=case['seconds'])),flush=True)
+ assert all(store.digest(Path(p))==h for p,h in hashes.items());report.update(status='REAL_PAIRED_IMAGES_READY_FOR_REVIEW',sources_preserved=True)
+except Exception as exc:report.update(status='FAILED_OR_RESOURCE_BLOCKED',error=str(exc));raise
+finally:(RUN/'report.json').write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(dict(status=report['status'],run=str(RUN))),flush=True)

@@ -1,3 +1,15 @@
+# Windows 0.9.19 - preserve Source interpretation without unused concept planning - 2026-10-23
+
+222 backend tests PASS (186.44 s), six relevant intent/reference tests PASS, TypeScript/Vite, fresh Windows/PyInstaller/Tauri/NSIS, generic native smoke and affected real-Qwen native acceptance PASS. Packaged backend/source cache verified. Preserves the separate agent's e36b767 UI. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe with adjacent afs-backend.exe; installer Asset Forge Studio_0.9.19_x64-setup.exe.
+
+Fixed the real 0.9.18 Source issue where an unused second new-concept planning call could fail and discard successful first interpretation. Source now retains validated translation/reference analysis, adds no inferred shape, records concept planning skipped with null duration and continues the original supplied-image route. Style/new-subject and text-only planning remain separate. Explicit numeric/schema checks, source hashes, checkpoint compatibility, fallback truthfulness and generation Quality Lock remain intact. Actual packaged Qwen analysis plus geometry admission took 39.63 s, showed Understood request and skipped concept, and persisted through restart without duplicate jobs or changed prompts/source. Declared global-mutex fixture holds GPU, then pauses the isolated batch before release: no new 3D output is claimed for this narrow test. The previous real full Archer delivery remains independent. Initial native assertion used the wrong texture field; corrected to existing texture.size and fully rerun. See SOURCE_INTERPRETATION.md and evidence/source_intent_native_v0919.json/png.
+
+Eight additional real paired-seed concept trials cover original long compilation, bound-material description, compact single-window description and bound first-window pooled conditioning. Baseline seed43 exactly reproduces retained castle. Compact and bound-first produce blue roofs at seed43, but all variants remain warm at seed44 and geometry/framing changes. No universal fidelity fix or default/pooling change is adopted, no 3D/Meshy/artistic acceptance follows. Original worker/model/source prompts and user data preserved. Evidence/limitations/runners: CASTLE_MATERIAL_CONDITIONING_RESEARCH.md.
+
+Still open: style and framing consistency across seeds, artistic/Meshy acceptance, broader engine/material benchmark and later roadmap modules. Technical delivery is working on genuine castle and tower outputs; it must not be reported as completion of every quality/module gate.
+
+---
+
 # Windows 0.9.18 - separate physical/commit admission; two real native deliveries - 2026-10-23
 
 219 backend tests PASS (204.38 s), 14 targeted memory tests PASS, TypeScript/Vite, fresh Windows/PyInstaller/Tauri/NSIS, generic native smoke, affected actual GPU acceptance and backend/source cache PASS. Current UI comes from the independent agent's committed work; root did not redesign it. Latest EXE: dist/windows/stable/latest/Asset Forge Studio.exe with adjacent afs-backend.exe; installer Asset Forge Studio_0.9.18_x64-setup.exe.
