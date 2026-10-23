@@ -68,6 +68,9 @@ class ProjectInput(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     description: str = Field(default='', max_length=20000)
     cover_artifact_id: str | None = None
+    # Approved image that steers concept style for every asset in the project (IP-Adapter when installed).
+    style_anchor_artifact_id: str | None = None
+    style_anchor_scale: float | None = Field(default=None, ge=0.1, le=1.0)
     art_bible: dict = Field(default_factory=dict)
     palette: list[str] = Field(default_factory=list, max_length=32)
     material_language: str = Field(default='', max_length=10000)
@@ -89,7 +92,7 @@ def projects():
 def create_project(body: ProjectInput):
     identifier = uuid.uuid4().hex
     if not body.name.strip(): raise HTTPException(400, 'Tên game không được để trống')
-    if body.cover_artifact_id: raise HTTPException(400, 'Tạo game trước rồi nhập ảnh cover thuộc game này')
+    if body.cover_artifact_id or body.style_anchor_artifact_id: raise HTTPException(400, 'Tạo game trước rồi nhập ảnh cover thuộc game này')
     value = body.model_dump() | dict(id=identifier)
     with store.connect() as db: db.execute('INSERT INTO projects VALUES (?,?,0)', (identifier, json.dumps(value)))
     return value
@@ -102,6 +105,9 @@ def update_project(identifier: str, body: ProjectInput):
     if body.cover_artifact_id:
         cover = scoped_artifact(body.cover_artifact_id, identifier)
         if cover['role'] not in ('concept', 'reference'): raise HTTPException(400, 'Cover cần ảnh')
+    if body.style_anchor_artifact_id:
+        anchor = scoped_artifact(body.style_anchor_artifact_id, identifier)
+        if anchor['role'] not in ('concept', 'reference'): raise HTTPException(400, 'Style anchor must be an image in this project')
     updates=body.model_dump(exclude_unset=True)
     if 'export_settings' in updates:updates['export_settings']=previous.get('export_settings',{}) | updates['export_settings']
     value = previous | updates | dict(id=identifier)
@@ -351,6 +357,9 @@ def concept(body: ConceptInput):
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
     except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc
     effective.update(negative_prompt=negative,composition_policy=COMPOSITION_POLICY)
+    from .style_anchor import resolve as resolve_anchor,locked as locked_anchor
+    style_anchor=resolve_anchor(value['project_id'],project(value['project_id']),body.style_reference_ids)
+    if style_anchor:effective.update(style_anchor=locked_anchor(style_anchor))
     if body.style_reference_ids:effective.update(reference_hashes=[r['sha256'] for r in reference_direction['references']],reference_direction=reference_direction)
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');previous=cached(db,body.request_id,request_digest(body))
@@ -358,7 +367,7 @@ def concept(body: ConceptInput):
         from .engine_health import admit
         admit(dict(kind='concept',asset_id=value['id'],effective_config=effective))
         result=jobs.enqueue(dict(kind='concept',batch_id=body.batch_id,batch_attempt=body.batch_attempt,project_id=value['project_id'],asset_id=value['id'],name=value['name']+' concept',
-            prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,
+            prompt=prompt,negative_prompt=negative,user_prompt=body.prompt,reference_direction=reference_direction,project_style_snapshot=config,seed=body.seed,style_anchor=style_anchor,
             steps=steps,size=size,effective_config=effective,effective_config_hash=fingerprint(effective),quality_repair=body.quality_repair),db=db)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_digest(body),json.dumps(result)))
         value.update(prompt=body.prompt,updated_at=store.now())

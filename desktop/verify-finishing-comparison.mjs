@@ -1,6 +1,7 @@
 // Actual retained GLBs in the packaged shared-camera viewer; no artistic approval.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {createHash} from 'node:crypto';
+import {openInspectorTab} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..'),run=path.join(root,'.local/finishing-comparison-native',new Date().toISOString().replaceAll(/[:.]/g,'-')),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
 const files={golden:process.env.AFS_BASELINE_GLB||path.join(root,'.local/native-checkpoint-real/20261022T124320Z/Library/jobs/770b27a74afa439998bc51e9dd320c70/output/raw.glb'),candidate:process.env.AFS_COMPARISON_GLB||path.join(root,'.local/projection-finishing/20261022T135129Z/output/raw.glb')};
 const hashes=Object.fromEntries(Object.entries(files).map(([k,p])=>[k,createHash('sha256').update(fs.readFileSync(p)).digest('hex')]));
@@ -25,12 +26,12 @@ try{
  if(process.env.AFS_SURFACE_CHECK==='1'){
   const panels=page.getByLabel('Measured triangle and shading diagnostics',{exact:true});assert.equal(await panels.count(),2);
   for(let i=0;i<2;i++){const role=i===0?'golden':'candidate',panel=panels.nth(i),expected=report.artifacts[role].metadata.surface_diagnostics;assert(expected);await panel.locator('summary').click();assert((await panel.innerText()).includes(expected.totals.very_thin_triangles.toLocaleString('en-US')));assert((await panel.innerText()).includes(expected.faces_opposing_mean_vertex_normal.toLocaleString('en-US')));}
-  await panels.first().scrollIntoViewIfNeeded();await page.screenshot({path:path.join(run,'actual-surface-diagnostics.png')});report.checks.push({name:'actual_both_GLB_surface_counts_match_import_measurements',passed:true});
+  await panels.first().scrollIntoViewIfNeeded();await openInspectorTab(page,'Checks');await page.screenshot({path:path.join(run,'actual-surface-diagnostics.png')});report.checks.push({name:'actual_both_GLB_surface_counts_match_import_measurements',passed:true});
  }
  if(process.env.AFS_TEXTURE_CHECK==='1'){
   const panels=page.getByLabel('Validated embedded textures',{exact:true});assert.equal(await panels.count(),2);
   for(let i=0;i<2;i++){const role=i===0?'golden':'candidate',panel=panels.nth(i),expected=report.artifacts[role].metadata.texture_diagnostics;assert.equal(expected.images.length,2);await panel.locator('summary').click();assert((await panel.innerText()).includes(expected.images[0].width.toLocaleString('en-US')));assert((await panel.innerText()).includes('G=roughness, B=metallic'));}
-  await panels.first().scrollIntoViewIfNeeded();await page.screenshot({path:path.join(run,'actual-texture-diagnostics.png')});report.checks.push({name:'actual_embedded_texture_resolutions_and_PBR_bindings_visible_in_Compare',passed:true});
+  await panels.first().scrollIntoViewIfNeeded();await openInspectorTab(page,'Checks');await page.screenshot({path:path.join(run,'actual-texture-diagnostics.png')});report.checks.push({name:'actual_embedded_texture_resolutions_and_PBR_bindings_visible_in_Compare',passed:true});
  }
  assert.equal((await call('/api/jobs')).length,0);assert.equal(report.errors.length,0);
  for(const role of ['golden','candidate'])assert.equal(createHash('sha256').update(fs.readFileSync(files[role])).digest('hex'),hashes[role]);

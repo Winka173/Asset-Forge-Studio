@@ -12,3 +12,5 @@
 - Keep user Library untouched during acceptance. No unrelated Video/Audio expansion work in this task.
 - Retain the real historical tower as a hash-bound regression baseline. A shape-reference request always retains image-to-3D; the narrow authored castle route is not an artistic quality replacement. Replays use explicit original settings and separate output directories. Never lower quality to clear a queue/resource failure.
 - Permanent admission/delivery exceptions stop repeated polling retries for that asset until explicit Retry; manual approval checkpoints remain separately reevaluated. Quarantined queued stages and terminal concept blockers do not reserve the logical asset window.
+
+- 2026-10-23: Text routes generate a concept tournament (Maximum 3, Balanced 2, Fast 1; per-item `concept_candidates` override) and rank only eligible concepts (cropped/too-small concepts are never promoted). User-provided references are not ranked or gated. Project style anchors use IP-Adapter Plus SDXL at 0.35 by default; the anchor identity and scale are locked in the effective configuration.

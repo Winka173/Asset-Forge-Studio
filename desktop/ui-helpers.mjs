@@ -52,3 +52,9 @@ export async function openGpuPopover(page) {
   await page.locator('.gpu-chip').click();
   await page.locator('.gpu-popover').waitFor();
 }
+
+// Diagnostics live in the inspector's Checks tab; prompt/spec/stage/export records live in History.
+export async function openInspectorTab(page, name) {
+  const tab = page.getByRole('tab', {name, exact: true}).first();
+  if (await tab.count() && (await tab.getAttribute('aria-selected')) !== 'true') await tab.click();
+}

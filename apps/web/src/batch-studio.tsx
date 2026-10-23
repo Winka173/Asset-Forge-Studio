@@ -252,6 +252,9 @@ export function BatchStudio({
   const manifestRef = useRef<HTMLElement>(null);
   mountedProject.current = projectId;
   selectedRef.current = selectedBatch;
+  // Steps keep one concern on screen: write the brief, review/produce the manifest, then export what exists.
+  const [stage, setStage] = useState<'brief' | 'manifest' | 'export'>('brief');
+  useEffect(() => { setStage(batch ? 'manifest' : 'brief'); }, [batch?.id]);
   const selectedItems =
     batch?.items.filter((item) => item.selected && !item.skipped) || [];
   const blockedItems = selectedItems.filter(needsSpecs);
@@ -598,7 +601,7 @@ export function BatchStudio({
           ? "Images here apply to the next Analyze. For this manifest, use Edit on each asset to assign its own image; running jobs are never changed."
           : "Optional. Selected images become the 3D geometry source for every imported asset. For different assets, leave this empty and assign individual images using Edit after Analyze."}/>);
   return (
-    <div className="batch-studio">
+    <div className="batch-studio" data-stage={stage}>
       <div className="batch-heading">
         <div>
           <div className="overline">
@@ -657,6 +660,7 @@ export function BatchStudio({
       {draftWarning && <p className="batch-storage-warning" role="status">{draftWarning}</p>}
       {busy && <ActivityIndicator label={analyzing ? 'Analyzing your source file' : 'Updating local batch'} detail={analyzing ? 'Reading the complete prompt and building the manifest. GPU production has not started.' : 'Waiting for the local backend to finish this action.'}/>}
       {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
+      <nav className="batch-steps" aria-label="Batch steps">{([['brief','Brief'],['manifest','Manifest & production'],['export','Export']] as const).map(([id,label],index)=><button key={id} type="button" aria-current={stage===id?'step':undefined} disabled={id!=='brief'&&!batch} onClick={()=>setStage(id)}><span>{index+1}</span>{label}</button>)}</nav>
       <details className="batch-workflow-disclosure"><summary>Workflow &amp; recovery <span>{workflow.mode==='auto'?'Automatic':workflow.mode==='assisted'?'Assisted':'Expert'}</span></summary><div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate all starts production when you choose.'}</p></div>
       <details className="advanced batch-workflow-options"><summary>Advanced · workflow checkpoints and recovery</summary>{workflow.mode==='assisted' && <div className="batch-checkpoint-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint} className="check-field"><input type="checkbox" disabled={busy} checked={workflow.checkpoints[checkpoint]} onChange={event=>updateWorkflow({checkpoints:{[checkpoint]:event.target.checked}})}/>Review {checkpoint==='candidate'?'3D candidate':checkpoint==='export'?'before export':'concept'}</label>)}</div>}<div className="batch-edit-pair"><label className="studio-field">Retry limit<input type="number" min="0" max="3" disabled={busy} value={workflow.retry_limit} onChange={event=>updateWorkflow({retry_limit:Number(event.target.value)})}/></label><label className="studio-field">Disk reserve (GB)<input type="number" min="1" disabled={busy} value={workflow.disk_reserve_gb} onChange={event=>updateWorkflow({disk_reserve_gb:Number(event.target.value)})}/></label></div><label className="studio-field">After reopening<Select aria-label="Batch recovery policy" value={workflow.auto_resume ? "auto" : "manual"} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({auto_resume:event.target.value==="auto"})}><option value="manual">Wait for manual Resume</option><option value="auto">Auto-resume after reopening</option></Select><small>Automatic GPU restart requires this explicit opt-in. Completed outputs and exports remain available in either mode.</small></label><p>One logical batch, up to {workflow.max_active_assets} active assets. Only one heavy GPU task runs at a time. Pause finishes the current stage before stopping; recovery reuses completed checkpoints.</p></details>
       </details>      <details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration · original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">

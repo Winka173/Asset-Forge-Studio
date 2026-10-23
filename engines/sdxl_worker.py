@@ -45,6 +45,19 @@ def main():
         pipe = StableDiffusionXLPipeline.from_pretrained(str(weights), variant='fp16', torch_dtype=torch.float16,
                 use_safetensors=True, local_files_only=True, add_watermarker=False)
         pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, algorithm_type='dpmsolver++', use_karras_sigmas=True)
+        anchor_image = None
+        style = req.get('style_anchor')
+        if style:
+            # Image-prompt style conditioning (IP-Adapter Plus SDXL): the project anchor steers palette, materials and
+            # rendering style while the text keeps the subject. Hash-bound so a changed anchor never runs silently.
+            from PIL import Image
+            anchor_path = Path(style['path']); adapter = Path(style['adapter_dir'])
+            if digest(anchor_path) != style['sha256']: raise ConditioningError('Style anchor image changed after admission; no generation started')
+            print('STAGE load_style_adapter', flush=True)
+            pipe.load_ip_adapter(str(adapter), subfolder='sdxl_models', weight_name=style['weight_name'], image_encoder_folder='models/image_encoder', local_files_only=True)
+            pipe.set_ip_adapter_scale(float(style['scale']))
+            anchor_image = Image.open(anchor_path).convert('RGB')
+            report['style_anchor'] = dict(sha256=style['sha256'], scale=style['scale'], adapter=style['weight_name'], adapter_sha256=digest(adapter/'sdxl_models'/style['weight_name']))
         pipe.enable_model_cpu_offload(); pipe.vae.enable_slicing(); pipe.vae.enable_tiling()
         prompt = req['prompt']
         negative = req.get('negative_prompt', DEFAULT_NEGATIVE)
@@ -79,7 +92,8 @@ def main():
             image = pipe(prompt_embeds=embeds, pooled_prompt_embeds=pooled, negative_prompt_embeds=neg_embeds,
                          negative_pooled_prompt_embeds=neg_pooled, height=req.get('size',1024), width=req.get('size',1024),
                          num_inference_steps=req['steps'], guidance_scale=req.get('guidance_scale',7),
-                         generator=torch.Generator(device='cpu').manual_seed(req['seed']), callback_on_step_end=progress).images[0]
+                         generator=torch.Generator(device='cpu').manual_seed(req['seed']), callback_on_step_end=progress,
+                         **(dict(ip_adapter_image=anchor_image) if anchor_image is not None else {})).images[0]
         image.save(output / 'concept.png')
         report.update(status='GENERATED_NEEDS_REVIEW', output_sha256=digest(output/'concept.png'),
                       peak_allocated_bytes=torch.cuda.max_memory_allocated(), peak_reserved_bytes=torch.cuda.max_memory_reserved(),

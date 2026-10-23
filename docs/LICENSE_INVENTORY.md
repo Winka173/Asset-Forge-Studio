@@ -19,3 +19,8 @@ Không có dịch vụ AI trả phí hoặc inference API tính lượt. Downloa
 | Python/web dependencies | Exact versions trong uv.lock/package-lock và lock riêng engine; license từng distribution cần inventory trước đóng gói | Chưa là bản phân phối thương mại |
 
 Không tự đồng ý điều khoản bằng tài khoản người dùng; không lưu token vào asset metadata. Quyền code, weights, helper model, input và output phải xem riêng.
+
+## IP-Adapter Plus SDXL (style anchor) — added 2026-10-23
+
+- Weights: `h94/IP-Adapter` `sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors` and `models/image_encoder` (OpenCLIP ViT-H/14), cached in the local Hugging Face hub; loaded offline (`local_files_only`). Repository license: Apache-2.0. The OpenCLIP ViT-H/14 image encoder was trained on LAION-2B; commercial use of outputs still follows the SDXL CreativeML Open RAIL++-M terms already recorded for concept generation.
+- Downloaded with explicit user authorization ("làm hết") after the user freed disk space. Not bundled with desktop builds.

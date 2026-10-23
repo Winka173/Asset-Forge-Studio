@@ -70,6 +70,10 @@ def verify_request(request, weights, environment, source, runtime=None):
         guidance=request.get('guidance_scale', 7))
     if any(effective.get(key) != value for key, value in values.items()):
         raise ConditioningError('Concept execution differs from the locked prompt/seed/steps/size/guidance')
+    anchor = request.get('style_anchor') or {}
+    locked_anchor = effective.get('style_anchor') or {}
+    if {k: anchor.get(k) for k in ('sha256', 'scale', 'weight_name')} != {k: locked_anchor.get(k) for k in ('sha256', 'scale', 'weight_name')}:
+        raise ConditioningError('Concept style anchor differs from the locked configuration')
     return dict(status='verified', policy_id=POLICY['id'], identity=actual)
 
 

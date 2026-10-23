@@ -14,6 +14,13 @@ def qa_project():
 
 
 @pytest.fixture(autouse=True)
+def single_concept_by_default(monkeypatch):
+    """Queue-invariant suites count jobs per asset; the concept tournament has its own dedicated tests."""
+    from apps.api import automation
+    monkeypatch.setattr(automation,'CONCEPT_CANDIDATES',{'Maximum':1,'Balanced':1,'Fast':1})
+
+
+@pytest.fixture(autouse=True)
 def no_implicit_local_llm_inference(monkeypatch):
     """Unit/API suites never start installed multi-GB models implicitly. Real acceptance is separate."""
     monkeypatch.setenv("AFS_INTENT_ENABLED","0")

@@ -39,6 +39,8 @@ class ManifestItem(BaseModel):
     candidates: int = Field(default=1,ge=1,le=5)
     # Optional game-ready triangle budget; the master keeps full detail and the delivered derivative is decimated to it.
     triangle_budget: int | None = Field(default=None,ge=500,le=5_000_000)
+    # Generated concepts compared before image-to-3D; 0 = by quality (Maximum 3, Balanced 2, Fast 1).
+    concept_candidates: int = Field(default=0,ge=0,le=6)
     target_outputs: list[Literal['glb','fbx']] = Field(default=['glb'],min_length=1,max_length=2)
     selected: bool = True
     confirmed: bool = False

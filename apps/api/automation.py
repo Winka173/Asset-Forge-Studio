@@ -13,6 +13,9 @@ from pydantic import BaseModel,Field
 from . import store,jobs,studio
 from .quality_repair import RepairBudget
 
+# Concepts generated and compared per asset before image-to-3D when the item does not set its own count.
+CONCEPT_CANDIDATES={'Maximum':3,'Balanced':2,'Fast':1}
+
 router=APIRouter(prefix='/api/automation')
 
 
@@ -290,6 +293,9 @@ def advance(identifier):
                     if source is None:
                         choices=[a for a in artifacts if a['role'] in ('concept','reference') and (a['id'] in item['reference_ids'] or a['role']=='concept' and a.get('asset_id')==item['asset_id'] and any(j['id']==a['metadata'].get('job_id') for j in current))]
                         from .concept_guard import filter_choices
+                        # Concept tournament: wait until every concept of this attempt has finished before choosing.
+                        if any(j['payload']['kind']=='concept' and j['status'] not in jobs.TERMINAL and j['status']!='REVIEW_REQUIRED' for j in current):
+                            active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
                         choices=filter_choices(value,item,current,choices,auto)
                         if choices is None:
                             if auto.get('status') not in ('blocked','failed','cancelled'):active_assets.add(item['asset_id'])
@@ -303,10 +309,26 @@ def advance(identifier):
                             except (OSError,ValueError):continue
                         if not valid:
                             if any(j['payload']['kind']=='concept' for j in current):auto.update(status='blocked',stage='concept QA',error='No valid concept output');continue
-                            studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept',prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),quality=item['quality'],batch_id=identifier,batch_attempt=item['attempt']))
+                            concept_count=item.get('concept_candidates') or CONCEPT_CANDIDATES[item['quality']]
+                            for index in range(concept_count):
+                                studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept'+(f':{index}' if index else ''),prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),quality=item['quality'],seed=42+index*7919,batch_id=identifier,batch_attempt=item['attempt']))
                             active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
-                        _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
-                        selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
+                        generated=[v for v in valid if v[2]['role']=='concept' and v[2]['id'] not in item['reference_ids']]
+                        if generated and len(generated)==len(valid):
+                            # Generated concepts compete on image-to-3D suitability and project style; user references stay authoritative.
+                            from .concept_rank import rank,POLICY_VERSION
+                            from .style_anchor import resolve as resolve_anchor
+                            anchor=resolve_anchor(value['project_id'],studio.project(value['project_id']),item.get('style_reference_ids',[]))
+                            ranked=rank([(v[2],store.safe_path(v[2]['relative_path'])) for v in generated],anchor and anchor['path'])
+                            if not ranked[0][1]['eligible']:
+                                auto.update(status='blocked',stage='Needs Attention / concept framing',error='No generated concept keeps the whole subject in frame: '+ranked[0][1].get('reason',''),concept_ranking=[dict(artifact_id=a['id'],**m) for a,m in ranked]);continue
+                            source,ranking=ranked[0][0],ranked[0][1]
+                            measured=next(v[3] for v in generated if v[2]['id']==source['id'])
+                            selection=dict(artifact_id=source['id'],sha256=source['sha256'],method=f'Concept tournament v{POLICY_VERSION}: whole subject in frame, framing, clean background and style-anchor palette similarity',
+                                measurements=measured,ranking=[dict(artifact_id=a['id'],**m) for a,m in ranked],style_anchor=anchor and anchor['sha256'],artistic_approval=False)
+                        else:
+                            _,_,source,measured=max(valid,key=lambda x:(x[0],x[1],x[2]['id']))
+                            selection=dict(artifact_id=source['id'],sha256=source['sha256'],method='Valid image, highest measured pixel count then Laplacian variance; deterministic tie fallback',measurements=measured,artistic_approval=False)
                         auto['concept_selection']=selection
                         batch.save(batch.stored(value))  # hash-bound selection must exist before Single gate checks it
                     if settings['mode']=='assisted' and settings['checkpoints']['concept']:

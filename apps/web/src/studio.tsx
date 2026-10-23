@@ -1889,6 +1889,30 @@ export function Studio() {
                         ))}
                     </Select>
                   </label>
+                  <label className="studio-field">
+                    Style anchor
+                    <Select
+                      aria-label="Style anchor"
+                      value={(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id || ""}
+                      onChange={(e) =>
+                        run(async () => {
+                          await request(`/api/projects/${projectId}`, { ...project, style_anchor_artifact_id: e.target.value || null });
+                          await reload();
+                          setNotice(e.target.value ? "Style anchor saved. New concepts in this project follow its look." : "Style anchor removed.");
+                        })
+                      }
+                    >
+                      <option value="" data-description="Concepts follow the prompt and Art Bible text only.">No style anchor</option>
+                      {data.artifacts
+                        .filter((a) => ["concept", "reference"].includes(a.role))
+                        .map((a) => (
+                          <option value={a.id} key={a.id} data-description="New concepts take palette, materials and rendering style from this image; the prompt still decides the subject.">
+                            {a.name}
+                          </option>
+                        ))}
+                    </Select>
+                    <small>Pick an approved asset image. Every new concept in this game is generated in its style (local IP-Adapter, strength 0.35).</small>
+                  </label>
                   <button
                     className="danger-button"
                     disabled={!project}

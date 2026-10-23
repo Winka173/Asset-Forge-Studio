@@ -144,3 +144,17 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .batch-override-panel, .batch-quality-override, .batch-analysis { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-2); }
 
 @media (max-width: 1100px) { .batch-intake, .batch-bottom { grid-template-columns: 1fr; } }
+
+/* Steps: one concern per screen; every section stays mounted so state and automation are unaffected. */
+.batch-steps { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; padding-bottom: var(--sp-4); border-bottom: 1px solid var(--border); }
+.batch-steps > button { gap: var(--sp-2); min-height: 32px; padding: 0 var(--sp-3) 0 6px; border-radius: var(--r-full); background: transparent; border-color: transparent; color: var(--text-2); }
+.batch-steps > button > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-3); font-size: var(--fs-xs); font-weight: 600; }
+.batch-steps > button[aria-current="step"] { background: var(--surface-2); border-color: var(--border); color: var(--text); }
+.batch-steps > button[aria-current="step"] > span { background: var(--accent); color: var(--text-inverse); }
+.batch-studio[data-stage="brief"] :is(.batch-manifest, .batch-bottom) { display: none; }
+.batch-studio[data-stage="manifest"] :is(.batch-workflow-disclosure, .batch-source-options, .batch-bottom, .batch-start-note) { display: none; }
+.batch-studio[data-stage="export"] :is(.batch-workflow-disclosure, .batch-source-options, .batch-manifest, .batch-start-note) { display: none; }
+.batch-studio > :is(.batch-manifest, .batch-bottom, .batch-source-options) { animation: afs-rise var(--dur-slow) var(--ease); }
+.batch-heading > .batch-history { flex: 0 0 auto; display: grid; grid-template-columns: auto minmax(220px, 280px); align-items: center; gap: var(--sp-3); }
+.batch-heading > .batch-history > label { color: var(--text-3); font-size: var(--fs-sm); }
+.batch-heading > .batch-history .afs-select { width: 100%; }
