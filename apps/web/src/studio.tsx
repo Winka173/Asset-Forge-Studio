@@ -191,7 +191,7 @@ function autoAssetName(prompt: string) {
 function State({ value }: { value: string }) {
   return (
     <span className={`state state-${value.toLowerCase().replaceAll(" ", "-")}`}>
-      {value.replaceAll("_", " ")}
+      {sentenceStatus(value)}
     </span>
   );
 }
@@ -2520,6 +2520,7 @@ function JobHistory({
               <div className="job-actions">
                 {activeStates.includes(job.status) ? (
                   <button
+                    className="btn-danger"
                     disabled={busy}
                     onClick={() =>
                       run(async () => {
@@ -2552,10 +2553,10 @@ function JobHistory({
                   </button>
                 )}
               </div>
-              {activeStates.includes(job.status) && (
+              {activeStates.includes(job.status) && ((job.progress?.stage && job.progress.stage.toUpperCase() !== job.status) || typeof job.progress?.percent === "number") && (
                 <div className="job-stage">
                   <span>
-                    {job.progress?.stage || job.status}
+                    {sentenceStatus(job.progress?.stage || job.status)}
                     {typeof job.progress?.percent === "number"
                       ? ` / ${job.progress.percent.toFixed(0)}% current stage`
                       : ""}

@@ -339,3 +339,8 @@ button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var
 .gpu-popover .gpu-name { color: var(--text); font-size: var(--fs-base); }
 .gpu-popover .studio-version { white-space: normal; }
 @media (max-width: 760px) { button.gpu-chip { font-size: 0; } }
+@media (max-width: 760px) {
+  .studio button.sidebar-group-toggle { justify-content: center; padding: 0; height: 1px; min-height: 1px; margin: var(--sp-3) var(--sp-2); background: var(--border); font-size: 0; }
+  .studio button.sidebar-group-toggle svg { display: none; }
+  .studio .studio-sidebar nav.sidebar-tools > a { height: 36px; opacity: 1; pointer-events: auto; }
+}

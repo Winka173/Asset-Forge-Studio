@@ -226,3 +226,8 @@ p.form-error, div.form-error { padding: var(--sp-3) var(--sp-4); border-radius: 
 
 /* Explanations stay in forms; toolbars over viewers keep only the controls. */
 :is(.production-view-tools, .production-preview-tabs, .preview-toolbar, .motion-transport, .world-result-toolbar) .afs-select-help-button { display: none; }
+
+/* Upload zones are fully clickable; the native file button stays hidden but keyboard focus still reaches the input. */
+.upload { position: relative; }
+.upload > input[type="file"], .dropzone > input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.upload:focus-within, .dropzone:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
