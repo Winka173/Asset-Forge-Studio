@@ -97,3 +97,4 @@ a.cinematic-download { align-self: flex-start; display: inline-flex; align-items
 nav[aria-label="Video creation steps"] { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
 nav[aria-label="Video creation steps"] > button { border-radius: var(--r-full); min-height: 32px; background: var(--surface-1); color: var(--text-2); }
 nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-pressed="true"], [aria-selected="true"], .selected) { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent); }
+.world-result > .world-preview-empty { margin: var(--sp-4) var(--sp-5); }

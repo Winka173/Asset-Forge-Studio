@@ -376,3 +376,22 @@ button.dashboard-row .production-dot { margin-top: 0; }
   .page-settings .page-transition > .settings-grid { grid-column: 1; }
   .settings-nav > button { flex-shrink: 0; }
 }
+
+/* Create: the step header already names the workflow, so studios drop their own title. */
+.page-create :is(.world-studio, .fx-studio, .video-studio) > header > :is(.overline, h2),
+.page-create .world-heading > :is(.overline, h2),
+.page-create .batch-heading :is(.overline, h1) { display: none; }
+.create-flow-top { align-items: center; }
+
+/* Create: non-single studios have their own stage chips, so the two-step stepper is redundant; single keeps the stepper instead of a second "Change workflow" control. */
+.create-flow:has(~ :is(.world-studio, .video-studio, .fx-studio, .batch-studio)) .create-stepper { display: none; }
+.create-flow:has(~ .create-single-flow) .create-flow-top > button { display: none; }
+/* Settings project summary */
+.panel-heading > h2 { flex: 1; }
+.settings-panel dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--sp-3); margin: 0; }
+.settings-panel dl > div { display: flex; flex-direction: column; gap: 2px; padding: var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); }
+.settings-panel dt { color: var(--text-3); font-size: var(--fs-xs); }
+.settings-panel dd { margin: 0; }
+.palette { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.palette:empty { display: none; }
+.palette > span { min-width: 28px; height: 28px; padding: 0 var(--sp-2); display: inline-grid; place-items: center; border-radius: var(--r-sm); border: 1px solid var(--border-strong); font-size: var(--fs-xs); }

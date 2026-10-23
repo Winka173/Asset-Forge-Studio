@@ -128,3 +128,16 @@ button.library-card-open:hover:not(:disabled) { background: transparent; border:
 .library-selection-bar[data-selected] > span { color: var(--accent); font-weight: 600; }
 @keyframes library-bar-up { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .library-studio:has(.library-selection-bar[data-selected]) { padding-bottom: 96px; }
+
+/* Less-used filters live in a compact popover. */
+.library-more-filters { position: relative; flex: 0 0 auto; border: 0; background: transparent; }
+.library-more-filters > summary { min-height: var(--control-h); padding: 0 var(--sp-3); border: 1px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface-1); font-size: var(--fs-base); font-weight: 500; white-space: nowrap; }
+.library-more-filters[open] > summary { border-color: var(--accent); }
+.library-more-filters > div { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; display: flex; flex-direction: column; gap: var(--sp-2); width: 260px; margin: 0; padding: var(--sp-3); border: 1px solid var(--border-strong); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: var(--shadow-lg); animation: afs-pop var(--dur) var(--ease); }
+.library-more-filters .afs-select-help-button { display: none; }
+/* Back button reads as a breadcrumb. */
+.library-management-heading > div:first-child > button:first-child { min-height: 28px; padding: 0 var(--sp-2); margin-left: calc(var(--sp-2) * -1); border-color: transparent; background: transparent; color: var(--text-2); font-size: var(--fs-sm); }
+.library-management-heading > div:first-child > button:first-child:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+.library-management-heading .afs-quick-export > small { display: none; }
+.library-management-filters > input { flex: 1 1 200px; min-width: 180px; }
+.library-management-filters > .afs-select { flex: 0 1 160px; min-width: 130px; }

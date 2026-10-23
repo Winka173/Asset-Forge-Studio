@@ -26,9 +26,9 @@ try{
  await launch();report.version=(await api('/api/desktop/health')).version;
  const project=await api('/api/projects',{name:`Runavelle Import QA ${stamp}`});await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.locator('.studio-sidebar').waitFor();
  await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();await page.getByRole('tab',{name:'Batch Assets',exact:true}).click();
- await page.getByLabel('Import asset manifest',{exact:true}).setInputFiles(sourcePath);await page.getByRole('button',{name:'Analyze Prompt',exact:true}).waitFor();
+ await page.getByLabel('Import asset manifest',{exact:true}).setInputFiles(sourcePath);await page.getByRole('button',{name:'Analyze prompt',exact:true}).waitFor();
  if(process.env.AFS_MANIFEST_FORMAT==='markdown'){await page.getByRole('combobox',{name:'Manifest format',exact:true}).click();await page.getByRole('option',{name:'Markdown manifest',exact:true}).click();}
- const response=page.waitForResponse(r=>r.url().endsWith('/api/batches/import'));await page.getByRole('button',{name:'Analyze Prompt',exact:true}).click();
+ const response=page.waitForResponse(r=>r.url().endsWith('/api/batches/import'));await page.getByRole('button',{name:'Analyze prompt',exact:true}).click();
  const imported=await response;assert.equal(imported.status(),201);const batch=await imported.json();report.batch_id=batch.id;
  const manifest=page.getByRole('region',{name:'Batch asset manifest'});await manifest.waitFor({timeout:30000});
  assert.equal(batch.items.length,headings.length);assert.equal(batch.import_diagnostics.expected_count,headings.length);assert.equal(batch.import_diagnostics.primary_count,312);assert.equal(batch.import_diagnostics.future_count,37);
@@ -44,7 +44,7 @@ try{
   await manifest.getByRole('button',{name:item.name,exact:true}).click();const dialog=page.getByRole('dialog');assert.equal(await dialog.getByLabel('Individual asset prompt').inputValue(),item.prompt);
   await dialog.getByRole('checkbox',{name:/I confirm the dimensions/}).check();const saved=page.waitForResponse(r=>r.url().endsWith(`/items/${item.asset_id}`));await dialog.getByRole('button',{name:'Save specifications',exact:true}).click();assert((await saved).ok());await dialog.waitFor({state:'hidden'});
  }
- const generate=manifest.getByRole('button',{name:'Generate Selected (3)',exact:true});await generate.waitFor();await generate.scrollIntoViewIfNeeded();assert(await generate.isEnabled());
+ const generate=manifest.getByRole('button',{name:'Generate selected (3)',exact:true});await generate.waitFor();await generate.scrollIntoViewIfNeeded();assert(await generate.isEnabled());
  await page.screenshot({path:path.join(run,'manifest-visible-three-selected.png'),fullPage:true,animations:'disabled'});
  report.checks.push({name:'all349_rendered_across_pages_future_unselected_editable_three_selected_generate_visible_enabled',passed:true});
  // Hold the real shared GPU lock only during queue verification, then cancel these QA jobs.

@@ -213,3 +213,16 @@ p.form-error, div.form-error { padding: var(--sp-3) var(--sp-4); border-radius: 
 .library-detail-skeleton { height: min(62vh, 640px); min-height: 360px; border-radius: var(--r-xl); }
 ::view-transition-group(asset-hero) { animation-duration: 380ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 200ms; }
+
+/* Content links are neutral and underlined; amber stays reserved for primary actions and focus. */
+:where(.studio-main) a { color: var(--text); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+:where(.studio-main) a:hover { color: var(--accent-hover); text-decoration-color: currentColor; }
+
+/* Long verification notes stay readable on demand instead of dominating the layout. */
+:is(.control-footnote, .fx-hint, .batch-scope-note, .world-scope, .production-action-help, .result-disclaimer, .batch-manifest-note, .library-publication-state, .notification-scope-hint, .updates-policy > small, .capability-note > small) {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: help; transition: color var(--dur) var(--ease);
+}
+:is(.control-footnote, .fx-hint, .batch-scope-note, .world-scope, .production-action-help, .result-disclaimer, .batch-manifest-note, .library-publication-state, .notification-scope-hint, .updates-policy > small, .capability-note > small):hover { -webkit-line-clamp: unset; color: var(--text-2); }
+
+/* Explanations stay in forms; toolbars over viewers keep only the controls. */
+:is(.production-view-tools, .production-preview-tabs, .preview-toolbar, .motion-transport, .world-result-toolbar) .afs-select-help-button { display: none; }

@@ -4,7 +4,7 @@ import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
 import {UpdatesSettings} from './updates';
 import {EngineHealthSettings} from './engine-health';
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
-import {WorkspaceTools,ContinueWork,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
+import {WorkspaceTools,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
@@ -177,6 +177,9 @@ const icons: Record<string, LucideIcon> = {
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const Glyph = icons[name] || Box;
   return <Glyph size={size} strokeWidth={1.75} aria-hidden="true" />;
+}
+function sentenceStatus(value: string) {
+  return /^[A-Z_ ]+$/.test(value) ? value.charAt(0) + value.slice(1).toLowerCase().replaceAll("_", " ") : value;
 }
 function autoAssetName(prompt: string) {
   const words = prompt.split(/\r?\n/)[0].replace(/[^\p{L}\p{N}\s-]/gu, " ").trim().split(/\s+/).filter(Boolean);
@@ -1076,11 +1079,10 @@ export function Studio() {
                   )}
                 </div>
               </section>
-              <ContinueWork assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at})):[]} onAsset={openLibraryAsset} onQueue={()=>navigate('Production')}/>
               {data.assets.length>0&&<div className="dashboard-panels">
                 <section className="dashboard-panel" aria-label="Active now">
                   <header><h3>Active now</h3><button className="text-button" onClick={()=>navigate('Production')}>Production <Icon name="Arrow" size={14}/></button></header>
-                  {activeJobs.length?activeJobs.slice(0,5).map(job=><button key={job.id} className="dashboard-row" onClick={()=>openProduction('job/'+job.id)}><span className="production-dot state-running"/><span><strong>{data.assets.find(a=>a.id===job.payload.asset_id)?.name||job.kind||'Local job'}</strong><small>{job.progress?.stage||job.status.toLowerCase()}</small></span>{typeof job.progress?.percent==='number'&&<b>{Math.round(job.progress.percent)}%</b>}</button>):<p className="dashboard-empty">Nothing is running. New work starts only when you press Generate.</p>}
+                  {activeJobs.length?activeJobs.slice(0,5).map(job=><button key={job.id} className="dashboard-row" onClick={()=>openProduction('job/'+job.id)}><span className="production-dot state-running"/><span><strong>{data.assets.find(a=>a.id===job.payload.asset_id)?.name||job.kind||'Local job'}</strong><small>{sentenceStatus(job.progress?.stage||job.status)}</small></span>{typeof job.progress?.percent==='number'&&<b>{Math.round(job.progress.percent)}%</b>}</button>):<p className="dashboard-empty">Nothing is running. New work starts only when you press Generate.</p>}
                 </section>
                 <section className="dashboard-panel" aria-label="Needs attention">
                   <header><h3>Needs attention</h3><button className="text-button" onClick={()=>navigate('Library')}>Library <Icon name="Arrow" size={14}/></button></header>
@@ -1795,9 +1797,7 @@ export function Studio() {
                 </div>
               </div>
               <SettingsNav />
-              <div className="settings-grid"><UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
-                <CapabilityRegistry/>
-                {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
+              <div className="settings-grid">
                 <section className="settings-panel">
                   <div className="panel-heading">
                     <Icon name="Library" />
@@ -1896,6 +1896,9 @@ export function Studio() {
                     Archive project
                   </button>
                 </section>
+                <InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
+                {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
+
                 <section className="settings-panel">
                   <div className="panel-heading">
                     <Icon name="Settings" />
@@ -1948,6 +1951,8 @@ export function Studio() {
                     <pre>{JSON.stringify(environment, null, 2)}</pre>
                   )}
                 </section>
+                <UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/>
+                <CapabilityRegistry/>
                 <section className="settings-panel engine-settings">
                   <div className="panel-heading">
                     <Icon name="Cube" />
@@ -2526,7 +2531,7 @@ function JobHistory({
                     Cancel
                   </button>
                 ) : ["FAILED", "CANCELLED", "BLOCKED"].includes(job.status) ? (
-                  <button className="btn-info"
+                  <button
                     disabled={busy}
                     onClick={() =>
                       run(async () => {

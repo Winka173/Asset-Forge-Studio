@@ -443,7 +443,7 @@ export function BatchStudio({
       adopt(created);
       await refresh(created.id);
       setNotice(
-        `Analyzed and saved ${created.items.length} asset. ${created.items.filter(item => item.selected).length} selected, including Future. Press Generate All to start; Analyze has not run any AI.`,
+        `Analyzed and saved ${created.items.length} asset. ${created.items.filter(item => item.selected).length} selected, including Future. Press Generate all to start; Analyze has not run any AI.`,
       );
       requestAnimationFrame(() => manifestRef.current?.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}));
     } finally { setAnalyzing(false); }
@@ -461,7 +461,7 @@ export function BatchStudio({
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ""));
       if(workflow.mode!=='expert'){await analyzeSource(text,file,file.name,'auto');return;}
       setNotice(
-        "Local file loaded. Press Analyze Prompt to validate the schema and review the manifest.",
+        "Local file loaded. Press Analyze prompt to validate the schema and review the manifest.",
       );
     });
   }
@@ -654,7 +654,7 @@ export function BatchStudio({
       {draftWarning && <p className="batch-storage-warning" role="status">{draftWarning}</p>}
       {busy && <ActivityIndicator label={analyzing ? 'Analyzing your source file' : 'Updating local batch'} detail={analyzing ? 'Reading the complete prompt and building the manifest. GPU production has not started.' : 'Waiting for the local backend to finish this action.'}/>}
       {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
-      <details className="batch-workflow-disclosure"><summary>Workflow &amp; recovery <span>{workflow.mode==='auto'?'Automatic':workflow.mode==='assisted'?'Assisted':'Expert'}</span></summary><div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate All starts production when you choose.'}</p></div>
+      <details className="batch-workflow-disclosure"><summary>Workflow &amp; recovery <span>{workflow.mode==='auto'?'Automatic':workflow.mode==='assisted'?'Assisted':'Expert'}</span></summary><div className="batch-workflow-switch"><label className="studio-field">Workflow<Select aria-label="Batch workflow mode" value={workflow.mode} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({mode:event.target.value as Workflow['mode']})}><option value="auto">Auto · import, generate, deliver</option><option value="assisted">Assisted · optional checkpoints</option><option value="expert">Expert · full manual control</option></Select></label><p>{!workflowReady ? 'Loading this project’s workflow…' : workflow.mode==='expert' ? 'Manual analysis, specifications and review controls remain available.' : workflow.mode==='assisted' ? 'Imported files are analyzed automatically. Only enabled checkpoints require attention.' : 'Import a file to detect assets automatically. Generate all starts production when you choose.'}</p></div>
       <details className="advanced batch-workflow-options"><summary>Advanced · workflow checkpoints and recovery</summary>{workflow.mode==='assisted' && <div className="batch-checkpoint-options">{(['concept','candidate','export'] as const).map(checkpoint=><label key={checkpoint} className="check-field"><input type="checkbox" disabled={busy} checked={workflow.checkpoints[checkpoint]} onChange={event=>updateWorkflow({checkpoints:{[checkpoint]:event.target.checked}})}/>Review {checkpoint==='candidate'?'3D candidate':checkpoint==='export'?'before export':'concept'}</label>)}</div>}<div className="batch-edit-pair"><label className="studio-field">Retry limit<input type="number" min="0" max="3" disabled={busy} value={workflow.retry_limit} onChange={event=>updateWorkflow({retry_limit:Number(event.target.value)})}/></label><label className="studio-field">Disk reserve (GB)<input type="number" min="1" disabled={busy} value={workflow.disk_reserve_gb} onChange={event=>updateWorkflow({disk_reserve_gb:Number(event.target.value)})}/></label></div><label className="studio-field">After reopening<Select aria-label="Batch recovery policy" value={workflow.auto_resume ? "auto" : "manual"} disabled={busy||!workflowReady} onChange={event=>updateWorkflow({auto_resume:event.target.value==="auto"})}><option value="manual">Wait for manual Resume</option><option value="auto">Auto-resume after reopening</option></Select><small>Automatic GPU restart requires this explicit opt-in. Completed outputs and exports remain available in either mode.</small></label><p>One logical batch, up to {workflow.max_active_assets} active assets. Only one heavy GPU task runs at a time. Pause finishes the current stage before stopping; recovery reuses completed checkpoints.</p></details>
       </details>      <details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration · original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">
         <section className="batch-brief">
@@ -681,7 +681,7 @@ export function BatchStudio({
             />}
             <small>
               {prompt.length.toLocaleString()} characters ·{' '}
-              Long prompts are kept intact. Import and Analyze use no GPU; Generate All starts automatic production.
+              Long prompts are kept intact. Import and Analyze use no GPU; Generate all starts automatic production.
             </small>
           </label>
           <div className="batch-intake-actions">
@@ -715,7 +715,7 @@ export function BatchStudio({
               onClick={analyze}
             >
               <Glyph kind="list" />
-              {analyzing ? 'Analyzing…' : 'Analyze Prompt'}
+              {analyzing ? 'Analyzing…' : 'Analyze prompt'}
             </button>
           </div>
         </section>
@@ -772,7 +772,7 @@ export function BatchStudio({
             </div>
               <div className="batch-submission-summary" aria-label="Batch submission summary"><strong>{batch.items.length} assets · {batch.items.filter(i=>i.source_status==='FUTURE').length} FUTURE included</strong><span>{mode} · {workflow.review_policy==='manual_approval'?'Manual export approval':workflow.review_policy==='review_flagged'?'Export after QA; review exceptions':'Automatic export after QA'} · No per-asset confirmation in Auto</span><span>GLB destination and formats are shown in Export Settings. GPU work starts only when you submit.</span></div>
               <div className="batch-run-actions batch-production-actions">
-                <button className={(selectedItems.length>0&&selectedItems.length<batch.items.length?'secondary':'primary')+' batch-generate-all'} disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={()=>batch.items.some(i=>i.started)?onSubmitted?.(batch.id):runAll()}><Glyph kind="play"/>{batch.items.some(i=>i.started)?'Open Production':`Generate All (${batch.items.length})`}</button>
+                <button className={(selectedItems.length>0&&selectedItems.length<batch.items.length?'secondary':'primary')+' batch-generate-all'} disabled={busy || exportSettingsBusy || !workflowReady || !batch.items.length} onClick={()=>batch.items.some(i=>i.started)?onSubmitted?.(batch.id):runAll()}><Glyph kind="play"/>{batch.items.some(i=>i.started)?'Open Production':`Generate all (${batch.items.length})`}</button>
                 {batch.items.some(i=>i.started)&&<><button
                   className="secondary btn-success"
                   disabled={busy}
@@ -780,9 +780,9 @@ export function BatchStudio({
                 >
                   {batch.paused ? "Resume batch" : "Pause batch"}
                 </button>
-                <button className="secondary btn-danger" disabled={busy} onClick={()=>control('cancel')}>Cancel Batch</button>
-                <button className="secondary btn-info" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry Failed</button>
-                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}>Skip Failed</button></>}
+                <button className="secondary btn-danger" disabled={busy} onClick={()=>control('cancel')}>Cancel batch</button>
+                <button className="secondary btn-info" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry failed</button>
+                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}>Skip failed</button></>}
                 <button
                   className={selectedItems.length>0&&selectedItems.length<batch.items.length?'primary':'secondary'}
                   disabled={
@@ -798,7 +798,7 @@ export function BatchStudio({
                 </button>
               </div>
             <details className="batch-delivery-settings"><summary>Export settings <span>GLB Only by default</span></summary><BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/></details>
-            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate All</span><span>No GPU starts until Generate</span></div>
+            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate all</span><span>No GPU starts until Generate</span></div>
             <details className="batch-technical-summary"><summary>Advanced production details</summary>            <div className="batch-production-summary"><div><strong>{batch.items.reduce((sum,item)=>sum+item.candidates,0)} candidates</strong><span>Configured across {batch.items.length} independent assets</span></div><div><strong>{batch.preflight?.estimated_jobs != null ? `${batch.preflight.estimated_jobs} estimated jobs` : 'Job estimate pending'}</strong><span>1 heavy GPU task at a time · bounded CPU overlap</span></div><div><strong>Automatic production</strong><span>Technical QA and delivery are automatic. Artistic review stays optional.</span></div></div>
 </details>
             {batch.import_diagnostics && <details className="batch-import-diagnostics"><summary>Import report · {batch.import_diagnostics.status || 'Parsed'}</summary><div><span>Detected: {batch.import_diagnostics.detected_format || 'Unknown'}</span><span>Parser: {batch.import_diagnostics.parser_method || 'Deterministic'}</span><span>Local AI: {batch.import_diagnostics.local_ai_used ? 'Used' : 'Not used'}</span><span>Parsed: {batch.import_diagnostics.parsed_count ?? batch.items.length}{batch.import_diagnostics.expected_count ? ` / ${batch.import_diagnostics.expected_count} expected` : ''}</span><span>Primary: {batch.import_diagnostics.primary_count ?? '—'} · Future: {batch.import_diagnostics.future_count ?? '—'}</span></div>{batch.import_diagnostics.source_file?.sha256 && <code>SHA256: {batch.import_diagnostics.source_file.sha256}</code>}{(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url) && <a href={apiUrl(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url)} download>Download original source</a>}{batch.import_diagnostics.warnings?.map((warning,index)=><p key={`w${index}`}>{warning}</p>)}{batch.import_diagnostics.errors?.map((message,index)=><p className="error-text" key={`e${index}`}>{message}</p>)}</details>}
@@ -1123,7 +1123,7 @@ export function BatchStudio({
               <div className="batch-panel-title">
                 <h2>Export what exists.</h2>
               </div>
-              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export Selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export All Completed</button></div>
+              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export all completed</button></div>
               <p>
                 The ZIP contains only real generated outputs. Failed assets or assets without a mesh are never presented as finished models.
               </p>
@@ -1173,7 +1173,7 @@ export function BatchStudio({
           <div>
             <h3>Review the plan before spending GPU time.</h3>
             <p>
-              Import → Analyze → Generate All → Library. Analyze keeps your prompt unchanged and uses no GPU. Generate All includes Future items; parameters and concepts are handled automatically and outputs wait for review.
+              Import → Analyze → Generate all → Library. Analyze keeps your prompt unchanged and uses no GPU. Generate all includes Future items; parameters and concepts are handled automatically and outputs wait for review.
             </p>
           </div>
         </div>

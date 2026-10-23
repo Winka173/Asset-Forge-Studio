@@ -72,9 +72,9 @@ try{
   await page.locator('.studio-sidebar nav a[aria-label="Settings"]').click();await page.getByRole('heading',{name:'Windows application',exact:true}).waitFor();await page.getByRole('button',{name:'Choose library folder',exact:true}).waitFor();report.checks.push({name:'native_runtime_settings_panel',passed:true,native_dialog_interaction:'MANUAL_NOT_AUTOMATED'});
   await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();await page.getByRole('button',{name:'Batch assets Import a collection'}).click();
   await page.getByLabel('Batch Master Prompt').fill('- Castle T1-T3\n- Archer Tower T1-T3\n- Magic Tower T1-T3\n- House T1-T3\n- A modular Wall/Gate');
-  const analyzed=page.waitForResponse(r=>r.url().endsWith('/api/batches/analyze')&&r.request().method()==='POST');await page.getByRole('button',{name:'Analyze Prompt',exact:true}).click();const batch=await(await analyzed).json();if(batch.items.length!==14)throw Error('Native Batch UI did not produce 14 explicit items');await page.locator('.batch-table tbody tr').nth(13).waitFor();
-  await page.getByRole('button',{name:'Generate All (14)',exact:true}).waitFor();
-  await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent.includes('Generate All (14)')&&!button.disabled));
+  const analyzed=page.waitForResponse(r=>r.url().endsWith('/api/batches/analyze')&&r.request().method()==='POST');await page.getByRole('button',{name:'Analyze prompt',exact:true}).click();const batch=await(await analyzed).json();if(batch.items.length!==14)throw Error('Native Batch UI did not produce 14 explicit items');await page.locator('.batch-table tbody tr').nth(13).waitFor();
+  await page.getByRole('button',{name:'Generate all (14)',exact:true}).waitFor();
+  await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent.includes('Generate all (14)')&&!button.disabled));
   if((await api('/api/jobs')).length!==0)throw Error('Analyze started GPU work');
   await page.screenshot({path:path.join(run,'desktop-batch.png'),fullPage:true});report.checks.push({name:'native_auto_batch_manifest_ready_no_gpu_before_explicit_click',passed:true,batch_id:batch.id,manifest_count:14});
   await close();report.checks.push({name:'graceful_close_owned_backend_exited',passed:true});await browser.close().catch(()=>{});
