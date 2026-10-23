@@ -1,0 +1,55 @@
+"""CPU-only diagnostic renders of real models; never modifies source files."""
+import sys,json,math,hashlib
+from pathlib import Path
+import bpy
+from mathutils import Vector
+run=Path(sys.argv[sys.argv.index('--')+1]).resolve()
+report=json.loads((run/'report.json').read_text('utf-8'))
+root=Path(__file__).resolve().parents[1]
+sources=[dict(name=c['engine']+'-'+str(c['seed']),input=str(Path(c['folder'])/'output/raw.glb')) for c in report['cases'] if c['status']=='GENERATED_GEOMETRY_NEEDS_REVIEW']
+sources.insert(0,dict(name='retained-trellis2-43',input=str(root/'.local/castle-quality-route/20261022T132736Z/Library/jobs/5eff3892f4154fe8a1091ce5d981cb4d/output/raw.glb')))
+result=dict(status='RUNNING',mode='Same 10m diagnostic height, CPU Cycles16, 512 square, neutral clay, same lights/cameras. Scale normalization is for comparison only, not measured game dimensions. No source/export mutation, PBR or artistic score.',candidates=[])
+out=run/'clay-comparison';out.mkdir(exist_ok=False)
+for item in sources:
+    source=Path(item['input']);before=hashlib.sha256(source.read_bytes()).hexdigest()
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(source))
+    objects=[o for o in bpy.context.scene.objects if o.type=='MESH']
+    pts=[o.matrix_world@Vector(p) for o in objects for p in o.bound_box]
+    lo=Vector([min(p[i] for p in pts) for i in range(3)]);hi=Vector([max(p[i] for p in pts) for i in range(3)])
+    center=Vector(((lo.x+hi.x)/2,(lo.y+hi.y)/2,lo.z));scale=10/(hi.z-lo.z)
+    from mathutils import Matrix
+    transform=Matrix.Scale(scale,4)@Matrix.Translation(-center)
+    clay=bpy.data.materials.new('Diagnostic clay');clay.use_nodes=True
+    node=next(n for n in clay.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+    node.inputs['Base Color'].default_value=(.32,.32,.32,1);node.inputs['Roughness'].default_value=.75
+    for obj in objects:
+        obj.matrix_world=transform@obj.matrix_world
+        obj.data.materials.clear();obj.data.materials.append(clay)
+    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=16;scene.cycles.use_denoising=True
+    scene.render.threads_mode='FIXED';scene.render.threads=8
+    scene.render.resolution_x=512;scene.render.resolution_y=512;scene.render.resolution_percentage=100
+    scene.render.image_settings.file_format='PNG';scene.render.film_transparent=False
+    scene.world=bpy.data.worlds.new('Diagnostic world');scene.world.use_nodes=True
+    bg=scene.world.node_tree.nodes.get('Background');bg.inputs[0].default_value=(.12,.14,.18,1);bg.inputs[1].default_value=.5
+    scene.view_settings.view_transform='Standard';scene.view_settings.look='None';scene.view_settings.exposure=0
+    target=Vector((0,0,5))
+    for name,loc,power in [('key',(6,-8,14),1800),('fill',(-7,-2,9),1000)]:
+        data=bpy.data.lights.new(name,'AREA');data.energy=power;data.size=7
+        obj=bpy.data.objects.new(name,data);scene.collection.objects.link(obj);obj.location=loc
+        obj.rotation_euler=(target-obj.location).to_track_quat('-Z','Y').to_euler()
+    data=bpy.data.cameras.new('Diagnostic camera');data.type='ORTHO';data.ortho_scale=16
+    cam=bpy.data.objects.new('Diagnostic camera',data);scene.collection.objects.link(cam);scene.camera=cam
+    folder=out/item['name'];folder.mkdir()
+    row=dict(**item,source_sha256=before,source_bounds_blender=[list(lo),list(hi)],diagnostic_scale=scale,files=[])
+    views=[(f'azimuth-{deg:03}',(math.sin(math.radians(deg)),-math.cos(math.radians(deg)),.35)) for deg in range(0,360,45)]
+    views += [('top',(0,.001,1)),('bottom',(0,-.001,-1))]
+    for name,direction in views:
+        cam.location=target+Vector(direction).normalized()*25
+        cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+        scene.render.filepath=str(folder/(name+'.png'));bpy.ops.render.render(write_still=True);row['files'].append(name+'.png')
+    assert hashlib.sha256(source.read_bytes()).hexdigest()==before
+    result['candidates'].append(row)
+    (out/'report.json').write_text(json.dumps(result,indent=2),'utf-8')
+result['status']='REAL_CLAY_RENDERED_NEEDS_REVIEW';(out/'report.json').write_text(json.dumps(result,indent=2),'utf-8')
+print('REAL_CASTLE_GEOMETRY_CLAY_COMPLETE',flush=True)

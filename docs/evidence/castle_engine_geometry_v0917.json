@@ -1,0 +1,3352 @@
+{
+  "status": "REAL_CASTLE_GEOMETRY_COMPARISON_NOT_APPROVED",
+  "generation": {
+    "status": "REAL_GEOMETRY_READY_FOR_COMPARISON",
+    "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z",
+    "source_hashes": {
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\conditioning.png": "3bf7dacf5e2674e259185c6e0ca0270e25e2f755320c9b2ff1d49fa7668a6900",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\generation.json": "818b020fdbd1d922e5f1e0d151be3b35b6c49705b317c9607549e5cc34ce6349",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\engines\\sparse_research_worker.py": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45"
+    },
+    "cases": [
+      {
+        "engine": "trellis_v1",
+        "seed": 42,
+        "folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42",
+        "samples": [],
+        "status": "GENERATED_GEOMETRY_NEEDS_REVIEW",
+        "admission": {
+          "schema_version": 1,
+          "allowed": true,
+          "reason": null,
+          "reason_code": null,
+          "at": "2026-10-23T02:12:52.542464+00:00",
+          "checked_at_epoch": 1792721572.5424643,
+          "available_bytes": 40338485248,
+          "unrealized_reserved_bytes": 0,
+          "usable_bytes": 40338485248,
+          "headroom_bytes": 2147483648,
+          "allowance": {
+            "profile_key": "host-memory:v1:07c895e1931e56af41f2a8102d6f6bd073431bfab46eaf9a98501fb1856d5fca",
+            "profile": {
+              "kind": "inference",
+              "engine": "trellis_v1",
+              "checkpoint": null,
+              "quality": null,
+              "pipeline_type": null,
+              "precision": null,
+              "texture_size": null,
+              "finishing_only": false,
+              "use_gpu": false
+            },
+            "bytes": 25769803776,
+            "planning_floor_gib": 24,
+            "observed": null,
+            "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+          },
+          "active_claims": [],
+          "quality_settings_changed": false
+        },
+        "generation": {
+          "status": "GENERATED_NEEDS_REVIEW",
+          "engine": "trellis_v1",
+          "request": {
+            "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png",
+            "seed": 42,
+            "steps": 50,
+            "slat_steps": 24,
+            "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42\\output",
+            "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42\\request.json",
+            "engine": "trellis_v1",
+            "engine_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\engines\\TRELLIS-v1",
+            "weights": "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96",
+            "experimental": true,
+            "commercial_approval": "NEEDS_REVIEW"
+          },
+          "network": "OFFLINE",
+          "input_sha256": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+          "script_sha256": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45",
+          "mesh_quality_parity": "NOT_TESTED",
+          "human_score": null,
+          "commercial_approval": "NEEDS_REVIEW",
+          "pbr": "NOT_AVAILABLE_GEOMETRY_TRIAL",
+          "timings": {
+            "load_models": 13.436999999999898,
+            "image_encoding": 0.32799999999997453,
+            "sparse_structure_sampling": 7.063000000000102,
+            "sparse_structure_decode": 0.06199999999989814,
+            "slat_sampling": 6.610000000000127,
+            "mesh_decode": 0.8279999999999745
+          },
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "active_voxels": 26386,
+          "triangles": 1269640,
+          "native_triangles": 1269640,
+          "peak_allocated_bytes": 7902098944,
+          "peak_reserved_bytes": 13222543360,
+          "torch_memory_scope": "whole worker peak, no reset between stages",
+          "output_sha256": "45cb98d6e1f6ab9c6287073e54eb90ddd6bf141e3c292f3556a2ee53ca8484d9",
+          "source_sha256": {
+            "app.py": "6a2093fb352eab9a6a9030f02ba55ce0a96e2eb969b56b498af904749d49fd01",
+            "app_text.py": "9f391c6ed270b1ccb911e2c32956a8e569f17bc41ac8c45e81d043bfae83269d",
+            "example.py": "2099f399b9089b73cc796b88bf4cd10c7653b24a00b9293652e207b6ecc7660d",
+            "example_multi_image.py": "7a6abcf14ae3a17a5a90f57aef828ee268a9c5a2411ccc10eaf8917ed1f46486",
+            "example_text.py": "ef55f7ac56d387d3ad46bd8d7670dd7a08a3d15e2248d327282f100f636d3458",
+            "example_variant.py": "a5d58e47e5682e48360e5bcd63f6338f98c4a1f5d38b4502ab7a8357f94150da",
+            "train.py": "a5d7d64906168b8c0b37262afbc6113689fdd41d1f658c21a231e966d38f1dcf",
+            "dataset_toolkits/build_metadata.py": "3aa1d4bdba3c68150a2c6de6c34c444045a84976c887421b21310485f1e7c209",
+            "dataset_toolkits/calculate_aesthetic_scores.py": "cb238962fc78b3e7f5c67fc207ccf5a3bf5a3df67ee294f124d0479e6b0e7b5e",
+            "dataset_toolkits/download.py": "3c399062c16c87fb3155c8ea0bddef47b04ba844b7e1919b9c0241c90639a18e",
+            "dataset_toolkits/encode_latent.py": "60ec0c3fe0f9ae78acaabb6953182753aa2c8da165849e220db4027408099fd8",
+            "dataset_toolkits/encode_ss_latent.py": "186ed8cb469bb158d2cfe292e446256cf3029c005df62be650acc4c2a7259d4d",
+            "dataset_toolkits/extract_feature.py": "2edb5a76c6321ca9a9b87cc6c1dbf564c81e690c1ae635b879f97f080c18602e",
+            "dataset_toolkits/render.py": "8373bf0c5a803820db9c27caf11510ea3020241802ea97d499dbad33e86837fb",
+            "dataset_toolkits/render_cond.py": "abf684a460f3f9db48f07c7b443b8fa4918eef2493d7f1fc2895be946cd1cbcd",
+            "dataset_toolkits/stat_latent.py": "f8c44465985236b95424dd44c85f4a2b4610fef0af06baac0e6251ed105a0c64",
+            "dataset_toolkits/utils.py": "85a64a8afa730abc65de7c911f67913c8fba173f4197e3170f11b7895616a8d2",
+            "dataset_toolkits/voxelize.py": "2228437a4f4a665fa8baa4161db104135bcf09007f04c59948ad0685b8e2bdc3",
+            "dataset_toolkits/blender_script/render.py": "a7f2c9247a7fcc1f17f0044e002aecb0ab758c0ff9ee7b742d617ddbc72f400a",
+            "dataset_toolkits/datasets/3D-FUTURE.py": "71e86046535072751969f45c29927d738bc1e3c2276f863eba38f12d8461f2a2",
+            "dataset_toolkits/datasets/ABO.py": "3617281daef577931079d631de109dfd57fb39aa52b15c25ac043a36d01bf01b",
+            "dataset_toolkits/datasets/HSSD.py": "51d8c509b03333d66089c66e0fe1ca4a49c2de4cb5e6ae7f1c85b3bdfa1d730b",
+            "dataset_toolkits/datasets/ObjaverseXL.py": "cdffe3a9e381698a0b8e2c0b89a79cc38f5918774e304dd99bf0b2e7b62578f6",
+            "dataset_toolkits/datasets/Toys4k.py": "d6500d5b42002371174c8eb7a8941b3f51bdbf28bea6847f9735f72534daab32",
+            "trellis/__init__.py": "b953c8a82e54705708a115dd0e53b7ca5ccf45b71517463a5e9b8e0de318ee43",
+            "trellis/datasets/components.py": "9edb1bac7d58d52d78c28d82a7d38ef108d234f4fb1ffc6af7d06b00dfd55b43",
+            "trellis/datasets/sparse_feat2render.py": "d385b8d7ac817f77dc5e15c1856bd4c56256421406d4963164241d48b5277505",
+            "trellis/datasets/sparse_structure.py": "79ac04e0dbcb2602bf0c9af601d35ff89aa5c4b036e48972817cb65dfc94b006",
+            "trellis/datasets/sparse_structure_latent.py": "26278e7c48f71d5c8b4bc77b062519c787ba4bc5968898288c5c6e21c2a98bed",
+            "trellis/datasets/structured_latent.py": "b9d753bd3c5ca9c7464b136004584360e8bcbe86fa691409a42cec84403d47f2",
+            "trellis/datasets/structured_latent2render.py": "9906babe9af99c36c2a7f5ccf26c1472022089139e753ba4becc714d36b16a6f",
+            "trellis/datasets/__init__.py": "624a8ada45439071904ac77a1d8292fd56c6d77c09db8851ec90fdbb235c0e12",
+            "trellis/models/sparse_elastic_mixin.py": "17b85bc281172d72fec8944821693819643df7eae11713b2a87eed142c09c833",
+            "trellis/models/sparse_structure_flow.py": "9cf28b488ec7c4be47a1fd34013f0fcf1f772fd80e9ac9690c6969016d686c0e",
+            "trellis/models/sparse_structure_vae.py": "bbef234dc85312cc4ccae55837b40e03c897f4267198d8414d403c425ff06dec",
+            "trellis/models/structured_latent_flow.py": "a6cafe4876de76c7143731b2d5a271a3bfd26a84512408a805158b849ac81eb8",
+            "trellis/models/__init__.py": "cf6ade1218a987cb58d5952915b4d8c84741c795d3a7c2bd862b61a609dc25bf",
+            "trellis/models/structured_latent_vae/base.py": "26c0a7c6253ecaf9770127062bed7c3360fb72ce062e50f30cd4db7fe15f244b",
+            "trellis/models/structured_latent_vae/decoder_gs.py": "c5bd28d3781b7cdb95b7c41dec1d94252b98ec9e22c305515f973549a709c5ce",
+            "trellis/models/structured_latent_vae/decoder_mesh.py": "5b6b3afaf959d5baa1a5794d3bd6194c560b294c840d265fdd28547c33a6f21f",
+            "trellis/models/structured_latent_vae/decoder_rf.py": "127fb19334eec1587860b599ac71c6b76624a48e0343e65a0bf313996012bf13",
+            "trellis/models/structured_latent_vae/encoder.py": "d9f85c654170131334e6497bbb060108392b1cb95cbd3c163d9fe6f89fd18e8b",
+            "trellis/models/structured_latent_vae/__init__.py": "cacb8dcaed2b4a216c104834689995a0acd189b6fef24bb1931f1ad8894ee450",
+            "trellis/modules/norm.py": "9df6876f02ff6160119517e3e861ba1f56d1f47d22f45be20cfa542b66bcd438",
+            "trellis/modules/spatial.py": "4a029d5077bb0a5412ee5eceb8de21d3b4c8920a8f53d477441c3c3219a0da3c",
+            "trellis/modules/utils.py": "7850febc6caafd80205f49a3e86bb453a8bbcba654507d2edb4f27d62fa3d2c6",
+            "trellis/modules/attention/full_attn.py": "93d0bfd12749b0a303f0c2b68c12bdfc8aa57d10e598b677b3183523303fccc8",
+            "trellis/modules/attention/modules.py": "1e53692f62362750d3283477331d7c83127d53708dd8ef8e4ff7b3ca22d9a281",
+            "trellis/modules/attention/__init__.py": "03b1df628c1f8639e17115126a5653ba9b974de86f2f4f145ce41b37427b23a7",
+            "trellis/modules/sparse/basic.py": "3ce99cf799889f6fd5035d50f843911a61ac8eeb4be8f2d98c19f0e1870d7f38",
+            "trellis/modules/sparse/linear.py": "9c2a3d122c8624c27c0109c925722d9df60c74783e757353d0de6b19f22e4c43",
+            "trellis/modules/sparse/nonlinearity.py": "0bce3cc92d398f3fa9f65d2f085eeaee2b0f022839eb60861c8a4d0cfbc0cb5f",
+            "trellis/modules/sparse/norm.py": "75d34306e5c6f3161452d5dc9cbe256222b887df49aa64bbc19128661e4cccf1",
+            "trellis/modules/sparse/spatial.py": "39a997b7073e70e7bf5535986c894e02b08ccbcec05f8df807479d2ec2bfa84c",
+            "trellis/modules/sparse/__init__.py": "68363a0f51472cebcb83bf23ccd6fd4abd8504c34505139310ec86e0f781dadc",
+            "trellis/modules/sparse/attention/full_attn.py": "35c0b9d3f9cb510ff2ed3dd3a787645e35ec57a2a6140400a87b8059ae321675",
+            "trellis/modules/sparse/attention/modules.py": "d9e2cbe5e31e1a995472c4339f5d68744ce7dbdbd312310e00d56e1ea604e6b6",
+            "trellis/modules/sparse/attention/serialized_attn.py": "cd1c1bf11e72800b8497af7e029084d18c319291766e8536d1d486d62be17155",
+            "trellis/modules/sparse/attention/windowed_attn.py": "8b440ee5cdf13c4d39783bfd3bafdc44c5be9fd28084f1943a7e18238075e1b2",
+            "trellis/modules/sparse/attention/__init__.py": "a73bf9e14d339ccd2380140dd2a63eb4025162fa7f14aaaec2201cf8c2b8b161",
+            "trellis/modules/sparse/conv/conv_spconv.py": "879d58ef6dc4ebd6acc1cca33defc358e1889dfb9eb40f2c009975955c59fb09",
+            "trellis/modules/sparse/conv/conv_torchsparse.py": "46c30a87d93164dfa0247e15884e35501b355b4c114ceeb6a5b639d3713d5b17",
+            "trellis/modules/sparse/conv/__init__.py": "53285fc33da4ba74b2a9bdde4e2a447b2f80330204e78df4f40ef33318fc6edd",
+            "trellis/modules/sparse/transformer/blocks.py": "974d165de533f1c5e2213d8d5be2d5ad7cd9258e7e472ebc4fa8f2c5416bec8a",
+            "trellis/modules/sparse/transformer/modulated.py": "f81510aef663f602a48a2921c2175698ad9414810b1492c784b1ceb5ca5dd787",
+            "trellis/modules/sparse/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/modules/transformer/blocks.py": "857ccc64ad186c4d84a1c2c0b30093b87c5f19a7854e62bb682f878fcc16d256",
+            "trellis/modules/transformer/modulated.py": "362bace67d9f12fd91972ef1bab0ebf38b60083b9ab2cdff877cb59277e62f13",
+            "trellis/modules/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/pipelines/base.py": "58ba1e140e60d51a36bfb5c37f9be922d618db863c62b47740553026c3e78053",
+            "trellis/pipelines/trellis_image_to_3d.py": "fb54758592848d1672cb4ce56bf7c9431c3bbb67d0c3980536eb263948ccb591",
+            "trellis/pipelines/trellis_text_to_3d.py": "d985e4f56b83a9887ee8a3f056f9a999dc1af416992cd405767ff3e08dc3456e",
+            "trellis/pipelines/__init__.py": "1657e5df0abfceeefeee317aaaa4a787b94e01f62bcefa5a70fe2ab80a8e9499",
+            "trellis/pipelines/samplers/base.py": "10bc216dc255e64746e51d929fc66d88efa7e3763e48a52a4fae3722d1e01869",
+            "trellis/pipelines/samplers/classifier_free_guidance_mixin.py": "ed17b1388c0ace508777b0519dae24a2d5857f468454be9e7c75eefb06a7e8b0",
+            "trellis/pipelines/samplers/flow_euler.py": "4492f18a35dda969fba01dbed032b9549b371f1d6b672d1f6d36ce47e6cfcf7b",
+            "trellis/pipelines/samplers/guidance_interval_mixin.py": "2b0b1db3a80e97eb2b983732f27b32132395171804294367ce627ad508c0504b",
+            "trellis/pipelines/samplers/__init__.py": "8a6e24d85a29def30445dd98af403fd78295876d4d7ffaf78c09356bd08e2c09",
+            "trellis/renderers/gaussian_render.py": "6ff6d219a207d9ed55a5190555fddd7d1cb3cc0e40719f1227fa9926e296cfce",
+            "trellis/renderers/mesh_renderer.py": "a602309e57b418e29419b90fcfad5d32a3799afa2a218f43d2ac61098ca9a33c",
+            "trellis/renderers/octree_renderer.py": "7b5aac095f622413bbb431c1dc1b92443c1a017fa7b2ab1b78bff7b646737083",
+            "trellis/renderers/sh_utils.py": "ece62fef10e63f3bb1f0c89292ff82591a3a8842c25fe039102d853bc8dded93",
+            "trellis/renderers/__init__.py": "9d770c4d9ea82dbd5cd5762497ceeb1b5342d75d42bf57db6e9d5668e5f0f279",
+            "trellis/representations/__init__.py": "dbd426e358cd7d4ffe9432778d3fddd2ccb230d553c0a057f613eef89f6dae84",
+            "trellis/representations/gaussian/gaussian_model.py": "3377b83ac62a38629336d46a0da1aca0f770d076d23ea2b09cbc77dcb5418ebf",
+            "trellis/representations/gaussian/general_utils.py": "9d67f784af2a9860d5405a676d2792caeb834c7a06e543171f07956190dc159c",
+            "trellis/representations/gaussian/__init__.py": "891087d9c250aa57155bd0606808e2783cbe6cc6991c81edb551f625f81d34be",
+            "trellis/representations/mesh/cube2mesh.py": "34504de533939ca3608a74887a4ff3c62decb471113fefd3507c9546e63897a6",
+            "trellis/representations/mesh/utils_cube.py": "a38c2901cca27cacbe1bb098bf649b074c214cff76be4fa8f8d34e04ea5206b6",
+            "trellis/representations/mesh/__init__.py": "3780cfefda1a54715d6887d273f2a059bacabfb62f2a7d232181dcd1921bd972",
+            "trellis/representations/mesh/flexicubes/flexicubes.py": "cac9cbc1311d03d2a57b7486a06d59960d5408bcc885ced00f537427b249b20f",
+            "trellis/representations/mesh/flexicubes/tables.py": "02a0d3277273ca2b18371c9895837131d453bfbd257d5a5e92433ed84f066cd6",
+            "trellis/representations/mesh/flexicubes/examples/download_data.py": "50b2425f34c15f753647d424634a06e6cb83ceacfd2632a889f6fe8f80718816",
+            "trellis/representations/mesh/flexicubes/examples/loss.py": "9f165f073bba3e560b51ef80e2e87943b525e8f487c8d70b5f1a4dc7f6c6085d",
+            "trellis/representations/mesh/flexicubes/examples/optimize.py": "9b410418738be79624216eb5c098600b03ce0cebef5d8baad5ffc8ca10a3ff2d",
+            "trellis/representations/mesh/flexicubes/examples/render.py": "736ef16cb17257309e0cc0b717cd9773c72a3797d0beda5e5a41c1186b1f52a3",
+            "trellis/representations/mesh/flexicubes/examples/util.py": "8649c2fa83c6e9804baaaf978ed5592471c3656c857cd9e5ff2d909e4acbefc5",
+            "trellis/representations/octree/octree_dfs.py": "6a151d09e03aaf1d72c9ec9dc25a8c396609bafc8095274de365878a2a3d5bd1",
+            "trellis/representations/octree/__init__.py": "2243db6b94f53b4f547bb5d269ad0d2c7b779a7f18cde64cb60f1ab050659b48",
+            "trellis/representations/radiance_field/strivec.py": "6df62c751f1116a25678ad07d4932cec5bcf899967dffb7c82ac4d85b37c0c98",
+            "trellis/representations/radiance_field/__init__.py": "73a6481c49a88fbadd8c8b5c16e0f968e4a4c86d24de45cb1ca302ec6c831f1c",
+            "trellis/trainers/base.py": "69da8877a4544ef5aefe7d4bd524fdbe5c35d3f31c69fd315b5c1597195321ce",
+            "trellis/trainers/basic.py": "3f2a0cdcade573ac20c4daa8b4b3ea3f63e16a293a7accbd4db44372b0386668",
+            "trellis/trainers/utils.py": "0d109ab2e59a03097867290b2fcc5e876c47790636728ec9ea7ff2b76e841fb0",
+            "trellis/trainers/__init__.py": "e0cb498b5d64cdb9aa6419dcf0949af0d153c05bdaa7eba9ea3975f0d7d37685",
+            "trellis/trainers/flow_matching/flow_matching.py": "892df243dcceee5892e2969015c1969b265738ba0255ef00bf35fc2fda47a26d",
+            "trellis/trainers/flow_matching/sparse_flow_matching.py": "1f9e7f9c8efa452462fc4c9e1292bd264385121f85719f3712bfd2622838dab9",
+            "trellis/trainers/flow_matching/mixins/classifier_free_guidance.py": "5f3a151d76dd37bed3a261aed84a721d99725b6aed7da8206b298c8d52c077b3",
+            "trellis/trainers/flow_matching/mixins/image_conditioned.py": "139324fdabce3871901b9fc0c3bde6fd9f729cfff383600925360b8fb987e3b4",
+            "trellis/trainers/flow_matching/mixins/text_conditioned.py": "4bd667ff7a2e9930d795900e323114482390b865c919ae3214704f0737f5ded9",
+            "trellis/trainers/vae/sparse_structure_vae.py": "32ae8e3fadcc2637c09717f7f9d5c0f76ec7b1b7a1cd912361f63e85d4556f22",
+            "trellis/trainers/vae/structured_latent_vae_gaussian.py": "075e79599406b9ab47b2bebd13982a20eef9005d47f63338ff7633b920caabcf",
+            "trellis/trainers/vae/structured_latent_vae_mesh_dec.py": "efa3f799db6b46c43e65d049d3a0a8b0b89756ef49cc498d363fb1386ade7010",
+            "trellis/trainers/vae/structured_latent_vae_rf_dec.py": "d0f50c213edad07df8ece9f31068229ea7de31efd7a8213148d693ee6f69d63e",
+            "trellis/utils/data_utils.py": "8868ed0cf40af75e3eaf68a4b5912b7220ed884b063b8058a41f8c53deb393a1",
+            "trellis/utils/dist_utils.py": "0e91c7c5b67c229cf48d12eb32b50f804dd77e6e16fe85544c93c1f17f3fc5fc",
+            "trellis/utils/elastic_utils.py": "eb743b8015232bcc67e33104a4c8d212d41664dbb9a6ea10866dc499f229bc30",
+            "trellis/utils/general_utils.py": "6b2aa148277330a983e44367dc184f2feccf395502f442fcf4f14375fcf98e50",
+            "trellis/utils/grad_clip_utils.py": "c6058be0fdc81dd10da9d88945bad4820f7a35afa2699262b179d81a6686754d",
+            "trellis/utils/loss_utils.py": "0614d65eb03eb43e14263080e8c65f8e4b0592c4fcff9a2edbd7ff541bf4d02d",
+            "trellis/utils/postprocessing_utils.py": "b4322d00b85e0a612b9dbd8e2a3514b5492f503b3b73b7b9f4dc9a63acc17d44",
+            "trellis/utils/random_utils.py": "675c2f4f3047a0145d18feabbcb6b0028b39177a3fc7b82b48d4dbd8f0107aca",
+            "trellis/utils/render_utils.py": "7ab520ffa62ca22ffdb05a8566b778dca2e7702286ccfce60fb7bf343960a5ed",
+            "trellis/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "duration_seconds": 48.73500000000013
+        },
+        "inspection": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 1269640,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.8994392156600952,
+            0.8535283207893372,
+            1.000546932220459
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.45145168900489807,
+              -0.42451930046081543,
+              -0.5002122521400452
+            ],
+            [
+              0.44798752665519714,
+              0.42900902032852173,
+              0.5003346800804138
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 1269640,
+              "vertices": 634688,
+              "watertight": true,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": true,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 1269640,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 19
+            },
+            "faces_opposing_mean_vertex_normal": 28,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 1269640,
+                "zero_area_triangles": 0,
+                "very_thin_triangles": 19,
+                "triangle_quality_p01": 0.27593277377561987,
+                "faces_opposing_mean_vertex_normal": 28,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+                "surface_area_source_units_squared": 7.640041277235329,
+                "bounding_diagonal_source_units": 1.5932971036917392,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "texture_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+            "status": "VALIDATED_EMBEDDED_IMAGES",
+            "images": [],
+            "bindings": [],
+            "checks": {
+              "image_decode": "PASS",
+              "embedded_image_bounds": "PASS",
+              "material_texture_references": "PASS",
+              "texture_coordinate_declarations": "PASS"
+            },
+            "limitations": [
+              "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+              "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "embedded_texture_integrity": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "inspection_seconds": 1.8910000000000764,
+        "reused_completed_inference": true
+      },
+      {
+        "engine": "trellis_v1",
+        "seed": 43,
+        "folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-43",
+        "samples": [
+          {
+            "seconds": 0.06300000000010186,
+            "gpu_used_mib": 1875.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 40230084608,
+            "worker_tree_rss_bytes": 24100864
+          },
+          {
+            "seconds": 1.1100000000001273,
+            "gpu_used_mib": 1871.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39794401280,
+            "worker_tree_rss_bytes": 414097408
+          },
+          {
+            "seconds": 2.155999999999949,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39733432320,
+            "worker_tree_rss_bytes": 487526400
+          },
+          {
+            "seconds": 3.2029999999999745,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39637319680,
+            "worker_tree_rss_bytes": 547332096
+          },
+          {
+            "seconds": 4.266000000000076,
+            "gpu_used_mib": 1872.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39579308032,
+            "worker_tree_rss_bytes": 637800448
+          },
+          {
+            "seconds": 5.3279999999999745,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39630434304,
+            "worker_tree_rss_bytes": 864714752
+          },
+          {
+            "seconds": 6.375,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 38372270080,
+            "worker_tree_rss_bytes": 2030092288
+          },
+          {
+            "seconds": 7.4220000000000255,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 37302542336,
+            "worker_tree_rss_bytes": 3143434240
+          },
+          {
+            "seconds": 8.485000000000127,
+            "gpu_used_mib": 1875.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36963201024,
+            "worker_tree_rss_bytes": 3143499776
+          },
+          {
+            "seconds": 9.594000000000051,
+            "gpu_used_mib": 1868.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36750290944,
+            "worker_tree_rss_bytes": 3453677568
+          },
+          {
+            "seconds": 10.641000000000076,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 36370374656,
+            "worker_tree_rss_bytes": 3822489600
+          },
+          {
+            "seconds": 11.702999999999975,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36378939392,
+            "worker_tree_rss_bytes": 3823079424
+          },
+          {
+            "seconds": 12.766000000000076,
+            "gpu_used_mib": 4173.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36375535616,
+            "worker_tree_rss_bytes": 3823239168
+          },
+          {
+            "seconds": 13.844000000000051,
+            "gpu_used_mib": 4173.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36373774336,
+            "worker_tree_rss_bytes": 3827191808
+          },
+          {
+            "seconds": 14.922000000000025,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36183396352,
+            "worker_tree_rss_bytes": 4045352960
+          },
+          {
+            "seconds": 15.969000000000051,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35146477568,
+            "worker_tree_rss_bytes": 5091790848
+          },
+          {
+            "seconds": 17.047000000000025,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34731986944,
+            "worker_tree_rss_bytes": 5381836800
+          },
+          {
+            "seconds": 18.125,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34466476032,
+            "worker_tree_rss_bytes": 5489717248
+          },
+          {
+            "seconds": 19.21900000000005,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34258657280,
+            "worker_tree_rss_bytes": 5564747776
+          },
+          {
+            "seconds": 20.28099999999995,
+            "gpu_used_mib": 4176.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34095484928,
+            "worker_tree_rss_bytes": 5630595072
+          },
+          {
+            "seconds": 21.375,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33357479936,
+            "worker_tree_rss_bytes": 6295715840
+          },
+          {
+            "seconds": 22.438000000000102,
+            "gpu_used_mib": 4820.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 35.0,
+            "available_RAM_bytes": 34399842304,
+            "worker_tree_rss_bytes": 5771866112
+          },
+          {
+            "seconds": 23.46900000000005,
+            "gpu_used_mib": 4802.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34393812992,
+            "worker_tree_rss_bytes": 5792149504
+          },
+          {
+            "seconds": 24.53099999999995,
+            "gpu_used_mib": 4798.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34398900224,
+            "worker_tree_rss_bytes": 5792149504
+          },
+          {
+            "seconds": 25.577999999999975,
+            "gpu_used_mib": 4805.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34694234112,
+            "worker_tree_rss_bytes": 5792149504
+          },
+          {
+            "seconds": 26.610000000000127,
+            "gpu_used_mib": 4807.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34659033088,
+            "worker_tree_rss_bytes": 5792149504
+          },
+          {
+            "seconds": 27.65599999999995,
+            "gpu_used_mib": 4809.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34681827328,
+            "worker_tree_rss_bytes": 5792149504
+          },
+          {
+            "seconds": 28.702999999999975,
+            "gpu_used_mib": 4811.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34602160128,
+            "worker_tree_rss_bytes": 5792161792
+          },
+          {
+            "seconds": 29.75,
+            "gpu_used_mib": 4815.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 48.0,
+            "available_RAM_bytes": 34203193344,
+            "worker_tree_rss_bytes": 6067257344
+          },
+          {
+            "seconds": 30.797000000000025,
+            "gpu_used_mib": 5526.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 33.0,
+            "available_RAM_bytes": 33981521920,
+            "worker_tree_rss_bytes": 6118637568
+          },
+          {
+            "seconds": 31.860000000000127,
+            "gpu_used_mib": 5532.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 91.0,
+            "available_RAM_bytes": 34059640832,
+            "worker_tree_rss_bytes": 6118907904
+          },
+          {
+            "seconds": 32.90599999999995,
+            "gpu_used_mib": 5533.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 34076213248,
+            "worker_tree_rss_bytes": 6118907904
+          },
+          {
+            "seconds": 33.952999999999975,
+            "gpu_used_mib": 5541.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 89.0,
+            "available_RAM_bytes": 34091180032,
+            "worker_tree_rss_bytes": 6118973440
+          },
+          {
+            "seconds": 35.0,
+            "gpu_used_mib": 5554.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 91.0,
+            "available_RAM_bytes": 34097651712,
+            "worker_tree_rss_bytes": 6120009728
+          },
+          {
+            "seconds": 36.0630000000001,
+            "gpu_used_mib": 5561.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 89.0,
+            "available_RAM_bytes": 34089857024,
+            "worker_tree_rss_bytes": 6120013824
+          },
+          {
+            "seconds": 37.09400000000005,
+            "gpu_used_mib": 5302.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 77.0,
+            "available_RAM_bytes": 33781370880,
+            "worker_tree_rss_bytes": 6449823744
+          },
+          {
+            "seconds": 38.141000000000076,
+            "gpu_used_mib": 14586.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 85.0,
+            "available_RAM_bytes": 33550594048,
+            "worker_tree_rss_bytes": 6649896960
+          },
+          {
+            "seconds": 39.1880000000001,
+            "gpu_used_mib": 14594.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34292826112,
+            "worker_tree_rss_bytes": 5867651072
+          }
+        ],
+        "status": "GENERATED_GEOMETRY_NEEDS_REVIEW",
+        "admission": {
+          "schema_version": 1,
+          "allowed": true,
+          "reason": null,
+          "reason_code": null,
+          "at": "2026-10-23T02:17:37.149689+00:00",
+          "checked_at_epoch": 1792721857.14969,
+          "available_bytes": 40228446208,
+          "unrealized_reserved_bytes": 0,
+          "usable_bytes": 40228446208,
+          "headroom_bytes": 2147483648,
+          "allowance": {
+            "profile_key": "host-memory:v1:07c895e1931e56af41f2a8102d6f6bd073431bfab46eaf9a98501fb1856d5fca",
+            "profile": {
+              "kind": "inference",
+              "engine": "trellis_v1",
+              "checkpoint": null,
+              "quality": null,
+              "pipeline_type": null,
+              "precision": null,
+              "texture_size": null,
+              "finishing_only": false,
+              "use_gpu": false
+            },
+            "bytes": 25769803776,
+            "planning_floor_gib": 24,
+            "observed": null,
+            "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+          },
+          "active_claims": [],
+          "quality_settings_changed": false
+        },
+        "generation": {
+          "status": "GENERATED_NEEDS_REVIEW",
+          "engine": "trellis_v1",
+          "request": {
+            "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png",
+            "seed": 43,
+            "steps": 50,
+            "slat_steps": 24,
+            "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-43\\output",
+            "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-43\\request.json",
+            "engine": "trellis_v1",
+            "engine_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\engines\\TRELLIS-v1",
+            "weights": "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96",
+            "experimental": true,
+            "commercial_approval": "NEEDS_REVIEW"
+          },
+          "network": "OFFLINE",
+          "input_sha256": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+          "script_sha256": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45",
+          "mesh_quality_parity": "NOT_TESTED",
+          "human_score": null,
+          "commercial_approval": "NEEDS_REVIEW",
+          "pbr": "NOT_AVAILABLE_GEOMETRY_TRIAL",
+          "timings": {
+            "load_models": 16.110000000000127,
+            "image_encoding": 0.21900000000005093,
+            "sparse_structure_sampling": 6.967999999999847,
+            "sparse_structure_decode": 0.06199999999989814,
+            "slat_sampling": 6.483999999999924,
+            "mesh_decode": 0.7660000000000764
+          },
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "active_voxels": 25932,
+          "triangles": 1231654,
+          "native_triangles": 1231654,
+          "peak_allocated_bytes": 7870498816,
+          "peak_reserved_bytes": 13067354112,
+          "torch_memory_scope": "whole worker peak, no reset between stages",
+          "output_sha256": "aee060b52cb71963f2549920294ad0185045facb971b9d6e303a301e6e8ef0e4",
+          "source_sha256": {
+            "app.py": "6a2093fb352eab9a6a9030f02ba55ce0a96e2eb969b56b498af904749d49fd01",
+            "app_text.py": "9f391c6ed270b1ccb911e2c32956a8e569f17bc41ac8c45e81d043bfae83269d",
+            "example.py": "2099f399b9089b73cc796b88bf4cd10c7653b24a00b9293652e207b6ecc7660d",
+            "example_multi_image.py": "7a6abcf14ae3a17a5a90f57aef828ee268a9c5a2411ccc10eaf8917ed1f46486",
+            "example_text.py": "ef55f7ac56d387d3ad46bd8d7670dd7a08a3d15e2248d327282f100f636d3458",
+            "example_variant.py": "a5d58e47e5682e48360e5bcd63f6338f98c4a1f5d38b4502ab7a8357f94150da",
+            "train.py": "a5d7d64906168b8c0b37262afbc6113689fdd41d1f658c21a231e966d38f1dcf",
+            "dataset_toolkits/build_metadata.py": "3aa1d4bdba3c68150a2c6de6c34c444045a84976c887421b21310485f1e7c209",
+            "dataset_toolkits/calculate_aesthetic_scores.py": "cb238962fc78b3e7f5c67fc207ccf5a3bf5a3df67ee294f124d0479e6b0e7b5e",
+            "dataset_toolkits/download.py": "3c399062c16c87fb3155c8ea0bddef47b04ba844b7e1919b9c0241c90639a18e",
+            "dataset_toolkits/encode_latent.py": "60ec0c3fe0f9ae78acaabb6953182753aa2c8da165849e220db4027408099fd8",
+            "dataset_toolkits/encode_ss_latent.py": "186ed8cb469bb158d2cfe292e446256cf3029c005df62be650acc4c2a7259d4d",
+            "dataset_toolkits/extract_feature.py": "2edb5a76c6321ca9a9b87cc6c1dbf564c81e690c1ae635b879f97f080c18602e",
+            "dataset_toolkits/render.py": "8373bf0c5a803820db9c27caf11510ea3020241802ea97d499dbad33e86837fb",
+            "dataset_toolkits/render_cond.py": "abf684a460f3f9db48f07c7b443b8fa4918eef2493d7f1fc2895be946cd1cbcd",
+            "dataset_toolkits/stat_latent.py": "f8c44465985236b95424dd44c85f4a2b4610fef0af06baac0e6251ed105a0c64",
+            "dataset_toolkits/utils.py": "85a64a8afa730abc65de7c911f67913c8fba173f4197e3170f11b7895616a8d2",
+            "dataset_toolkits/voxelize.py": "2228437a4f4a665fa8baa4161db104135bcf09007f04c59948ad0685b8e2bdc3",
+            "dataset_toolkits/blender_script/render.py": "a7f2c9247a7fcc1f17f0044e002aecb0ab758c0ff9ee7b742d617ddbc72f400a",
+            "dataset_toolkits/datasets/3D-FUTURE.py": "71e86046535072751969f45c29927d738bc1e3c2276f863eba38f12d8461f2a2",
+            "dataset_toolkits/datasets/ABO.py": "3617281daef577931079d631de109dfd57fb39aa52b15c25ac043a36d01bf01b",
+            "dataset_toolkits/datasets/HSSD.py": "51d8c509b03333d66089c66e0fe1ca4a49c2de4cb5e6ae7f1c85b3bdfa1d730b",
+            "dataset_toolkits/datasets/ObjaverseXL.py": "cdffe3a9e381698a0b8e2c0b89a79cc38f5918774e304dd99bf0b2e7b62578f6",
+            "dataset_toolkits/datasets/Toys4k.py": "d6500d5b42002371174c8eb7a8941b3f51bdbf28bea6847f9735f72534daab32",
+            "trellis/__init__.py": "b953c8a82e54705708a115dd0e53b7ca5ccf45b71517463a5e9b8e0de318ee43",
+            "trellis/datasets/components.py": "9edb1bac7d58d52d78c28d82a7d38ef108d234f4fb1ffc6af7d06b00dfd55b43",
+            "trellis/datasets/sparse_feat2render.py": "d385b8d7ac817f77dc5e15c1856bd4c56256421406d4963164241d48b5277505",
+            "trellis/datasets/sparse_structure.py": "79ac04e0dbcb2602bf0c9af601d35ff89aa5c4b036e48972817cb65dfc94b006",
+            "trellis/datasets/sparse_structure_latent.py": "26278e7c48f71d5c8b4bc77b062519c787ba4bc5968898288c5c6e21c2a98bed",
+            "trellis/datasets/structured_latent.py": "b9d753bd3c5ca9c7464b136004584360e8bcbe86fa691409a42cec84403d47f2",
+            "trellis/datasets/structured_latent2render.py": "9906babe9af99c36c2a7f5ccf26c1472022089139e753ba4becc714d36b16a6f",
+            "trellis/datasets/__init__.py": "624a8ada45439071904ac77a1d8292fd56c6d77c09db8851ec90fdbb235c0e12",
+            "trellis/models/sparse_elastic_mixin.py": "17b85bc281172d72fec8944821693819643df7eae11713b2a87eed142c09c833",
+            "trellis/models/sparse_structure_flow.py": "9cf28b488ec7c4be47a1fd34013f0fcf1f772fd80e9ac9690c6969016d686c0e",
+            "trellis/models/sparse_structure_vae.py": "bbef234dc85312cc4ccae55837b40e03c897f4267198d8414d403c425ff06dec",
+            "trellis/models/structured_latent_flow.py": "a6cafe4876de76c7143731b2d5a271a3bfd26a84512408a805158b849ac81eb8",
+            "trellis/models/__init__.py": "cf6ade1218a987cb58d5952915b4d8c84741c795d3a7c2bd862b61a609dc25bf",
+            "trellis/models/structured_latent_vae/base.py": "26c0a7c6253ecaf9770127062bed7c3360fb72ce062e50f30cd4db7fe15f244b",
+            "trellis/models/structured_latent_vae/decoder_gs.py": "c5bd28d3781b7cdb95b7c41dec1d94252b98ec9e22c305515f973549a709c5ce",
+            "trellis/models/structured_latent_vae/decoder_mesh.py": "5b6b3afaf959d5baa1a5794d3bd6194c560b294c840d265fdd28547c33a6f21f",
+            "trellis/models/structured_latent_vae/decoder_rf.py": "127fb19334eec1587860b599ac71c6b76624a48e0343e65a0bf313996012bf13",
+            "trellis/models/structured_latent_vae/encoder.py": "d9f85c654170131334e6497bbb060108392b1cb95cbd3c163d9fe6f89fd18e8b",
+            "trellis/models/structured_latent_vae/__init__.py": "cacb8dcaed2b4a216c104834689995a0acd189b6fef24bb1931f1ad8894ee450",
+            "trellis/modules/norm.py": "9df6876f02ff6160119517e3e861ba1f56d1f47d22f45be20cfa542b66bcd438",
+            "trellis/modules/spatial.py": "4a029d5077bb0a5412ee5eceb8de21d3b4c8920a8f53d477441c3c3219a0da3c",
+            "trellis/modules/utils.py": "7850febc6caafd80205f49a3e86bb453a8bbcba654507d2edb4f27d62fa3d2c6",
+            "trellis/modules/attention/full_attn.py": "93d0bfd12749b0a303f0c2b68c12bdfc8aa57d10e598b677b3183523303fccc8",
+            "trellis/modules/attention/modules.py": "1e53692f62362750d3283477331d7c83127d53708dd8ef8e4ff7b3ca22d9a281",
+            "trellis/modules/attention/__init__.py": "03b1df628c1f8639e17115126a5653ba9b974de86f2f4f145ce41b37427b23a7",
+            "trellis/modules/sparse/basic.py": "3ce99cf799889f6fd5035d50f843911a61ac8eeb4be8f2d98c19f0e1870d7f38",
+            "trellis/modules/sparse/linear.py": "9c2a3d122c8624c27c0109c925722d9df60c74783e757353d0de6b19f22e4c43",
+            "trellis/modules/sparse/nonlinearity.py": "0bce3cc92d398f3fa9f65d2f085eeaee2b0f022839eb60861c8a4d0cfbc0cb5f",
+            "trellis/modules/sparse/norm.py": "75d34306e5c6f3161452d5dc9cbe256222b887df49aa64bbc19128661e4cccf1",
+            "trellis/modules/sparse/spatial.py": "39a997b7073e70e7bf5535986c894e02b08ccbcec05f8df807479d2ec2bfa84c",
+            "trellis/modules/sparse/__init__.py": "68363a0f51472cebcb83bf23ccd6fd4abd8504c34505139310ec86e0f781dadc",
+            "trellis/modules/sparse/attention/full_attn.py": "35c0b9d3f9cb510ff2ed3dd3a787645e35ec57a2a6140400a87b8059ae321675",
+            "trellis/modules/sparse/attention/modules.py": "d9e2cbe5e31e1a995472c4339f5d68744ce7dbdbd312310e00d56e1ea604e6b6",
+            "trellis/modules/sparse/attention/serialized_attn.py": "cd1c1bf11e72800b8497af7e029084d18c319291766e8536d1d486d62be17155",
+            "trellis/modules/sparse/attention/windowed_attn.py": "8b440ee5cdf13c4d39783bfd3bafdc44c5be9fd28084f1943a7e18238075e1b2",
+            "trellis/modules/sparse/attention/__init__.py": "a73bf9e14d339ccd2380140dd2a63eb4025162fa7f14aaaec2201cf8c2b8b161",
+            "trellis/modules/sparse/conv/conv_spconv.py": "879d58ef6dc4ebd6acc1cca33defc358e1889dfb9eb40f2c009975955c59fb09",
+            "trellis/modules/sparse/conv/conv_torchsparse.py": "46c30a87d93164dfa0247e15884e35501b355b4c114ceeb6a5b639d3713d5b17",
+            "trellis/modules/sparse/conv/__init__.py": "53285fc33da4ba74b2a9bdde4e2a447b2f80330204e78df4f40ef33318fc6edd",
+            "trellis/modules/sparse/transformer/blocks.py": "974d165de533f1c5e2213d8d5be2d5ad7cd9258e7e472ebc4fa8f2c5416bec8a",
+            "trellis/modules/sparse/transformer/modulated.py": "f81510aef663f602a48a2921c2175698ad9414810b1492c784b1ceb5ca5dd787",
+            "trellis/modules/sparse/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/modules/transformer/blocks.py": "857ccc64ad186c4d84a1c2c0b30093b87c5f19a7854e62bb682f878fcc16d256",
+            "trellis/modules/transformer/modulated.py": "362bace67d9f12fd91972ef1bab0ebf38b60083b9ab2cdff877cb59277e62f13",
+            "trellis/modules/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/pipelines/base.py": "58ba1e140e60d51a36bfb5c37f9be922d618db863c62b47740553026c3e78053",
+            "trellis/pipelines/trellis_image_to_3d.py": "fb54758592848d1672cb4ce56bf7c9431c3bbb67d0c3980536eb263948ccb591",
+            "trellis/pipelines/trellis_text_to_3d.py": "d985e4f56b83a9887ee8a3f056f9a999dc1af416992cd405767ff3e08dc3456e",
+            "trellis/pipelines/__init__.py": "1657e5df0abfceeefeee317aaaa4a787b94e01f62bcefa5a70fe2ab80a8e9499",
+            "trellis/pipelines/samplers/base.py": "10bc216dc255e64746e51d929fc66d88efa7e3763e48a52a4fae3722d1e01869",
+            "trellis/pipelines/samplers/classifier_free_guidance_mixin.py": "ed17b1388c0ace508777b0519dae24a2d5857f468454be9e7c75eefb06a7e8b0",
+            "trellis/pipelines/samplers/flow_euler.py": "4492f18a35dda969fba01dbed032b9549b371f1d6b672d1f6d36ce47e6cfcf7b",
+            "trellis/pipelines/samplers/guidance_interval_mixin.py": "2b0b1db3a80e97eb2b983732f27b32132395171804294367ce627ad508c0504b",
+            "trellis/pipelines/samplers/__init__.py": "8a6e24d85a29def30445dd98af403fd78295876d4d7ffaf78c09356bd08e2c09",
+            "trellis/renderers/gaussian_render.py": "6ff6d219a207d9ed55a5190555fddd7d1cb3cc0e40719f1227fa9926e296cfce",
+            "trellis/renderers/mesh_renderer.py": "a602309e57b418e29419b90fcfad5d32a3799afa2a218f43d2ac61098ca9a33c",
+            "trellis/renderers/octree_renderer.py": "7b5aac095f622413bbb431c1dc1b92443c1a017fa7b2ab1b78bff7b646737083",
+            "trellis/renderers/sh_utils.py": "ece62fef10e63f3bb1f0c89292ff82591a3a8842c25fe039102d853bc8dded93",
+            "trellis/renderers/__init__.py": "9d770c4d9ea82dbd5cd5762497ceeb1b5342d75d42bf57db6e9d5668e5f0f279",
+            "trellis/representations/__init__.py": "dbd426e358cd7d4ffe9432778d3fddd2ccb230d553c0a057f613eef89f6dae84",
+            "trellis/representations/gaussian/gaussian_model.py": "3377b83ac62a38629336d46a0da1aca0f770d076d23ea2b09cbc77dcb5418ebf",
+            "trellis/representations/gaussian/general_utils.py": "9d67f784af2a9860d5405a676d2792caeb834c7a06e543171f07956190dc159c",
+            "trellis/representations/gaussian/__init__.py": "891087d9c250aa57155bd0606808e2783cbe6cc6991c81edb551f625f81d34be",
+            "trellis/representations/mesh/cube2mesh.py": "34504de533939ca3608a74887a4ff3c62decb471113fefd3507c9546e63897a6",
+            "trellis/representations/mesh/utils_cube.py": "a38c2901cca27cacbe1bb098bf649b074c214cff76be4fa8f8d34e04ea5206b6",
+            "trellis/representations/mesh/__init__.py": "3780cfefda1a54715d6887d273f2a059bacabfb62f2a7d232181dcd1921bd972",
+            "trellis/representations/mesh/flexicubes/flexicubes.py": "cac9cbc1311d03d2a57b7486a06d59960d5408bcc885ced00f537427b249b20f",
+            "trellis/representations/mesh/flexicubes/tables.py": "02a0d3277273ca2b18371c9895837131d453bfbd257d5a5e92433ed84f066cd6",
+            "trellis/representations/mesh/flexicubes/examples/download_data.py": "50b2425f34c15f753647d424634a06e6cb83ceacfd2632a889f6fe8f80718816",
+            "trellis/representations/mesh/flexicubes/examples/loss.py": "9f165f073bba3e560b51ef80e2e87943b525e8f487c8d70b5f1a4dc7f6c6085d",
+            "trellis/representations/mesh/flexicubes/examples/optimize.py": "9b410418738be79624216eb5c098600b03ce0cebef5d8baad5ffc8ca10a3ff2d",
+            "trellis/representations/mesh/flexicubes/examples/render.py": "736ef16cb17257309e0cc0b717cd9773c72a3797d0beda5e5a41c1186b1f52a3",
+            "trellis/representations/mesh/flexicubes/examples/util.py": "8649c2fa83c6e9804baaaf978ed5592471c3656c857cd9e5ff2d909e4acbefc5",
+            "trellis/representations/octree/octree_dfs.py": "6a151d09e03aaf1d72c9ec9dc25a8c396609bafc8095274de365878a2a3d5bd1",
+            "trellis/representations/octree/__init__.py": "2243db6b94f53b4f547bb5d269ad0d2c7b779a7f18cde64cb60f1ab050659b48",
+            "trellis/representations/radiance_field/strivec.py": "6df62c751f1116a25678ad07d4932cec5bcf899967dffb7c82ac4d85b37c0c98",
+            "trellis/representations/radiance_field/__init__.py": "73a6481c49a88fbadd8c8b5c16e0f968e4a4c86d24de45cb1ca302ec6c831f1c",
+            "trellis/trainers/base.py": "69da8877a4544ef5aefe7d4bd524fdbe5c35d3f31c69fd315b5c1597195321ce",
+            "trellis/trainers/basic.py": "3f2a0cdcade573ac20c4daa8b4b3ea3f63e16a293a7accbd4db44372b0386668",
+            "trellis/trainers/utils.py": "0d109ab2e59a03097867290b2fcc5e876c47790636728ec9ea7ff2b76e841fb0",
+            "trellis/trainers/__init__.py": "e0cb498b5d64cdb9aa6419dcf0949af0d153c05bdaa7eba9ea3975f0d7d37685",
+            "trellis/trainers/flow_matching/flow_matching.py": "892df243dcceee5892e2969015c1969b265738ba0255ef00bf35fc2fda47a26d",
+            "trellis/trainers/flow_matching/sparse_flow_matching.py": "1f9e7f9c8efa452462fc4c9e1292bd264385121f85719f3712bfd2622838dab9",
+            "trellis/trainers/flow_matching/mixins/classifier_free_guidance.py": "5f3a151d76dd37bed3a261aed84a721d99725b6aed7da8206b298c8d52c077b3",
+            "trellis/trainers/flow_matching/mixins/image_conditioned.py": "139324fdabce3871901b9fc0c3bde6fd9f729cfff383600925360b8fb987e3b4",
+            "trellis/trainers/flow_matching/mixins/text_conditioned.py": "4bd667ff7a2e9930d795900e323114482390b865c919ae3214704f0737f5ded9",
+            "trellis/trainers/vae/sparse_structure_vae.py": "32ae8e3fadcc2637c09717f7f9d5c0f76ec7b1b7a1cd912361f63e85d4556f22",
+            "trellis/trainers/vae/structured_latent_vae_gaussian.py": "075e79599406b9ab47b2bebd13982a20eef9005d47f63338ff7633b920caabcf",
+            "trellis/trainers/vae/structured_latent_vae_mesh_dec.py": "efa3f799db6b46c43e65d049d3a0a8b0b89756ef49cc498d363fb1386ade7010",
+            "trellis/trainers/vae/structured_latent_vae_rf_dec.py": "d0f50c213edad07df8ece9f31068229ea7de31efd7a8213148d693ee6f69d63e",
+            "trellis/utils/data_utils.py": "8868ed0cf40af75e3eaf68a4b5912b7220ed884b063b8058a41f8c53deb393a1",
+            "trellis/utils/dist_utils.py": "0e91c7c5b67c229cf48d12eb32b50f804dd77e6e16fe85544c93c1f17f3fc5fc",
+            "trellis/utils/elastic_utils.py": "eb743b8015232bcc67e33104a4c8d212d41664dbb9a6ea10866dc499f229bc30",
+            "trellis/utils/general_utils.py": "6b2aa148277330a983e44367dc184f2feccf395502f442fcf4f14375fcf98e50",
+            "trellis/utils/grad_clip_utils.py": "c6058be0fdc81dd10da9d88945bad4820f7a35afa2699262b179d81a6686754d",
+            "trellis/utils/loss_utils.py": "0614d65eb03eb43e14263080e8c65f8e4b0592c4fcff9a2edbd7ff541bf4d02d",
+            "trellis/utils/postprocessing_utils.py": "b4322d00b85e0a612b9dbd8e2a3514b5492f503b3b73b7b9f4dc9a63acc17d44",
+            "trellis/utils/random_utils.py": "675c2f4f3047a0145d18feabbcb6b0028b39177a3fc7b82b48d4dbd8f0107aca",
+            "trellis/utils/render_utils.py": "7ab520ffa62ca22ffdb05a8566b778dca2e7702286ccfce60fb7bf343960a5ed",
+            "trellis/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "duration_seconds": 38.79599999999982
+        },
+        "inspection": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 1231654,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.9032918214797974,
+            0.8709568381309509,
+            1.000439167022705
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.45294100046157837,
+              -0.4347337484359741,
+              -0.5000420212745667
+            ],
+            [
+              0.450350821018219,
+              0.4362230896949768,
+              0.5003971457481384
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 1231654,
+              "vertices": 615722,
+              "watertight": false,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 1231654,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 10
+            },
+            "faces_opposing_mean_vertex_normal": 47,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 1231654,
+                "zero_area_triangles": 0,
+                "very_thin_triangles": 10,
+                "triangle_quality_p01": 0.2871870719049298,
+                "faces_opposing_mean_vertex_normal": 47,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+                "surface_area_source_units_squared": 7.381212747253405,
+                "bounding_diagonal_source_units": 1.6047991947756073,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "texture_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+            "status": "VALIDATED_EMBEDDED_IMAGES",
+            "images": [],
+            "bindings": [],
+            "checks": {
+              "image_decode": "PASS",
+              "embedded_image_bounds": "PASS",
+              "material_texture_references": "PASS",
+              "texture_coordinate_declarations": "PASS"
+            },
+            "limitations": [
+              "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+              "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "embedded_texture_integrity": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "seconds": 42.391000000000076
+      },
+      {
+        "engine": "hi3dgen",
+        "seed": 42,
+        "folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-42",
+        "samples": [
+          {
+            "seconds": 0.07799999999997453,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 40262103040,
+            "worker_tree_rss_bytes": 25571328
+          },
+          {
+            "seconds": 1.1089999999999236,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 40131907584,
+            "worker_tree_rss_bytes": 140038144
+          },
+          {
+            "seconds": 2.155999999999949,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 40009437184,
+            "worker_tree_rss_bytes": 237633536
+          },
+          {
+            "seconds": 3.2029999999999745,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39825559552,
+            "worker_tree_rss_bytes": 353550336
+          },
+          {
+            "seconds": 4.25,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39852466176,
+            "worker_tree_rss_bytes": 375611392
+          },
+          {
+            "seconds": 5.280999999999949,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39868768256,
+            "worker_tree_rss_bytes": 390619136
+          },
+          {
+            "seconds": 6.3279999999999745,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39869440000,
+            "worker_tree_rss_bytes": 396759040
+          },
+          {
+            "seconds": 7.389999999999873,
+            "gpu_used_mib": 1871.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39795945472,
+            "worker_tree_rss_bytes": 405569536
+          },
+          {
+            "seconds": 8.436999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39804878848,
+            "worker_tree_rss_bytes": 416428032
+          },
+          {
+            "seconds": 9.467999999999847,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39763984384,
+            "worker_tree_rss_bytes": 435150848
+          },
+          {
+            "seconds": 10.514999999999873,
+            "gpu_used_mib": 1871.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39681699840,
+            "worker_tree_rss_bytes": 445960192
+          },
+          {
+            "seconds": 11.561999999999898,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39709986816,
+            "worker_tree_rss_bytes": 457637888
+          },
+          {
+            "seconds": 12.608999999999924,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39680258048,
+            "worker_tree_rss_bytes": 473382912
+          },
+          {
+            "seconds": 13.655999999999949,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39642460160,
+            "worker_tree_rss_bytes": 477732864
+          },
+          {
+            "seconds": 14.702999999999975,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39680290816,
+            "worker_tree_rss_bytes": 482394112
+          },
+          {
+            "seconds": 15.75,
+            "gpu_used_mib": 1872.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39648845824,
+            "worker_tree_rss_bytes": 489865216
+          },
+          {
+            "seconds": 16.811999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39591800832,
+            "worker_tree_rss_bytes": 495718400
+          },
+          {
+            "seconds": 17.875,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39601836032,
+            "worker_tree_rss_bytes": 511156224
+          },
+          {
+            "seconds": 18.936999999999898,
+            "gpu_used_mib": 1871.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39591702528,
+            "worker_tree_rss_bytes": 519503872
+          },
+          {
+            "seconds": 19.983999999999924,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 39588966400,
+            "worker_tree_rss_bytes": 535425024
+          },
+          {
+            "seconds": 21.047000000000025,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 39811350528,
+            "worker_tree_rss_bytes": 538492928
+          },
+          {
+            "seconds": 22.092999999999847,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39854788608,
+            "worker_tree_rss_bytes": 550555648
+          },
+          {
+            "seconds": 23.125,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39805292544,
+            "worker_tree_rss_bytes": 555307008
+          },
+          {
+            "seconds": 24.186999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 39687979008,
+            "worker_tree_rss_bytes": 568426496
+          },
+          {
+            "seconds": 25.25,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39186968576,
+            "worker_tree_rss_bytes": 943005696
+          },
+          {
+            "seconds": 26.297000000000025,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 37614596096,
+            "worker_tree_rss_bytes": 2406043648
+          },
+          {
+            "seconds": 27.327999999999975,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36873175040,
+            "worker_tree_rss_bytes": 3038384128
+          },
+          {
+            "seconds": 28.375,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 36413059072,
+            "worker_tree_rss_bytes": 3038527488
+          },
+          {
+            "seconds": 29.436999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 36226498560,
+            "worker_tree_rss_bytes": 3269099520
+          },
+          {
+            "seconds": 30.5,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35340304384,
+            "worker_tree_rss_bytes": 3566657536
+          },
+          {
+            "seconds": 31.547000000000025,
+            "gpu_used_mib": 4177.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35268751360,
+            "worker_tree_rss_bytes": 3573383168
+          },
+          {
+            "seconds": 32.577999999999975,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35212533760,
+            "worker_tree_rss_bytes": 3573489664
+          },
+          {
+            "seconds": 33.625,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35242999808,
+            "worker_tree_rss_bytes": 3573686272
+          },
+          {
+            "seconds": 34.6869999999999,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35061960704,
+            "worker_tree_rss_bytes": 3772325888
+          },
+          {
+            "seconds": 35.733999999999924,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34769993728,
+            "worker_tree_rss_bytes": 4692537344
+          },
+          {
+            "seconds": 36.78099999999995,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34457649152,
+            "worker_tree_rss_bytes": 4974723072
+          },
+          {
+            "seconds": 37.84299999999985,
+            "gpu_used_mib": 4176.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34458173440,
+            "worker_tree_rss_bytes": 5033353216
+          },
+          {
+            "seconds": 38.875,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34360250368,
+            "worker_tree_rss_bytes": 5083836416
+          },
+          {
+            "seconds": 39.9369999999999,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34339430400,
+            "worker_tree_rss_bytes": 5122494464
+          },
+          {
+            "seconds": 41.0,
+            "gpu_used_mib": 3528.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 33174896640,
+            "worker_tree_rss_bytes": 6263939072
+          },
+          {
+            "seconds": 42.047000000000025,
+            "gpu_used_mib": 3522.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 3.0,
+            "available_RAM_bytes": 33134919680,
+            "worker_tree_rss_bytes": 6267023360
+          },
+          {
+            "seconds": 43.09299999999985,
+            "gpu_used_mib": 3522.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33133379584,
+            "worker_tree_rss_bytes": 6269169664
+          },
+          {
+            "seconds": 44.15599999999995,
+            "gpu_used_mib": 3528.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 33019260928,
+            "worker_tree_rss_bytes": 6271815680
+          },
+          {
+            "seconds": 45.21799999999985,
+            "gpu_used_mib": 3528.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 33072488448,
+            "worker_tree_rss_bytes": 6278610944
+          },
+          {
+            "seconds": 46.26499999999987,
+            "gpu_used_mib": 3522.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33174626304,
+            "worker_tree_rss_bytes": 6290657280
+          },
+          {
+            "seconds": 47.3119999999999,
+            "gpu_used_mib": 3522.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33117249536,
+            "worker_tree_rss_bytes": 6296834048
+          },
+          {
+            "seconds": 48.375,
+            "gpu_used_mib": 3528.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 33116000256,
+            "worker_tree_rss_bytes": 6317326336
+          },
+          {
+            "seconds": 49.422000000000025,
+            "gpu_used_mib": 3528.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34427412480,
+            "worker_tree_rss_bytes": 5638922240
+          },
+          {
+            "seconds": 50.46799999999985,
+            "gpu_used_mib": 4532.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 59.0,
+            "available_RAM_bytes": 34039619584,
+            "worker_tree_rss_bytes": 6225608704
+          },
+          {
+            "seconds": 51.51499999999987,
+            "gpu_used_mib": 5484.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34777993216,
+            "worker_tree_rss_bytes": 5515436032
+          },
+          {
+            "seconds": 52.577999999999975,
+            "gpu_used_mib": 6866.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 9.0,
+            "available_RAM_bytes": 34835984384,
+            "worker_tree_rss_bytes": 5432389632
+          },
+          {
+            "seconds": 53.63999999999987,
+            "gpu_used_mib": 8048.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 82.0,
+            "available_RAM_bytes": 32762662912,
+            "worker_tree_rss_bytes": 7543255040
+          },
+          {
+            "seconds": 54.6869999999999,
+            "gpu_used_mib": 4814.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 33972084736,
+            "worker_tree_rss_bytes": 6313332736
+          },
+          {
+            "seconds": 55.733999999999924,
+            "gpu_used_mib": 4803.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33952579584,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 56.78099999999995,
+            "gpu_used_mib": 4805.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33820180480,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 57.84299999999985,
+            "gpu_used_mib": 4806.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 33613615104,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 58.88999999999987,
+            "gpu_used_mib": 4800.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33567752192,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 59.9369999999999,
+            "gpu_used_mib": 4809.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33972662272,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 60.983999999999924,
+            "gpu_used_mib": 4811.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 33979953152,
+            "worker_tree_rss_bytes": 6175997952
+          },
+          {
+            "seconds": 62.01499999999987,
+            "gpu_used_mib": 3926.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 86.0,
+            "available_RAM_bytes": 33704562688,
+            "worker_tree_rss_bytes": 6466695168
+          },
+          {
+            "seconds": 63.0619999999999,
+            "gpu_used_mib": 5716.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 91.0,
+            "available_RAM_bytes": 33796882432,
+            "worker_tree_rss_bytes": 6391771136
+          },
+          {
+            "seconds": 64.10899999999992,
+            "gpu_used_mib": 5723.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 95.0,
+            "available_RAM_bytes": 33812594688,
+            "worker_tree_rss_bytes": 6391771136
+          },
+          {
+            "seconds": 65.15599999999995,
+            "gpu_used_mib": 5723.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 93.0,
+            "available_RAM_bytes": 33773453312,
+            "worker_tree_rss_bytes": 6391775232
+          },
+          {
+            "seconds": 66.20299999999997,
+            "gpu_used_mib": 5716.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 94.0,
+            "available_RAM_bytes": 33825226752,
+            "worker_tree_rss_bytes": 6391775232
+          },
+          {
+            "seconds": 67.23399999999992,
+            "gpu_used_mib": 5716.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 94.0,
+            "available_RAM_bytes": 33803735040,
+            "worker_tree_rss_bytes": 6391775232
+          },
+          {
+            "seconds": 68.28099999999995,
+            "gpu_used_mib": 5723.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 95.0,
+            "available_RAM_bytes": 33813118976,
+            "worker_tree_rss_bytes": 6391775232
+          },
+          {
+            "seconds": 69.32799999999997,
+            "gpu_used_mib": 5723.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 81.0,
+            "available_RAM_bytes": 33482072064,
+            "worker_tree_rss_bytes": 6690054144
+          },
+          {
+            "seconds": 70.375,
+            "gpu_used_mib": 12999.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33432698880,
+            "worker_tree_rss_bytes": 6779092992
+          },
+          {
+            "seconds": 71.42200000000003,
+            "gpu_used_mib": 12992.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33356435456,
+            "worker_tree_rss_bytes": 6833737728
+          },
+          {
+            "seconds": 72.46799999999985,
+            "gpu_used_mib": 12999.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36235423744,
+            "worker_tree_rss_bytes": 3750727680
+          }
+        ],
+        "status": "GENERATED_GEOMETRY_NEEDS_REVIEW",
+        "admission": {
+          "schema_version": 1,
+          "allowed": true,
+          "reason": null,
+          "reason_code": null,
+          "at": "2026-10-23T02:18:19.577817+00:00",
+          "checked_at_epoch": 1792721899.5778177,
+          "available_bytes": 39874117632,
+          "unrealized_reserved_bytes": 0,
+          "usable_bytes": 39874117632,
+          "headroom_bytes": 2147483648,
+          "allowance": {
+            "profile_key": "host-memory:v1:8635f4da5c7eef0c48acd9c3b8b9b7be7a9fd3020552258b9110b92ecd53beb0",
+            "profile": {
+              "kind": "inference",
+              "engine": "hi3dgen",
+              "checkpoint": null,
+              "quality": null,
+              "pipeline_type": null,
+              "precision": null,
+              "texture_size": null,
+              "finishing_only": false,
+              "use_gpu": false
+            },
+            "bytes": 25769803776,
+            "planning_floor_gib": 24,
+            "observed": null,
+            "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+          },
+          "active_claims": [],
+          "quality_settings_changed": false
+        },
+        "generation": {
+          "status": "GENERATED_NEEDS_REVIEW",
+          "engine": "hi3dgen",
+          "request": {
+            "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png",
+            "seed": 42,
+            "steps": 50,
+            "slat_steps": 24,
+            "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-42\\output",
+            "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-42\\request.json",
+            "engine": "hi3dgen",
+            "engine_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\engines\\Hi3DGen",
+            "weights": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\hi3dgen",
+            "experimental": true,
+            "commercial_approval": "NEEDS_REVIEW"
+          },
+          "network": "OFFLINE",
+          "input_sha256": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+          "script_sha256": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45",
+          "mesh_quality_parity": "NOT_TESTED",
+          "human_score": null,
+          "commercial_approval": "NEEDS_REVIEW",
+          "pbr": "NOT_AVAILABLE_GEOMETRY_TRIAL",
+          "timings": {
+            "load_models": 15.891000000000076,
+            "normal_prediction": 1.1880000000001019,
+            "image_encoding": 0.13999999999987267,
+            "sparse_structure_sampling": 6.858999999999924,
+            "sparse_structure_decode": 0.06199999999989814,
+            "slat_sampling": 6.969000000000051,
+            "mesh_decode": 1.1869999999998981
+          },
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "active_voxels": 33864,
+          "triangles": 1059520,
+          "native_triangles": 1059520,
+          "peak_allocated_bytes": 7808932864,
+          "peak_reserved_bytes": 11395923968,
+          "torch_memory_scope": "whole worker peak, no reset between stages",
+          "output_sha256": "0d2b87172ed09f786f6723c4ef980b34b57ec783ff0a198aab39e690e9a6b068",
+          "source_sha256": {
+            "app.py": "82261310bcaba06468717710ea8ab32f8876ecb307e2c83cd736440a6d146c86",
+            "hi3dgen/__init__.py": "3cf3ab7e6e9d01d3e645c12104d8dfcab75c4b454e48ac4bcb8f4cb734563854",
+            "hi3dgen/models/sparse_structure_flow.py": "7834d0316d2f941b6426034f0b79071da81c704ea1bfefd946abe5c4743b7cdb",
+            "hi3dgen/models/sparse_structure_vae.py": "561c0266fa1ace5d69dbe13fe791223b8a19fda455182812ad5c52acbc7e7736",
+            "hi3dgen/models/structured_latent_flow.py": "8999c96cda2f78e8c502da93076106bda1c07c15302b72c56d3ac834db78f3b6",
+            "hi3dgen/models/__init__.py": "bfb5e7cb7a61aaa5e17c35dcaba7f679cf6ed71f7e57ba9c2fe8b36ff13583f4",
+            "hi3dgen/models/structured_latent_vae/base.py": "a2293e15bbb621b7f77c00dcf91ed7213689b9694b76935d221ca5b1af63a6d7",
+            "hi3dgen/models/structured_latent_vae/decoder_mesh.py": "d99cdf7898b3dc3925d48aa39a9ee0dbe03c98e5babe42c813bac0dd2f14d723",
+            "hi3dgen/models/structured_latent_vae/encoder.py": "3002184f243d8c484d05a73b6296cb256b4be3124eeb27dda3ad17812ebfae82",
+            "hi3dgen/models/structured_latent_vae/__init__.py": "ecfa484f84567e2429df990a684bb9505a6685f5d22322322f1d1da10b287c40",
+            "hi3dgen/modules/norm.py": "74c234940ecad3608948b1e5118ce71a066eb642471e003264388456231e98a6",
+            "hi3dgen/modules/spatial.py": "a53cdc79795ea647668ceab2248b5ed8a2d236e9a4427471334399cf3b75237d",
+            "hi3dgen/modules/utils.py": "715d87d1fb09e67531661b5a5c0ffa743ae90c92330cc261124ed9869d069377",
+            "hi3dgen/modules/attention/full_attn.py": "1104de8a3739d5eee5b50661051eef8bb6fd6622177693dba35b2e04881330d9",
+            "hi3dgen/modules/attention/modules.py": "cab3b2339607607deb044261c7fdc0f0ed6f5ca09765f4093dfaa6e4099978cc",
+            "hi3dgen/modules/attention/__init__.py": "4134541fc072ac92e4fd3d70078e9890c9d92befe5b3c8d4e91c82ce40e92c57",
+            "hi3dgen/modules/sparse/basic.py": "9c768edaf82b3947c279ae7fc0184976cf6ebe2da372d8a78cfce662faacb807",
+            "hi3dgen/modules/sparse/linear.py": "6a59a35d3150835320e7d4b09a6b1c0094abd5c6653b04a6806b3d5c419e792d",
+            "hi3dgen/modules/sparse/nonlinearity.py": "b143348485987034c8674b5b79fea8b8080446f3e3e6828c5ea86af364df64c8",
+            "hi3dgen/modules/sparse/norm.py": "744e81c05e6440609e0ddbee08d57cebcb0dfb36541189efd5f9939b5207f311",
+            "hi3dgen/modules/sparse/spatial.py": "9eb1bab96bb647f72d17937da555258a4d1b5bd560938180686726249cc2be71",
+            "hi3dgen/modules/sparse/__init__.py": "b0bf2ef8af9d34d30c555697542c2548c5a4184f140f3ee9e10d5a16e622b6f4",
+            "hi3dgen/modules/sparse/attention/full_attn.py": "10f0012179ec1caeee6f85e8b651767a247160cfde1339d54e53e25f1af3b6a1",
+            "hi3dgen/modules/sparse/attention/modules.py": "e820fa11ec73ba7a6c0bde37e157677c3d8649b6d205681e6287688927c59a91",
+            "hi3dgen/modules/sparse/attention/serialized_attn.py": "84e69a48ce4ec79a4aa98175ec2acf947f16e6b0c9ba1041fa162d6a5b41f796",
+            "hi3dgen/modules/sparse/attention/windowed_attn.py": "7a1ee527018e11e69cc857d9bc58d5e088b58fc7519640600ecfde5445fe3122",
+            "hi3dgen/modules/sparse/attention/__init__.py": "c3617be76e84220ef007d7a7e6f46c487913748428b9b2354835ca6282ff6080",
+            "hi3dgen/modules/sparse/conv/conv_spconv.py": "aa88421c1947ea4098ec1670e412cdd67fe9ba7dce3553b9706cc011ce5eb59a",
+            "hi3dgen/modules/sparse/conv/conv_torchsparse.py": "954655302394a71555b9d7596bba4e85e1fb6289e08d6f7938cd262616a2ba08",
+            "hi3dgen/modules/sparse/conv/__init__.py": "eb165b09e64bb9cfbadd5b07498188daec183e1a0a986fe2a27ad00bbcb1992f",
+            "hi3dgen/modules/sparse/transformer/blocks.py": "3431bec06f09fd307fc8d72393ec6b8396c85b4d9791f5153750e2b447d0f49e",
+            "hi3dgen/modules/sparse/transformer/modulated.py": "c4ed7b6710a381dc5517dfae27824ffa8003181d7040da500b3e068d14d7768d",
+            "hi3dgen/modules/sparse/transformer/__init__.py": "ca5539a92febac026b082222a34b770f41561092531d3435469eb1672993a488",
+            "hi3dgen/modules/transformer/blocks.py": "5ae4e0157970b13efcf63f9f069578042b49435776f0bb786184ac25a81b6efb",
+            "hi3dgen/modules/transformer/modulated.py": "bd29d7b5463f57a0c1141a512f6ea508fccfd863859f0f12d106e304ba5ce55c",
+            "hi3dgen/modules/transformer/__init__.py": "ca5539a92febac026b082222a34b770f41561092531d3435469eb1672993a488",
+            "hi3dgen/pipelines/base.py": "ef4e2ba6790e391e819de566f7e628abbaa26ae15096bb99c17d8c6f6ff0a4f6",
+            "hi3dgen/pipelines/hi3dgen.py": "6c4f4498ce67b6ff3db44a54f0c3e39a7f4bcb1010711bbdf9b6e5cd484bae5b",
+            "hi3dgen/pipelines/__init__.py": "5ab71966946c42d09b62be85724e73c4d4b8bb14317c3a8e3de2d594dcd880b9",
+            "hi3dgen/pipelines/samplers/base.py": "a53ae72ed6c2ee4d0dce4d521ba82cf0b2ad55542bb031a3e139452d9a27e9f8",
+            "hi3dgen/pipelines/samplers/classifier_free_guidance_mixin.py": "0cbca5822791cb8aeae42b8e79311d1ced9ca5436450796fb9546bbc9fd7fafd",
+            "hi3dgen/pipelines/samplers/flow_euler.py": "af5c6390251635c77a9de4dfbd3dc5c7ae85afc9abc499556effe69d7ab92243",
+            "hi3dgen/pipelines/samplers/guidance_interval_mixin.py": "c9971ed25e92c5748a88606623ba15badbc682aaba8c41486dc88db467fbff1f",
+            "hi3dgen/pipelines/samplers/__init__.py": "cf17cb6ec5e8b12e5c2bbe963e1c8af162407449456c60f3043a4e97a94bb95a",
+            "hi3dgen/representations/__init__.py": "7b8e26b0396d64b527d406854c47de7b4246a503b8d40d5ce524721b4cbb58ec",
+            "hi3dgen/representations/mesh/cube2mesh.py": "98a3bf29c46c74547d7ab603129afa54a9bd45270fd70bbd29d6bd5cf853e595",
+            "hi3dgen/representations/mesh/utils_cube.py": "e55921a53355deb71d6c7721ab3adf1296eda2397d8db2f8be7d72939d0b187c",
+            "hi3dgen/representations/mesh/__init__.py": "c42162c2b3f6a239a11c1e0476fbb6a5e1c5c94f7a355795369d097c15317b91"
+          },
+          "duration_seconds": 71.40599999999995
+        },
+        "inspection": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 1059520,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.8418328166007996,
+            0.7484911382198334,
+            0.9894848465919495
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.4196692109107971,
+              -0.372374951839447,
+              -0.4948977530002594
+            ],
+            [
+              0.42216360569000244,
+              0.37611618638038635,
+              0.49458709359169006
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 1059520,
+              "vertices": 529708,
+              "watertight": true,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 1059520,
+              "zero_area_triangles": 8,
+              "very_thin_triangles": 384
+            },
+            "faces_opposing_mean_vertex_normal": 21,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 1059520,
+                "zero_area_triangles": 8,
+                "very_thin_triangles": 384,
+                "triangle_quality_p01": 0.031235653641230474,
+                "faces_opposing_mean_vertex_normal": 21,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+                "surface_area_source_units_squared": 6.288730231290149,
+                "bounding_diagonal_source_units": 1.4993337642882425,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "texture_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+            "status": "VALIDATED_EMBEDDED_IMAGES",
+            "images": [],
+            "bindings": [],
+            "checks": {
+              "image_decode": "PASS",
+              "embedded_image_bounds": "PASS",
+              "material_texture_references": "PASS",
+              "texture_coordinate_declarations": "PASS"
+            },
+            "limitations": [
+              "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+              "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "embedded_texture_integrity": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "seconds": 74.88999999999987
+      },
+      {
+        "engine": "hi3dgen",
+        "seed": 43,
+        "folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-43",
+        "samples": [
+          {
+            "seconds": 0.07799999999997453,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39791583232,
+            "worker_tree_rss_bytes": 24309760
+          },
+          {
+            "seconds": 1.125,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39556165632,
+            "worker_tree_rss_bytes": 405520384
+          },
+          {
+            "seconds": 2.1720000000000255,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39436333056,
+            "worker_tree_rss_bytes": 478650368
+          },
+          {
+            "seconds": 3.219000000000051,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39193219072,
+            "worker_tree_rss_bytes": 523919360
+          },
+          {
+            "seconds": 4.266000000000076,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39309139968,
+            "worker_tree_rss_bytes": 553451520
+          },
+          {
+            "seconds": 5.313000000000102,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 38825070592,
+            "worker_tree_rss_bytes": 1042685952
+          },
+          {
+            "seconds": 6.360000000000127,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 37389455360,
+            "worker_tree_rss_bytes": 2480840704
+          },
+          {
+            "seconds": 7.407000000000153,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 36838264832,
+            "worker_tree_rss_bytes": 3037872128
+          },
+          {
+            "seconds": 8.452999999999975,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36404342784,
+            "worker_tree_rss_bytes": 3359621120
+          },
+          {
+            "seconds": 9.516000000000076,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36277981184,
+            "worker_tree_rss_bytes": 3572297728
+          },
+          {
+            "seconds": 10.547000000000025,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36319621120,
+            "worker_tree_rss_bytes": 3572391936
+          },
+          {
+            "seconds": 11.594000000000051,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36259983360,
+            "worker_tree_rss_bytes": 3572514816
+          },
+          {
+            "seconds": 12.641000000000076,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36070477824,
+            "worker_tree_rss_bytes": 3741003776
+          },
+          {
+            "seconds": 13.688000000000102,
+            "gpu_used_mib": 4180.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35180462080,
+            "worker_tree_rss_bytes": 4240109568
+          },
+          {
+            "seconds": 14.735000000000127,
+            "gpu_used_mib": 4180.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34451214336,
+            "worker_tree_rss_bytes": 4973412352
+          },
+          {
+            "seconds": 15.797000000000025,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34497826816,
+            "worker_tree_rss_bytes": 5034090496
+          },
+          {
+            "seconds": 16.860000000000127,
+            "gpu_used_mib": 4177.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34352578560,
+            "worker_tree_rss_bytes": 5099679744
+          },
+          {
+            "seconds": 17.907000000000153,
+            "gpu_used_mib": 4177.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34324619264,
+            "worker_tree_rss_bytes": 5121482752
+          },
+          {
+            "seconds": 18.96900000000005,
+            "gpu_used_mib": 3526.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33823604736,
+            "worker_tree_rss_bytes": 6267355136
+          },
+          {
+            "seconds": 20.0,
+            "gpu_used_mib": 3522.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 33758543872,
+            "worker_tree_rss_bytes": 6315458560
+          },
+          {
+            "seconds": 21.047000000000025,
+            "gpu_used_mib": 4563.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 83.0,
+            "available_RAM_bytes": 33789767680,
+            "worker_tree_rss_bytes": 6285709312
+          },
+          {
+            "seconds": 22.09400000000005,
+            "gpu_used_mib": 7165.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 5.0,
+            "available_RAM_bytes": 34347888640,
+            "worker_tree_rss_bytes": 5766692864
+          },
+          {
+            "seconds": 23.141000000000076,
+            "gpu_used_mib": 3584.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 13.0,
+            "available_RAM_bytes": 31999041536,
+            "worker_tree_rss_bytes": 7856517120
+          },
+          {
+            "seconds": 24.202999999999975,
+            "gpu_used_mib": 4796.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 36.0,
+            "available_RAM_bytes": 33940914176,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 25.25,
+            "gpu_used_mib": 4801.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33893564416,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 26.297000000000025,
+            "gpu_used_mib": 4803.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33888010240,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 27.34400000000005,
+            "gpu_used_mib": 4800.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 33905496064,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 28.407000000000153,
+            "gpu_used_mib": 4802.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 33906044928,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 29.452999999999975,
+            "gpu_used_mib": 4809.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34196295680,
+            "worker_tree_rss_bytes": 6175727616
+          },
+          {
+            "seconds": 30.5,
+            "gpu_used_mib": 4811.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34245664768,
+            "worker_tree_rss_bytes": 6175682560
+          },
+          {
+            "seconds": 31.547000000000025,
+            "gpu_used_mib": 4750.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 13.0,
+            "available_RAM_bytes": 34215997440,
+            "worker_tree_rss_bytes": 6226833408
+          },
+          {
+            "seconds": 32.59400000000005,
+            "gpu_used_mib": 5348.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 91.0,
+            "available_RAM_bytes": 34079768576,
+            "worker_tree_rss_bytes": 6373904384
+          },
+          {
+            "seconds": 33.641000000000076,
+            "gpu_used_mib": 5357.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 34070581248,
+            "worker_tree_rss_bytes": 6373908480
+          },
+          {
+            "seconds": 34.6880000000001,
+            "gpu_used_mib": 5365.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 34096013312,
+            "worker_tree_rss_bytes": 6373908480
+          },
+          {
+            "seconds": 35.73500000000013,
+            "gpu_used_mib": 5364.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 34086449152,
+            "worker_tree_rss_bytes": 6373908480
+          },
+          {
+            "seconds": 36.797000000000025,
+            "gpu_used_mib": 4772.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 33820139520,
+            "worker_tree_rss_bytes": 6631227392
+          },
+          {
+            "seconds": 37.86000000000013,
+            "gpu_used_mib": 9821.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 95.0,
+            "available_RAM_bytes": 33779957760,
+            "worker_tree_rss_bytes": 6773411840
+          },
+          {
+            "seconds": 38.90700000000015,
+            "gpu_used_mib": 9820.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34318917632,
+            "worker_tree_rss_bytes": 6052872192
+          },
+          {
+            "seconds": 39.952999999999975,
+            "gpu_used_mib": 9844.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 38036443136,
+            "worker_tree_rss_bytes": 2285076480
+          }
+        ],
+        "status": "GENERATED_GEOMETRY_NEEDS_REVIEW",
+        "admission": {
+          "schema_version": 1,
+          "allowed": true,
+          "reason": null,
+          "reason_code": null,
+          "at": "2026-10-23T02:19:34.503471+00:00",
+          "checked_at_epoch": 1792721974.5034714,
+          "available_bytes": 39806222336,
+          "unrealized_reserved_bytes": 0,
+          "usable_bytes": 39806222336,
+          "headroom_bytes": 2147483648,
+          "allowance": {
+            "profile_key": "host-memory:v1:8635f4da5c7eef0c48acd9c3b8b9b7be7a9fd3020552258b9110b92ecd53beb0",
+            "profile": {
+              "kind": "inference",
+              "engine": "hi3dgen",
+              "checkpoint": null,
+              "quality": null,
+              "pipeline_type": null,
+              "precision": null,
+              "texture_size": null,
+              "finishing_only": false,
+              "use_gpu": false
+            },
+            "bytes": 25769803776,
+            "planning_floor_gib": 24,
+            "observed": null,
+            "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+          },
+          "active_claims": [],
+          "quality_settings_changed": false
+        },
+        "generation": {
+          "status": "GENERATED_NEEDS_REVIEW",
+          "engine": "hi3dgen",
+          "request": {
+            "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png",
+            "seed": 43,
+            "steps": 50,
+            "slat_steps": 24,
+            "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-43\\output",
+            "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-43\\request.json",
+            "engine": "hi3dgen",
+            "engine_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\engines\\Hi3DGen",
+            "weights": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\models\\hi3dgen",
+            "experimental": true,
+            "commercial_approval": "NEEDS_REVIEW"
+          },
+          "network": "OFFLINE",
+          "input_sha256": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+          "script_sha256": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45",
+          "mesh_quality_parity": "NOT_TESTED",
+          "human_score": null,
+          "commercial_approval": "NEEDS_REVIEW",
+          "pbr": "NOT_AVAILABLE_GEOMETRY_TRIAL",
+          "timings": {
+            "load_models": 13.530999999999949,
+            "normal_prediction": 0.6399999999998727,
+            "image_encoding": 0.09400000000005093,
+            "sparse_structure_sampling": 6.844000000000051,
+            "sparse_structure_decode": 0.032000000000152795,
+            "slat_sampling": 5.282000000000153,
+            "mesh_decode": 0.8440000000000509
+          },
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "active_voxels": 19827,
+          "triangles": 1048406,
+          "native_triangles": 1048406,
+          "peak_allocated_bytes": 5611899392,
+          "peak_reserved_bytes": 8065646592,
+          "torch_memory_scope": "whole worker peak, no reset between stages",
+          "output_sha256": "377d849a5560274e25051bc0c00e4d2c59a56fab1847d0f7a7b957fea76e46ed",
+          "source_sha256": {
+            "app.py": "82261310bcaba06468717710ea8ab32f8876ecb307e2c83cd736440a6d146c86",
+            "hi3dgen/__init__.py": "3cf3ab7e6e9d01d3e645c12104d8dfcab75c4b454e48ac4bcb8f4cb734563854",
+            "hi3dgen/models/sparse_structure_flow.py": "7834d0316d2f941b6426034f0b79071da81c704ea1bfefd946abe5c4743b7cdb",
+            "hi3dgen/models/sparse_structure_vae.py": "561c0266fa1ace5d69dbe13fe791223b8a19fda455182812ad5c52acbc7e7736",
+            "hi3dgen/models/structured_latent_flow.py": "8999c96cda2f78e8c502da93076106bda1c07c15302b72c56d3ac834db78f3b6",
+            "hi3dgen/models/__init__.py": "bfb5e7cb7a61aaa5e17c35dcaba7f679cf6ed71f7e57ba9c2fe8b36ff13583f4",
+            "hi3dgen/models/structured_latent_vae/base.py": "a2293e15bbb621b7f77c00dcf91ed7213689b9694b76935d221ca5b1af63a6d7",
+            "hi3dgen/models/structured_latent_vae/decoder_mesh.py": "d99cdf7898b3dc3925d48aa39a9ee0dbe03c98e5babe42c813bac0dd2f14d723",
+            "hi3dgen/models/structured_latent_vae/encoder.py": "3002184f243d8c484d05a73b6296cb256b4be3124eeb27dda3ad17812ebfae82",
+            "hi3dgen/models/structured_latent_vae/__init__.py": "ecfa484f84567e2429df990a684bb9505a6685f5d22322322f1d1da10b287c40",
+            "hi3dgen/modules/norm.py": "74c234940ecad3608948b1e5118ce71a066eb642471e003264388456231e98a6",
+            "hi3dgen/modules/spatial.py": "a53cdc79795ea647668ceab2248b5ed8a2d236e9a4427471334399cf3b75237d",
+            "hi3dgen/modules/utils.py": "715d87d1fb09e67531661b5a5c0ffa743ae90c92330cc261124ed9869d069377",
+            "hi3dgen/modules/attention/full_attn.py": "1104de8a3739d5eee5b50661051eef8bb6fd6622177693dba35b2e04881330d9",
+            "hi3dgen/modules/attention/modules.py": "cab3b2339607607deb044261c7fdc0f0ed6f5ca09765f4093dfaa6e4099978cc",
+            "hi3dgen/modules/attention/__init__.py": "4134541fc072ac92e4fd3d70078e9890c9d92befe5b3c8d4e91c82ce40e92c57",
+            "hi3dgen/modules/sparse/basic.py": "9c768edaf82b3947c279ae7fc0184976cf6ebe2da372d8a78cfce662faacb807",
+            "hi3dgen/modules/sparse/linear.py": "6a59a35d3150835320e7d4b09a6b1c0094abd5c6653b04a6806b3d5c419e792d",
+            "hi3dgen/modules/sparse/nonlinearity.py": "b143348485987034c8674b5b79fea8b8080446f3e3e6828c5ea86af364df64c8",
+            "hi3dgen/modules/sparse/norm.py": "744e81c05e6440609e0ddbee08d57cebcb0dfb36541189efd5f9939b5207f311",
+            "hi3dgen/modules/sparse/spatial.py": "9eb1bab96bb647f72d17937da555258a4d1b5bd560938180686726249cc2be71",
+            "hi3dgen/modules/sparse/__init__.py": "b0bf2ef8af9d34d30c555697542c2548c5a4184f140f3ee9e10d5a16e622b6f4",
+            "hi3dgen/modules/sparse/attention/full_attn.py": "10f0012179ec1caeee6f85e8b651767a247160cfde1339d54e53e25f1af3b6a1",
+            "hi3dgen/modules/sparse/attention/modules.py": "e820fa11ec73ba7a6c0bde37e157677c3d8649b6d205681e6287688927c59a91",
+            "hi3dgen/modules/sparse/attention/serialized_attn.py": "84e69a48ce4ec79a4aa98175ec2acf947f16e6b0c9ba1041fa162d6a5b41f796",
+            "hi3dgen/modules/sparse/attention/windowed_attn.py": "7a1ee527018e11e69cc857d9bc58d5e088b58fc7519640600ecfde5445fe3122",
+            "hi3dgen/modules/sparse/attention/__init__.py": "c3617be76e84220ef007d7a7e6f46c487913748428b9b2354835ca6282ff6080",
+            "hi3dgen/modules/sparse/conv/conv_spconv.py": "aa88421c1947ea4098ec1670e412cdd67fe9ba7dce3553b9706cc011ce5eb59a",
+            "hi3dgen/modules/sparse/conv/conv_torchsparse.py": "954655302394a71555b9d7596bba4e85e1fb6289e08d6f7938cd262616a2ba08",
+            "hi3dgen/modules/sparse/conv/__init__.py": "eb165b09e64bb9cfbadd5b07498188daec183e1a0a986fe2a27ad00bbcb1992f",
+            "hi3dgen/modules/sparse/transformer/blocks.py": "3431bec06f09fd307fc8d72393ec6b8396c85b4d9791f5153750e2b447d0f49e",
+            "hi3dgen/modules/sparse/transformer/modulated.py": "c4ed7b6710a381dc5517dfae27824ffa8003181d7040da500b3e068d14d7768d",
+            "hi3dgen/modules/sparse/transformer/__init__.py": "ca5539a92febac026b082222a34b770f41561092531d3435469eb1672993a488",
+            "hi3dgen/modules/transformer/blocks.py": "5ae4e0157970b13efcf63f9f069578042b49435776f0bb786184ac25a81b6efb",
+            "hi3dgen/modules/transformer/modulated.py": "bd29d7b5463f57a0c1141a512f6ea508fccfd863859f0f12d106e304ba5ce55c",
+            "hi3dgen/modules/transformer/__init__.py": "ca5539a92febac026b082222a34b770f41561092531d3435469eb1672993a488",
+            "hi3dgen/pipelines/base.py": "ef4e2ba6790e391e819de566f7e628abbaa26ae15096bb99c17d8c6f6ff0a4f6",
+            "hi3dgen/pipelines/hi3dgen.py": "6c4f4498ce67b6ff3db44a54f0c3e39a7f4bcb1010711bbdf9b6e5cd484bae5b",
+            "hi3dgen/pipelines/__init__.py": "5ab71966946c42d09b62be85724e73c4d4b8bb14317c3a8e3de2d594dcd880b9",
+            "hi3dgen/pipelines/samplers/base.py": "a53ae72ed6c2ee4d0dce4d521ba82cf0b2ad55542bb031a3e139452d9a27e9f8",
+            "hi3dgen/pipelines/samplers/classifier_free_guidance_mixin.py": "0cbca5822791cb8aeae42b8e79311d1ced9ca5436450796fb9546bbc9fd7fafd",
+            "hi3dgen/pipelines/samplers/flow_euler.py": "af5c6390251635c77a9de4dfbd3dc5c7ae85afc9abc499556effe69d7ab92243",
+            "hi3dgen/pipelines/samplers/guidance_interval_mixin.py": "c9971ed25e92c5748a88606623ba15badbc682aaba8c41486dc88db467fbff1f",
+            "hi3dgen/pipelines/samplers/__init__.py": "cf17cb6ec5e8b12e5c2bbe963e1c8af162407449456c60f3043a4e97a94bb95a",
+            "hi3dgen/representations/__init__.py": "7b8e26b0396d64b527d406854c47de7b4246a503b8d40d5ce524721b4cbb58ec",
+            "hi3dgen/representations/mesh/cube2mesh.py": "98a3bf29c46c74547d7ab603129afa54a9bd45270fd70bbd29d6bd5cf853e595",
+            "hi3dgen/representations/mesh/utils_cube.py": "e55921a53355deb71d6c7721ab3adf1296eda2397d8db2f8be7d72939d0b187c",
+            "hi3dgen/representations/mesh/__init__.py": "c42162c2b3f6a239a11c1e0476fbb6a5e1c5c94f7a355795369d097c15317b91"
+          },
+          "duration_seconds": 38.61000000000013
+        },
+        "inspection": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 1048406,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.9970080256462097,
+            0.8126828968524933,
+            0.8337711691856384
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.4967128038406372,
+              -0.40501871705055237,
+              -0.4193495213985443
+            ],
+            [
+              0.5002952218055725,
+              0.4076641798019409,
+              0.4144216477870941
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 1048406,
+              "vertices": 524115,
+              "watertight": true,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": false,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 1048406,
+              "zero_area_triangles": 4,
+              "very_thin_triangles": 366
+            },
+            "faces_opposing_mean_vertex_normal": 34,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 1048406,
+                "zero_area_triangles": 4,
+                "very_thin_triangles": 366,
+                "triangle_quality_p01": 0.03310950406649086,
+                "faces_opposing_mean_vertex_normal": 34,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+                "surface_area_source_units_squared": 6.2860189377116376,
+                "bounding_diagonal_source_units": 1.532857741802774,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "texture_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+            "status": "VALIDATED_EMBEDDED_IMAGES",
+            "images": [],
+            "bindings": [],
+            "checks": {
+              "image_decode": "PASS",
+              "embedded_image_bounds": "PASS",
+              "material_texture_references": "PASS",
+              "texture_coordinate_declarations": "PASS"
+            },
+            "limitations": [
+              "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+              "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "embedded_texture_integrity": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "seconds": 42.73500000000013
+      }
+    ],
+    "scope": "Actual cached TRELLIS v1 and original-normal Hi3DGen, two seeds each, same retained castle RGBA. Geometry only; no PBR, commercial approval, Meshy parity or production promotion. Mask lineage is the prior evaluation-only TRELLIS2 run. CPU Blender clay comparison follows in a separate command.",
+    "recovery": "First neural stage completed; initial inspection interrupted after diagnosing quadratic missing-normal fallback. Real outputs retained and reinspected using the repaired validator, not regenerated.",
+    "sources_preserved": true
+  },
+  "clay": {
+    "status": "REAL_CLAY_RENDERED_NEEDS_REVIEW",
+    "mode": "Same 10m diagnostic height, CPU Cycles16, 512 square, neutral clay, same lights/cameras. Scale normalization is for comparison only, not measured game dimensions. No source/export mutation, PBR or artistic score.",
+    "candidates": [
+      {
+        "name": "retained-trellis2-43",
+        "input": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb",
+        "source_sha256": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+        "source_bounds_blender": [
+          [
+            -0.5018848180770874,
+            -0.4301314949989319,
+            -0.39737850427627563
+          ],
+          [
+            0.5015670657157898,
+            0.42972326278686523,
+            0.3988600969314575
+          ]
+        ],
+        "diagnostic_scale": 12.559049491988983,
+        "files": [
+          "azimuth-000.png",
+          "azimuth-045.png",
+          "azimuth-090.png",
+          "azimuth-135.png",
+          "azimuth-180.png",
+          "azimuth-225.png",
+          "azimuth-270.png",
+          "azimuth-315.png",
+          "top.png",
+          "bottom.png"
+        ]
+      },
+      {
+        "name": "trellis_v1-42",
+        "input": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42\\output\\raw.glb",
+        "source_sha256": "45cb98d6e1f6ab9c6287073e54eb90ddd6bf141e3c292f3556a2ee53ca8484d9",
+        "source_bounds_blender": [
+          [
+            -0.45145168900489807,
+            -0.5003346800804138,
+            -0.42451930046081543
+          ],
+          [
+            0.44798752665519714,
+            0.5002122521400452,
+            0.42900902032852173
+          ]
+        ],
+        "diagnostic_scale": 11.716072866512581,
+        "files": [
+          "azimuth-000.png",
+          "azimuth-045.png",
+          "azimuth-090.png",
+          "azimuth-135.png",
+          "azimuth-180.png",
+          "azimuth-225.png",
+          "azimuth-270.png",
+          "azimuth-315.png",
+          "top.png",
+          "bottom.png"
+        ]
+      },
+      {
+        "name": "trellis_v1-43",
+        "input": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-43\\output\\raw.glb",
+        "source_sha256": "aee060b52cb71963f2549920294ad0185045facb971b9d6e303a301e6e8ef0e4",
+        "source_bounds_blender": [
+          [
+            -0.45294100046157837,
+            -0.5003971457481384,
+            -0.4347337484359741
+          ],
+          [
+            0.450350821018219,
+            0.5000420212745667,
+            0.4362230896949768
+          ]
+        ],
+        "diagnostic_scale": 11.48162522204857,
+        "files": [
+          "azimuth-000.png",
+          "azimuth-045.png",
+          "azimuth-090.png",
+          "azimuth-135.png",
+          "azimuth-180.png",
+          "azimuth-225.png",
+          "azimuth-270.png",
+          "azimuth-315.png",
+          "top.png",
+          "bottom.png"
+        ]
+      },
+      {
+        "name": "hi3dgen-42",
+        "input": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-42\\output\\raw.glb",
+        "source_sha256": "0d2b87172ed09f786f6723c4ef980b34b57ec783ff0a198aab39e690e9a6b068",
+        "source_bounds_blender": [
+          [
+            -0.4196692109107971,
+            -0.49458709359169006,
+            -0.372374951839447
+          ],
+          [
+            0.42216360569000244,
+            0.4948977530002594,
+            0.37611618638038635
+          ]
+        ],
+        "diagnostic_scale": 13.360211616911595,
+        "files": [
+          "azimuth-000.png",
+          "azimuth-045.png",
+          "azimuth-090.png",
+          "azimuth-135.png",
+          "azimuth-180.png",
+          "azimuth-225.png",
+          "azimuth-270.png",
+          "azimuth-315.png",
+          "top.png",
+          "bottom.png"
+        ]
+      },
+      {
+        "name": "hi3dgen-43",
+        "input": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\hi3dgen-43\\output\\raw.glb",
+        "source_sha256": "377d849a5560274e25051bc0c00e4d2c59a56fab1847d0f7a7b957fea76e46ed",
+        "source_bounds_blender": [
+          [
+            -0.4967128038406372,
+            -0.4144216477870941,
+            -0.40501871705055237
+          ],
+          [
+            0.5002952218055725,
+            0.4193495213985443,
+            0.4076641798019409
+          ]
+        ],
+        "diagnostic_scale": 12.304922422669193,
+        "files": [
+          "azimuth-000.png",
+          "azimuth-045.png",
+          "azimuth-090.png",
+          "azimuth-135.png",
+          "azimuth-180.png",
+          "azimuth-225.png",
+          "azimuth-270.png",
+          "azimuth-315.png",
+          "top.png",
+          "bottom.png"
+        ]
+      }
+    ]
+  },
+  "render_files": [
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-000.png",
+      "bytes": 320468,
+      "sha256": "dc489b2c14c5eaff4362c68480e1970d7261a74d35742546ec3140672df95bc1"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-045.png",
+      "bytes": 327199,
+      "sha256": "89776feaa0b35c8f64102efcc51a8e22941794113683c74157dc02f554d01e21"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-090.png",
+      "bytes": 314319,
+      "sha256": "b0b81614f3e0f871c9789eb4e8f9988f64f0edf0ebfad0cf2a36137a008abe5b"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-135.png",
+      "bytes": 309821,
+      "sha256": "c62e3389d0f4d0cd35a35c6ac4a108ae769e00c4c8270e7b055d05551aceac70"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-180.png",
+      "bytes": 305241,
+      "sha256": "50c313380d94c81513c0afdb218866ee45529ac6dcfbbda1d134db7261fd2cbb"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-225.png",
+      "bytes": 314727,
+      "sha256": "fd4d16b5ddd6df7477840c5e9a5308246b7905a95d27211443e6b207ed0cd826"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-270.png",
+      "bytes": 313284,
+      "sha256": "e6bdbc52e20a50053b0fc95024d3d80545a4dc020c093608d9284d0afff1dd70"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/azimuth-315.png",
+      "bytes": 322887,
+      "sha256": "51878995f27b6310887fe7e7b3a249ba88845ff0926a4e9d5ea0aa2ff49c46fb"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/top.png",
+      "bytes": 314070,
+      "sha256": "0029945682a63e2ecec84332eec752986fbb7381716ff3016c46081d73c8be8c"
+    },
+    {
+      "relative_path": "clay-comparison/retained-trellis2-43/bottom.png",
+      "bytes": 268340,
+      "sha256": "6f2cb25b54e14a8dc558ec32388edcfe23a20d2d6d290e26a8060337957d970a"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-000.png",
+      "bytes": 313987,
+      "sha256": "87f05a88bb6c478bee70454a425cd64b7a8fe1f41d0b0063c489004382d9f4e0"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-045.png",
+      "bytes": 320372,
+      "sha256": "91c785dc1c2fe020defb34bf2d85e4a1438b794588fe1d9fb24c55360528624f"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-090.png",
+      "bytes": 312019,
+      "sha256": "1338ccc8f0e31b52fd1bbf3782c3b78dacf09286639506f998cfdb55c22470ad"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-135.png",
+      "bytes": 314775,
+      "sha256": "68620a13f3627607112e30aef3712da4daa02611dc0935a3078224c225481ec8"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-180.png",
+      "bytes": 311876,
+      "sha256": "94a0ebfd4aa0e0c886f55f4c367dec0c2697a49249f5784f43ac25151e0d1983"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-225.png",
+      "bytes": 314801,
+      "sha256": "0dba14da10ee38e01c7524271ee42ece3a7068d37cd66cfbc24b7600888f939c"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-270.png",
+      "bytes": 310298,
+      "sha256": "2f8e7cfac30cef4cde93c7afc5fb5b62040b95a87721d069b613cd802b4df2ec"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/azimuth-315.png",
+      "bytes": 318610,
+      "sha256": "39d8bfd2b23ab58726ca7ba88eb7ab9a254b1468fab3347b179bb302a2ed747f"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/top.png",
+      "bytes": 321885,
+      "sha256": "8b1dd4d624a57f25fe02e9c96266e1f34cf210aae0567b0e333df559cb942900"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-42/bottom.png",
+      "bytes": 285660,
+      "sha256": "53893df25be45624061f7e45f59c972fcc0f82b016307ba41b13f8c7a95f49ae"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-000.png",
+      "bytes": 313370,
+      "sha256": "8a8ba635a7edf4c03c5a47b8c3598ca52645fe1b1e7a2589291b85aa1b369fd5"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-045.png",
+      "bytes": 316783,
+      "sha256": "9b12817c16f46213d953dda88a00a133d21c84163f29dd726f6f21a9c838e03c"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-090.png",
+      "bytes": 310949,
+      "sha256": "7f45119eca45aad8d717d1bfd427d7da2ef8336f4507a51548c0de3e4b74a571"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-135.png",
+      "bytes": 311096,
+      "sha256": "197e002eafdb974de2391036c7791e205a570df76abb2c10650fc40e1debc9ff"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-180.png",
+      "bytes": 307051,
+      "sha256": "af76f89de36c756a35e8227d1380720145585b8b26c4d1b41c7e9b4200d486fa"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-225.png",
+      "bytes": 310505,
+      "sha256": "d10afda022ba54c78c102cb19a9f8ddc479a90d13d9b22c313d0960de8bea399"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-270.png",
+      "bytes": 308036,
+      "sha256": "51c36bb00e7fa11614d7596b3c442e538c35605a97e340289a1e1b6c3107d59d"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/azimuth-315.png",
+      "bytes": 317314,
+      "sha256": "0f520e9f35f7e91df4bd7d8643611e1b6ade517e24881384e702510bfecc698a"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/top.png",
+      "bytes": 318861,
+      "sha256": "432184d2315c8bd180832a4f8916b8396cf4281da4a3c60a39641f77b58f9393"
+    },
+    {
+      "relative_path": "clay-comparison/trellis_v1-43/bottom.png",
+      "bytes": 286627,
+      "sha256": "115fef9b512f85a22c84dae628e6f976ccfb976a76748b684bb4eb375e4e19fc"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-000.png",
+      "bytes": 332239,
+      "sha256": "3c775d99fae9193cb7856b041f7b4f74958a070d10bc56646ebb3492e072b9a9"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-045.png",
+      "bytes": 343128,
+      "sha256": "dbb30d29c1853891a8ffe067a7c3e1f497d0c0b468fc19258261923cac875ee6"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-090.png",
+      "bytes": 330716,
+      "sha256": "baa89b33ce3699ffc74e20c5c252aa9f7fc5e6589ff201aee9cc72ff89805f23"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-135.png",
+      "bytes": 329761,
+      "sha256": "d8ebdcc7c12c684a843d5c9355556169633e09df052845fffb38eed16a9756af"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-180.png",
+      "bytes": 316382,
+      "sha256": "f15a204c86a47eb891e702683b390bdc7f1464003d47cb15b49f797de13170b1"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-225.png",
+      "bytes": 330782,
+      "sha256": "e75eb03158192ce790f19286fdd1fc23600d5fc180b13ae0782763ceffc23f7e"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-270.png",
+      "bytes": 329478,
+      "sha256": "3d318d47c73b2be1ecf320a791441a3734bcbbb8e7045fe88bc670bcb8954b59"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/azimuth-315.png",
+      "bytes": 339672,
+      "sha256": "b668a76e3cd697142e9912de0b72f138a13e5777077f0f6ead4c06ad7f6f0d5a"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/top.png",
+      "bytes": 334940,
+      "sha256": "6472935e6952595c2cd0d8bb9a66ccd89a3df7d0a8492feaa982dbb86bf74bbb"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-42/bottom.png",
+      "bytes": 270289,
+      "sha256": "8693b4a3eadbaddc2063cbb2a7c8c19578d7974b5ef8485e51281a8e1cf53698"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-000.png",
+      "bytes": 328135,
+      "sha256": "892ecb914d6a8a88ca0e4ae5e68b3f5d3e6b8f98c176bedf1006c405ee58c082"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-045.png",
+      "bytes": 332743,
+      "sha256": "70e02ee58dc994fa371b8bf7fa817ba23ecf4dbd9d10d79f2a5551f7a361ed59"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-090.png",
+      "bytes": 322788,
+      "sha256": "8748d7eec2bab9b4b46b8764713a4ac0b5294997ea4561fd842c1be7229f4bf7"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-135.png",
+      "bytes": 320531,
+      "sha256": "8af9874aa2fb2a324bccd86d5dd81af186978cb5cd0b410ff9fb8126641cafa2"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-180.png",
+      "bytes": 314693,
+      "sha256": "ed44c897f879171b7e73ef2f6238dfeb0e043906c417d27efba8f2642fcd16a2"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-225.png",
+      "bytes": 328626,
+      "sha256": "80a40f8a6e725fe88176df0e2dd2af44df21d8f58bcb6473241aa7a023bd14e8"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-270.png",
+      "bytes": 324087,
+      "sha256": "365d012b2081a03679d5c71309198e318accad77ba08842fa7d129435d312d69"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/azimuth-315.png",
+      "bytes": 333504,
+      "sha256": "e43689b8e2c1f4749c9411a474fc264c2f32486225e7c7d466cfbb56f5766e75"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/top.png",
+      "bytes": 329789,
+      "sha256": "be93b6eeb7cedcc4347435820113d28e52d2c4e17058d11d01b3b684687d7c94"
+    },
+    {
+      "relative_path": "clay-comparison/hi3dgen-43/bottom.png",
+      "bytes": 267802,
+      "sha256": "ed5235959851b419b6ce480ba061162a312d7596a04d1c68caf3098f47d8cc38"
+    }
+  ],
+  "supplemental_v1_seed42": {
+    "status": "REAL_GEOMETRY_READY_FOR_COMPARISON",
+    "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\remeasure-first",
+    "source_hashes": {
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\conditioning.png": "3bf7dacf5e2674e259185c6e0ca0270e25e2f755320c9b2ff1d49fa7668a6900",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\raw.glb": "2a366ab9f86ba21efee9a16f0ba56fab1b7076bbdecc7f6d83615cd45dba796e",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\generation.json": "818b020fdbd1d922e5f1e0d151be3b35b6c49705b317c9607549e5cc34ce6349",
+      "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\engines\\sparse_research_worker.py": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45"
+    },
+    "cases": [
+      {
+        "engine": "trellis_v1",
+        "seed": 42,
+        "folder": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\remeasure-first\\trellis_v1-42",
+        "samples": [
+          {
+            "seconds": 0.06199999999989814,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 40274124800,
+            "worker_tree_rss_bytes": 27136000
+          },
+          {
+            "seconds": 1.1089999999999236,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39895547904,
+            "worker_tree_rss_bytes": 343199744
+          },
+          {
+            "seconds": 2.155999999999949,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39791480832,
+            "worker_tree_rss_bytes": 420745216
+          },
+          {
+            "seconds": 3.2029999999999745,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39716040704,
+            "worker_tree_rss_bytes": 484589568
+          },
+          {
+            "seconds": 4.25,
+            "gpu_used_mib": 1873.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39956639744,
+            "worker_tree_rss_bytes": 527446016
+          },
+          {
+            "seconds": 5.2970000000000255,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 39903850496,
+            "worker_tree_rss_bytes": 616497152
+          },
+          {
+            "seconds": 6.342999999999847,
+            "gpu_used_mib": 1871.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39843307520,
+            "worker_tree_rss_bytes": 671141888
+          },
+          {
+            "seconds": 7.389999999999873,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 39315488768,
+            "worker_tree_rss_bytes": 1191489536
+          },
+          {
+            "seconds": 8.436999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 2.0,
+            "available_RAM_bytes": 37811601408,
+            "worker_tree_rss_bytes": 2581295104
+          },
+          {
+            "seconds": 9.5,
+            "gpu_used_mib": 1875.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 36972871680,
+            "worker_tree_rss_bytes": 3142557696
+          },
+          {
+            "seconds": 10.561999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36807057408,
+            "worker_tree_rss_bytes": 3546767360
+          },
+          {
+            "seconds": 11.625,
+            "gpu_used_mib": 1867.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36917628928,
+            "worker_tree_rss_bytes": 3417612288
+          },
+          {
+            "seconds": 12.686999999999898,
+            "gpu_used_mib": 1874.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 36948131840,
+            "worker_tree_rss_bytes": 3529883648
+          },
+          {
+            "seconds": 13.733999999999924,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36630818816,
+            "worker_tree_rss_bytes": 3824230400
+          },
+          {
+            "seconds": 14.780999999999949,
+            "gpu_used_mib": 4179.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36644921344,
+            "worker_tree_rss_bytes": 3824447488
+          },
+          {
+            "seconds": 15.827999999999975,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36664229888,
+            "worker_tree_rss_bytes": 3824877568
+          },
+          {
+            "seconds": 16.875,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36677840896,
+            "worker_tree_rss_bytes": 3929227264
+          },
+          {
+            "seconds": 17.936999999999898,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 36262641664,
+            "worker_tree_rss_bytes": 4252774400
+          },
+          {
+            "seconds": 18.983999999999924,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35132354560,
+            "worker_tree_rss_bytes": 5377474560
+          },
+          {
+            "seconds": 20.03099999999995,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35156484096,
+            "worker_tree_rss_bytes": 5383487488
+          },
+          {
+            "seconds": 21.092999999999847,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34977943552,
+            "worker_tree_rss_bytes": 5577015296
+          },
+          {
+            "seconds": 22.139999999999873,
+            "gpu_used_mib": 4177.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 35071270912,
+            "worker_tree_rss_bytes": 5475381248
+          },
+          {
+            "seconds": 23.217999999999847,
+            "gpu_used_mib": 4172.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34905620480,
+            "worker_tree_rss_bytes": 5634174976
+          },
+          {
+            "seconds": 24.264999999999873,
+            "gpu_used_mib": 4178.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 33967116288,
+            "worker_tree_rss_bytes": 6573162496
+          },
+          {
+            "seconds": 25.327999999999975,
+            "gpu_used_mib": 4708.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 67.0,
+            "available_RAM_bytes": 36218851328,
+            "worker_tree_rss_bytes": 4271976448
+          },
+          {
+            "seconds": 26.375,
+            "gpu_used_mib": 4800.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 1.0,
+            "available_RAM_bytes": 34800250880,
+            "worker_tree_rss_bytes": 5740417024
+          },
+          {
+            "seconds": 27.422000000000025,
+            "gpu_used_mib": 4800.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34797404160,
+            "worker_tree_rss_bytes": 5741408256
+          },
+          {
+            "seconds": 28.467999999999847,
+            "gpu_used_mib": 4805.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34803281920,
+            "worker_tree_rss_bytes": 5741408256
+          },
+          {
+            "seconds": 29.514999999999873,
+            "gpu_used_mib": 4806.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 98.0,
+            "available_RAM_bytes": 34797150208,
+            "worker_tree_rss_bytes": 5741408256
+          },
+          {
+            "seconds": 30.561999999999898,
+            "gpu_used_mib": 4802.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34787749888,
+            "worker_tree_rss_bytes": 5741363200
+          },
+          {
+            "seconds": 31.608999999999924,
+            "gpu_used_mib": 4804.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 96.0,
+            "available_RAM_bytes": 34761805824,
+            "worker_tree_rss_bytes": 5741375488
+          },
+          {
+            "seconds": 32.63999999999987,
+            "gpu_used_mib": 4813.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34743021568,
+            "worker_tree_rss_bytes": 5741379584
+          },
+          {
+            "seconds": 33.702999999999975,
+            "gpu_used_mib": 3899.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 97.0,
+            "available_RAM_bytes": 34437640192,
+            "worker_tree_rss_bytes": 6077771776
+          },
+          {
+            "seconds": 34.75,
+            "gpu_used_mib": 5564.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 62.0,
+            "available_RAM_bytes": 34485231616,
+            "worker_tree_rss_bytes": 6017462272
+          },
+          {
+            "seconds": 35.797000000000025,
+            "gpu_used_mib": 5570.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 93.0,
+            "available_RAM_bytes": 34489192448,
+            "worker_tree_rss_bytes": 6017781760
+          },
+          {
+            "seconds": 36.827999999999975,
+            "gpu_used_mib": 5585.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 90.0,
+            "available_RAM_bytes": 34484658176,
+            "worker_tree_rss_bytes": 6017781760
+          },
+          {
+            "seconds": 37.88999999999987,
+            "gpu_used_mib": 5594.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 88.0,
+            "available_RAM_bytes": 34456580096,
+            "worker_tree_rss_bytes": 6017781760
+          },
+          {
+            "seconds": 38.9369999999999,
+            "gpu_used_mib": 5594.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 94.0,
+            "available_RAM_bytes": 34433355776,
+            "worker_tree_rss_bytes": 6017781760
+          },
+          {
+            "seconds": 39.983999999999924,
+            "gpu_used_mib": 5600.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 94.0,
+            "available_RAM_bytes": 34338856960,
+            "worker_tree_rss_bytes": 6017781760
+          },
+          {
+            "seconds": 41.03099999999995,
+            "gpu_used_mib": 5349.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 26.0,
+            "available_RAM_bytes": 34238025728,
+            "worker_tree_rss_bytes": 6405206016
+          },
+          {
+            "seconds": 42.077999999999975,
+            "gpu_used_mib": 14741.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 11.0,
+            "available_RAM_bytes": 34034552832,
+            "worker_tree_rss_bytes": 6607712256
+          },
+          {
+            "seconds": 43.125,
+            "gpu_used_mib": 14734.0,
+            "gpu_total_mib": 16303.0,
+            "gpu_utilization_percent": 0.0,
+            "available_RAM_bytes": 34657824768,
+            "worker_tree_rss_bytes": 5806325760
+          }
+        ],
+        "status": "GENERATED_GEOMETRY_NEEDS_REVIEW",
+        "admission": {
+          "schema_version": 1,
+          "allowed": true,
+          "reason": null,
+          "reason_code": null,
+          "at": "2026-10-23T02:25:05.211605+00:00",
+          "checked_at_epoch": 1792722305.211606,
+          "available_bytes": 40277360640,
+          "unrealized_reserved_bytes": 0,
+          "usable_bytes": 40277360640,
+          "headroom_bytes": 2147483648,
+          "allowance": {
+            "profile_key": "host-memory:v1:07c895e1931e56af41f2a8102d6f6bd073431bfab46eaf9a98501fb1856d5fca",
+            "profile": {
+              "kind": "inference",
+              "engine": "trellis_v1",
+              "checkpoint": null,
+              "quality": null,
+              "pipeline_type": null,
+              "precision": null,
+              "texture_size": null,
+              "finishing_only": false,
+              "use_gpu": false
+            },
+            "bytes": 25769803776,
+            "planning_floor_gib": 24,
+            "observed": null,
+            "basis": "Conservative stage allowance; raised by retained measured worker RSS/private peaks. Not a guarantee against external allocations."
+          },
+          "active_claims": [],
+          "quality_settings_changed": false
+        },
+        "generation": {
+          "status": "GENERATED_NEEDS_REVIEW",
+          "engine": "trellis_v1",
+          "request": {
+            "image": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\castle-quality-route\\20261022T132736Z\\Library\\jobs\\5eff3892f4154fe8a1091ce5d981cb4d\\output\\source_alpha.png",
+            "seed": 42,
+            "steps": 50,
+            "slat_steps": 24,
+            "output": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\remeasure-first\\trellis_v1-42\\output",
+            "request_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\remeasure-first\\trellis_v1-42\\request.json",
+            "engine": "trellis_v1",
+            "engine_path": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\engines\\TRELLIS-v1",
+            "weights": "C:\\Users\\Winka\\Tools\\trellis2\\code\\MODELS\\hub\\models--microsoft--TRELLIS-image-large\\snapshots\\25e0d31ffbebe4b5a97464dd851910efc3002d96",
+            "experimental": true,
+            "commercial_approval": "NEEDS_REVIEW"
+          },
+          "network": "OFFLINE",
+          "input_sha256": "b287799161deecbce89d81fa53ed4a18e8c84fb91d19b2d6dcbd44315a41724f",
+          "script_sha256": "034529be575bf9537cef2bfca8c04f155fd4be0188872936398f67ff867cdb45",
+          "mesh_quality_parity": "NOT_TESTED",
+          "human_score": null,
+          "commercial_approval": "NEEDS_REVIEW",
+          "pbr": "NOT_AVAILABLE_GEOMETRY_TRIAL",
+          "timings": {
+            "load_models": 17.764999999999873,
+            "image_encoding": 0.4070000000001528,
+            "sparse_structure_sampling": 7.094000000000051,
+            "sparse_structure_decode": 0.125,
+            "slat_sampling": 6.719000000000051,
+            "mesh_decode": 0.7820000000001528
+          },
+          "torch": "2.8.0+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 5070 Ti",
+          "active_voxels": 26386,
+          "triangles": 1269620,
+          "native_triangles": 1269620,
+          "peak_allocated_bytes": 7902098944,
+          "peak_reserved_bytes": 13222543360,
+          "torch_memory_scope": "whole worker peak, no reset between stages",
+          "output_sha256": "984250a86b87fcdd4577710f4d60851f135eebb8557598342ad7b83d3d878889",
+          "source_sha256": {
+            "app.py": "6a2093fb352eab9a6a9030f02ba55ce0a96e2eb969b56b498af904749d49fd01",
+            "app_text.py": "9f391c6ed270b1ccb911e2c32956a8e569f17bc41ac8c45e81d043bfae83269d",
+            "example.py": "2099f399b9089b73cc796b88bf4cd10c7653b24a00b9293652e207b6ecc7660d",
+            "example_multi_image.py": "7a6abcf14ae3a17a5a90f57aef828ee268a9c5a2411ccc10eaf8917ed1f46486",
+            "example_text.py": "ef55f7ac56d387d3ad46bd8d7670dd7a08a3d15e2248d327282f100f636d3458",
+            "example_variant.py": "a5d58e47e5682e48360e5bcd63f6338f98c4a1f5d38b4502ab7a8357f94150da",
+            "train.py": "a5d7d64906168b8c0b37262afbc6113689fdd41d1f658c21a231e966d38f1dcf",
+            "dataset_toolkits/build_metadata.py": "3aa1d4bdba3c68150a2c6de6c34c444045a84976c887421b21310485f1e7c209",
+            "dataset_toolkits/calculate_aesthetic_scores.py": "cb238962fc78b3e7f5c67fc207ccf5a3bf5a3df67ee294f124d0479e6b0e7b5e",
+            "dataset_toolkits/download.py": "3c399062c16c87fb3155c8ea0bddef47b04ba844b7e1919b9c0241c90639a18e",
+            "dataset_toolkits/encode_latent.py": "60ec0c3fe0f9ae78acaabb6953182753aa2c8da165849e220db4027408099fd8",
+            "dataset_toolkits/encode_ss_latent.py": "186ed8cb469bb158d2cfe292e446256cf3029c005df62be650acc4c2a7259d4d",
+            "dataset_toolkits/extract_feature.py": "2edb5a76c6321ca9a9b87cc6c1dbf564c81e690c1ae635b879f97f080c18602e",
+            "dataset_toolkits/render.py": "8373bf0c5a803820db9c27caf11510ea3020241802ea97d499dbad33e86837fb",
+            "dataset_toolkits/render_cond.py": "abf684a460f3f9db48f07c7b443b8fa4918eef2493d7f1fc2895be946cd1cbcd",
+            "dataset_toolkits/stat_latent.py": "f8c44465985236b95424dd44c85f4a2b4610fef0af06baac0e6251ed105a0c64",
+            "dataset_toolkits/utils.py": "85a64a8afa730abc65de7c911f67913c8fba173f4197e3170f11b7895616a8d2",
+            "dataset_toolkits/voxelize.py": "2228437a4f4a665fa8baa4161db104135bcf09007f04c59948ad0685b8e2bdc3",
+            "dataset_toolkits/blender_script/render.py": "a7f2c9247a7fcc1f17f0044e002aecb0ab758c0ff9ee7b742d617ddbc72f400a",
+            "dataset_toolkits/datasets/3D-FUTURE.py": "71e86046535072751969f45c29927d738bc1e3c2276f863eba38f12d8461f2a2",
+            "dataset_toolkits/datasets/ABO.py": "3617281daef577931079d631de109dfd57fb39aa52b15c25ac043a36d01bf01b",
+            "dataset_toolkits/datasets/HSSD.py": "51d8c509b03333d66089c66e0fe1ca4a49c2de4cb5e6ae7f1c85b3bdfa1d730b",
+            "dataset_toolkits/datasets/ObjaverseXL.py": "cdffe3a9e381698a0b8e2c0b89a79cc38f5918774e304dd99bf0b2e7b62578f6",
+            "dataset_toolkits/datasets/Toys4k.py": "d6500d5b42002371174c8eb7a8941b3f51bdbf28bea6847f9735f72534daab32",
+            "trellis/__init__.py": "b953c8a82e54705708a115dd0e53b7ca5ccf45b71517463a5e9b8e0de318ee43",
+            "trellis/datasets/components.py": "9edb1bac7d58d52d78c28d82a7d38ef108d234f4fb1ffc6af7d06b00dfd55b43",
+            "trellis/datasets/sparse_feat2render.py": "d385b8d7ac817f77dc5e15c1856bd4c56256421406d4963164241d48b5277505",
+            "trellis/datasets/sparse_structure.py": "79ac04e0dbcb2602bf0c9af601d35ff89aa5c4b036e48972817cb65dfc94b006",
+            "trellis/datasets/sparse_structure_latent.py": "26278e7c48f71d5c8b4bc77b062519c787ba4bc5968898288c5c6e21c2a98bed",
+            "trellis/datasets/structured_latent.py": "b9d753bd3c5ca9c7464b136004584360e8bcbe86fa691409a42cec84403d47f2",
+            "trellis/datasets/structured_latent2render.py": "9906babe9af99c36c2a7f5ccf26c1472022089139e753ba4becc714d36b16a6f",
+            "trellis/datasets/__init__.py": "624a8ada45439071904ac77a1d8292fd56c6d77c09db8851ec90fdbb235c0e12",
+            "trellis/models/sparse_elastic_mixin.py": "17b85bc281172d72fec8944821693819643df7eae11713b2a87eed142c09c833",
+            "trellis/models/sparse_structure_flow.py": "9cf28b488ec7c4be47a1fd34013f0fcf1f772fd80e9ac9690c6969016d686c0e",
+            "trellis/models/sparse_structure_vae.py": "bbef234dc85312cc4ccae55837b40e03c897f4267198d8414d403c425ff06dec",
+            "trellis/models/structured_latent_flow.py": "a6cafe4876de76c7143731b2d5a271a3bfd26a84512408a805158b849ac81eb8",
+            "trellis/models/__init__.py": "cf6ade1218a987cb58d5952915b4d8c84741c795d3a7c2bd862b61a609dc25bf",
+            "trellis/models/structured_latent_vae/base.py": "26c0a7c6253ecaf9770127062bed7c3360fb72ce062e50f30cd4db7fe15f244b",
+            "trellis/models/structured_latent_vae/decoder_gs.py": "c5bd28d3781b7cdb95b7c41dec1d94252b98ec9e22c305515f973549a709c5ce",
+            "trellis/models/structured_latent_vae/decoder_mesh.py": "5b6b3afaf959d5baa1a5794d3bd6194c560b294c840d265fdd28547c33a6f21f",
+            "trellis/models/structured_latent_vae/decoder_rf.py": "127fb19334eec1587860b599ac71c6b76624a48e0343e65a0bf313996012bf13",
+            "trellis/models/structured_latent_vae/encoder.py": "d9f85c654170131334e6497bbb060108392b1cb95cbd3c163d9fe6f89fd18e8b",
+            "trellis/models/structured_latent_vae/__init__.py": "cacb8dcaed2b4a216c104834689995a0acd189b6fef24bb1931f1ad8894ee450",
+            "trellis/modules/norm.py": "9df6876f02ff6160119517e3e861ba1f56d1f47d22f45be20cfa542b66bcd438",
+            "trellis/modules/spatial.py": "4a029d5077bb0a5412ee5eceb8de21d3b4c8920a8f53d477441c3c3219a0da3c",
+            "trellis/modules/utils.py": "7850febc6caafd80205f49a3e86bb453a8bbcba654507d2edb4f27d62fa3d2c6",
+            "trellis/modules/attention/full_attn.py": "93d0bfd12749b0a303f0c2b68c12bdfc8aa57d10e598b677b3183523303fccc8",
+            "trellis/modules/attention/modules.py": "1e53692f62362750d3283477331d7c83127d53708dd8ef8e4ff7b3ca22d9a281",
+            "trellis/modules/attention/__init__.py": "03b1df628c1f8639e17115126a5653ba9b974de86f2f4f145ce41b37427b23a7",
+            "trellis/modules/sparse/basic.py": "3ce99cf799889f6fd5035d50f843911a61ac8eeb4be8f2d98c19f0e1870d7f38",
+            "trellis/modules/sparse/linear.py": "9c2a3d122c8624c27c0109c925722d9df60c74783e757353d0de6b19f22e4c43",
+            "trellis/modules/sparse/nonlinearity.py": "0bce3cc92d398f3fa9f65d2f085eeaee2b0f022839eb60861c8a4d0cfbc0cb5f",
+            "trellis/modules/sparse/norm.py": "75d34306e5c6f3161452d5dc9cbe256222b887df49aa64bbc19128661e4cccf1",
+            "trellis/modules/sparse/spatial.py": "39a997b7073e70e7bf5535986c894e02b08ccbcec05f8df807479d2ec2bfa84c",
+            "trellis/modules/sparse/__init__.py": "68363a0f51472cebcb83bf23ccd6fd4abd8504c34505139310ec86e0f781dadc",
+            "trellis/modules/sparse/attention/full_attn.py": "35c0b9d3f9cb510ff2ed3dd3a787645e35ec57a2a6140400a87b8059ae321675",
+            "trellis/modules/sparse/attention/modules.py": "d9e2cbe5e31e1a995472c4339f5d68744ce7dbdbd312310e00d56e1ea604e6b6",
+            "trellis/modules/sparse/attention/serialized_attn.py": "cd1c1bf11e72800b8497af7e029084d18c319291766e8536d1d486d62be17155",
+            "trellis/modules/sparse/attention/windowed_attn.py": "8b440ee5cdf13c4d39783bfd3bafdc44c5be9fd28084f1943a7e18238075e1b2",
+            "trellis/modules/sparse/attention/__init__.py": "a73bf9e14d339ccd2380140dd2a63eb4025162fa7f14aaaec2201cf8c2b8b161",
+            "trellis/modules/sparse/conv/conv_spconv.py": "879d58ef6dc4ebd6acc1cca33defc358e1889dfb9eb40f2c009975955c59fb09",
+            "trellis/modules/sparse/conv/conv_torchsparse.py": "46c30a87d93164dfa0247e15884e35501b355b4c114ceeb6a5b639d3713d5b17",
+            "trellis/modules/sparse/conv/__init__.py": "53285fc33da4ba74b2a9bdde4e2a447b2f80330204e78df4f40ef33318fc6edd",
+            "trellis/modules/sparse/transformer/blocks.py": "974d165de533f1c5e2213d8d5be2d5ad7cd9258e7e472ebc4fa8f2c5416bec8a",
+            "trellis/modules/sparse/transformer/modulated.py": "f81510aef663f602a48a2921c2175698ad9414810b1492c784b1ceb5ca5dd787",
+            "trellis/modules/sparse/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/modules/transformer/blocks.py": "857ccc64ad186c4d84a1c2c0b30093b87c5f19a7854e62bb682f878fcc16d256",
+            "trellis/modules/transformer/modulated.py": "362bace67d9f12fd91972ef1bab0ebf38b60083b9ab2cdff877cb59277e62f13",
+            "trellis/modules/transformer/__init__.py": "9838f0c93475b59778ff055d21372db80a5307d121b18acc328e25c446e97283",
+            "trellis/pipelines/base.py": "58ba1e140e60d51a36bfb5c37f9be922d618db863c62b47740553026c3e78053",
+            "trellis/pipelines/trellis_image_to_3d.py": "fb54758592848d1672cb4ce56bf7c9431c3bbb67d0c3980536eb263948ccb591",
+            "trellis/pipelines/trellis_text_to_3d.py": "d985e4f56b83a9887ee8a3f056f9a999dc1af416992cd405767ff3e08dc3456e",
+            "trellis/pipelines/__init__.py": "1657e5df0abfceeefeee317aaaa4a787b94e01f62bcefa5a70fe2ab80a8e9499",
+            "trellis/pipelines/samplers/base.py": "10bc216dc255e64746e51d929fc66d88efa7e3763e48a52a4fae3722d1e01869",
+            "trellis/pipelines/samplers/classifier_free_guidance_mixin.py": "ed17b1388c0ace508777b0519dae24a2d5857f468454be9e7c75eefb06a7e8b0",
+            "trellis/pipelines/samplers/flow_euler.py": "4492f18a35dda969fba01dbed032b9549b371f1d6b672d1f6d36ce47e6cfcf7b",
+            "trellis/pipelines/samplers/guidance_interval_mixin.py": "2b0b1db3a80e97eb2b983732f27b32132395171804294367ce627ad508c0504b",
+            "trellis/pipelines/samplers/__init__.py": "8a6e24d85a29def30445dd98af403fd78295876d4d7ffaf78c09356bd08e2c09",
+            "trellis/renderers/gaussian_render.py": "6ff6d219a207d9ed55a5190555fddd7d1cb3cc0e40719f1227fa9926e296cfce",
+            "trellis/renderers/mesh_renderer.py": "a602309e57b418e29419b90fcfad5d32a3799afa2a218f43d2ac61098ca9a33c",
+            "trellis/renderers/octree_renderer.py": "7b5aac095f622413bbb431c1dc1b92443c1a017fa7b2ab1b78bff7b646737083",
+            "trellis/renderers/sh_utils.py": "ece62fef10e63f3bb1f0c89292ff82591a3a8842c25fe039102d853bc8dded93",
+            "trellis/renderers/__init__.py": "9d770c4d9ea82dbd5cd5762497ceeb1b5342d75d42bf57db6e9d5668e5f0f279",
+            "trellis/representations/__init__.py": "dbd426e358cd7d4ffe9432778d3fddd2ccb230d553c0a057f613eef89f6dae84",
+            "trellis/representations/gaussian/gaussian_model.py": "3377b83ac62a38629336d46a0da1aca0f770d076d23ea2b09cbc77dcb5418ebf",
+            "trellis/representations/gaussian/general_utils.py": "9d67f784af2a9860d5405a676d2792caeb834c7a06e543171f07956190dc159c",
+            "trellis/representations/gaussian/__init__.py": "891087d9c250aa57155bd0606808e2783cbe6cc6991c81edb551f625f81d34be",
+            "trellis/representations/mesh/cube2mesh.py": "34504de533939ca3608a74887a4ff3c62decb471113fefd3507c9546e63897a6",
+            "trellis/representations/mesh/utils_cube.py": "a38c2901cca27cacbe1bb098bf649b074c214cff76be4fa8f8d34e04ea5206b6",
+            "trellis/representations/mesh/__init__.py": "3780cfefda1a54715d6887d273f2a059bacabfb62f2a7d232181dcd1921bd972",
+            "trellis/representations/mesh/flexicubes/flexicubes.py": "cac9cbc1311d03d2a57b7486a06d59960d5408bcc885ced00f537427b249b20f",
+            "trellis/representations/mesh/flexicubes/tables.py": "02a0d3277273ca2b18371c9895837131d453bfbd257d5a5e92433ed84f066cd6",
+            "trellis/representations/mesh/flexicubes/examples/download_data.py": "50b2425f34c15f753647d424634a06e6cb83ceacfd2632a889f6fe8f80718816",
+            "trellis/representations/mesh/flexicubes/examples/loss.py": "9f165f073bba3e560b51ef80e2e87943b525e8f487c8d70b5f1a4dc7f6c6085d",
+            "trellis/representations/mesh/flexicubes/examples/optimize.py": "9b410418738be79624216eb5c098600b03ce0cebef5d8baad5ffc8ca10a3ff2d",
+            "trellis/representations/mesh/flexicubes/examples/render.py": "736ef16cb17257309e0cc0b717cd9773c72a3797d0beda5e5a41c1186b1f52a3",
+            "trellis/representations/mesh/flexicubes/examples/util.py": "8649c2fa83c6e9804baaaf978ed5592471c3656c857cd9e5ff2d909e4acbefc5",
+            "trellis/representations/octree/octree_dfs.py": "6a151d09e03aaf1d72c9ec9dc25a8c396609bafc8095274de365878a2a3d5bd1",
+            "trellis/representations/octree/__init__.py": "2243db6b94f53b4f547bb5d269ad0d2c7b779a7f18cde64cb60f1ab050659b48",
+            "trellis/representations/radiance_field/strivec.py": "6df62c751f1116a25678ad07d4932cec5bcf899967dffb7c82ac4d85b37c0c98",
+            "trellis/representations/radiance_field/__init__.py": "73a6481c49a88fbadd8c8b5c16e0f968e4a4c86d24de45cb1ca302ec6c831f1c",
+            "trellis/trainers/base.py": "69da8877a4544ef5aefe7d4bd524fdbe5c35d3f31c69fd315b5c1597195321ce",
+            "trellis/trainers/basic.py": "3f2a0cdcade573ac20c4daa8b4b3ea3f63e16a293a7accbd4db44372b0386668",
+            "trellis/trainers/utils.py": "0d109ab2e59a03097867290b2fcc5e876c47790636728ec9ea7ff2b76e841fb0",
+            "trellis/trainers/__init__.py": "e0cb498b5d64cdb9aa6419dcf0949af0d153c05bdaa7eba9ea3975f0d7d37685",
+            "trellis/trainers/flow_matching/flow_matching.py": "892df243dcceee5892e2969015c1969b265738ba0255ef00bf35fc2fda47a26d",
+            "trellis/trainers/flow_matching/sparse_flow_matching.py": "1f9e7f9c8efa452462fc4c9e1292bd264385121f85719f3712bfd2622838dab9",
+            "trellis/trainers/flow_matching/mixins/classifier_free_guidance.py": "5f3a151d76dd37bed3a261aed84a721d99725b6aed7da8206b298c8d52c077b3",
+            "trellis/trainers/flow_matching/mixins/image_conditioned.py": "139324fdabce3871901b9fc0c3bde6fd9f729cfff383600925360b8fb987e3b4",
+            "trellis/trainers/flow_matching/mixins/text_conditioned.py": "4bd667ff7a2e9930d795900e323114482390b865c919ae3214704f0737f5ded9",
+            "trellis/trainers/vae/sparse_structure_vae.py": "32ae8e3fadcc2637c09717f7f9d5c0f76ec7b1b7a1cd912361f63e85d4556f22",
+            "trellis/trainers/vae/structured_latent_vae_gaussian.py": "075e79599406b9ab47b2bebd13982a20eef9005d47f63338ff7633b920caabcf",
+            "trellis/trainers/vae/structured_latent_vae_mesh_dec.py": "efa3f799db6b46c43e65d049d3a0a8b0b89756ef49cc498d363fb1386ade7010",
+            "trellis/trainers/vae/structured_latent_vae_rf_dec.py": "d0f50c213edad07df8ece9f31068229ea7de31efd7a8213148d693ee6f69d63e",
+            "trellis/utils/data_utils.py": "8868ed0cf40af75e3eaf68a4b5912b7220ed884b063b8058a41f8c53deb393a1",
+            "trellis/utils/dist_utils.py": "0e91c7c5b67c229cf48d12eb32b50f804dd77e6e16fe85544c93c1f17f3fc5fc",
+            "trellis/utils/elastic_utils.py": "eb743b8015232bcc67e33104a4c8d212d41664dbb9a6ea10866dc499f229bc30",
+            "trellis/utils/general_utils.py": "6b2aa148277330a983e44367dc184f2feccf395502f442fcf4f14375fcf98e50",
+            "trellis/utils/grad_clip_utils.py": "c6058be0fdc81dd10da9d88945bad4820f7a35afa2699262b179d81a6686754d",
+            "trellis/utils/loss_utils.py": "0614d65eb03eb43e14263080e8c65f8e4b0592c4fcff9a2edbd7ff541bf4d02d",
+            "trellis/utils/postprocessing_utils.py": "b4322d00b85e0a612b9dbd8e2a3514b5492f503b3b73b7b9f4dc9a63acc17d44",
+            "trellis/utils/random_utils.py": "675c2f4f3047a0145d18feabbcb6b0028b39177a3fc7b82b48d4dbd8f0107aca",
+            "trellis/utils/render_utils.py": "7ab520ffa62ca22ffdb05a8566b778dca2e7702286ccfce60fb7bf343960a5ed",
+            "trellis/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "duration_seconds": 42.5630000000001
+        },
+        "inspection": {
+          "status": "NEEDS_REVIEW",
+          "triangles": 1269620,
+          "mesh_instances": 1,
+          "dimensions_xyz_m": [
+            0.8994284570217133,
+            0.853545218706131,
+            1.0005425214767456
+          ],
+          "bounds_xyz_m": [
+            [
+              -0.4514431953430176,
+              -0.42452773451805115,
+              -0.5002127885818481
+            ],
+            [
+              0.4479852616786957,
+              0.42901748418807983,
+              0.5003297328948975
+            ]
+          ],
+          "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+          "meshes": [
+            {
+              "node": "geometry_0",
+              "triangles": 1269620,
+              "vertices": 634684,
+              "watertight": true,
+              "winding_consistent": true,
+              "watertight_after_position_weld_1e8": true,
+              "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+              "has_uv": false
+            }
+          ],
+          "materials": [],
+          "images": 0,
+          "surface_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+            "geometry_count": 1,
+            "totals": {
+              "triangles": 1269620,
+              "zero_area_triangles": 0,
+              "very_thin_triangles": 15
+            },
+            "faces_opposing_mean_vertex_normal": 26,
+            "all_vertex_normals_finite": true,
+            "meshes": [
+              {
+                "triangles": 1269620,
+                "zero_area_triangles": 0,
+                "very_thin_triangles": 15,
+                "triangle_quality_p01": 0.2757237961535152,
+                "faces_opposing_mean_vertex_normal": 26,
+                "finite_vertex_normals": true,
+                "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+                "surface_area_source_units_squared": 7.639911077663159,
+                "bounding_diagonal_source_units": 1.5932973127949475,
+                "geometry": "geometry_0"
+              }
+            ],
+            "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+            "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+            "limitations": [
+              "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+              "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+              "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+            ]
+          },
+          "texture_diagnostics": {
+            "schema_version": 1,
+            "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+            "status": "VALIDATED_EMBEDDED_IMAGES",
+            "images": [],
+            "bindings": [],
+            "checks": {
+              "image_decode": "PASS",
+              "embedded_image_bounds": "PASS",
+              "material_texture_references": "PASS",
+              "texture_coordinate_declarations": "PASS"
+            },
+            "limitations": [
+              "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+              "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+            ]
+          },
+          "checks": {
+            "container": "PASS",
+            "finite_nonempty_geometry": "PASS",
+            "external_resources": "PASS",
+            "embedded_texture_integrity": "PASS",
+            "uv_overlap": "NOT_TESTED",
+            "self_intersections": "NOT_TESTED",
+            "pbr_plausibility": "NOT_TESTED",
+            "dimensions_approved": "NOT_TESTED",
+            "unity_import": "NOT_TESTED",
+            "human_quality": "NOT_TESTED"
+          }
+        },
+        "seconds": 45.76499999999987
+      }
+    ],
+    "scope": "Actual cached TRELLIS v1 and original-normal Hi3DGen, two seeds each, same retained castle RGBA. Geometry only; no PBR, commercial approval, Meshy parity or production promotion. Mask lineage is the prior evaluation-only TRELLIS2 run. CPU Blender clay comparison follows in a separate command.",
+    "sources_preserved": true
+  },
+  "telemetry_limit": "First original v1 seed42 whole-GPU samples were lost when its quadratic API inspection was interrupted. Its measured Torch peaks remain in generation.json. Supplemental same-setting repeat has a separate actual whole-GPU trace and slightly different geometry, not a retroactive measurement of the original.",
+  "reproducibility_limit": "The supplemental v1 seed42 result has 1269620 triangles versus 1269640 originally and a different GLB hash. A fixed seed is not proof of bit-identical geometry. Cause not isolated; neither original model was overwritten.",
+  "decision": "Keep current production defaults. V1 and Hi3DGen remain research geometry-only; no PBR advantage, commercial clearance, Meshy parity or user artistic approval established."
+}

@@ -2,6 +2,46 @@
 import numpy as np
 import trimesh
 from apps.api.inspection import inspect_glb
+from apps.api.surface_diagnostics import derived_vertex_normals,measure
+
+
+def test_derived_normals_match_independent_small_mesh_reference_without_mutation():
+    vertices=np.array([[0.,0,0],[2,0,0],[0,1,0],[0,0,3],[5,5,5]])
+    faces=np.array([[0,2,1],[0,1,3],[0,3,2],[1,2,3]])
+    mesh=trimesh.Trimesh(vertices=vertices,faces=faces,process=False)
+    # Independent upstream reference restricted to four faces. The production
+    # path must not call this quadratic fallback for large neural output.
+    expected=trimesh.geometry.weighted_vertex_normals(len(vertices),faces,mesh.face_normals,mesh.face_angles,use_loop=True)
+    actual=derived_vertex_normals(mesh)
+    assert np.allclose(actual,expected,atol=1e-12)
+    assert np.array_equal(actual[-1],[0,0,0])
+    result=measure(mesh)
+    assert 'derived angle-weighted' in result['vertex_normals_source']
+    assert 'vertex_normals' not in mesh._cache.cache
+    assert np.array_equal(mesh.vertices,vertices) and np.array_equal(mesh.faces,faces)
+
+
+def test_missing_normals_real_glb_is_inspected_without_normal_property(tmp_path,monkeypatch):
+    mesh=trimesh.creation.icosphere(subdivisions=3)
+    path=tmp_path/'real-geometry-no-normals.glb'
+    path.write_bytes(trimesh.exchange.gltf.export_glb(trimesh.Scene(mesh),include_normals=False))
+    from apps.api.inspection import glb_document
+    assert 'NORMAL' not in glb_document(path)['meshes'][0]['primitives'][0]['attributes']
+    def forbidden(*args,**kwargs):raise AssertionError('Inspection must not invoke the quadratic normal fallback')
+    monkeypatch.setattr(trimesh.Trimesh,'vertex_normals',property(forbidden))
+    result=inspect_glb(path)
+    assert result['triangles']==len(mesh.faces)
+    assert result['surface_diagnostics']['all_vertex_normals_finite']
+    assert 'derived angle-weighted' in result['surface_diagnostics']['meshes'][0]['vertex_normals_source']
+
+
+def test_degenerate_geometry_derived_normals_are_finite_at_multiple_scales():
+    for scale in (.001,1,1000):
+        mesh=trimesh.Trimesh(vertices=np.array([[0.,0,0],[1,0,0],[2,0,0],[0,1,0]])*scale,
+                             faces=[[0,1,2],[0,1,3],[0,0,0]],process=False)
+        result=measure(mesh)
+        assert result['finite_vertex_normals'] and result['zero_area_triangles']==2
+        assert result['faces_opposing_mean_vertex_normal']==0
 
 
 def test_glb_measures_opposed_normals_and_collapsed_triangles(tmp_path):

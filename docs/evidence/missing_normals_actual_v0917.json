@@ -1,0 +1,105 @@
+{
+  "status": "PASS_ACTUAL_RETAINED_NEURAL_GLB",
+  "seconds": 1.75,
+  "source_sha256": "45cb98d6e1f6ab9c6287073e54eb90ddd6bf141e3c292f3556a2ee53ca8484d9",
+  "source": "data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42\\output\\raw.glb",
+  "report": {
+    "status": "NEEDS_REVIEW",
+    "triangles": 1269640,
+    "mesh_instances": 1,
+    "dimensions_xyz_m": [
+      0.8994392156600952,
+      0.8535283207893372,
+      1.000546932220459
+    ],
+    "bounds_xyz_m": [
+      [
+        -0.45145168900489807,
+        -0.42451930046081543,
+        -0.5002122521400452
+      ],
+      [
+        0.44798752665519714,
+        0.42900902032852173,
+        0.5003346800804138
+      ]
+    ],
+    "coordinate_system": "glTF Y-up, meters; scale is unapproved source scale",
+    "meshes": [
+      {
+        "node": "geometry_0",
+        "triangles": 1269640,
+        "vertices": 634688,
+        "watertight": true,
+        "winding_consistent": true,
+        "watertight_after_position_weld_1e8": true,
+        "topology_note": "Raw GLB vertices can split at UV/normal seams; position-weld result is a proxy, not a hole/intersection proof",
+        "has_uv": false
+      }
+    ],
+    "materials": [],
+    "images": 0,
+    "surface_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+      "geometry_count": 1,
+      "totals": {
+        "triangles": 1269640,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 19
+      },
+      "faces_opposing_mean_vertex_normal": 28,
+      "all_vertex_normals_finite": true,
+      "meshes": [
+        {
+          "triangles": 1269640,
+          "zero_area_triangles": 0,
+          "very_thin_triangles": 19,
+          "triangle_quality_p01": 0.27593277377561987,
+          "faces_opposing_mean_vertex_normal": 28,
+          "finite_vertex_normals": true,
+          "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+          "surface_area_source_units_squared": 7.640041277235329,
+          "bounding_diagonal_source_units": 1.5932971036917392,
+          "geometry": "geometry_0"
+        }
+      ],
+      "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+      "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+      "limitations": [
+        "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+        "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+        "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+      ]
+    },
+    "texture_diagnostics": {
+      "schema_version": 1,
+      "validator_sha256": "f5e404ba8ba790da7705fc8eb2ff1f099e5342347135a90c164ea009265bc24a",
+      "status": "VALIDATED_EMBEDDED_IMAGES",
+      "images": [],
+      "bindings": [],
+      "checks": {
+        "image_decode": "PASS",
+        "embedded_image_bounds": "PASS",
+        "material_texture_references": "PASS",
+        "texture_coordinate_declarations": "PASS"
+      },
+      "limitations": [
+        "Checks decoded PNG/JPEG images, references and declared UV shape/count, not UV overlap, texel density, shader fidelity or artistic detail.",
+        "Resolution and decoded pixel hashes do not establish AI detail, PBR plausibility or Meshy equivalence. No texture or source is modified."
+      ]
+    },
+    "checks": {
+      "container": "PASS",
+      "finite_nonempty_geometry": "PASS",
+      "external_resources": "PASS",
+      "embedded_texture_integrity": "PASS",
+      "uv_overlap": "NOT_TESTED",
+      "self_intersections": "NOT_TESTED",
+      "pbr_plausibility": "NOT_TESTED",
+      "dimensions_approved": "NOT_TESTED",
+      "unity_import": "NOT_TESTED",
+      "human_quality": "NOT_TESTED"
+    }
+  }
+}

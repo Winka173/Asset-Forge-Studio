@@ -1,0 +1,17 @@
+import os,sys,time,subprocess,json
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+run=ROOT/'data/research_castle_geometry/20261023T021252Z';os.environ['AFS_DATA']=str(run/'Library')
+from apps.api import jobs,store,host_resources
+folder=store.DATA/'jobs/clay-render';folder.mkdir(parents=True,exist_ok=True)
+job=dict(id='clay-render',payload=dict(kind='blender',use_gpu=False));started=time.monotonic();process=None
+with jobs.resource_slot('cpu'),host_resources.reserve(job,'cpu') as receipt,(run/'clay-worker.log').open('w',encoding='utf-8') as log:
+    assert receipt['allowed'],receipt['reason']
+    command=[str(Path.home()/'Tools/blender-4.5.14-windows-x64/blender.exe'),'-b','--factory-startup','--python-exit-code','1','--python',str(ROOT/'.local/render_castle_geometry_tournament.py'),'--',str(run),'--qa-job-folder',str(folder)]
+    try:
+        process=subprocess.Popen(command,cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+        (folder/'process.json').write_text(json.dumps(dict(pid=process.pid,command=command)),'utf-8')
+        process.wait(timeout=1200);assert process.returncode==0,'Inspect retained actual clay log'
+    finally:
+        if process and process.poll() is None:jobs.kill_tree(process)
+print(json.dumps(dict(status='REAL_CLAY_COMPLETE',seconds=time.monotonic()-started,run=str(run))),flush=True)

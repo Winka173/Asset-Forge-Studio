@@ -1,0 +1,46 @@
+{
+  "status": "PASS_NATIVE_REAL_MISSING_NORMALS",
+  "version": "0.9.17",
+  "run": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\missing-normals-native\\2026-10-23T02-29-40-969Z",
+  "source": "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\data\\research_castle_geometry\\20261023T021252Z\\trellis_v1-42\\output\\raw.glb",
+  "source_sha256": "45cb98d6e1f6ab9c6287073e54eb90ddd6bf141e3c292f3556a2ee53ca8484d9",
+  "errors": [],
+  "scope": "Real retained TRELLIS v1 neural castle without NORMAL attributes; packaged API import, selected QA, visible GLB and restart. No new inference, texture/PBR, quality approval or export claim.",
+  "import_seconds": 1.5789640999999996,
+  "asset_id": "8bea932a79b948a495d50525d3186553",
+  "artifact_id": "d8b14a1cd3924e2c8ad665a419c2feb7",
+  "diagnostics": {
+    "schema_version": 1,
+    "validator_sha256": "7d4bb80a1ed79382819373a55d8365bbd8607fcde711f5c195117b76d324aa5c",
+    "geometry_count": 1,
+    "totals": {
+      "triangles": 1269640,
+      "zero_area_triangles": 0,
+      "very_thin_triangles": 19
+    },
+    "faces_opposing_mean_vertex_normal": 28,
+    "all_vertex_normals_finite": true,
+    "meshes": [
+      {
+        "triangles": 1269640,
+        "zero_area_triangles": 0,
+        "very_thin_triangles": 19,
+        "triangle_quality_p01": 0.27593277377561987,
+        "faces_opposing_mean_vertex_normal": 28,
+        "finite_vertex_normals": true,
+        "vertex_normals_source": "derived angle-weighted diagnostic normals; source GLB normals unavailable",
+        "surface_area_source_units_squared": 7.640041277235329,
+        "bounding_diagonal_source_units": 1.5932971036917392,
+        "geometry": "geometry_0"
+      }
+    ],
+    "thin_triangle_definition": "2*sqrt(3)*double_area / sum(edge_length_squared) < 0.001; equilateral=1, degenerate=0",
+    "status": "MEASURED_OBSERVATIONS_NOT_ART_APPROVAL",
+    "limitations": [
+      "Opposed geometric/mean vertex normals can explain shading artifacts but do not prove holes or inward surfaces.",
+      "Thin triangles can be intentional; no arbitrary artistic pass/fail threshold is applied.",
+      "Counts are unique local meshes, not transformed instances. No UV overlap, intersection, manifold or texture certification."
+    ]
+  },
+  "reinspection_seconds": 1.460448799999999
+}

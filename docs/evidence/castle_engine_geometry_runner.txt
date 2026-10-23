@@ -1,0 +1,77 @@
+"""Isolated real geometry tournament; no production integration or visual score."""
+import os, sys, json, time, subprocess
+from pathlib import Path
+from datetime import datetime, timezone
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+RUN=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else ROOT/'data/research_castle_geometry'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+assert RUN.is_relative_to((ROOT/'data/research_castle_geometry').resolve());RUN.mkdir(parents=True,exist_ok=True)
+os.environ['AFS_DATA']=str(RUN/'Library')
+from apps.api import jobs,store,host_resources
+from apps.api.inspection import inspect_glb
+from engines.research_adapters import RESEARCH_ADAPTERS
+import psutil
+source=ROOT/'.local/castle-quality-route/20261022T132736Z/Library/jobs/5eff3892f4154fe8a1091ce5d981cb4d/output'
+files=[source/n for n in ('source_alpha.png','conditioning.png','raw.glb','generation.json')]
+files += [ROOT/'engines/sparse_research_worker.py']
+hashes={str(p):store.digest(p) for p in files}
+report=dict(status='RUNNING',run=str(RUN),source_hashes=hashes,cases=[],
+    scope='Actual cached TRELLIS v1 and original-normal Hi3DGen, two seeds each, same retained castle RGBA. Geometry only; no PBR, commercial approval, Meshy parity or production promotion. Mask lineage is the prior evaluation-only TRELLIS2 run. CPU Blender clay comparison follows in a separate command.')
+if (RUN/'report.json').exists():
+    previous=json.loads((RUN/'report.json').read_text('utf-8'));assert previous['source_hashes']==hashes
+    report['cases']=previous['cases'];report['recovery']='First neural stage completed; initial inspection interrupted after diagnosing quadratic missing-normal fallback. Real outputs retained and reinspected using the repaired validator, not regenerated.'
+def flush():
+    (RUN/'report.json').write_text(json.dumps(report,indent=2),'utf-8')
+    print(json.dumps(dict(status=report['status'],run=str(RUN),cases=len(report['cases']))),flush=True)
+try:
+ for engine in ('trellis_v1','hi3dgen'):
+  if len(sys.argv)>2 and sys.argv[2]=='remeasure-first' and engine!='trellis_v1':continue
+  adapter=RESEARCH_ADAPTERS[engine];assert adapter.installed,adapter.probe()
+  for seed in (42,43):
+   if len(sys.argv)>2 and sys.argv[2]=='remeasure-first' and seed!=42:continue
+   name=f'{engine}-{seed}';folder=RUN/name;folder.mkdir(exist_ok=True)
+   path=folder/'request.json'
+   command,cwd,request=adapter.generate(dict(image=str(source/'source_alpha.png'),seed=seed,steps=50,slat_steps=24,output=str(folder/'output'),request_path=str(path)),lambda e:None)
+   case=next((c for c in report['cases'] if c['engine']==engine and c['seed']==seed),None)
+   if case is None:
+    case=dict(engine=engine,seed=seed,folder=str(folder),samples=[],status='WAITING_RESOURCE');report['cases'].append(case)
+   if (folder/'output/generation.json').exists():
+    generation=json.loads((folder/'output/generation.json').read_text('utf-8'))
+    if generation['status']=='GENERATED_NEEDS_REVIEW':
+     assert generation['input_sha256']==hashes[str(source/'source_alpha.png')]
+     case['generation']=generation;t=time.monotonic();case['inspection']=inspect_glb(folder/'output/raw.glb')
+     case.update(inspection_seconds=time.monotonic()-t,status='GENERATED_GEOMETRY_NEEDS_REVIEW',reused_completed_inference=True);flush();continue
+   assert not path.exists(),'An interrupted neural stage needs a separate immutable retry directory'
+   path.write_text(json.dumps(request,indent=2),'utf-8');flush()
+   job=dict(id=name,payload=dict(kind='inference',engine=engine));process=None;started=time.monotonic()
+   try:
+    with jobs.resource_slot('gpu'),host_resources.reserve(job,'gpu') as admission,(folder/'worker.log').open('w',encoding='utf-8') as log:
+     case['admission']=admission
+     if not admission['allowed']:raise RuntimeError(admission['reason'])
+     case['status']='RUNNING';flush()
+     process=subprocess.Popen(command,cwd=cwd,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+     job_folder=store.DATA/'jobs'/name;job_folder.mkdir(parents=True,exist_ok=True)
+     (job_folder/'process.json').write_text(json.dumps(dict(pid=process.pid,command=command)),'utf-8')
+     while process.poll() is None:
+      r=subprocess.run(['nvidia-smi','--query-gpu=memory.used,memory.total,utilization.gpu','--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=10)
+      vals=[float(v.strip()) for v in r.stdout.strip().split(',')]
+      sample=dict(seconds=time.monotonic()-started,gpu_used_mib=vals[0],gpu_total_mib=vals[1],gpu_utilization_percent=vals[2],available_RAM_bytes=psutil.virtual_memory().available)
+      try:
+       p=psutil.Process(process.pid);sample['worker_tree_rss_bytes']=sum(p.memory_info().rss for p in [p,*p.children(recursive=True)])
+      except psutil.Error:pass
+      case['samples'].append(sample)
+      if time.monotonic()-started>600:raise TimeoutError('Research stage timeout')
+      time.sleep(1)
+     if process.returncode:raise RuntimeError(f'Actual engine exit {process.returncode}; retained worker.log')
+    generation=json.loads((folder/'output/generation.json').read_text('utf-8'));case['generation']=generation
+    assert generation['input_sha256']==hashes[str(source/'source_alpha.png')]
+    case['inspection']=inspect_glb(folder/'output/raw.glb')
+    assert case['inspection']['triangles']>0
+    case['status']='GENERATED_GEOMETRY_NEEDS_REVIEW'
+   except Exception as exc:case.update(status='FAILED_OR_RESOURCE_BLOCKED',error=str(exc))
+   finally:
+    if process and process.poll() is None:jobs.kill_tree(process)
+    case['seconds']=time.monotonic()-started;flush()
+ assert all(store.digest(Path(p))==h for p,h in hashes.items()),'Retained source changed'
+ report['sources_preserved']=True
+ report['status']='REAL_GEOMETRY_READY_FOR_COMPARISON' if all(c['status']=='GENERATED_GEOMETRY_NEEDS_REVIEW' for c in report['cases']) else 'INCOMPLETE_RETAINED_FAILURES'
+finally:flush()

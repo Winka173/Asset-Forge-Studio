@@ -2,6 +2,16 @@
 
 This is a research queue, not a list of production integrations. Each new engine gets its own environment, pinned source/model revisions and subprocess adapter. No Character/Animation/Map/VFX work is authorized by this expansion. Model downloads remain separate from app startup/inference.
 
+## 2026-10-23 castle extension
+
+Both installed research environments now also have two real castle seeds and
+shared-light clay coverage through 360 degrees plus top/bottom, alongside the
+retained TRELLIS.2 baseline. See [actual castle comparison](CASTLE_ENGINE_GEOMETRY_20261023.md)
+for measured time/VRAM, geometry, failures, source hashes, frames and limits.
+Advantages are mixed and PBR remains untested for these research engines; neither
+is promoted. One repeated v1 seed differs slightly, so seed equality alone is
+not a bit-identical-output guarantee. Original Archer results remain preserved.
+
 ## Current evidence and next decision
 
 | Engine | Hardware evidence / requirements | Licensing and dependencies checked | Decision |

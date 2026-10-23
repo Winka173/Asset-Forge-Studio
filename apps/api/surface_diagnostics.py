@@ -4,10 +4,32 @@ from pathlib import Path
 import numpy as np
 
 
+def derived_vertex_normals(mesh):
+    """Angle-weighted diagnostic normals in O(faces + vertices), without SciPy.
+
+    Never assign these to the mesh or export them. Trimesh's no-SciPy fallback
+    scans every face for each vertex and can stall inspection of neural meshes.
+    Face temporaries are bounded; loaded normals use the unchanged path below.
+    """
+    summed=np.zeros((len(mesh.vertices),3),dtype=np.float64)
+    for start in range(0,len(mesh.faces),65536):
+        faces=mesh.faces[start:start+65536];tri=np.asarray(mesh.vertices)[faces]
+        cross=np.cross(tri[:,1]-tri[:,0],tri[:,2]-tri[:,0]);length=np.linalg.norm(cross,axis=1)
+        normal=np.divide(cross,length[:,None],out=np.zeros_like(cross),where=length[:,None]>0)
+        for corner in range(3):
+            a=tri[:,(corner+1)%3]-tri[:,corner];b=tri[:,(corner+2)%3]-tri[:,corner]
+            denominator=np.linalg.norm(a,axis=1)*np.linalg.norm(b,axis=1)
+            cosine=np.divide(np.einsum('ij,ij->i',a,b),denominator,out=np.ones_like(denominator),where=denominator>0)
+            angle=np.arccos(np.clip(cosine,-1,1))
+            np.add.at(summed,faces[:,corner],normal*angle[:,None])
+    length=np.linalg.norm(summed,axis=1)
+    return np.divide(summed,length[:,None],out=np.zeros_like(summed),where=length[:,None]>0)
+
+
 def measure(mesh):
     diagonal=float(np.linalg.norm(np.ptp(mesh.vertices,axis=0)))
     imported='vertex_normals' in mesh._cache.cache
-    normals=np.asarray(mesh.vertex_normals)
+    normals=np.asarray(mesh._cache.cache['vertex_normals']) if imported else derived_vertex_normals(mesh)
     finite_normals=bool(np.isfinite(normals).all())
     zero=thin=opposed=0;areas=0.;quality=[]
     for start in range(0,len(mesh.faces),65536):
@@ -22,7 +44,7 @@ def measure(mesh):
     q=np.concatenate(quality)
     return dict(triangles=len(mesh.faces),zero_area_triangles=zero,very_thin_triangles=thin,triangle_quality_p01=float(np.percentile(q,1)),
         faces_opposing_mean_vertex_normal=opposed if finite_normals else None,finite_vertex_normals=finite_normals,
-        vertex_normals_source='loaded GLB normals' if imported else 'computed by loader; source GLB normals unavailable',
+        vertex_normals_source='loaded GLB normals' if imported else 'derived angle-weighted diagnostic normals; source GLB normals unavailable',
         surface_area_source_units_squared=areas,bounding_diagonal_source_units=diagonal)
 
 
