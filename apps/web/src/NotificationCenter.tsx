@@ -3,7 +3,6 @@ import {createPortal} from 'react-dom';
 import {apiFetch} from './api';
 import {Select} from './select';
 import {isDesktop} from './desktop';
-import './notifications.css';
 type Notice={id:string;project_id:string;project_name:string;asset_id:string;asset_name:string;kind:'completed'|'failed';title:string;message:string;created_at:string;read:boolean;target:string};
 type Notices={items:Notice[];unread_count:number;total:number;has_more?:boolean;next_offset?:number|null};
 export function NotificationCenter({projectId,onProduction,desktopNotifications=false}:{projectId:string;onProduction:(target:string)=>void;desktopNotifications?:boolean}){

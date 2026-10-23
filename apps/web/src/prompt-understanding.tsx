@@ -1,4 +1,3 @@
-import './prompt-understanding.css';
 
 /** Read only inferred metadata. Original prompt remains in the asset's immutable source history. */
 export function PromptUnderstanding({specification}:{specification:unknown}) {

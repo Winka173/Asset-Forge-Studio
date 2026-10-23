@@ -1,7 +1,6 @@
 import {ToastNotice} from './workspace-feedback';
 import {useEffect,useRef,useState} from 'react';
 import {apiFetch} from './api';
-import './updates.css';
 type Item={id:string;name:string;kind?:string;installed?:string;latest?:string;status:string;source?:string;provider?:string;license?:string;reason?:string;automatic:boolean;error?:string;candidate?:{bytes:number}};
 type Job={id:string;status:string;error?:string;progress?:{stage:string}};
 type Data={status:string;checked_at?:string;error?:string;policy:{auto_check:boolean;auto_update_media:boolean};items:Item[];jobs:Job[];active_media?:{version:string};previous_media?:unknown;pending_media?:{version:string}};

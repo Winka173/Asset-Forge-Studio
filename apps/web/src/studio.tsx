@@ -178,6 +178,13 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const Glyph = icons[name] || Box;
   return <Glyph size={size} strokeWidth={1.75} aria-hidden="true" />;
 }
+function autoAssetName(prompt: string) {
+  const words = prompt.split(/\r?\n/)[0].replace(/[^\p{L}\p{N}\s-]/gu, " ").trim().split(/\s+/).filter(Boolean);
+  if (/^(a|an|the|một)$/i.test(words[0] || "")) words.shift();
+  const stop = words.findIndex((w, i) => i > 0 && /^(with|and|that|which|featuring|for|in|on|của|với|và|có)$/i.test(w));
+  const picked = words.slice(0, Math.min(stop > 0 ? stop : words.length, 5));
+  return picked.map((w) => w[0].toUpperCase() + w.slice(1)).join(" ").slice(0, 48).trim();
+}
 function State({ value }: { value: string }) {
   return (
     <span className={`state state-${value.toLowerCase().replaceAll(" ", "-")}`}>
@@ -298,6 +305,11 @@ export function Studio() {
   const [collapsed, setCollapsed] = useState(
     localStorage.getItem("afs.sidebar") === "collapsed",
   );
+  useEffect(() => {
+    if (loadedProject !== projectId) return;
+    const mode: Draft["mode"] = draft.source ? (draft.prompt.trim() ? "Text + Image" : "Image") : "Text";
+    if (draft.mode !== mode) setDraft((d) => ({ ...d, mode }));
+  }, [draft.source, draft.prompt, draft.mode, loadedProject, projectId]);
   function toggleSidebar(next = !collapsed) {
     setCollapsed(next);
     localStorage.setItem("afs.sidebar", next ? "collapsed" : "expanded");
@@ -515,7 +527,7 @@ export function Studio() {
       `afs.draft.${projectId}`,
       JSON.stringify({ draft, serialized, pending: true }),
     );
-    setDraftStatus("Đang lưu…");
+    setDraftStatus("Saving…");
     const timer = setTimeout(() => {
       request(`/api/projects/${projectId}/draft`, { draft })
         .then(() => {
@@ -528,10 +540,10 @@ export function Studio() {
               `afs.draft.${projectId}`,
               JSON.stringify({ ...local, pending: false }),
             );
-          setDraftStatus("Đã lưu trên máy");
+          setDraftStatus("Saved locally");
         })
         .catch((e) => {
-          setDraftStatus("Chưa lưu");
+          setDraftStatus("Not saved");
           setError(String(e));
         });
     }, 800);
@@ -582,7 +594,7 @@ export function Studio() {
     }
     const created = await request<Asset>("/api/assets", {
       project_id: projectId,
-      name: draft.name.trim() || "Untitled asset",
+      name: draft.name.trim() || autoAssetName(draft.prompt) || "Untitled asset",
       prompt: draft.prompt,
       reference_ids: draft.source ? [draft.source] : [],
       settings: draft,
@@ -1130,108 +1142,55 @@ export function Studio() {
               <div className={`create-workspace create-single-flow step-${createStep}`}>
                 <section className="create-controls" aria-label={createStep===1?'Asset description':'Generation settings'}>
                   {createStep===1&&<div className="create-input-step">
-                  <div
-                    className="input-tabs"
-                    role="tablist"
-                    aria-label="Input mode"
-                  >
-                    {(["Text", "Image", "Text + Image"] as const).map(
-                      (mode) => (
-                        <button
-                          role="tab"
-                          aria-selected={draft.mode === mode}
-                          key={mode}
-                          onClick={() => change({ mode })}
-                        >
-                          {mode}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                  <div className="capability-note" role="note"><strong>Prompt understanding</strong><p>{data.capabilities.prompt_interpretation?.available?'Local Qwen3-VL is available. Auto mode adds a queued CPU interpretation stage before concept/3D; original text and image hashes are retained.':'Local vision/language model unavailable. Current fallback uses explicit image purpose and measured colors; it does not semantically understand the reference.'}</p><small>{data.capabilities.prompt_interpretation?.verification}</small></div>
-                  <label className="studio-field">
-                    Asset name
-                    <input
-                      value={draft.name}
-                      onChange={(e) => change({ name: e.target.value })}
-                      placeholder="e.g. Archer Tower"
-                      maxLength={160}
+                  <label className="studio-field prompt-field">
+                    Describe your asset
+                    <textarea
+                      className="prompt-input"
+                      autoFocus
+                      placeholder="e.g. A medieval stone watchtower with a wooden roof and mossy bricks"
+                      value={draft.prompt}
+                      onChange={(e) => change({ prompt: e.target.value })}
                     />
+                    <small>Shape, materials, colours and style. One sentence is enough.</small>
                   </label>
-                  {draft.mode !== "Image" && (
-                    <label className="studio-field">
-                      Describe your asset
-                      <textarea
-                        className="prompt-input"
-                        placeholder="Hình dáng, vật liệu, màu sắc, phong cách…"
-                        value={draft.prompt}
-                        onChange={(e) => change({ prompt: e.target.value })}
-                      />
-                      <small>
-                        Choose whether the reference is a design to reconstruct or a color reference for a new subject.
-                      </small>
-                    </label>
-                  )}
-                  {draft.mode === "Text" ? (
-                    <details className="capability-note" open={!data.capabilities.text_to_concept}><summary>How automatic generation works</summary>
-                      <Icon name="Image" size={22} />
-                      <h3>A local strategy for your request</h3>
-                      <p>AFS uses your source image for reconstruction, creates a concept when required, or uses a supported Blender architecture profile. Required capabilities are checked before generation. No cloud inference.</p>
-                      <button
-                        className="secondary"
-                        onClick={() => change({ mode: "Text + Image" })}
-                      >
-                        Use a reference image
-                      </button>
-                    </details>
-                  ) : (
-                    <>
-                      <label
-                        className={`dropzone${source ? " has-image" : ""}`}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          upload(e.dataTransfer.files[0]);
+                  <div className="reference-field">
+                    <div className="reference-field-head"><span>Reference image <em>Optional</em></span>{source&&<button className="text-button" onClick={()=>change({source:''})}>Remove</button>}</div>
+                    <label
+                      className={`dropzone${source ? " has-image" : ""}`}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        upload(e.dataTransfer.files[0]);
+                      }}
+                    >
+                      {source ? (
+                        <img src={apiUrl(source.url)} alt="Selected reference image" />
+                      ) : (
+                        <>
+                          <Icon name="Upload" size={22} />
+                          <strong>Drop an image or click to browse</strong>
+                          <span>PNG, JPG, WebP · or import a GLB</span>
+                        </>
+                      )}
+                      <input
+                        aria-label="Upload concept image"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,.glb"
+                        disabled={busy}
+                        onChange={(e) => {
+                          upload(e.target.files?.[0]);
+                          e.target.value = "";
                         }}
-                      >
-                        {source ? (
-                          <img
-                            src={apiUrl(source.url)}
-                            alt="Ảnh reference đang chọn"
-                          />
-                        ) : (
-                          <>
-                            <Icon name="Upload" size={28} />
-                            <strong>Drop your concept here</strong>
-                            <span>or browse · PNG, JPG, WebP / import GLB</span>
-                          </>
-                        )}
-                        <input
-                          aria-label="Upload concept image"
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp,.glb"
-                          disabled={busy}
-                          onChange={(e) => {
-                            upload(e.target.files?.[0]);
-                            e.target.value = "";
-                          }}
-                        />
-                        {source && (
-                          <span className="replace-image">Replace image</span>
-                        )}
-                      </label>
+                      />
+                      {source && <span className="replace-image">Replace image</span>}
+                    </label>
+                    {data.artifacts.some((a) => ["concept", "reference"].includes(a.role)) && (
                       <label className="studio-field">
-                        Or choose a project reference
-                        <Select
-                          aria-label="Project reference"
-                          value={draft.source}
-                          onChange={(e) => change({ source: e.target.value })}
-                        >
-                          <option value="">Select image…</option>
+                        Or pick one from this project
+                        <Select aria-label="Project reference" value={draft.source} onChange={(e) => change({ source: e.target.value })}>
+                          <option value="">No reference</option>
                           {data.artifacts
-                            .filter((a) =>
-                              ["concept", "reference"].includes(a.role),
-                            )
+                            .filter((a) => ["concept", "reference"].includes(a.role))
                             .map((a) => (
                               <option key={a.id} value={a.id}>
                                 {a.name}
@@ -1240,15 +1199,12 @@ export function Studio() {
                             ))}
                         </Select>
                       </label>
-                    </>
-                  )}
-                  {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new asset strategy. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates the requested new subject using reference colors and a supported local strategy. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / supported local strategy / Blender / GLB. The reference does not replace the requested subject; style fidelity remains reviewable.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
-                  <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
+                    )}
+                  </div>
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
                   </div>}
                   {createStep===2&&<div className="create-settings-step">
-                  <div className="create-input-recap"><div><strong>{draft.name.trim()||'New asset'}</strong><p>{draft.mode==='Image'?(source?.name||'Reference image'):draft.prompt}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
-                  <label className="studio-field result-count-field">Results to choose from<Select aria-label="Result count" value={draft.seeds.split(',').filter(s=>s.trim()).length} onChange={e=>{const count=Number(e.target.value);const value=Number(draft.seeds.split(',')[0]);const first=Number.isInteger(value)&&value>=0&&value<=4294967295?value:42;change({seeds:Array.from({length:count},(_,i)=>String((first+i)%4294967296)).join(',')});}}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select><small>One by default. Extra seeds share the GPU queue; source candidates stay in History.</small></label>
+                  <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <div className="generate-actions">
                     {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
                     <button
@@ -1266,20 +1222,12 @@ export function Studio() {
                       {candidate&&selectedAsset?"Refine this result":busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
                       <Icon name="Arrow" size={17} />
                     </button>
-                    <button
-                      className="quiet-button"
-                      disabled={busy || !draft.name.trim()}
-                      onClick={() =>
-                        run(async () => {
-                          await ensureAsset();
-                          await reload();
-                          setNotice("Asset draft đã lưu vào Library.");
-                        })
-                      }
-                    >
-                      Save draft to library
-                    </button>
                   </div>
+                  <details className="advanced create-advanced"><summary>Advanced options <span>Optional · defaults keep maximum quality</span></summary>
+                  <label className="studio-field">Asset name <input value={draft.name} onChange={(e) => change({ name: e.target.value })} placeholder={autoAssetName(draft.prompt)||"Named from your prompt"} maxLength={160}/></label>
+                  {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new asset strategy. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates the requested new subject using reference colors and a supported local strategy. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / supported local strategy / Blender / GLB. The reference does not replace the requested subject; style fidelity remains reviewable.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
+                  <label className="studio-field result-count-field">Results to choose from<Select aria-label="Result count" value={draft.seeds.split(',').filter(s=>s.trim()).length} onChange={e=>{const count=Number(e.target.value);const value=Number(draft.seeds.split(',')[0]);const first=Number.isInteger(value)&&value>=0&&value<=4294967295?value:42;change({seeds:Array.from({length:count},(_,i)=>String((first+i)%4294967296)).join(',')});}}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'result':'results'}</option>)}</Select><small>One by default. Extra seeds share the GPU queue; source candidates stay in History.</small></label>
+                  <details className="creative-reference"><summary>Game inspiration <span>Optional</span></summary><label className="studio-field">Reference game<input aria-label="Inspiration game" value={draft.inspirationGame||''} onChange={e=>change({inspirationGame:e.target.value})} placeholder="e.g. Warcraft, Age of Empires" maxLength={200}/></label><p>Saved as inspiration context, separately from your game Art Bible. No automatic style override or verified research is implied.</p></details>
                   <details className="generation-options"><summary>Generation options <span>{draft.quality} · {draft.engine==='auto'?'Auto engine':draft.engine}</span></summary><label className="studio-field">Architecture generation<Select aria-label="Architecture generation strategy" value={workflow.architecture_strategy||'ai_detail'} onChange={e=>changeWorkflow({architecture_strategy:e.target.value as 'ai_detail'|'procedural_blockout'})}><option value="ai_detail" data-description="Default quality route: generate a detailed concept when needed, then use local image-to-3D with native textures. Simple primitive assembly is never substituted. Artistic fidelity still needs review.">Detailed AI model (default)</option><option value="procedural_blockout" data-description="Optional structural layout study: simple authored castle components and procedural materials. Lower visual detail than the AI tower baseline. This is not a finished high-quality art asset.">Structural blockout (simple geometry)</option></Select><small>Detailed AI preserves the high-detail generation route. Blockout is a separate, explicitly chosen layout tool.</small></label><label className="studio-field"><span><input type="checkbox" checked={workflow.prompt_interpretation} onChange={e=>changeWorkflow({prompt_interpretation:e.target.checked})}/> Use local prompt understanding when available</span><small>Saved per game. CPU analysis translates the prompt and classifies image purpose before generation. Missing models use the visible deterministic fallback.</small></label>                  <div
                     className="studio-field"
                     role="group"
@@ -1443,6 +1391,22 @@ export function Studio() {
                     </p>
                   </details>
                   <details className="selective-export-history"><summary>Export settings · GLB Only by default</summary><BatchExportSettings key={projectId} projectId={projectId}/></details>
+                  <div className="create-advanced-actions">
+                    <button
+                      className="quiet-button"
+                      disabled={busy}
+                      onClick={() =>
+                        run(async () => {
+                          await ensureAsset();
+                          await reload();
+                          setNotice("Asset draft đã lưu vào Library.");
+                        })
+                      }
+                    >
+                      Save draft to library
+                    </button>
+                  </div>
+                  </details>
                   {(busy || activeJobs.some(job=>job.payload.asset_id===selectedAsset?.id)) && <ActivityIndicator label={busy?"Preparing local pipeline":"Local pipeline is running"} detail="Measured job stages appear in Jobs. You can leave this screen without losing progress."/>}
                   <p className="control-footnote">Local pipeline. Technical QA and exports run automatically in Auto mode. Artistic review stays optional and independent.</p>
                   </div>}
@@ -1501,7 +1465,7 @@ export function Studio() {
                             (j) => j.payload.asset_id === selectedAsset?.id,
                           )
                             ? "Local engine đang xử lý. Output thật sẽ xuất hiện sau khi kiểm chứng."
-                            : "Nhập concept và tạo một candidate để xem model 3D."}
+                            : "Press Generate and your 3D model appears here."}
                         </p>
                         <span>Orbit · inspect · compare · refine</span>
                       </div>

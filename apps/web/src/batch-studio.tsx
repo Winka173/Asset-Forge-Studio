@@ -5,8 +5,6 @@ import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
-import "./batch-spacing.css";
-import "./batch-action-polish.css";
 import { BatchReferences } from "./batch-references";
 
 type Reference = { id: string; name: string; role: string; url: string };

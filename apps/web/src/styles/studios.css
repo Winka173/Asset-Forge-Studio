@@ -1,0 +1,99 @@
+/* World, FX and Video studios share one structure: heading → controls card (left) → result card (right). */
+:is(.world-studio, .fx-studio, .video-studio) { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
+:is(.world-studio, .fx-studio, .video-studio) > * { margin: 0; }
+:is(.world-studio, .fx-studio, .video-studio) > header, .world-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; padding: 0; border: 0; background: none; }
+:is(.world-studio, .fx-studio, .video-studio) > header > div:first-child, .world-heading > div:first-child { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 820px; }
+:is(.world-studio, .fx-studio, .video-studio) > header h2, .world-heading h2 { font-size: var(--fs-2xl); }
+:is(.world-studio, .fx-studio, .video-studio) > header p { font-size: var(--fs-md); }
+:is(.world-studio, .fx-studio, .video-studio) textarea { min-height: 120px; }
+:is(.world-studio, .fx-studio, .video-studio) .studio-field > small { color: var(--text-3); font-weight: 400; }
+.studio-card, .world-studio .create-controls, .world-result, .fx-studio-input, .fx-preview, .cinematic-layout > *, .cinematic-shot-workspace > *, .cinematic-results, .cinematic-inputs {
+  display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; padding: var(--sp-5);
+  border: 1px solid var(--border); border-radius: var(--r-xl); background: var(--surface-1);
+}
+:is(.world-studio .create-controls, .world-result, .fx-studio-input, .fx-preview, .cinematic-layout > *, .cinematic-results, .cinematic-inputs) > * { margin: 0; }
+
+/* World */
+.world-notice { padding: var(--sp-3) var(--sp-4); border-radius: var(--r-md); background: var(--surface-2); color: var(--text-2); font-size: var(--fs-sm); }
+.world-steps, [aria-label$="stages"] { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.world-studio .create-workspace { grid-template-columns: minmax(300px, 32%) minmax(0, 1fr); gap: var(--sp-5); }
+.world-primary-actions { display: flex; flex-direction: column; gap: var(--sp-2); }
+.world-primary-actions > .primary { width: 100%; min-height: 44px; }
+.world-primary-actions > small, .world-options small { color: var(--text-3); }
+.world-options > :not(summary), .world-json > :not(summary), .world-output-files > :not(summary) { margin-top: var(--sp-3); }
+.world-dimensions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); }
+textarea.world-plan-json { font-family: var(--font-mono); font-size: var(--fs-xs); min-height: 220px; }
+.world-job { padding: var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); font-size: var(--fs-sm); color: var(--text-2); }
+.world-result { position: sticky; top: calc(var(--topbar-h) + var(--sp-4)); padding: 0; overflow: hidden; gap: 0; }
+.world-result > * { padding-left: var(--sp-5); padding-right: var(--sp-5); }
+.world-result-toolbar { display: flex; align-items: flex-end; gap: var(--sp-3); flex-wrap: wrap; padding-top: var(--sp-4); padding-bottom: var(--sp-3); }
+.world-result-toolbar > .studio-field { flex: 1 1 220px; }
+.world-preview-tabs { display: flex; gap: var(--sp-1); padding-bottom: var(--sp-3); border-bottom: 1px solid var(--border); }
+.world-preview-tabs button { min-height: 32px; background: transparent; border-color: transparent; color: var(--text-2); }
+.world-preview-tabs button:is([aria-pressed="true"], [aria-selected="true"], .selected) { background: var(--surface-3); color: var(--text); }
+.world-result > img.world-preview { width: 100%; max-height: 640px; object-fit: contain; padding: 0; background: var(--bg); }
+.world-preview-empty { display: grid; place-items: center; min-height: 380px; margin: var(--sp-4) var(--sp-5); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); color: var(--text-3); text-align: center; }
+.world-result > details { margin: var(--sp-3) var(--sp-5) 0; padding: 0; }
+.world-result .export-files { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: flex-end; padding-top: var(--sp-3); padding-bottom: var(--sp-3); }
+.world-scope { padding-bottom: var(--sp-4); color: var(--text-3); font-size: var(--fs-xs); }
+.world-layout-preview { position: relative; background: var(--bg); }
+.world-layout-caption { color: var(--text-3); font-size: var(--fs-xs); }
+.world-layout-legend { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); color: var(--text-2); font-size: var(--fs-xs); }
+
+/* FX */
+.fx-studio-layout { display: grid; grid-template-columns: minmax(300px, 32%) minmax(0, 1fr); gap: var(--sp-5); align-items: start; }
+.fx-hint { color: var(--text-3); font-size: var(--fs-sm); }
+button.fx-generate { width: 100%; min-height: 44px; }
+.fx-job-status { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); font-size: var(--fs-sm); }
+.fx-busy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: afs-pulse 1.5s ease-in-out infinite; }
+.fx-preview { position: sticky; top: calc(var(--topbar-h) + var(--sp-4)); }
+.fx-preview-controls { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.fx-frame { aspect-ratio: 16 / 9; display: grid; place-items: center; overflow: hidden; border-radius: var(--r-lg); background: var(--bg); text-align: center; color: var(--text-3); }
+.fx-frame img { width: 100%; height: 100%; object-fit: contain; }
+.fx-timeline { display: flex; align-items: center; gap: var(--sp-2); }
+.fx-timeline input[type="range"] { flex: 1; }
+.fx-alternatives { display: flex; flex-direction: column; gap: var(--sp-2); }
+.fx-alternatives > div { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--sp-2); }
+.fx-alternatives button { flex-direction: column; height: auto; padding: 4px; }
+.fx-alternatives button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.fx-alternatives img { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: var(--r-sm); }
+.fx-downloads { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+
+/* Video / cinematic */
+.cinematic-actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+footer.cinematic-actions { justify-content: flex-end; padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+.cinematic-layout { display: grid; grid-template-columns: minmax(260px, 300px) minmax(320px, 1fr) minmax(240px, 280px); gap: var(--sp-4); align-items: start; }
+.cinematic-layout > .cinematic-composer { padding: 0; overflow: hidden; }
+.cinematic-viewport { position: relative; height: 560px; overflow: hidden; background: radial-gradient(circle at 50% 35%, #1d1e23, var(--bg) 80%); }
+.cinematic-transform-tools { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-3); }
+label.cinematic-import { position: relative; display: flex; flex-direction: column; gap: 6px; color: var(--text-2); font-size: var(--fs-sm); }
+.cinematic-objects { display: flex; flex-direction: column; gap: var(--sp-1); max-height: 380px; overflow: auto; }
+.cinematic-objects > button { justify-content: flex-start; background: transparent; border-color: transparent; text-align: left; }
+.cinematic-objects > button:is([aria-pressed="true"], .selected) { background: var(--surface-3); }
+.cinematic-axes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); }
+.cinematic-shot-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--sp-4); align-items: start; }
+.cinematic-shot { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-2); }
+.cinematic-shot-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--sp-3); align-items: end; }
+.cinematic-results video { display: block; width: 100%; max-height: 650px; border-radius: var(--r-lg); background: #000; }
+a.cinematic-download { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--control-h); padding: 0 var(--sp-4); border-radius: var(--r-md); background: var(--accent); color: var(--text-inverse); font-weight: 600; }
+.cinematic-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--sp-3); }
+.cinematic-job { padding: var(--sp-3) var(--sp-4); border-radius: var(--r-md); background: var(--surface-2); font-size: var(--fs-sm); color: var(--text-2); }
+.cinematic-refine, .cinematic-edit-plan { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-1); }
+.cinematic-refine-examples { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+
+@media (max-width: 1250px) {
+  .cinematic-layout { grid-template-columns: 260px minmax(0, 1fr); }
+  .cinematic-layout > :last-child { grid-column: 1 / -1; }
+  .cinematic-shot-workspace { grid-template-columns: 1fr; }
+  .cinematic-viewport { height: 440px; }
+}
+@media (max-width: 1000px) {
+  .world-studio .create-workspace, .fx-studio-layout, .cinematic-layout { grid-template-columns: 1fr; }
+  .world-result, .fx-preview { position: static; }
+}
+
+/* Headers whose copy is not wrapped stack vertically. */
+:is(.world-studio, .fx-studio, .video-studio) > header:not(:has(> div)) { flex-direction: column; align-items: flex-start; gap: var(--sp-2); }
+nav[aria-label="Video creation steps"] { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+nav[aria-label="Video creation steps"] > button { border-radius: var(--r-full); min-height: 32px; background: var(--surface-1); color: var(--text-2); }
+nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-pressed="true"], [aria-selected="true"], .selected) { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent); }

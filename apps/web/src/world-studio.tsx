@@ -3,7 +3,6 @@ import {apiFetch,apiUrl} from './api';
 import {Select} from './select';
 import {ErrorNotice} from './error-notice';
 import {LayoutPreview,parseLayout,type LayoutPlan} from './world-layout';
-import './world-studio.css';
 type File={id:string;name:string;role:string;url:string;metadata:Record<string,unknown>};
 type Job={id:string;plan_id:string;status:string;error?:string;progress?:{stage:string}};
 type Saved={asset:{id:string;master_artifact_id?:string;settings:{current_world_plan_id?:string}};plans:{artifact:File;plan:LayoutPlan;approval_current:boolean}[];artifacts:File[];exports?:{artifact_id:string;files:{name:string;url:string}[];export_directory:string}[];jobs:Job[]};

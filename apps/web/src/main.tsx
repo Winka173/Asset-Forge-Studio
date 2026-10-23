@@ -9,6 +9,8 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/shell.css";
 import "./styles/app.css";
+import "./styles/studios.css";
+import "./styles/panels.css";
 import { bootDesktop } from "./desktop";
 
 bootDesktop().then(() => createRoot(document.getElementById("root")!).render(

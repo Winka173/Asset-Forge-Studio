@@ -160,7 +160,8 @@ button.generate-button:hover:not(:disabled)::after { opacity: 1; animation: afs-
 .preview-toolbar .segmented, .preview-toolbar .afs-select-trigger { background: rgb(22 23 26 / 0.85); backdrop-filter: blur(10px); }
 .preview-toolbar .afs-select-help-button { display: none; }
 .preview-toolbar > .afs-select { width: auto; flex: 0 0 auto; }
-.preview-toolbar .afs-select-trigger { width: auto; min-width: 128px; }
+.preview-toolbar .afs-select-trigger { width: auto; min-width: 112px; }
+.preview-toolbar { flex-wrap: nowrap; overflow-x: auto; justify-content: safe center; }
 .result-panel { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border-top: 1px solid var(--border); }
 .result-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
 .result-heading > .afs-select { max-width: 45%; }
@@ -309,24 +310,7 @@ button.job-main:hover:not(:disabled) { background: none; }
 
 /* Production uses the full canvas width; its internals live in production.css. */
 .studio-main.page-production { max-width: none; }
-.production-empty { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
 
-/* Library asset detail header */
-.library-management-heading { align-items: flex-end; margin: 0; }
-.library-management-heading > div:first-child { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); min-width: 0; }
-.library-management-heading h1 { margin: 0; overflow-wrap: anywhere; }
-.library-review-navigation { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
-.library-review-navigation > span { padding: 0 var(--sp-1); color: var(--text-2); font-variant-numeric: tabular-nums; }
-.library-management-heading > div:first-child > small { font-family: var(--font-mono); }
-.asset-management-actions { display: flex; align-items: flex-start; gap: var(--sp-2); flex-wrap: wrap; margin: 0; }
-.asset-management-actions button { flex: 0 0 auto; min-width: 0; }
-.library-detail-preview > details { margin: 0 var(--sp-4) var(--sp-2); }
-.library-detail-preview > details:last-child { margin-bottom: var(--sp-4); }
-.library-detail-inspector { display: flex; flex-direction: column; gap: var(--sp-3); padding-right: var(--sp-1); }
-.library-detail-inspector > * { margin-top: 0; margin-bottom: 0; }
-
-.library-asset-detail { display: flex; flex-direction: column; gap: var(--sp-5); }
-.library-asset-detail > * { margin-top: 0; margin-bottom: 0; }
 :is(.library-detail-inspector, .production-inspector) details, details.asset-requirements { padding: 0; }
 :is(.library-detail-inspector, .production-inspector) summary { min-height: 40px; padding-top: var(--sp-2); padding-bottom: var(--sp-2); }
 
@@ -335,9 +319,21 @@ button.job-main:hover:not(:disabled) { background: none; }
 span[data-current="true"] { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 :is(.video-studio, .world-studio) .afs-select { min-width: 0; }
 
-/* Production asset header: status line first, actions in one aligned row below. */
-.production-context-action { flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); background: var(--surface-2); }
-.production-context-action > .production-current-stage { flex: 1 1 100%; }
-.production-context-action .afs-quick-export { min-width: 0; }
-.production-context-action .afs-quick-export > small { max-width: 220px; }
-.production-context-action button { min-height: var(--control-h); }
+
+/* Minimal create flow: prompt + optional reference, then Generate; everything else lives in Advanced options. */
+.prompt-field > small { color: var(--text-3); font-weight: 400; }
+.reference-field { display: flex; flex-direction: column; gap: var(--sp-2); }
+.reference-field-head { display: flex; align-items: center; justify-content: space-between; min-height: 24px; color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; }
+.reference-field-head em { margin-left: var(--sp-2); color: var(--text-3); font-style: normal; font-weight: 400; }
+.reference-field .dropzone { min-height: 128px; padding: var(--sp-5); }
+.reference-field .dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.reference-field .dropzone svg { color: var(--text-3); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+.reference-field .dropzone:hover svg { color: var(--accent); transform: translateY(-2px); }
+.reference-field .dropzone strong { color: var(--text); font-weight: 500; }
+.reference-field .dropzone > span:not(.replace-image) { color: var(--text-3); font-size: var(--fs-sm); }
+.reference-field .dropzone.has-image { height: 200px; padding: 0; animation: afs-pop var(--dur-slow) var(--ease); }
+.create-input-recap > img { width: 56px; height: 56px; flex-shrink: 0; object-fit: cover; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--surface-2); }
+.create-advanced > summary span { margin-left: auto; color: var(--text-3); font-size: var(--fs-xs); font-weight: 400; }
+.create-advanced[open] > summary { border-bottom: 1px solid var(--border); }
+.create-advanced > details { background: var(--surface-2); }
+.create-advanced-actions { display: flex; justify-content: flex-end; }

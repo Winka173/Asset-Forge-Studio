@@ -88,7 +88,8 @@ button:is(.btn-danger, .btn-warning, .btn-success, .btn-info, .btn-accent, [clas
 }
 button:is(.btn-danger, .btn-warning, .btn-success, .btn-info, .btn-accent, [class*="danger"]):disabled { color: var(--text-3); background: var(--surface-2); border-color: var(--border); opacity: 0.7; }
 
-input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea {
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea) {
+  font-weight: 400;
   width: 100%; min-height: var(--control-h); padding: 0 var(--sp-3);
   border: 1px solid var(--border-strong); border-radius: var(--r-md);
   background: var(--surface-1); color: var(--text); font-size: var(--fs-base);
@@ -96,8 +97,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
 }
 textarea { padding: var(--sp-2) var(--sp-3); min-height: 88px; line-height: 1.55; resize: vertical; }
 input::placeholder, textarea::placeholder { color: var(--text-3); }
-input:hover:not(:disabled):not(:focus), select:hover:not(:disabled), textarea:hover:not(:disabled):not(:focus) { border-color: #41444c; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+:where(input:hover:not(:disabled):not(:focus), select:hover:not(:disabled), textarea:hover:not(:disabled):not(:focus)) { border-color: #41444c; }
+:where(input, select, textarea):focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 input:disabled, select:disabled, textarea:disabled { opacity: 0.5; cursor: not-allowed; }
 input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 input[type="range"] { width: 100%; accent-color: var(--accent); }

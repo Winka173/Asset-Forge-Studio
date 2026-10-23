@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { apiFetch, apiUrl } from './api';
 import { Select } from './select';
 import { isDesktop } from './desktop';
-import './export-settings.css';
 
 export type ExportSettings = {preset:'glb_only'|'unity'|'unreal'|'full_source'|'custom';glb:boolean;manifest:boolean;zip:boolean;fbx:boolean;blend:boolean;textures:boolean;lods:boolean;high_poly:boolean;unity_package:boolean;unreal_package:boolean;output_directory:string|null};
 export const DEFAULT_EXPORT_SETTINGS:ExportSettings={preset:'glb_only',glb:true,manifest:true,zip:false,fbx:false,blend:false,textures:false,lods:false,high_poly:false,unity_package:false,unreal_package:false,output_directory:null};

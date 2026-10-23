@@ -4,7 +4,6 @@ import {apiUrl} from './api';
 import {Select} from './select';
 import {ErrorNotice} from './error-notice';
 import {managementCall} from './asset-management';
-import './fx-studio.css';
 type Artifact={id:string;role:string;name:string;url:string;metadata:{job_id?:string;candidate_group?:string;candidate_index?:number;candidate_count?:number}};
 type Recipe={project_id:string;name:string;prompt:string;element:string;duration:number;radius:number;trail_lifetime:number;intensity:number;segments:number;particle_count:number;seed:number};
 type Job={id:string;status:string;error?:string;progress?:{stage:string};payload:{artifact_id:string;asset_id:string}};

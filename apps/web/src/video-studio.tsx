@@ -3,7 +3,6 @@ import {useEffect,useRef,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
 import {Select} from './select';
 import {SceneComposer,type SceneObject,type Source} from './scene-composer';
-import './video-studio.css';
 import {CinematicRefine} from './cinematic-refine';
 import {AudioDirector,type AudioState,type AudioSource} from './cinematic-audio';
 type Shot={id:string;name:string;duration:number;movement:'orbit'|'dolly';target_id:string|null;distance:number;elevation:number;azimuth:number;amount:number;source_start_frame?:number;motion_duration?:number;look?:'inherit'|'violet_reveal'};
