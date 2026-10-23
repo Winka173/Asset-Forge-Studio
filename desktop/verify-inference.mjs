@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
 import assert from 'node:assert/strict';
+import {fillAssetName} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const run=path.join(root,'.local/desktop-inference',new Date().toISOString().replaceAll(/[:.]/g,'-'));
 fs.mkdirSync(path.join(run,'config'),{recursive:true});
@@ -26,8 +27,8 @@ async function close(){await page.evaluate(()=>window.__TAURI__.core.invoke('des
 try{
  await launch();
  await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();
- await page.getByRole('tab',{name:'Text + Image',exact:true}).click();
- await page.getByLabel('Asset name',{exact:true}).fill('Archer Tower Maximum Single QA');
+ 
+ await fillAssetName(page,'Archer Tower Maximum Single QA');
  const prompt='Archer Tower T3 Runavelle. Supplied concept reference. Single and Batch Maximum reproducibility benchmark; technical QA only.';
  await page.locator('.prompt-input').fill(prompt);
  const imported=page.waitForResponse(r=>r.url().includes('/api/import/reference')&&r.request().method()==='POST');

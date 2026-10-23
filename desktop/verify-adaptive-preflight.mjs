@@ -1,6 +1,7 @@
 // Negative UI capability injection only; generation/export remain real backend jobs.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import crypto from 'node:crypto';import {spawn} from 'node:child_process';
+import {fillAssetName,toGenerateStep} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..'),run=path.join(root,'.local/adaptive-preflight-native',new Date().toISOString().replaceAll(/[:.]/g,'-')),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
 function configure(library){fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library,blender:null,setup_complete:true}));}
 configure(path.join(run,'Library'));
@@ -16,8 +17,8 @@ try{
  await api('/api/automation/projects/'+project.id,{prompt_interpretation:false,architecture_strategy:'procedural_blockout'});
  const output=path.join(run,'GameAssets');fs.mkdirSync(output,{recursive:true});await api('/api/export-profiles/projects/'+project.id,{preset:'glb_only',manifest:true,output_directory:output});
  await page.route(url=>url.pathname==='/api/studio',async route=>{try{const r=await route.fetch(),body=await r.json();body.capabilities.text_to_concept=false;body.capabilities.image_to_3d=false;capabilityInjections++;await route.fulfill({response:r,json:body});}catch{report.interruptedCapabilityRequests=(report.interruptedCapabilityRequests||0)+1;await route.abort().catch(()=>{});}});
- await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.getByRole('link',{name:'Create',exact:true}).click();await page.getByRole('button',{name:'Single asset One prompt',exact:false}).click();await page.getByRole('tab',{name:'Text',exact:true}).click();
- await page.locator('.prompt-input').fill('Create one castle with four corner towers');await page.getByLabel('Asset name',{exact:true}).fill('Castle / no concept engine needed');await page.getByRole('button',{name:'Continue to generation',exact:true}).click();
+ await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.getByRole('link',{name:'Create',exact:true}).click();await page.getByRole('button',{name:'Single asset One prompt',exact:false}).click();
+ await page.locator('.prompt-input').fill('Create one castle with four corner towers');await fillAssetName(page,'Castle / no concept engine needed');await toGenerateStep(page);
  const generate=page.getByRole('button',{name:'Generate & export asset',exact:true});await generate.waitFor();assert(await generate.isEnabled());assert(capabilityInjections>0);await page.screenshot({path:path.join(run,'auto-preflight-not-disabled-by-optional-engine.png'),fullPage:true});
  const response=page.waitForResponse(r=>r.url().endsWith('/api/automation/single')&&r.request().method()==='POST');await generate.click();const submitted=await response;assert(submitted.ok(),await submitted.text());const request=await submitted.json();let completed;
  for(let n=0;n<600;n++){const b=await api('/api/batches/'+request.batch_id),state=b.items[0].automation;if(['failed','blocked'].includes(state.status))throw Error(JSON.stringify(state));if(state.status==='exported'){completed=b;break;}await sleep(1000);}

@@ -1,6 +1,7 @@
 // Actual packaged app: automatic import, visible GenerateAll, fresh Create, selective GLB and restart.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import crypto from 'node:crypto';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';
+import {readAssetName} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..'),stamp=new Date().toISOString().replaceAll(/[:.]/g,'-'),run=path.join(root,'.local/auto-native',stamp),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
 const exe=process.env.AFS_SMOKE_EXE||path.join(root,'dist/windows/expansion/latest/Asset Forge Studio Expansion.exe');
 fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(run,'Library'),blender:null,setup_complete:true}));
@@ -25,7 +26,7 @@ try{
  const glb=exported.files.find(f=>f.name.endsWith('.glb'));const delivered=Buffer.from(await(await fetch(session.api_base+glb.url,{headers:{'X-AFS-Token':session.api_token}})).arrayBuffer());assert.equal(crypto.createHash('sha256').update(delivered).digest('hex'),crypto.createHash('sha256').update(bytes).digest('hex'));assert(fs.existsSync(exported.project_manifest));
  const before=(await api('/api/jobs')).length;const again=await api(`/api/export-profiles/assets/${model.id}`,{artifact_id:artifact.id});assert.equal(again.id,exported.id);assert.equal((await api('/api/jobs')).length,before);
  await page.screenshot({path:path.join(run,'glb-only-export.png'),fullPage:true,animations:'disabled'});await page.getByRole('button',{name:'Close dialog',exact:true}).click();
- await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();await page.waitForFunction(()=>!location.hash.includes('/'));assert.equal(await page.getByLabel('Asset name',{exact:true}).inputValue(),'');assert.equal(await page.locator('.prompt-input').inputValue(),'');report.checks.push({name:'native_real_textured_glb_selective_export_hash_manifest_no_inference_and_create_new_draft',passed:true,export_id:exported.id});
+ await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();await page.waitForFunction(()=>!location.hash.includes('/'));assert.equal(await readAssetName(page),'');assert.equal(await page.locator('.prompt-input').inputValue(),'');report.checks.push({name:'native_real_textured_glb_selective_export_hash_manifest_no_inference_and_create_new_draft',passed:true,export_id:exported.id});
  // Real queue stages can be paused/closed/reopened without running GPU work during shell QA.
  const selected=batch.items.slice(0,3).map(i=>i.asset_id);await api(`/api/batches/${batch.id}/run`,{selected_ids:selected,automatic:true});await api(`/api/batches/${batch.id}/control`,{action:'pause'});
  // If the real worker already admitted a concept, cancel this isolated shell QA run rather than claim stage pause.

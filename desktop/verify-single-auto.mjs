@@ -1,6 +1,7 @@
 // Real native Single Auto text -> concept -> local 3D -> Blender -> GLB delivery.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import crypto from 'node:crypto';
+import {fillAssetName} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..'),stamp=new Date().toISOString().replaceAll(/[:.]/g,'-'),run=path.join(root,'.local/single-auto-native',stamp),config=path.join(run,'config'),game=path.join(run,'GameAssets');fs.mkdirSync(config,{recursive:true});fs.mkdirSync(game);
 fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(run,'Library'),blender:null,setup_complete:true}));
 const server=net.createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
@@ -12,7 +13,7 @@ async function close(){closing=true;await page.evaluate(()=>window.__TAURI__.cor
 try{
  await launch();const project=await api('/api/projects',{name:'Runavelle Single Auto real Maximum QA'});await api(`/api/export-profiles/projects/${project.id}`,{output_directory:game});await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.locator('.studio-sidebar').waitFor();await page.locator('.studio-sidebar nav a[aria-label="Create"]').click();
  const source=fs.readFileSync(path.join(process.env.USERPROFILE,'Downloads/Runavelle_V4_ALL_349_Model_Prompts.md'),'utf8');const headings=[...source.matchAll(/^# ([A-Z][A-Z0-9]*_[A-Za-z0-9_]+)[ \t]+[\u2014\u2013-][ \t]+([^\r\n]+)/gm)];const index=headings.findIndex(h=>h[1].includes('ARCHER_TOWER_T3'));assert(index>=0);const prompt=source.slice(headings[index].index,headings[index+1].index);report.source_id=headings[index][1];report.source_prompt_sha256=crypto.createHash('sha256').update(prompt).digest('hex');
- await page.getByLabel('Asset name',{exact:true}).fill('Archer Tower T3 / Single Auto Maximum QA');await page.locator('.prompt-input').fill(prompt);const response=page.waitForResponse(r=>r.url().endsWith('/api/automation/single'));await page.getByRole('button',{name:'Generate asset',exact:true}).click();const result=await(await response).json();batchId=result.batch_id;report.batch_id=batchId;report.asset_id=result.asset_id;
+ await fillAssetName(page,'Archer Tower T3 / Single Auto Maximum QA');await page.locator('.prompt-input').fill(prompt);const response=page.waitForResponse(r=>r.url().endsWith('/api/automation/single'));await page.getByRole('button',{name:'Generate asset',exact:true}).click();const result=await(await response).json();batchId=result.batch_id;report.batch_id=batchId;report.asset_id=result.asset_id;
  await page.screenshot({path:path.join(run,'single-submitted.png'),fullPage:true,animations:'disabled'});const started=Date.now();let completed;
  for(let n=0;n<2400;n++){
   const value=await api(`/api/batches/${batchId}`),item=value.items[0];completed=item;

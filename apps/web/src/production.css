@@ -193,3 +193,6 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
 .action-menu-list > button { justify-content: flex-start; border-color: transparent; background: transparent; text-align: left; }
 .action-menu-list > button:hover:not(:disabled) { border-color: transparent; }
 .action-menu-list > button:disabled { background: transparent; border-color: transparent; }
+
+/* Virtualised queue rows slide to their new position when the order changes. */
+.production-row { transition: top 320ms var(--ease); animation-duration: 180ms; }

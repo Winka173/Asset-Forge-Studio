@@ -1,6 +1,7 @@
 // Packaged UI + actual retained GLB export + real bounded CUDA allocation.
 import {chromium} from '../apps/web/node_modules/playwright/index.mjs';
 import fs from 'node:fs';import path from 'node:path';import net from 'node:net';import assert from 'node:assert/strict';import crypto from 'node:crypto';import {spawn} from 'node:child_process';
+import {openGpuPopover} from './ui-helpers.mjs';
 const root=path.resolve(import.meta.dirname,'..'),replay=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/tower_replay_real.json'),'utf8'));
 const run=path.join(root,'.local/workspace-polish-native',new Date().toISOString().replaceAll(/[:.]/g,'-')),config=path.join(run,'config');fs.mkdirSync(config,{recursive:true});
 fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library:path.join(replay.run,'Library'),blender:null,setup_complete:true}));
@@ -16,7 +17,7 @@ try{
  const get=async route=>{const r=await fetch(runtime.api_base+route,{headers:{'X-AFS-Token':runtime.api_token}});assert(r.ok);return r.json();};
  const jobsBefore=await get('/api/jobs');
  await page.evaluate(id=>localStorage.setItem('afs.project',id),replay.artifact.project_id);await page.reload();
- const meter=page.getByLabel('Live GPU measurements',{exact:true});await meter.waitFor();const firstSample=await meter.getAttribute('data-sampled-at');await page.waitForFunction(t=>document.querySelector('.gpu-live-details')?.dataset.sampledAt!==t,firstSample);
+ await openGpuPopover(page);const meter=page.getByLabel('Live GPU measurements',{exact:true});await meter.waitFor();const firstSample=await meter.getAttribute('data-sampled-at');await page.waitForFunction(t=>document.querySelector('.gpu-live-details')?.dataset.sampledAt!==t,firstSample);
  const baseline=Number(await meter.getAttribute('data-vram-mib'));let log='';
  load=spawn(path.join(root,'.venv/Scripts/python.exe'),['-u','scripts/verify_gpu_live_load.py'],{cwd:root,stdio:['ignore','pipe','pipe'],windowsHide:true});load.stdout.on('data',b=>log+=String(b));load.stderr.on('data',b=>log+=String(b));
  for(let n=0;n<90&&!log.includes('REAL_CUDA_ALLOCATION_READY');n++){assert.equal(load.exitCode,null,log);await sleep(500);}assert(log.includes('REAL_CUDA_ALLOCATION_READY'),log);
