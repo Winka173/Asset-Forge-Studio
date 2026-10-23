@@ -177,3 +177,19 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
   .production-explorer, .production-inspector { flex-basis: auto; max-height: 420px; }
   .production-center { overflow: visible; }
 }
+
+/* Asset actions: primary pause/resume + overflow menu */
+.production-asset-actions { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+.action-menu { position: relative; border: 0; background: transparent; }
+.action-menu > summary { min-height: var(--control-h); padding: 0 var(--sp-3); border: 1px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface-2); font-size: var(--fs-base); white-space: nowrap; }
+.action-menu > summary::before { display: none; }
+.action-menu > summary::after { content: "⋯"; margin-left: var(--sp-1); color: var(--text-3); }
+.action-menu[open] > summary { background: var(--surface-3); border-radius: var(--r-md); }
+.production-inspector .action-menu > .action-menu-list { margin: 0; }
+.action-menu-list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; display: flex; flex-direction: column; gap: 2px; min-width: 210px; padding: var(--sp-1);
+  border: 1px solid var(--border-strong); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: var(--shadow-lg); animation: afs-pop var(--dur) var(--ease);
+}
+.action-menu-list > button { justify-content: flex-start; border-color: transparent; background: transparent; text-align: left; }
+.action-menu-list > button:hover:not(:disabled) { border-color: transparent; }
+.action-menu-list > button:disabled { background: transparent; border-color: transparent; }

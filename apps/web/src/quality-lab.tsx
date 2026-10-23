@@ -32,15 +32,15 @@ type Status = {
   postprocess_review?: string;
 };
 const rubric: Record<string, string> = {
-  silhouette_proportions: "Silhouette / tỷ lệ",
-  roof_crenellations: "Mái / crenellations",
-  front_back_coherence: "Nhất quán trước–sau",
+  silhouette_proportions: "Silhouette / proportions",
+  roof_crenellations: "Roof / crenellations",
+  front_back_coherence: "Front–back consistency",
   texture_pbr: "Texture / PBR",
-  crystal_balcony_details: "Crystal / ban công",
-  defects_holes: "Lỗi / lỗ geometry",
-  uv_quality: "Chất lượng UV",
+  crystal_balcony_details: "Crystal / balcony",
+  defects_holes: "Geometry errors / holes",
+  uv_quality: "UV quality",
   game_camera: "Camera gameplay",
-  artist_judgment: "Đánh giá mỹ thuật",
+  artist_judgment: "Artistic assessment",
 };
 
 export function QualityLab({
@@ -116,7 +116,7 @@ export function QualityLab({
       await refresh();
       if (role === "golden") setGolden(item.id);
       if (role === "candidate") setCandidate(item.id);
-      setNotice(`Đã lưu ${file.name} · SHA-256 ${item.sha256.slice(0, 12)}`);
+      setNotice(`Saved ${file.name} · SHA-256 ${item.sha256.slice(0, 12)}`);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -142,7 +142,7 @@ export function QualityLab({
       });
       if (!res.ok) throw new Error(JSON.stringify((await res.json()).detail));
       setNotice(
-        "Đã lưu đánh giá của người review. Unity và gate sản xuất vẫn cần kiểm tra riêng.",
+        "Review saved. Unity and production gates still need separate checks.",
       );
     } catch (e) {
       setError(String(e));
@@ -190,11 +190,11 @@ export function QualityLab({
         </p>
         <p className="muted mono">SHA {item.sha256.slice(0, 20)}…</p>
         <a href={apiUrl(item.url)} download>
-          Tải GLB gốc
+          Download original GLB
         </a>
       </>
     ) : (
-      <div className="empty">Chưa nhập GLB. Không có model thay thế.</div>
+      <div className="empty">No GLB imported. No substitute model is shown.</div>
     );
   }
   return (
@@ -230,17 +230,17 @@ export function QualityLab({
               }
             }}
           >
-            ⌘ Kiểm tra môi trường
+            ⌘ Check environment
           </button>
         </nav>
         <div className="aside-note">
           <span className="dot" /> LOCAL ONLY
           <p>
-            Không inference cloud.
+            No cloud inference.
             <br />
-            Không phí theo lượt.
+            No per-run fees.
           </p>
-          <small>Chất lượng trước số lượng.</small>
+          <small>Quality before quantity.</small>
         </div>
       </aside>
       <main>
@@ -254,7 +254,7 @@ export function QualityLab({
           </div>
           <span className="badge">{status.gate_a}</span>
         </header>
-        <div className="gate-strip" aria-label="Các bước kiểm chứng chất lượng">
+        <div className="gate-strip" aria-label="Quality verification steps">
           {[
             ["01", "Benchmark", status.gate_a],
             [
@@ -285,12 +285,12 @@ export function QualityLab({
         <section id="compare">
           <div className="section-head">
             <div>
-              <h2>So sánh cùng góc nhìn</h2>
-              <p>Giữ nguyên scale gốc · ánh sáng trung tính · camera đồng bộ</p>
+              <h2>Same-view comparison</h2>
+              <p>Original scale · neutral lighting · synced camera</p>
             </div>
             <div className="tools">
               <Select
-                aria-label="Góc camera"
+                aria-label="Camera angle"
                 value={view}
                 onChange={(e) => setView(e.target.value)}
               >
@@ -339,7 +339,7 @@ export function QualityLab({
                     );
                   }}
                 >
-                  <option value="">Chưa có model</option>
+                  <option value="">No model yet</option>
                   {status.artifacts
                     .filter((a) => a.role === role)
                     .map((a) => (
@@ -362,17 +362,15 @@ export function QualityLab({
           <div className="model-cards">
             <article>
               {facts(golden)}
-              {picker("golden", "+ Nhập golden GLB", ".glb")}
+              {picker("golden", "+ Import golden GLB", ".glb")}
             </article>
             <article>
               {facts(candidate)}
-              {picker("candidate", "+ Nhập local GLB", ".glb")}
+              {picker("candidate", "+ Import local GLB", ".glb")}
             </article>
           </div>
           <p className="muted">
-            Viewer WebGL phục vụ kiểm tra tương tác. Benchmark chính thức dùng
-            Blender với cấu hình camera/đèn được lưu và duyệt riêng. Chưa có kết
-            luận tương đương Meshy.
+            The WebGL viewer is for interactive inspection. The official benchmark uses Blender with saved, separately approved camera and lighting. No Meshy-equivalence conclusion exists.
           </p>
         </section>
         <div className="lower">
@@ -380,11 +378,11 @@ export function QualityLab({
             <div className="section-head">
               <div>
                 <div className="eyebrow">SOURCE OF TRUTH</div>
-                <h2>Concept đã cung cấp</h2>
+                <h2>Provided concept</h2>
               </div>
               {picker(
                 "concept",
-                "Nhập ảnh mới",
+                "Import new image",
                 "image/png,image/jpeg,image/webp",
               )}
             </div>
@@ -401,17 +399,16 @@ export function QualityLab({
                 </p>
               </>
             ) : (
-              <p>Chưa có ảnh concept.</p>
+              <p>No concept image yet.</p>
             )}
             <p className="muted">
-              Ảnh một góc chưa chứng minh hình dạng mặt sau. Multi-view và
-              segmentation chưa kiểm thử.
+              A single view does not prove the back shape. Multi-view and segmentation are untested.
             </p>
           </section>
           <section id="review">
             <div className="eyebrow">HUMAN REVIEW REQUIRED</div>
             <h2>
-              {golden ? "Compare with the selected reference" : "Đánh giá độ bám concept"}
+              {golden ? "Compare with the selected reference" : "Concept fidelity assessment"}
             </h2>
             {!golden && (
               <p>
@@ -420,15 +417,14 @@ export function QualityLab({
               </p>
             )}
             <p>
-              1 = kém / sai đáng kể · 5 = đạt tiêu chí người review. Mỗi chiều
-              độc lập, không suy ra % tương đương.
+              1 = poor / clearly wrong · 5 = meets the reviewer criteria. Each dimension is independent; no equivalence percentage is inferred.
             </p>
             <label className="field">
-              Người review
+              Reviewer
               <input
                 value={reviewer}
                 onChange={(e) => setReviewer(e.target.value)}
-                placeholder="Tên người đánh giá"
+                placeholder="Reviewer name"
               />
             </label>
             <div className="score-grid">
@@ -454,11 +450,11 @@ export function QualityLab({
               ))}
             </div>
             <label className="field">
-              Defects / việc cần sửa
+              Defects / fixes needed
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Ví dụ: mái dính khối, thiếu crystal, mặt sau trống…"
+                placeholder="e.g. roof merged into the body, missing crystal, empty back side…"
               />
             </label>
             <div className="tools">
@@ -468,7 +464,7 @@ export function QualityLab({
                 }
                 onClick={() => saveReview("NEEDS_REVIEW")}
               >
-                Lưu review
+                Save review
               </button>
               <button
                 disabled={
@@ -479,14 +475,14 @@ export function QualityLab({
                 }
                 onClick={() => saveReview("APPROVED")}
               >
-                Duyệt visual
+                Visual review
               </button>
             </div>
           </section>
         </div>
         {environment && (
           <section>
-            <h2>Môi trường thực tế</h2>
+            <h2>Actual environment</h2>
             <pre>{JSON.stringify(environment, null, 2)}</pre>
           </section>
         )}

@@ -1,20 +1,20 @@
-.afs-activity { display:flex; align-items:center; gap:16px; padding:20px 20px; background:var(--surface-3); border:1px solid var(--border-strong); border-radius:var(--r-lg); color:var(--text); min-width:0; }
-.afs-activity-orbit { position:relative; display:block; flex:none; width:38px; height:38px; border:2px solid var(--border-strong); border-top-color:var(--border-strong); border-radius:50%; animation:afs-activity-orbit 1.6s linear infinite; }
-.afs-activity-orbit i { position:absolute; width:4px; height:4px; border-radius:50%; background:var(--success); }
-.afs-activity-orbit i:nth-child(1) { top:7px; left:9px; }
-.afs-activity-orbit i:nth-child(2) { right:7px; top:15px; }
-.afs-activity-orbit i:nth-child(3) { left:11px; bottom:7px; }
-.afs-activity-copy { display:flex; flex-direction:column; flex:1; gap:6px; min-width:0; }
-.afs-activity-copy > strong { font-size:13px; font-weight:600; line-height:1.5; color:var(--text); }
-.afs-activity-copy > span { font-size:12px; color:var(--text-2); line-height:1.7; overflow-wrap:anywhere; }
-.afs-activity-track { height:3px; background:var(--surface-2); border-radius:var(--r-sm); overflow:hidden; margin-top:4px; }
-.afs-activity-track > span { display:block; height:100%; background:var(--success); border-radius:inherit; transition:width 300ms ease; }
-.afs-activity-track.is-indeterminate > span { width:26%; animation:afs-activity-travel 2s ease-in-out infinite; }
-.afs-activity-value { color:var(--success); font-size:12px; font-variant-numeric:tabular-nums; }
-.afs-activity-compact { padding:12px 12px; gap:12px; border-radius:var(--r-md); }
-.afs-activity-compact .afs-activity-orbit { width:20px; height:20px; }
-.afs-activity-compact .afs-activity-orbit i { display:none; }
-.afs-activity-compact .afs-activity-copy { gap:2px; }
-@keyframes afs-activity-orbit { to { transform:rotate(360deg); } }
-@keyframes afs-activity-travel { 0% { transform:translateX(-110%); } 100% { transform:translateX(490%); } }
-@media(prefers-reduced-motion:reduce) { .afs-activity-orbit,.afs-activity-track.is-indeterminate > span { animation:none; } .afs-activity-track > span { transition:none; } }
+/* Live stage indicator: spinner + label + measured or indeterminate track. */
+.afs-activity { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-2); color: var(--text); animation: afs-rise var(--dur-slow) var(--ease); }
+.afs-activity-orbit { position: relative; display: block; flex: none; width: 32px; height: 32px; border: 2px solid var(--surface-4); border-top-color: var(--accent); border-radius: 50%; animation: afs-activity-orbit 0.9s linear infinite; }
+.afs-activity-orbit i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0.6; }
+.afs-activity-orbit i:nth-child(1) { top: 6px; left: 8px; }
+.afs-activity-orbit i:nth-child(2) { right: 6px; top: 13px; }
+.afs-activity-orbit i:nth-child(3) { left: 10px; bottom: 6px; }
+.afs-activity-copy { display: flex; flex-direction: column; flex: 1; gap: var(--sp-1); min-width: 0; }
+.afs-activity-copy > strong { font-size: var(--fs-base); font-weight: 600; }
+.afs-activity-copy > span { color: var(--text-2); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.afs-activity-track { height: 4px; margin-top: var(--sp-1); overflow: hidden; border-radius: var(--r-full); background: var(--surface-4); }
+.afs-activity-track > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent-press), var(--accent-hover)); transition: width 0.4s var(--ease); }
+.afs-activity-track.is-indeterminate > span { width: 30%; animation: afs-activity-travel 1.6s var(--ease) infinite; }
+.afs-activity-value { color: var(--accent); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.afs-activity-compact { padding: var(--sp-2) var(--sp-3); gap: var(--sp-3); border-radius: var(--r-md); }
+.afs-activity-compact .afs-activity-orbit { width: 18px; height: 18px; }
+.afs-activity-compact .afs-activity-orbit i { display: none; }
+.afs-activity-compact .afs-activity-copy { gap: 2px; }
+@keyframes afs-activity-orbit { to { transform: rotate(360deg); } }
+@keyframes afs-activity-travel { from { transform: translateX(-110%); } to { transform: translateX(360%); } }

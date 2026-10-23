@@ -1,3 +1,34 @@
-.desktop-startup{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#23302566,transparent 65%),#0e1311;padding:40px;color:var(--text);font:14px 'var(--font-sans)',var(--font-sans)}.desktop-startup-panel,.desktop-setup-panel{max-width:650px;width:100%;padding:40px;border:1px solid var(--border-strong);border-radius:var(--r-xl);background:var(--surface-2);box-shadow:0 25px 120px #0005}.desktop-overline{font-size:10px;letter-spacing:2px;color:var(--text-2)}.desktop-startup h1{font-size:34px;font-weight:500;letter-spacing:-1px;margin:20px 0}.desktop-startup p{font-size:13px;line-height:1.9;color:var(--text-2)}.desktop-startup-state{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text-3);margin-top:32px}.desktop-startup-state i{width:8px;height:8px;border-radius:50%;background:var(--success)}.desktop-startup-state .failed{background:var(--danger)}.desktop-startup button{font-size:12px;border:1px solid var(--border-strong);background:var(--surface-3);color:var(--text-2);padding:12px 16px;border-radius:var(--r-sm);margin:16px 8px 0 0;cursor:pointer}.desktop-startup .desktop-primary{background:var(--success);color:var(--text-inverse);border-color:var(--border-strong);font-weight:600}.desktop-setup-checks{margin:24px 0;border-top:1px solid var(--border-strong)}.desktop-setup-checks>div{display:flex;justify-content:space-between;gap:32px;padding:12px 0;border-bottom:1px solid var(--border-strong);font-size:11px;line-height:1.7}.desktop-setup-checks span{color:var(--text-3);min-width:100px}.desktop-setup-checks strong{font-weight:400;color:var(--success);text-align:right;overflow-wrap:anywhere;max-width:75%}.desktop-setup-actions{display:flex;flex-wrap:wrap}.desktop-startup .desktop-setup-error{color:var(--danger);font-size:12px}.desktop-setup-panel>small{display:block;margin-top:24px;font-size:10px;line-height:1.8;color:var(--text-3)}.pulse{animation:desktop-pulse 1.7s ease-in-out infinite}@keyframes desktop-pulse{50%{opacity:.3}}@media(prefers-reduced-motion:reduce){.pulse{animation:none}}
-
-.desktop-checkpoint-exit{position:fixed;z-index:30000;right:24px;bottom:24px;width:min(420px,calc(100vw - 48px));box-sizing:border-box;padding:24px;background:var(--surface-2);color:var(--text);border-radius:var(--r-xl);box-shadow:0 12px 50px #0009;font:13px/1.7 var(--font-sans)}.desktop-checkpoint-exit p{color:var(--text)}.desktop-checkpoint-exit strong{font-size:14px}.desktop-checkpoint-exit button{padding:8px 16px;background:var(--accent);color:var(--text-inverse);border:0;border-radius:var(--r-md);font-weight:700;cursor:pointer}.desktop-checkpoint-exit[data-desktop-closing=waiting] strong::before{content:"";display:inline-block;width:9px;height:9px;margin-right:8px;border-radius:50%;background:var(--accent);animation:fx-pulse 1.5s ease-in-out infinite}@media(prefers-reduced-motion:reduce){.desktop-checkpoint-exit *::before{animation:none!important}}html[data-afs-motion=reduced] .desktop-checkpoint-exit *::before{animation:none!important}
+/* Native startup, first-run setup and checkpoint-exit surfaces (rendered before/around the React app). */
+.desktop-startup { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--sp-6); background: radial-gradient(ellipse at 50% 35%, var(--surface-2), var(--bg) 70%); color: var(--text); font-family: var(--font-sans); }
+.desktop-startup-panel, .desktop-setup-panel {
+  display: flex; flex-direction: column; gap: var(--sp-4); width: 100%; max-width: 620px; padding: var(--sp-10);
+  border: 1px solid var(--border-strong); border-radius: var(--r-xl); background: var(--surface-1); box-shadow: var(--shadow-lg); animation: afs-pop var(--dur-slow) var(--ease);
+}
+.desktop-startup-panel > *, .desktop-setup-panel > * { margin: 0; }
+.desktop-overline { color: var(--text-3); font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.desktop-startup h1 { font-size: var(--fs-3xl); font-weight: 600; letter-spacing: -0.02em; }
+.desktop-startup p { color: var(--text-2); font-size: var(--fs-md); line-height: 1.7; }
+.desktop-startup-state { display: flex; align-items: center; gap: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--border); color: var(--text-3); font-size: var(--fs-sm); }
+.desktop-startup-state i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.desktop-startup-state .failed { background: var(--danger); }
+.desktop-startup button { min-height: var(--control-h); }
+.desktop-startup button.desktop-primary { background: var(--accent); border-color: var(--accent); color: var(--text-inverse); font-weight: 600; }
+.desktop-startup button.desktop-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.desktop-setup-checks { display: flex; flex-direction: column; border-top: 1px solid var(--border); }
+.desktop-setup-checks > div { display: flex; justify-content: space-between; gap: var(--sp-6); padding: var(--sp-3) 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
+.desktop-setup-checks span { min-width: 100px; color: var(--text-3); }
+.desktop-setup-checks strong { max-width: 75%; color: var(--success); font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+.desktop-setup-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.desktop-startup .desktop-setup-error { color: var(--danger); font-size: var(--fs-sm); }
+.desktop-setup-panel > small { color: var(--text-3); font-size: var(--fs-xs); line-height: 1.6; }
+.pulse { animation: afs-pulse 1.7s ease-in-out infinite; }
+.desktop-checkpoint-exit {
+  position: fixed; z-index: 30000; right: var(--sp-6); bottom: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-3);
+  width: min(420px, calc(100vw - 48px)); padding: var(--sp-5); border: 1px solid var(--border-strong); border-radius: var(--r-xl);
+  background: var(--surface-2); box-shadow: var(--shadow-lg); color: var(--text); animation: afs-toast-in var(--dur-slow) var(--ease);
+}
+.desktop-checkpoint-exit > * { margin: 0; }
+.desktop-checkpoint-exit strong { display: flex; align-items: center; font-size: var(--fs-md); }
+.desktop-checkpoint-exit p { color: var(--text-2); font-size: var(--fs-sm); }
+.desktop-checkpoint-exit button { align-self: flex-start; background: var(--accent); border-color: var(--accent); color: var(--text-inverse); font-weight: 600; }
+.desktop-checkpoint-exit[data-desktop-closing=waiting] strong::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: var(--sp-2); border-radius: 50%; background: var(--accent); animation: afs-pulse 1.2s ease-in-out infinite; }

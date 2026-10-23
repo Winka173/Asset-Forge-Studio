@@ -15,7 +15,7 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     const div = host.current!;
     let renderer: T.WebGLRenderer;
     try { renderer = new T.WebGLRenderer({antialias: true, preserveDrawingBuffer: true}); }
-    catch { onError('Không khởi tạo được WebGL. Hãy bật hardware acceleration.'); return; }
+    catch { onError('Could not start WebGL. Enable hardware acceleration.'); return; }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.toneMapping = T.NoToneMapping;
@@ -121,5 +121,5 @@ export function CompareViewer({ left, right, conceptUrl, view, wireframe, onErro
     });
   }, [background, lighting, loaded, single]);
   const motions=useMemo(()=>motion.current.filter(Boolean),[loaded,left,right,single]);
-  return <div className={`viewer${single ? ' viewer-single' : ''}${motions.some(m=>m.clips.length||m.bones.length)?' viewer-has-motion':''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Hai GLB đồng bộ camera, scale giữ nguyên'}>{!loadFailed && loaded < (single ? Number(Boolean(right||left)) : Number(Boolean(left))+Number(Boolean(right))) && <span className="viewer-loading" role="status">Loading model and textures...</span>}{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Ảnh concept, chưa có Meshy golden GLB"/><span>Ảnh tham chiếu · chưa có golden GLB</span></div>}<MotionPreview models={motions} onFit={()=>runtime.current?.fit()}/><span className="viewport-caption">Y-up · mét · {single ? 'model preview' : 'shared fit, giữ scale tương đối'} · kéo để orbit · cuộn để zoom</span></div>;
+  return <div className={`viewer${single ? ' viewer-single' : ''}${motions.some(m=>m.clips.length||m.bones.length)?' viewer-has-motion':''}`} ref={host} data-loaded={loaded} data-textures={textures} aria-label={single ? 'Model 3D, orbit zoom pan' : 'Two GLBs with synced camera, original scale'}>{!loadFailed && loaded < (single ? Number(Boolean(right||left)) : Number(Boolean(left))+Number(Boolean(right))) && <span className="viewer-loading" role="status">Loading model and textures...</span>}{!left && conceptUrl && <div className="concept-overlay"><img src={conceptUrl} alt="Concept image, no Meshy golden GLB yet"/><span>Reference image · no golden GLB yet</span></div>}<MotionPreview models={motions} onFit={()=>runtime.current?.fit()}/><span className="viewport-caption">Y-up · metres · {single ? 'model preview' : 'shared fit, relative scale kept'} · drag to orbit · scroll to zoom</span></div>;
 }

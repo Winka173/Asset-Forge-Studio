@@ -115,3 +115,16 @@ button.library-card-open:hover:not(:disabled) { background: transparent; border:
 }
 .library-management-heading .asset-management-actions > button { min-height: 40px; }
 .library-management-heading .afs-quick-export > small { text-align: center; }
+@media (max-width: 600px) {
+  .library-management-filters > .afs-select { flex: 1 1 calc(50% - var(--sp-2)); min-width: 0; }
+  .library-management-filters > input { flex-basis: 100%; min-width: 0; }
+}
+
+/* Selection bar floats at the bottom while assets are selected */
+.library-selection-bar[data-selected] {
+  position: fixed; bottom: var(--sp-5); left: calc(var(--sidebar-w) + var(--page-pad)); right: var(--page-pad); z-index: 25; border-color: var(--accent-line); background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+  backdrop-filter: blur(12px); box-shadow: var(--shadow-lg); animation: library-bar-up var(--dur-slow) var(--ease);
+}
+.library-selection-bar[data-selected] > span { color: var(--accent); font-weight: 600; }
+@keyframes library-bar-up { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.library-studio:has(.library-selection-bar[data-selected]) { padding-bottom: 96px; }

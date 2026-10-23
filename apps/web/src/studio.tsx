@@ -9,7 +9,7 @@ import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
+import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
@@ -310,6 +310,19 @@ export function Studio() {
     const mode: Draft["mode"] = draft.source ? (draft.prompt.trim() ? "Text + Image" : "Image") : "Text";
     if (draft.mode !== mode) setDraft((d) => ({ ...d, mode }));
   }, [draft.source, draft.prompt, draft.mode, loadedProject, projectId]);
+  const [quickPrompt, setQuickPrompt] = useState("");
+  const [toolsOpen, setToolsOpen] = useState(() => { try { return localStorage.getItem("afs.sidebar.tools") !== "closed"; } catch { return true; } });
+  const [gpuOpen, setGpuOpen] = useState(false);
+  const gpuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!gpuOpen) return;
+    const close = (event: MouseEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent ? event.key === "Escape" : !gpuRef.current?.contains(event.target as Node)) setGpuOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", close); };
+  }, [gpuOpen]);
   function toggleSidebar(next = !collapsed) {
     setCollapsed(next);
     localStorage.setItem("afs.sidebar", next ? "collapsed" : "expanded");
@@ -323,6 +336,15 @@ export function Studio() {
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
+  }, []);
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const command = (event as CustomEvent<string>).detail;
+      if (command === "toggle-sidebar") setCollapsed((value) => { localStorage.setItem("afs.sidebar", value ? "expanded" : "collapsed"); return !value; });
+      if (command === "pause-all") request("/api/production/control", { action: "pause", scope: "all" }).then(() => setNotice("Pause requested. Active stages finish at their safe checkpoint.")).catch((e) => setError(String(e)));
+    };
+    addEventListener("afs-command", handler);
+    return () => removeEventListener("afs-command", handler);
   }, []);
   projectRef.current = projectId;
   const project = data.project || data.projects.find((p) => p.id === projectId);
@@ -626,17 +648,17 @@ export function Studio() {
         return;
       }
       if (!source || draft.mode==='Text'||(draft.mode==='Text + Image'&&(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'&&source.metadata.origin!=='sdxl_local')) {
-        if(!data.capabilities.text_to_concept)throw new Error('SDXL local chưa sẵn sàng. Nhập ảnh concept để tiếp tục.');
-        if(!draft.prompt.trim())throw new Error('Nhập prompt để tạo concept.');
+        if(!data.capabilities.text_to_concept)throw new Error('Local SDXL is not ready. Add a concept image to continue.');
+        if(!draft.prompt.trim())throw new Error('Enter a prompt to create a concept.');
         const model=await ensureAsset();
         const body={asset_id:model.id,prompt:draft.prompt,quality:draft.quality,seed:Number(draft.seeds.split(',')[0]),style_reference_ids:draft.mode==='Text + Image'&&source?[source.id]:[]};
         const key=`afs.concept.request.${projectId}`,serialized=JSON.stringify(body),previous=JSON.parse(localStorage.getItem(key)||'null');
         const id=previous?.serialized===serialized?previous.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({serialized,id}));
         const job=await request<Job>('/api/studio/concept',{...body,request_id:id});
         change({assetId:model.id,source:'',conceptJobId:job.id});setPreviewTab('Concept');await reload();localStorage.setItem('afs.production.selection','job/'+job.id);navigate('Production');
-        setNotice('Đang tạo concept bằng SDXL local. Bạn cần duyệt ảnh trước khi dựng 3D.');return;
+        setNotice('Creating a concept with local SDXL. Approve the image before building 3D.');return;
       }
-      if(sourceNeedsApproval)throw new Error('Duyệt concept trước khi tạo 3D.');
+      if(sourceNeedsApproval)throw new Error('Approve the concept before creating 3D.');
       const seeds = draft.seeds.split(",").map((s) => Number(s.trim()));
       if (
         !draft.seeds.trim() ||
@@ -644,7 +666,7 @@ export function Studio() {
         new Set(seeds).size !== seeds.length ||
         seeds.some((s) => !Number.isInteger(s) || s < 0 || s > 4294967295)
       )
-        throw new Error("Dùng 1–5 seed nguyên khác nhau từ 0 đến 4294967295.");
+        throw new Error("Use 1–5 distinct integer seeds between 0 and 4294967295.");
       const asset = await ensureAsset();
       const body = {
         asset_id: asset.id,
@@ -681,7 +703,7 @@ export function Studio() {
       setVersionId("");
       setPreviewTab("Model");
       setNotice(
-        `${result.jobs.length} job đã vào hàng đợi local. Bạn có thể rời trang; refresh không tạo thêm job.`,
+        `${result.jobs.length} jobs queued locally. You can leave this page; refreshing does not create more jobs.`,
       );
     });
   }
@@ -694,11 +716,11 @@ export function Studio() {
         const response=await apiFetch(`/api/import/candidate?project_id=${projectId}&asset_id=${asset.id}`,{method:'POST',body:form});
         if(!response.ok)throw new Error(JSON.stringify((await response.json()).detail));
         const model:Artifact=await response.json();await reload();setAssetId(asset.id);setVersionId(model.id);setPreviewTab('Model');
-        setNotice('Đã nhập GLB thật thành version mới trong Library. Model chưa được duyệt chất lượng.');
+        setNotice('Imported the GLB as a new Library version. Quality has not been reviewed.');
         return;
       }
       if (!file.type.startsWith("image/"))
-        throw new Error("Chọn ảnh PNG, JPG hoặc WebP.");
+        throw new Error("Choose a PNG, JPG or WebP image.");
       const form = new FormData();
       form.append("file", file);
       const res = await apiFetch(
@@ -814,13 +836,13 @@ export function Studio() {
       setModal(null);
       if (saved.id !== projectId) setProjectId(saved.id);
       else await reload();
-      setNotice("Project đã lưu trên máy.");
+      setNotice("Project saved locally.");
     });
   }
   async function exportAsset() {
     await run(async () => {
       if (!selectedAsset || !candidate)
-        throw new Error("Chọn version GLB thật để xuất.");
+        throw new Error("Choose a real GLB version to export.");
       const exportBody = {
         artifact_id: candidate.id,
         preset: exportPreset,
@@ -846,7 +868,7 @@ export function Studio() {
       await reload();
       if (result.job)
         setNotice(
-          `Export đang xử lý · job ${result.job.id.slice(0, 8)}. Xem file sau khi hoàn tất trong Jobs.`,
+          `Export in progress · job ${result.job.id.slice(0, 8)}. Files appear in Diagnostics when finished.`,
         );
     });
   }
@@ -856,7 +878,7 @@ export function Studio() {
         <button
           className="asset-visual"
           onClick={() => openAsset(asset)}
-          aria-label={`Mở ${asset.name}`}
+          aria-label={`Open ${asset.name}`}
         >
           {asset.thumbnail_url ? (
             <img
@@ -869,8 +891,8 @@ export function Studio() {
               <Icon name="Cube" size={44} />
               <span>
                 {asset.versions.length
-                  ? "Có model · mở để xem 3D"
-                  : "Chưa có output"}
+                  ? "Has a model · open to view in 3D"
+                  : "No output yet"}
               </span>
             </div>
           )}
@@ -889,7 +911,7 @@ export function Studio() {
           </button>
           <button
             className={`icon-button favorite${asset.favorite ? " on" : ""}`}
-            aria-label={`${asset.favorite ? "Bỏ" : "Thêm"} yêu thích ${asset.name}`}
+            aria-label={`${asset.favorite ? "Remove" : "Add"} favorite ${asset.name}`}
             onClick={() => updateAsset(asset, { favorite: !asset.favorite })}
           >
             <Icon name="Star" size={16} />
@@ -956,33 +978,16 @@ export function Studio() {
               </a>
             ))}
           </nav>
-          <div className="production-secondary-label">Tools &amp; settings</div>
-          <nav aria-label="Secondary navigation">{(['Compare','Jobs','Settings'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p==='Jobs'?'Diagnostics':p} data-tooltip={p==='Jobs'?'Diagnostics':p} aria-current={page===p?'page':undefined}>{page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name={p} size={18}/><span className="nav-label">{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
+          <button className="production-secondary-label sidebar-group-toggle" aria-expanded={toolsOpen} onClick={()=>{const next=!toolsOpen;setToolsOpen(next);try{localStorage.setItem('afs.sidebar.tools',next?'open':'closed');}catch{/* Preference only. */}}}>Tools<ChevronDown size={14} aria-hidden="true"/></button>
+          <nav aria-label="Secondary navigation" className="sidebar-tools" data-open={toolsOpen||page==='Compare'||page==='Jobs'}>{(['Compare','Jobs'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p==='Jobs'?'Diagnostics':p} data-tooltip={p==='Jobs'?'Diagnostics':p} aria-current={page===p?'page':undefined}>{page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name={p} size={18}/><span className="nav-label">{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
         </div>
+        <nav aria-label="Settings navigation" className="sidebar-settings">
+          <a href="#settings" className={page==='Settings'?'current':''} aria-label="Settings" title="Settings" data-tooltip="Settings" aria-current={page==='Settings'?'page':undefined}>{page==='Settings'&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name="Settings" size={18}/><span className="nav-label">Settings</span></a>
+        </nav>
         <div className="sidebar-bottom">
-          <div className="sidebar-status">
+          <div className="sidebar-status" title="Weights & assets stay on this PC">
             <span className="live-dot" /> <span>Local workspace</span>
           </div>
-          <p className="gpu-name" title={gpu?.name}>
-            {gpu?.available
-              ? gpu.name?.replace("NVIDIA GeForce ", "")
-              : "GPU status unavailable"}
-          </p>
-          {gpu?.available && (
-            <div className="gpu-meter" title={`${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM`}>
-              <span
-                style={{
-                  width: `${Math.min(100, ((gpu.used_mib || 0) / (gpu.total_mib || 1)) * 100)}%`,
-                }}
-              />
-              <small>
-                {((gpu.used_mib || 0) / 1024).toFixed(1)} /{" "}
-                {((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM
-              </small>
-            </div>
-          )}
-          {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% · peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live · 2s sampling · whole GPU</small></div>}
-          <small className="studio-version">Weights &amp; assets stay on this PC</small>
         </div>
       </aside>
       <div className="studio-body">
@@ -1003,9 +1008,23 @@ export function Studio() {
           </div>
           <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
 
-            <span className="local-chip">
-              <span className="live-dot" /> LOCAL
-            </span>
+            <div className="gpu-chip-wrap" ref={gpuRef}>
+              <button className="quiet-button gpu-chip" aria-expanded={gpuOpen} aria-label="GPU status" onClick={()=>setGpuOpen(v=>!v)}>
+                <span className="live-dot" />
+                {gpu?.available ? `${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB` : "GPU"}
+              </button>
+              {gpuOpen && <div className="gpu-popover" role="dialog" aria-label="GPU details">
+                <strong className="gpu-name" title={gpu?.name}>{gpu?.available ? gpu.name?.replace("NVIDIA GeForce ", "") : "GPU status unavailable"}</strong>
+                {gpu?.available && (
+                  <div className="gpu-meter">
+                    <span style={{ width: `${Math.min(100, ((gpu.used_mib || 0) / (gpu.total_mib || 1)) * 100)}%` }} />
+                    <small>{((gpu.used_mib || 0) / 1024).toFixed(1)} / {((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM</small>
+                  </div>
+                )}
+                {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% · peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live · 2s sampling · whole GPU</small></div>}
+                <small className="studio-version">Local inference only · weights & assets stay on this PC</small>
+              </div>}
+            </div>
             <button className="quiet-button" onClick={() => navigate("Production")}>
               <Icon name="Jobs" size={15} />
               {globalQueue ? `${globalQueue.running} active · ${globalQueue.queued} queued${globalQueue.paused?' · paused':''}` : 'Queue status unavailable'}
@@ -1018,10 +1037,10 @@ export function Studio() {
             <div className="onboarding-symbol"><Icon name="Cube" size={36}/></div>
             <div className="overline">YOUR STUDIO. YOUR WORLDS.</div>
             <h1>Start with your first game.</h1>
-            <p>Tạo project để giữ Art Bible, reference và thư viện asset riêng cho từng game. Workspace mới bắt đầu trống, sẵn sàng cho ý tưởng của bạn.</p>
+            <p>Create a project to keep an Art Bible, references and a separate asset library for each game. A new workspace starts empty, ready for your ideas.</p>
             <button className="primary" onClick={() => editProject(false)}><Icon name="Create" size={17}/> Create your first project</button>
             <div className="onboarding-steps"><span><b>01</b> Create a game project</span><span><b>02</b> Add a prompt or reference</span><span><b>03</b> Generate, review & export</span></div>
-            <small>AI chạy local. Các file export được sắp theo project.</small>
+            <small>AI runs locally. Exported files are organised by project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
             <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
@@ -1035,51 +1054,39 @@ export function Studio() {
           {error&&<ErrorNotice message={error} onRefresh={()=>reload().catch(e=>setError(String(e)))} onEdit={page==='Create'&&creationMode==='single'?()=>setCreateStep(1):undefined} onDismiss={()=>setError('')}/>}
           <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
           {projectId && page === "Home" && (
-            <><ContinueWork assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at})):[]} onAsset={openLibraryAsset} onQueue={()=>navigate('Production')}/>
-
-              <div className="page-heading">
-                <div>
-                  <div className="overline">YOUR LOCAL 3D WORKSPACE</div>
-                  <h1>{data.assets.length?'Your creative workspace.':'Start with a prompt.'}</h1>
-                  <p>Describe what you need, add a reference if useful, then choose and refine the result.</p>
-                </div>
-                {data.assets.length>0&&<button className="primary" onClick={() => newAsset()}>
-                  <Icon name="Create" size={17} /> Create asset
-                </button>}
-              </div>
-              <div className="home-hero">
+            <>
+              <section className="home-hero quick-create" aria-label="Quick create">
                 <div className="hero-copy">
-                  <span className="pill">TEXT + OPTIONAL REFERENCE / LOCAL</span><h2>Turn your idea<br/>into an asset.</h2>
-                  <p>Start with a short description. Images are optional. Generation, review and revisions stay in your local workspace.</p>
-                  <div className="hero-actions"><button className="primary" onClick={()=>newAsset()}><Icon name="Create" size={17}/>Create an asset<Icon name="Arrow" size={16}/></button></div>
-                  <span className="hero-footnote">One result by default. Choose up to five when you need alternatives.</span>
+                  <div className="overline">{project?.name || 'Your workspace'} · local 3D studio</div>
+                  <h2>What do you want to make?</h2>
+                  <form className="quick-create-form" onSubmit={(event)=>{event.preventDefault();const prompt=quickPrompt.trim();if(!prompt)return;newAsset();setDraft(d=>({...d,prompt}));setCreateStep(1);setQuickPrompt('');}}>
+                    <textarea aria-label="Quick create prompt" rows={2} value={quickPrompt} onChange={e=>setQuickPrompt(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();e.currentTarget.form?.requestSubmit();}}} placeholder="e.g. A stylized wooden watchtower with a stone base" />
+                    <button className="primary" type="submit" disabled={!quickPrompt.trim()}><Icon name="Arrow" size={17}/><span>Continue</span></button>
+                  </form>
+                  <span className="hero-footnote">Enter to continue · add a reference image on the next step · Shift+Enter for a new line</span>
                 </div>
                 <div className="hero-reference">
-                  {data.artifacts.find(
-                    (a) => a.id === project?.cover_artifact_id,
-                  )?.url ||
-                  data.artifacts.find((a) => a.role === "concept")?.url ? (
+                  {(data.artifacts.find((a) => a.id === project?.cover_artifact_id) || data.artifacts.find((a) => a.role === "concept"))?.url ? (
                     <>
-                      <img
-                        src={apiUrl(
-                          (data.artifacts.find(
-                            (a) => a.id === project?.cover_artifact_id,
-                          ) ||
-                            data.artifacts.find((a) => a.role === "concept"))!
-                            .url,
-                        )}
-                        alt="Actual project reference image"
-                      />
+                      <img src={apiUrl((data.artifacts.find((a) => a.id === project?.cover_artifact_id) || data.artifacts.find((a) => a.role === "concept"))!.url)} alt="Actual project reference image" />
                       <span>PROJECT REFERENCE · IMAGE ONLY</span>
                     </>
                   ) : (
-                    <div className="hero-empty">
-                      <Icon name="Cube" size={100} />
-                      <span>Your preview starts with your idea</span>
-                    </div>
+                    <div className="hero-empty"><Icon name="Cube" size={96} /><span>Your preview starts with your idea</span></div>
                   )}
                 </div>
-              </div>
+              </section>
+              <ContinueWork assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at})):[]} onAsset={openLibraryAsset} onQueue={()=>navigate('Production')}/>
+              {data.assets.length>0&&<div className="dashboard-panels">
+                <section className="dashboard-panel" aria-label="Active now">
+                  <header><h3>Active now</h3><button className="text-button" onClick={()=>navigate('Production')}>Production <Icon name="Arrow" size={14}/></button></header>
+                  {activeJobs.length?activeJobs.slice(0,5).map(job=><button key={job.id} className="dashboard-row" onClick={()=>openProduction('job/'+job.id)}><span className="production-dot state-running"/><span><strong>{data.assets.find(a=>a.id===job.payload.asset_id)?.name||job.kind||'Local job'}</strong><small>{job.progress?.stage||job.status.toLowerCase()}</small></span>{typeof job.progress?.percent==='number'&&<b>{Math.round(job.progress.percent)}%</b>}</button>):<p className="dashboard-empty">Nothing is running. New work starts only when you press Generate.</p>}
+                </section>
+                <section className="dashboard-panel" aria-label="Needs attention">
+                  <header><h3>Needs attention</h3><button className="text-button" onClick={()=>navigate('Library')}>Library <Icon name="Arrow" size={14}/></button></header>
+                  {(()=>{const items=data.assets.filter(a=>/fail|error|block|reject|review/i.test(a.status));return items.length?items.slice(0,5).map(a=><button key={a.id} className="dashboard-row" onClick={()=>openLibraryAsset(a.id)}><span className={`production-dot state-${/fail|error|block|reject/i.test(a.status)?'failed':'paused'}`}/><span><strong>{a.name}</strong><small>{a.status.replaceAll('_',' ')}</small></span></button>):<p className="dashboard-empty">All clear. Nothing is failed or waiting for review.</p>;})()}
+                </section>
+              </div>}
               {data.assets.length>0&&<><div className="workspace-stats">
                 <div>
                   <span>Project assets</span>
@@ -1126,8 +1133,7 @@ export function Studio() {
                   <Icon name="Library" size={36} />
                   <h3>A library built from your work.</h3>
                   <p>
-                    Nhập ảnh đầu tiên để bắt đầu. Chưa có asset nào trong
-                    project này.
+                    Add your first prompt or image to begin. This project has no assets yet.
                   </p>
                   <button className="secondary" onClick={() => newAsset()}>
                     Create first asset
@@ -1206,7 +1212,7 @@ export function Studio() {
                   {createStep===2&&<div className="create-settings-step">
                   <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <div className="generate-actions">
-                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept cần bạn duyệt</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Đã lưu duyệt concept. Có thể tạo 3D.');})}>Approve concept</button></div>}
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept needs your approval</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Concept approval saved. You can create 3D now.');})}>Approve concept</button></div>}
                     <button
                       className="primary generate-button"
                       disabled={
@@ -1301,7 +1307,7 @@ export function Studio() {
                         ))}
                     </Select>
                     <small>
-                      Chỉ engine đã tạo output thật mới xuất hiện ở đây.
+                      Only engines that have produced real output appear here.
                     </small>
                   </label>
 </details>
@@ -1386,8 +1392,7 @@ export function Studio() {
                       Blender cleanup, LOD & benchmark views
                     </label>
                     <p>
-                      GPU queue chạy tuần tự. Offload do adapter quyết định theo
-                      engine; không đổi môi trường Python đang cài.
+                      The GPU queue runs sequentially. Offload is decided per engine by its adapter; installed Python environments are unchanged.
                     </p>
                   </details>
                   <details className="selective-export-history"><summary>Export settings · GLB Only by default</summary><BatchExportSettings key={projectId} projectId={projectId}/></details>
@@ -1399,7 +1404,7 @@ export function Studio() {
                         run(async () => {
                           await ensureAsset();
                           await reload();
-                          setNotice("Asset draft đã lưu vào Library.");
+                          setNotice("Asset draft saved to the Library.");
                         })
                       }
                     >
@@ -1439,7 +1444,7 @@ export function Studio() {
                       <img
                         className="concept-large"
                         src={apiUrl(source.url)}
-                        alt="Ảnh concept thật, không phải output 3D"
+                        alt="Real concept image, not a 3D output"
                       />
                     ) : candidate ? (
                       <CompareViewer
@@ -1464,7 +1469,7 @@ export function Studio() {
                           {activeJobs.some(
                             (j) => j.payload.asset_id === selectedAsset?.id,
                           )
-                            ? "Local engine đang xử lý. Output thật sẽ xuất hiện sau khi kiểm chứng."
+                            ? "The local engine is working. Real output appears after verification."
                             : "Press Generate and your 3D model appears here."}
                         </p>
                         <span>Orbit · inspect · compare · refine</span>
@@ -1573,7 +1578,7 @@ export function Studio() {
                                 await ensureAsset();
                                 await reload();
                                 setNotice(
-                                  "Đã lưu asset và các version thật vào Library.",
+                                  "Asset and its real versions saved to the Library.",
                                 );
                               })
                             }
@@ -1604,7 +1609,7 @@ export function Studio() {
                                   .join(", "),
                               });
                               setNotice(
-                                "Seed mới đã chuẩn bị. Nhấn Generate 3D để tạo variation.",
+                                "New seed ready. Press Generate 3D to create a variation.",
                               );
                             }}
                           >
@@ -1736,8 +1741,8 @@ export function Studio() {
                         )}
                         {candidate && (
                           <p className="result-disclaimer">
-                            Visual review và license còn độc lập. Chưa có bằng
-                            chứng tương đương Meshy 7.1. {data.jobs.some(j=>j.payload.kind==='unity_import'&&j.payload.artifact_id===candidate.id&&j.status==='REVIEW_REQUIRED')?'Unity import đã qua kiểm tra Editor; hiệu năng và mỹ thuật vẫn cần duyệt.':'Unity import của phiên bản này chưa được kiểm thử.'}
+                            Visual review and licensing remain separate. There is no
+                            evidence of Meshy 7.1 equivalence. {data.jobs.some(j=>j.payload.kind==='unity_import'&&j.payload.artifact_id===candidate.id&&j.status==='REVIEW_REQUIRED')?'Unity import passed the Editor check; performance and art still need review.':'Unity import of this version is untested.'}
                           </p>
                         )}
                       </>
@@ -1785,11 +1790,11 @@ export function Studio() {
                   <div className="overline">LOCAL STUDIO SETTINGS</div>
                   <h1>A workspace that stays yours.</h1>
                   <p>
-                    Mỗi game có Art Bible và cấu hình riêng; engines chạy bằng
-                    môi trường độc lập.
+                    Each game has its own Art Bible and settings; engines run in isolated environments.
                   </p>
                 </div>
               </div>
+              <SettingsNav />
               <div className="settings-grid"><UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><InterfaceSettings/>{projectId&&<ProjectRecoverySettings key={projectId} projectId={projectId}/>}
                 <CapabilityRegistry/>
                 {isDesktop() && <DesktopSettings activeJobs={activeJobs.length}/>}
@@ -1805,15 +1810,15 @@ export function Studio() {
                     </button>
                   </div>
                   <h3>{project?.name}</h3>
-                  <p>{project?.description || "Chưa có mô tả project."}</p>
+                  <p>{project?.description || "No project description yet."}</p>
                   <dl>
                     <div>
                       <dt>Default style</dt>
-                      <dd>{project?.default_style || "Chưa đặt"}</dd>
+                      <dd>{project?.default_style || "Not set"}</dd>
                     </div>
                     <div>
                       <dt>Material language</dt>
-                      <dd>{project?.material_language || "Chưa đặt"}</dd>
+                      <dd>{project?.material_language || "Not set"}</dd>
                     </div>
                     <div>
                       <dt>Units / reference height</dt>
@@ -1927,9 +1932,7 @@ export function Studio() {
                     </div>
                   </dl>
                   <p>
-                    Không trả phí theo lượt, không tự tải weights. License
-                    model/dependency và chất lượng thương mại vẫn cần duyệt
-                    riêng.
+                    No per-run fees and no automatic weight downloads. Model/dependency licences and commercial quality still need separate review.
                   </p>
                   <button
                     className="secondary"
@@ -1954,7 +1957,7 @@ export function Studio() {
                     <div className="engine-setting" key={e.id}>
                       <div>
                         <h3>{e.id}</h3>
-                        <p>{e.blocker || "Chưa có ghi chú."}</p>
+                        <p>{e.blocker || "No notes yet."}</p>
                       </div>
                       <State
                         value={
@@ -2147,8 +2150,8 @@ export function Studio() {
             {modal === "archive-project" && (
               <>
                 <p>
-                  Project sẽ được archive. Nhập tên{" "}
-                  <strong>{project?.name}</strong> để xác nhận.
+                  The project will be archived. Type its name{" "}
+                  <strong>{project?.name}</strong> to confirm.
                 </p>
                 <label className="studio-field">
                   Project name
@@ -2174,7 +2177,7 @@ export function Studio() {
                         setData(emptyData);
                         setProjectId("");
                         setNotice(
-                          "Project đã archive. Tạo một project mới để tiếp tục.",
+                          "Project archived. Create a new project to continue.",
                         );
                       }
                     })
@@ -2187,10 +2190,8 @@ export function Studio() {
             {modal === "approve" && (
               <>
                 <p>
-                  Chọn version này làm master của{" "}
-                  <strong>{selectedAsset?.name}</strong>. Master cũ vẫn nằm
-                  trong version history. Đây là duyệt visual của bạn, chưa chứng
-                  minh Meshy parity hoặc game-ready.
+                  Make this version the master of{" "}
+                  <strong>{selectedAsset?.name}</strong>. The previous Master stays in version history. This is your visual approval; it does not prove Meshy parity or game readiness.
                 </p>
                 <label className="studio-field">
                   Reviewer
@@ -2223,7 +2224,7 @@ export function Studio() {
                       );
                       await reload();
                       setModal(null);
-                      setNotice("Đã lưu human approval và master version.");
+                      setNotice("Human approval and master version saved.");
                     })
                   }
                 >
@@ -2235,10 +2236,9 @@ export function Studio() {
               <>
                 {selectedAsset && <SingleSelectiveExport projectId={projectId} assetId={selectedAsset.id} artifactId={candidate?.id}/>}
                 <details className="selective-export-history"><summary>Advanced · legacy Blender conversion presets</summary>
-                <div className="export-organization-note"><Icon name="Library" size={18}/><span>Download ZIP để giữ cấu trúc <strong>Project / Asset / Preset</strong>. File xuất của mỗi game nằm trong thư mục riêng.</span></div>
+                <div className="export-organization-note"><Icon name="Library" size={18}/><span>Download the ZIP to keep the folder structure <strong>Project / Asset / Preset</strong>. Exports for each game live in their own folder.</span></div>
                 <p>
-                  Xuất từ version thật đang chọn. Preset Unity tạo file và LOD
-                  bằng Blender; khả năng import trong Unity chưa được kiểm thử.
+                  Exports the selected real version. Unity presets create files and LODs with Blender; Unity import is untested.
                 </p>
                 <label className="studio-field">
                   Export preset
@@ -2445,8 +2445,7 @@ function JobHistory({
           <div className="overline">LOCAL PROCESSING QUEUE</div>
           <h1>Every run. Every result.</h1>
           <p>
-            Job được lưu bền vững. Refresh hoặc chuyển trang không chạy lại
-            inference.
+            Jobs are stored durably. Refreshing or leaving the page never re-runs inference.
           </p>
         </div>
         <span className="queue-status">
@@ -2577,7 +2576,7 @@ function JobHistory({
           <h3>
             {jobs.length ? "No jobs in this view." : "The queue is quiet."}
           </h3>
-          <p>Local AI và Blender jobs sẽ xuất hiện tại đây.</p>
+          <p>Local AI and Blender jobs appear here.</p>
         </div>
       )}
       {selected && (
@@ -2625,8 +2624,7 @@ function JobHistory({
             </>
           ) : (
             <p>
-              Job chưa có file output. Trạng thái và lỗi được giữ lại trong
-              history.
+              This job has no output files yet. Status and errors stay in history.
             </p>
           )}
         </section>
@@ -2635,6 +2633,34 @@ function JobHistory({
   );
 }
 
+function SettingsNav() {
+  const [items, setItems] = useState<{ label: string; el: HTMLElement }[]>([]);
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const grid = document.querySelector(".settings-grid");
+    if (!grid) return;
+    const read = () => setItems(Array.from(grid.children).filter((el): el is HTMLElement => el instanceof HTMLElement).map((el) => ({ el, label: (el.querySelector("h2")?.textContent || el.getAttribute("aria-label") || "").trim() })).filter((item) => item.label));
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(grid, { childList: true });
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const update = () => { let current = 0; items.forEach((item, index) => { if (item.el.getBoundingClientRect().top < 140) current = index; }); setActive(current); };
+    update();
+    addEventListener("scroll", update, { passive: true });
+    return () => removeEventListener("scroll", update);
+  }, [items]);
+  return (
+    <nav className="settings-nav" aria-label="Settings sections">
+      {items.map((item, index) => (
+        <button key={item.label + index} aria-current={active === index ? "true" : undefined} onClick={() => item.el.scrollIntoView({ behavior: "smooth", block: "start" })}>
+          {item.label}
+        </button>
+      ))}
+    </nav>
+  );
+}
 function DesktopSettings({activeJobs}:{activeJobs:number}) {
   const [info,setInfo]=useState<Awaited<ReturnType<typeof desktopInfo>>>();
   const [error,setError]=useState('');const [working,setWorking]=useState(false);

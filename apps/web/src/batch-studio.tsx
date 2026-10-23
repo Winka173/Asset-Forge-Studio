@@ -152,9 +152,9 @@ async function call<T>(url: string, body?: unknown): Promise<T> {
         : Array.isArray(error.detail)
           ? error.detail.slice(0, 5).map((issue: {loc?: unknown[]; msg?: unknown}) => {
               const field = (issue.loc || []).filter(part => part !== 'body').map(String).join(' / ');
-              return `${field ? `${field}: ` : ''}${typeof issue.msg === 'string' ? issue.msg : 'Giá trị chưa hợp lệ.'}`;
+              return `${field ? `${field}: ` : ''}${typeof issue.msg === 'string' ? issue.msg : 'Invalid value.'}`;
             }).join('\n')
-          : `Không thể hoàn tất yêu cầu (${response.status}). Kiểm tra file và thử lại.`,
+          : `Could not complete the request (${response.status}). Check the file and try again.`,
     );
   }
   return response.json();
@@ -312,7 +312,7 @@ export function BatchStudio({
     setSelectedBatch(value.id);
     selectedRef.current = value.id;
     try { localStorage.setItem(`afs.batch.selected.${projectId}`, value.id); }
-    catch { setDraftWarning('Browser storage đầy. Batch đã lưu trên máy và có thể mở lại từ Batch history.'); }
+    catch { setDraftWarning('Browser storage is full. The batch is saved locally and can be reopened from Saved batches.'); }
     setName(value.name);
     setPrompt(value.master_prompt);
     setSourceFile(value.import_diagnostics?.source_file?.name ? {name:value.import_diagnostics.source_file.name,bytes:value.import_diagnostics.source_file.bytes||0} : null);
@@ -380,7 +380,7 @@ export function BatchStudio({
         `afs.batch.draft.${projectId}`,
         JSON.stringify({ name, prompt, format, mode, references, sourceFile }),
       ); setDraftWarning(''); }
-      catch { setDraftWarning('Prompt vẫn được giữ đầy đủ trong phiên này. Browser storage không đủ để autosave bản nháp lớn; Analyze để lưu batch vào Library trước khi đóng ứng dụng.'); }
+      catch { setDraftWarning('Your prompt is kept in this session. Browser storage cannot autosave a draft this large; run Analyze to save the batch before closing the app.'); }
     }, 600);
     return () => window.clearTimeout(timer);
   }, [projectId, name, prompt, format, mode, references, sourceFile]);
@@ -424,7 +424,7 @@ export function BatchStudio({
     try {
       if (!text.trim())
         throw new Error(
-          "Nhập Master Prompt hoặc import manifest trước khi phân tích.",
+          "Enter a master prompt or import a manifest before analyzing.",
         );
       let created: Batch;
       const batchName=name.trim()||filename?.replace(/\.[^.]+$/,'')||'Untitled batch';
@@ -443,7 +443,7 @@ export function BatchStudio({
       adopt(created);
       await refresh(created.id);
       setNotice(
-        `Đã phân tích và lưu ${created.items.length} asset. ${created.items.filter(item => item.selected).length} được chọn, gồm cả Future. Nhấn Generate All để bắt đầu; Analyze chưa chạy AI.`,
+        `Analyzed and saved ${created.items.length} asset. ${created.items.filter(item => item.selected).length} selected, including Future. Press Generate All to start; Analyze has not run any AI.`,
       );
       requestAnimationFrame(() => manifestRef.current?.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}));
     } finally { setAnalyzing(false); }
@@ -452,7 +452,7 @@ export function BatchStudio({
     if (!file) return;
     await execute(async () => {
       const text = await file.text();
-      if (!text.trim()) throw new Error("Manifest rỗng.");
+      if (!text.trim()) throw new Error("The manifest is empty.");
       setPrompt(text);
       uploadedFile.current=file;
       setSourceFile({name:file.name,bytes:file.size});
@@ -461,7 +461,7 @@ export function BatchStudio({
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ""));
       if(workflow.mode!=='expert'){await analyzeSource(text,file,file.name,'auto');return;}
       setNotice(
-        "Đã đọc file local. Nhấn Analyze Prompt để kiểm chứng schema và xem manifest.",
+        "Local file loaded. Press Analyze Prompt to validate the schema and review the manifest.",
       );
     });
   }
@@ -481,7 +481,7 @@ export function BatchStudio({
       await onRefresh?.();
       onSubmitted?.(batch.id);
       setNotice(
-        automatic ? 'Đã bắt đầu automatic production cho các asset được chọn. Concept được chọn kỹ thuật tự động; output lưu Needs Review, không phải artistic approval.' : 'Đã tiếp tục workflow manual. Concept và thông số cần người dùng duyệt.',
+        automatic ? 'Automatic production started for the selected assets. Concepts are selected automatically on technical grounds; outputs are saved as Needs Review, not artistic approval.' : 'Manual workflow resumed. Concepts and parameters need your review.',
       );
     });
   }
@@ -490,7 +490,7 @@ export function BatchStudio({
     await execute(async()=>{
       await generationRequest(`/api/batches/${batch.id}/run-all`,{});
       await refresh(batch.id);await onRefresh?.();onSubmitted?.(batch.id);
-      setNotice(`Đã bắt đầu automatic production cho toàn bộ ${batch.items.length} asset, gồm Future. Quality Lock giữ nguyên; output cần review sau khi tạo.`);
+      setNotice(`Automatic production started for all ${batch.items.length} assets, including Future. Quality Lock is unchanged; outputs need review after generation.`);
     });
   }
   async function control(action: string) {
@@ -503,12 +503,12 @@ export function BatchStudio({
       await refresh(action === "duplicate" ? value.id : batch.id);
       setNotice(
         action === "pause"
-          ? "Batch dừng ở checkpoint an toàn; stage đang chạy được giữ lại."
+          ? "The batch will stop at a safe checkpoint; the running stage is kept."
           : action === "resume"
-            ? "Đã tiếp tục batch, không chạy lại stage thành công."
-            : action === 'retry_failed' ? 'Đã retry các checkpoint lỗi đủ điều kiện; không lặp lại output thành công.' : action === 'skip_failed' ? 'Đã bỏ qua các asset lỗi và giữ nguyên output đã hoàn tất.' : action === "duplicate"
-              ? "Đã tạo bản cấu hình batch mới để bạn chỉnh sửa."
-              : "Đã yêu cầu dừng batch. Output đã thành công vẫn được giữ lại.",
+            ? "Batch resumed; successful stages are not re-run."
+            : action === 'retry_failed' ? 'Retried eligible failed checkpoints; successful outputs are not repeated.' : action === 'skip_failed' ? 'Skipped failed assets and kept completed outputs.' : action === "duplicate"
+              ? "Created a new batch configuration for you to edit."
+              : "Batch cancellation requested. Successful outputs are kept.",
       );
     });
   }
@@ -520,7 +520,7 @@ export function BatchStudio({
       });
       await refresh(batch.id);
       await onRefresh?.();
-      setNotice(`${item.name}: ${action}. Các Master đã duyệt được giữ riêng.`);
+      setNotice(`${item.name}: ${action}. Approved Masters are kept separately.`);
     });
   }
   function edit(item: ManifestItem) {
@@ -563,7 +563,7 @@ export function BatchStudio({
       };
       await patchItem(editing.asset_id, fields);
       setEditing(null);
-      setNotice("Đã lưu thông số asset. Kích thước không được tự suy diễn.");
+      setNotice("Asset parameters saved. Dimensions are never inferred automatically.");
     });
   }
   async function approveConcept() {
@@ -580,7 +580,7 @@ export function BatchStudio({
       await refresh(batch.id);
       await onRefresh?.();
       setNotice(
-        "Concept đã được bạn duyệt; asset tiếp tục ở checkpoint kế tiếp.",
+        "Concept approved; the asset continues at the next checkpoint.",
       );
     });
   }
@@ -603,7 +603,7 @@ export function BatchStudio({
           </div>
           <h1>One brief. Many considered assets.</h1>
           <p>
-            Phân tích, duyệt manifest rồi sản xuất theo từng checkpoint —{" "}
+            Analyze, review the manifest, then produce checkpoint by checkpoint —{" "}
             <strong>1 heavy GPU job; bounded CPU / I/O overlap.</strong>
           </p>
           {qualityLocked && <span className="batch-quality-lock"><Glyph kind="check"/>QUALITY LOCK · NO AUTOMATIC DOWNGRADE</span>}
@@ -673,15 +673,15 @@ export function BatchStudio({
           </label>
           <label className="studio-field">
             Master Prompt or structured manifest
-            {sourceFile ? <div className="batch-source-file"><strong>{sourceFile.name}</strong><span>{(sourceFile.bytes/1048576).toFixed(2)} MB · {prompt.length.toLocaleString('vi-VN')} ký tự · nguyên bản giữ đầy đủ</span><details><summary>Preview source · first 12,000 characters</summary><pre>{prompt.slice(0,12000)}</pre></details><button type="button" className="text-button" onClick={()=>{uploadedFile.current=null;setSourceFile(null);}}>Edit source as text</button></div> : <textarea
+            {sourceFile ? <div className="batch-source-file"><strong>{sourceFile.name}</strong><span>{(sourceFile.bytes/1048576).toFixed(2)} MB · {prompt.length.toLocaleString()} characters · original kept in full</span><details><summary>Preview source · first 12,000 characters</summary><pre>{prompt.slice(0,12000)}</pre></details><button type="button" className="text-button" onClick={()=>{uploadedFile.current=null;setSourceFile(null);}}>Edit source as text</button></div> : <textarea
               aria-label="Batch Master Prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe exactly the assets you need. Tier ranges such as Castle T1–T3 become separate assets. Include width, depth, height and expected materials when known."
             />}
             <small>
-              {prompt.length.toLocaleString('vi-VN')} ký tự ·{' '}
-              Prompt dài được giữ nguyên. Import và Analyze không chạy GPU; Generate All bắt đầu production tự động.
+              {prompt.length.toLocaleString()} characters ·{' '}
+              Long prompts are kept intact. Import and Analyze use no GPU; Generate All starts automatic production.
             </small>
           </label>
           <div className="batch-intake-actions">
@@ -744,16 +744,14 @@ export function BatchStudio({
             <div>
               <strong>{projectName || projectId}</strong>
               <p>
-                Art Bible, palette và ngôn ngữ vật liệu kế thừa từ game.
-                Override chỉ áp dụng cho asset được chỉnh.
+                Art Bible, palette and material language are inherited from the game. Overrides apply only to the edited asset.
               </p>
               {project?.default_style && <small>{project.default_style}</small>}
             </div>
           </div>
           {!batch && referencePanel}
           <p className="batch-scope-note">
-            Không tự thêm module ngoài yêu cầu. Style consistency cần được
-            review; không có cam kết khóa style tuyệt đối.
+            No modules are added beyond the request. Style consistency still needs review; there is no absolute style lock.
           </p>
         </section>
       </div>
@@ -804,7 +802,7 @@ export function BatchStudio({
             <details className="batch-technical-summary"><summary>Advanced production details</summary>            <div className="batch-production-summary"><div><strong>{batch.items.reduce((sum,item)=>sum+item.candidates,0)} candidates</strong><span>Configured across {batch.items.length} independent assets</span></div><div><strong>{batch.preflight?.estimated_jobs != null ? `${batch.preflight.estimated_jobs} estimated jobs` : 'Job estimate pending'}</strong><span>1 heavy GPU task at a time · bounded CPU overlap</span></div><div><strong>Automatic production</strong><span>Technical QA and delivery are automatic. Artistic review stays optional.</span></div></div>
 </details>
             {batch.import_diagnostics && <details className="batch-import-diagnostics"><summary>Import report · {batch.import_diagnostics.status || 'Parsed'}</summary><div><span>Detected: {batch.import_diagnostics.detected_format || 'Unknown'}</span><span>Parser: {batch.import_diagnostics.parser_method || 'Deterministic'}</span><span>Local AI: {batch.import_diagnostics.local_ai_used ? 'Used' : 'Not used'}</span><span>Parsed: {batch.import_diagnostics.parsed_count ?? batch.items.length}{batch.import_diagnostics.expected_count ? ` / ${batch.import_diagnostics.expected_count} expected` : ''}</span><span>Primary: {batch.import_diagnostics.primary_count ?? '—'} · Future: {batch.import_diagnostics.future_count ?? '—'}</span></div>{batch.import_diagnostics.source_file?.sha256 && <code>SHA256: {batch.import_diagnostics.source_file.sha256}</code>}{(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url) && <a href={apiUrl(batch.import_diagnostics.original_source_url || batch.import_diagnostics.source_file?.original_source_url)} download>Download original source</a>}{batch.import_diagnostics.warnings?.map((warning,index)=><p key={`w${index}`}>{warning}</p>)}{batch.import_diagnostics.errors?.map((message,index)=><p className="error-text" key={`e${index}`}>{message}</p>)}</details>}
-            <details className="batch-import-diagnostics batch-local-analysis"><summary>Optional local AI · metadata suggestions</summary><p>Phân tích theo đoạn bằng CPU. Không tạo model, không sửa prompt, dimensions hay cấu hình generation. Mọi gợi ý cần review riêng.</p><div><span>{checkingModels?'Checking local Ollama…':localModels?.available?'Local Ollama available':'Local Ollama unavailable'}</span><button type="button" className="text-button" disabled={checkingModels} onClick={checkLocalModels}>Refresh local models</button></div>{localModels?.reason && <p>{localModels.reason}</p>}{modelsError && <p role="alert">{modelsError}</p>}<small>{localModels?.execution || 'CPU only · metadata only'} · Không tự tải model.</small>{!!localModels?.models.length && <label className="studio-field">Installed local model<Select aria-label="Local metadata model" value={localModel} onChange={event=>setLocalModel(event.target.value)}>{localModels.models.map(model=><option key={model.name} value={model.name}>{model.name}</option>)}</Select></label>}<button className="secondary" disabled={busy||checkingModels||!localModels?.available||!localModel||!selectedItems.length} onClick={()=>execute(async()=>{const job=await call<{id:string}>(`/api/batch-analysis/${batch.id}`,{model:localModel,selected_ids:selectedItems.map(item=>item.asset_id)});setNotice(`Đã xếp CPU metadata analysis ${job.id.slice(0,12)}. Kết quả nằm trong Edit asset để review; chưa áp dụng vào generation.`);})}>Analyze selected metadata ({selectedItems.length})</button></details>
+            <details className="batch-import-diagnostics batch-local-analysis"><summary>Optional local AI · metadata suggestions</summary><p>Section-by-section CPU analysis. It creates no models and never edits prompts, dimensions or generation settings. Every suggestion needs separate review.</p><div><span>{checkingModels?'Checking local Ollama…':localModels?.available?'Local Ollama available':'Local Ollama unavailable'}</span><button type="button" className="text-button" disabled={checkingModels} onClick={checkLocalModels}>Refresh local models</button></div>{localModels?.reason && <p>{localModels.reason}</p>}{modelsError && <p role="alert">{modelsError}</p>}<small>{localModels?.execution || 'CPU only · metadata only'} · Models are never downloaded automatically.</small>{!!localModels?.models.length && <label className="studio-field">Installed local model<Select aria-label="Local metadata model" value={localModel} onChange={event=>setLocalModel(event.target.value)}>{localModels.models.map(model=><option key={model.name} value={model.name}>{model.name}</option>)}</Select></label>}<button className="secondary" disabled={busy||checkingModels||!localModels?.available||!localModel||!selectedItems.length} onClick={()=>execute(async()=>{const job=await call<{id:string}>(`/api/batch-analysis/${batch.id}`,{model:localModel,selected_ids:selectedItems.map(item=>item.asset_id)});setNotice(`Queued CPU metadata analysis ${job.id.slice(0,12)}. Results appear in Edit asset for review; nothing is applied to generation.`);})}>Analyze selected metadata ({selectedItems.length})</button></details>
             <div className="batch-checkpoints">
               <span className={batch.paused ? "paused" : ""}>
                 {batch.progress.pause_state==='pausing' ? 'PAUSING · FINISHING CURRENT STAGE' : batch.paused
@@ -827,16 +825,15 @@ export function BatchStudio({
             {!automatic && blockedItems.length > 0 && (
               <div className="batch-spec-warning">
                 <strong>
-                  {blockedItems.length} selected asset chưa đủ thông số / xác
-                  nhận.
+                  {blockedItems.length} selected assets are missing parameters / confirmation
+                  .
                 </strong>
                 <span>
-                  Nhấn Edit để bổ sung chiều rộng, sâu, cao và duyệt yêu cầu. Có
-                  thể bỏ chọn asset chưa sẵn sàng.
+                  Use Edit to add width, depth and height and to confirm requirements. You can deselect assets that are not ready.
                 </span>
               </div>
             )}
-            <details className="advanced batch-config-preview"><summary>EffectiveGenerationConfig · preview before enqueue <span>{selectedItems.length} selected</span></summary><p>Scheduling chỉ thay đổi thời điểm chạy. Engine, checkpoint, seeds và các stage yêu cầu được giữ trong manifest; retry không tự hạ quality.</p>{pageItems.filter(item=>item.selected).map(item => <div className="batch-effective-item" key={item.asset_id}><div><strong>{item.name}</strong><span>{item.quality_lock === false ? 'Explicit override' : 'Quality Lock'}</span></div>{item.config_warning && <p className="batch-preflight-warning">{item.config_warning}</p>}{item.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}{item.effective_config ? <pre>{JSON.stringify(item.effective_config,null,2)}</pre> : <p>Chưa có config đã resolve cho stage này. Backend phải resolve và lưu config trước khi enqueue; chưa phải kiểm chứng chất lượng.</p>}</div>)}</details>
+            <details className="advanced batch-config-preview"><summary>EffectiveGenerationConfig · preview before enqueue <span>{selectedItems.length} selected</span></summary><p>Scheduling only changes when work runs. Engine, checkpoint, seeds and required stages stay in the manifest; retries never lower quality.</p>{pageItems.filter(item=>item.selected).map(item => <div className="batch-effective-item" key={item.asset_id}><div><strong>{item.name}</strong><span>{item.quality_lock === false ? 'Explicit override' : 'Quality Lock'}</span></div>{item.config_warning && <p className="batch-preflight-warning">{item.config_warning}</p>}{item.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}{item.effective_config ? <pre>{JSON.stringify(item.effective_config,null,2)}</pre> : <p>No resolved config for this stage yet. The backend resolves and stores it before enqueueing; this is not a quality verification.</p>}</div>)}</details>
             <div className="batch-table-toolbar">
               <label className="batch-manifest-search">Search manifest<input type="search" aria-label="Search batch assets" value={assetSearch} onChange={event=>setAssetSearch(event.target.value)} placeholder="Name, source ID, category or status"/></label>
               <div className="segmented">
@@ -1052,15 +1049,13 @@ export function BatchStudio({
               </table>
               {!visibleItems.length && (
                 <div className="batch-empty">
-                  Không có asset trong bộ lọc này.
+                  No assets match this filter.
                 </div>
               )}
             </div>
             <div className="batch-pagination" aria-label="Manifest pages"><span>{visibleItems.length ? (currentPage-1)*50+1 : 0}–{Math.min(currentPage*50,visibleItems.length)} of {visibleItems.length} matching · {batch.items.length} total</span><button className="secondary" disabled={currentPage<=1} onClick={()=>setManifestPage(currentPage-1)}>Previous</button><span>Page {currentPage} / {pageCount}</span><button className="secondary" disabled={currentPage>=pageCount} onClick={()=>setManifestPage(currentPage+1)}>Next</button></div>
             <p className="batch-manifest-note">
-              Xác nhận manifest không phải duyệt chất lượng model. Không tự chạy
-              lại output thành công khi Resume; Regenerate là một thao tác
-              riêng.
+              Confirming the manifest is not a model quality approval. Resume never re-runs successful outputs; Regenerate is a separate action.
             </p>
           </section>
           <div className="batch-bottom">
@@ -1130,8 +1125,7 @@ export function BatchStudio({
               </div>
               <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export Selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export All Completed</button></div>
               <p>
-                ZIP chỉ chứa output thật đã tạo. Asset lỗi hoặc chưa có mesh
-                không được biến thành model hoàn thành.
+                The ZIP contains only real generated outputs. Failed assets or assets without a mesh are never presented as finished models.
               </p>
               <label className="studio-field">
                 Export selection
@@ -1156,7 +1150,7 @@ export function BatchStudio({
                   </a>
                 ) : (
                   <span className="batch-disabled-export">
-                    Chưa có model thật trong selection này.
+                    No real models in this selection yet.
                   </span>
                 )}
                 <a href={exportUrl("json")} download>
@@ -1167,8 +1161,7 @@ export function BatchStudio({
                 </a>
               </div>
               <small>
-                Cấu hình, prompt và manifest có thể lưu trước khi generation.
-                Unity-oriented folders không phải chứng nhận mobile performance.
+                Settings, prompts and the manifest can be saved before generation. Unity-oriented folders do not certify mobile performance.
               </small>
             </section>
           </div>
@@ -1180,7 +1173,7 @@ export function BatchStudio({
           <div>
             <h3>Review the plan before spending GPU time.</h3>
             <p>
-              Import → Analyze → Generate All → Library. Analyze giữ nguyên prompt và không chạy GPU. Generate All gồm cả Future; thông số và concept được xử lý tự động, output chờ review sau khi tạo.
+              Import → Analyze → Generate All → Library. Analyze keeps your prompt unchanged and uses no GPU. Generate All includes Future items; parameters and concepts are handled automatically and outputs wait for review.
             </p>
           </div>
         </div>
@@ -1258,7 +1251,7 @@ export function BatchStudio({
             {editing.source_char_start !== undefined && <p className="batch-source-status">Source character span: {editing.source_char_start}–{editing.source_char_end ?? '—'}</p>}
             {editing.spec_provenance && <details className="batch-import-diagnostics"><summary>Specification provenance · original / inferred / defaulted</summary><pre>{JSON.stringify(editing.spec_provenance,null,2)}</pre></details>}
             {editing.automatic_concept_selection && <details className="batch-import-diagnostics"><summary>Automatic concept selection · technical evidence</summary><p>Automatic selection is not human artistic approval.</p><pre>{JSON.stringify(editing.automatic_concept_selection,null,2)}</pre></details>}
-            {!!editing.semantic_metadata && Object.keys(editing.semantic_metadata).length>0 && <details className="batch-import-diagnostics"><summary>Local AI suggestions · Needs Review</summary><p>Read-only suggestions. Chưa áp dụng vào generation; prompt và source gốc được giữ nguyên.</p><pre>{JSON.stringify(editing.semantic_metadata,null,2)}</pre></details>}
+            {!!editing.semantic_metadata && Object.keys(editing.semantic_metadata).length>0 && <details className="batch-import-diagnostics"><summary>Local AI suggestions · Needs Review</summary><p>Read-only suggestions. Not applied to generation; the original prompt and source are kept.</p><pre>{JSON.stringify(editing.semantic_metadata,null,2)}</pre></details>}
             <fieldset className="batch-dimensions-editor">
               <legend>Target dimensions · meters</legend>
               {[
@@ -1306,8 +1299,8 @@ export function BatchStudio({
                 I confirm the dimensions and generation requirements
                 <small>
                   {dimensionsValid(editing)
-                    ? "Các thông số này do người dùng xác nhận; không phải số liệu tự suy đoán."
-                    : "Điền đủ chiều rộng, sâu, cao dương trước khi xác nhận."}
+                    ? "These values are confirmed by you; they are not automatic estimates."
+                    : "Enter positive width, depth and height before confirming."}
                 </small>
               </span>
             </label>
@@ -1375,7 +1368,7 @@ export function BatchStudio({
                   onChange={(e) => setStyleJson(e.target.value)}
                 />
                 <small>
-                  Project Art Bible được kế thừa; đây là override cho asset này.
+                  The project Art Bible is inherited; this is an override for this asset.
                 </small>
               </label>
               <label className="studio-field">
@@ -1395,8 +1388,8 @@ export function BatchStudio({
             </details>
             {editing.warnings?.map((warning,index)=><p className="batch-preflight-warning" key={index}>{warning}</p>)}
             {editing.config_warning && <p className="batch-preflight-warning">{editing.config_warning}</p>}
-            <details className="advanced"><summary>Current EffectiveGenerationConfig</summary>{editing.effective_config ? <pre>{JSON.stringify(editing.effective_config,null,2)}</pre> : <p>Chưa resolve. Config mới phải được backend kiểm tra trước khi enqueue.</p>}</details>
-            {lowersQuality && <div className="batch-override-panel"><label className="batch-confirm batch-quality-override"><input type="checkbox" checked={qualityOverride} onChange={e=>setQualityOverride(e.target.checked)}/><span>I explicitly approve this quality/configuration change<small>Giảm preset / candidates, thay engine hoặc bỏ output yêu cầu cần được bạn chủ động duyệt. Không có automatic downgrade.</small></span></label><label className="studio-field">Quality override reason<input value={qualityReason} onChange={e=>setQualityReason(e.target.value)} placeholder="Why this different configuration is appropriate"/></label></div>}
+            <details className="advanced"><summary>Current EffectiveGenerationConfig</summary>{editing.effective_config ? <pre>{JSON.stringify(editing.effective_config,null,2)}</pre> : <p>Not resolved yet. The backend checks new settings before enqueueing.</p>}</details>
+            {lowersQuality && <div className="batch-override-panel"><label className="batch-confirm batch-quality-override"><input type="checkbox" checked={qualityOverride} onChange={e=>setQualityOverride(e.target.checked)}/><span>I explicitly approve this quality/configuration change<small>Lowering the preset or candidates, changing engine or dropping required outputs needs your explicit approval. There is no automatic downgrade.</small></span></label><label className="studio-field">Quality override reason<input value={qualityReason} onChange={e=>setQualityReason(e.target.value)} placeholder="Why this different configuration is appropriate"/></label></div>}
             {error && (
               <p role="alert" className="error-text">
                 {error}
@@ -1459,9 +1452,7 @@ export function BatchStudio({
               alt={`Actual concept for ${approval.name}`}
             />
             <p>
-              Kiểm tra silhouette, style, vật liệu và độ bám Art Bible. Duyệt
-              ảnh chỉ cho phép chuyển sang 3D; chưa phải duyệt Master hoặc chất
-              lượng Meshy.
+              Check silhouette, style, materials and Art Bible fit. Approving the image only allows the 3D step; it is not a Master or Meshy-quality approval.
             </p>
             <label className="studio-field">
               Reviewer

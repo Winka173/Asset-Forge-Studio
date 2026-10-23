@@ -204,3 +204,12 @@ p.form-error, div.form-error { padding: var(--sp-3) var(--sp-4); border-radius: 
 /* Flex/grid containers own spacing via gap; children must not add stray margins. */
 .settings-panel > *, .create-input-step > *, .create-settings-step > *, .create-controls > * { margin-top: 0; margin-bottom: 0; }
 .settings-panel > :empty:not(input):not(textarea):not(select):not(canvas):not(img) { display: none; }
+
+/* Loading skeletons and view transitions */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skeleton { border-radius: var(--r-lg); background: linear-gradient(90deg, var(--surface-1) 25%, var(--surface-3) 50%, var(--surface-1) 75%); background-size: 200% 100%; animation: afs-shimmer 1.4s linear infinite; }
+.skeleton-title { height: 36px; width: min(320px, 60%); }
+.skeleton-block { height: 120px; }
+.library-detail-skeleton { height: min(62vh, 640px); min-height: 360px; border-radius: var(--r-xl); }
+::view-transition-group(asset-hero) { animation-duration: 380ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 200ms; }

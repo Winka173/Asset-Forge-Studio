@@ -209,11 +209,11 @@ button.project-new:hover:not(:disabled) { background: var(--surface-2); border-c
 .continue-work ~ .home-hero { display: none; }
 
 /* ── Feedback ──────────────────────────────────────────── */
+.afs-toast-stack { position: fixed; z-index: 30000; right: var(--sp-6); bottom: var(--sp-6); display: flex; flex-direction: column-reverse; gap: var(--sp-2); align-items: flex-end; pointer-events: none; }
 .afs-toast {
-  position: fixed; z-index: 30000; right: var(--sp-6); bottom: var(--sp-6); display: flex; align-items: center; gap: var(--sp-3);
-  max-width: min(460px, calc(100vw - 48px)); padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-3); max-width: min(460px, calc(100vw - 48px)); padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
   border: 1px solid var(--border-strong); border-radius: var(--r-lg); background: var(--surface-3); color: var(--text);
-  box-shadow: var(--shadow-lg); font-size: var(--fs-base); line-height: 1.5; animation: afs-toast-in var(--dur-slow) var(--ease);
+  box-shadow: var(--shadow-lg); font-size: var(--fs-base); line-height: 1.5; pointer-events: auto; cursor: grab; touch-action: pan-y;
 }
 .afs-toast-check { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; background: var(--success-soft); color: var(--success); }
 .afs-toast button { min-width: 28px; min-height: 28px; width: 28px; padding: 0; border-color: transparent; background: transparent; color: var(--text-2); font-size: 18px; }
@@ -306,3 +306,36 @@ input.afs-select-search { position: sticky; top: calc(var(--sp-1) * -1); z-index
   .topbar-meta kbd { display: none; }
   .studio .gpu-meter small { display: none; }
 }
+@media (max-width: 760px) {
+  .topbar-meta button.quiet-button { font-size: 0; gap: 0; padding: 0 var(--sp-2); }
+  .topbar-meta button.quiet-button > svg { width: 18px; height: 18px; }
+  .breadcrumb { flex: 1; overflow: hidden; }
+  .studio .studio-sidebar .nav-count { position: absolute; top: 2px; right: 2px; height: 16px; min-width: 16px; padding: 0 4px; font-size: 10px; }
+}
+
+/* Tools group (collapsible), pinned Settings, compact footer */
+button.sidebar-group-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 28px; padding: 0 10px 0 12px; border: 0; background: transparent; cursor: pointer; }
+button.sidebar-group-toggle:hover:not(:disabled) { background: transparent; color: var(--text-2); }
+button.sidebar-group-toggle svg { transition: transform var(--dur) var(--ease); }
+button.sidebar-group-toggle[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.studio-sidebar nav.sidebar-tools[data-open="false"] > a { height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
+.studio-sidebar nav.sidebar-tools > a { transition: height var(--dur-slow) var(--ease), opacity var(--dur) var(--ease); }
+.sidebar-collapsed button.sidebar-group-toggle { justify-content: center; padding: 0; height: 1px; min-height: 1px; margin: var(--sp-3) var(--sp-2); background: var(--border); font-size: 0; }
+.sidebar-collapsed button.sidebar-group-toggle svg { display: none; }
+.sidebar-collapsed .studio-sidebar nav.sidebar-tools > a { height: 36px; opacity: 1; pointer-events: auto; }
+.studio-sidebar nav.sidebar-settings { padding-top: var(--sp-2); border-top: 1px solid var(--border); }
+.sidebar-bottom { flex-direction: row; align-items: center; padding: var(--sp-2) var(--sp-3); border: 0; background: transparent; }
+.sidebar-status { color: var(--text-3); font-weight: 400; }
+
+/* GPU chip + popover in the topbar */
+.gpu-chip-wrap { position: relative; }
+button.gpu-chip { gap: var(--sp-2); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-2); }
+button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var(--text); }
+.gpu-popover {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 40; width: 280px; display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-4); border: 1px solid var(--border-strong); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: var(--shadow-lg);
+  animation: afs-pop var(--dur) var(--ease); transform-origin: top right;
+}
+.gpu-popover .gpu-name { color: var(--text); font-size: var(--fs-base); }
+.gpu-popover .studio-version { white-space: normal; }
+@media (max-width: 760px) { button.gpu-chip { font-size: 0; } }

@@ -1,13 +1,14 @@
+import {AnimatePresence,motion} from 'motion/react';
 import {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {apiFetch,apiUrl} from './api';
 import {isDesktop} from './desktop';
 
+function toastStack(){let stack=document.getElementById('afs-toast-stack');if(!stack){stack=document.createElement('div');stack.id='afs-toast-stack';stack.className='afs-toast-stack';document.body.appendChild(stack);}return stack;}
 export function ToastNotice({message,onDismiss}:{message:string;onDismiss:()=>void}) {
   useEffect(()=>{if(!message)return;const timer=setTimeout(onDismiss,6500);return()=>clearTimeout(timer);},[message]);
-  return message?createPortal(<div className="afs-toast" role="status"><span className="afs-toast-check" aria-hidden="true">✓</span><span>{message}</span><button aria-label="Dismiss notification" onClick={onDismiss}>×</button></div>,document.body):null;
+  return createPortal(<AnimatePresence>{message&&<motion.div key={message} className="afs-toast" role="status" layout initial={{opacity:0,y:16,scale:0.97}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,x:48,transition:{duration:0.18}}} transition={{type:'spring',stiffness:420,damping:32}} drag="x" dragConstraints={{left:0,right:0}} dragElastic={0.6} onDragEnd={(_event,info)=>{if(Math.abs(info.offset.x)>90)onDismiss();}}><span className="afs-toast-check" aria-hidden="true">✓</span><span>{message}</span><button aria-label="Dismiss notification" onClick={onDismiss}>×</button></motion.div>}</AnimatePresence>,toastStack());
 }
-
 type ExportResult={export_directory:string;delivery_scope?:string;files:{name:string;bytes:number;url:string}[]};
 export function AssetExportAction({assetId,artifactId,onChanged}:{assetId:string;artifactId?:string;onChanged?:()=>void}) {
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[result,setResult]=useState<ExportResult|null>(null);
