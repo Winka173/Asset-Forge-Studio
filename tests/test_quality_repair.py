@@ -85,3 +85,27 @@ def test_unavailable_local_evaluator_retains_truthful_receipts(context,monkeypat
     result=model_guard.receipt(jobs.get(check['id']))
     assert result['evaluation_status']=='NOT_EVALUATED' and not result['artistic_approval']
     assert jobs.get(check['id'])['status']=='REVIEW_REQUIRED'
+
+
+def test_exhausted_concept_repairs_continue_with_least_defective_concept_without_user_input(context,monkeypatch):
+    value,item=context;value['automation']['settings']['retry_limit']=0
+    item.update(prompt='Original tower',interpret_prompt=True,reference_ids=[],quality='Maximum')
+    images=[]
+    for index,colour in enumerate(('navy','teal')):
+        path=store.DATA/f'concept{index}.png';Image.new('RGB',(32,32),colour).save(path)
+        images.append(store.add_artifact(path,'concept',f'Concept {index}',dict(project_id='runavelle',asset_id=item['asset_id'])))
+    issues={images[0]['id']:['missing_requested_subject'],images[1]['id']:['multiple_views_or_panels','missing_requested_subject']}
+    def verdict(job):
+        image=next(i for i in images if i['id']==job['payload']['artifact_id'])
+        return dict(source_artifact_id=image['id'],source_sha256=image['sha256'],screening_policy=job['payload']['screening_policy'],suitable_single_asset_image=False,issues=issues[image['id']])
+    monkeypatch.setattr(concept_guard,'receipt',verdict)
+    for _ in images:  # one check is admitted per tick; complete it like the worker would
+        assert concept_guard.filter_choices(value,item,jobs.listing(),images,{}) is None
+        for check in [j for j in jobs.listing() if j['payload']['kind']=='concept_layout' and j['status']=='QUEUED']:
+            for state in ('RUNNING','GENERATED','VALIDATING','REVIEW_REQUIRED'):jobs.transition(check['id'],state)
+    auto={}
+    kept=concept_guard.filter_choices(value,item,jobs.listing(),images,auto)
+    assert [k['id'] for k in kept]==[images[0]['id']]
+    assert auto.get('status')!='blocked' and auto['auto_decisions'][0]['stage']=='concept_layout'
+    assert auto['auto_decisions'][0]['artistic_approval'] is False
+    assert not any(j['payload']['kind']=='concept' for j in jobs.listing())  # no extra repair beyond the limit

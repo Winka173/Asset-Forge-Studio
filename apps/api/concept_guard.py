@@ -21,7 +21,7 @@ def retry_blocked(value,item,request_id):
     if any(j['payload']['kind']=='inference' for j in current):raise HTTPException(409,'3D generation already exists; use a versioned revision instead')
     count=sum(j['payload']['kind']=='concept' for j in current)
     prompt=repair_prompt(item)
-    job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=key,prompt=item['prompt'],interpreted_prompt=prompt,
+    job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=key,prompt=item['prompt'],interpreted_prompt=prompt,directives=[REPAIR_FRAMING],
         style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,batch_id=value['id'],batch_attempt=item['attempt']))
     auto.pop('error',None);auto.pop('concept_selection',None)
     auto.update(status='queued',stage='New concept requested; original prompt and quality preserved')
@@ -32,14 +32,19 @@ def retry_blocked(value,item,request_id):
     return dict(ok=True,job=job,reused=False)
 
 
+# Subject-neutral: architectural wording here turned trees and fountains into buildings.
+REPAIR_FRAMING='Exactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around every extremity and the base.'
+
+
 def repair_prompt(item):
+    """The description a repair concept is conditioned on; framing and repair instructions travel as directives."""
     interpretation=item.get('prompt_interpretation',{})
     prompt=interpretation.get('generation_prompt_en',item['prompt'])
     if interpretation.get('schema_version',0)<4 and interpretation.get('chunks'):
         prompt='\n'.join(r['interpretation']['translated_prompt_en'] for r in interpretation['chunks'])
         subject=interpretation['chunks'][0]['interpretation'].get('requested_subject_en','game asset')
         prompt='A complete '+subject+'. '+prompt
-    return prompt+'\nExactly ONE connected standalone asset, full silhouette visible, one three-quarter camera view. Plain neutral studio background, generous clear space around all roof tips, side walls and foundation.'
+    return prompt
 
 
 def execute(job,folder):
@@ -81,10 +86,14 @@ def filter_choices(value,item,current,choices,auto):
     for image in choices:
         if image['role']!='concept' or image['id'] in item.get('reference_ids',[]):allowed.append(image);continue
         from .quality_evaluation import evaluator_key
-        key=evaluator_key(image,item['prompt'],item.get('asset_generation_spec',{}).get('reference_hashes',[]),'concept_guard.py')
+        from engines.concept_prompt import subject_anchor
+        from engines.quality import fingerprint
+        # Deterministic interpretations carry no chunks; the prompt's readable heading names the subject better than a generic label.
+        subject=(item.get('prompt_interpretation',{}).get('chunks') or [{}])[0].get('interpretation',{}).get('requested_subject_en') or subject_anchor(item['prompt']) or 'game asset'
+        # The checked subject is part of the question, so a verdict for another subject is never reused.
+        key=fingerprint(dict(evaluator=evaluator_key(image,item['prompt'],item.get('asset_generation_spec',{}).get('reference_hashes',[]),'concept_guard.py'),subject_en=subject))
         reports=[j for j in current if j['payload']['kind']=='concept_layout' and j['payload']['artifact_id']==image['id'] and j['payload'].get('evaluation_key')==key]
         if not reports:
-            subject=(item.get('prompt_interpretation',{}).get('chunks') or [{}])[0].get('interpretation',{}).get('requested_subject_en','game asset')
             jobs.enqueue(dict(kind='concept_layout',engine='qwen3_vl_local_cpu',project_id=value['project_id'],asset_id=item['asset_id'],
                 batch_id=value['id'],batch_attempt=item['attempt'],artifact_id=image['id'],source_sha256=image['sha256'],subject_en=subject,
                 original_prompt=item['prompt'],screening_policy=POLICY_VERSION,use_gpu=False,timeout_seconds=900,priority=item.get('priority',0),evaluation_key=key))
@@ -99,18 +108,29 @@ def filter_choices(value,item,current,choices,auto):
     if rejected_ids:
         studio.patch_resolved_specification(item['asset_id'],dict(concept_layout_checks=rejected))
     if allowed or not rejected:return allowed
-    count=len([j for j in current if j['payload']['kind']=='concept'])
+    # Only repair concepts count against the limit; the concept tournament's originals are the first attempt.
+    count=1+len([j for j in current if j['payload']['kind']=='concept' and j['payload'].get('quality_repair')])
     limit=min(2,value['automation']['settings'].get('retry_limit',1))
     from .quality_repair import planner
     images={image['id']:image for image in choices}
     latest=max(rejected,key=lambda r:images[r['source_artifact_id']].get('created_at',''))
     plan=planner.concept(value,item,current,[latest])
     if count<=limit and plan['action']=='repair_concept':
-        prompt=repair_prompt(item)+'\n'+'\n'.join(plan['instructions'])
         job=studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=plan['id'],
-            prompt=item['prompt'],interpreted_prompt=prompt,style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
+            prompt=item['prompt'],interpreted_prompt=repair_prompt(item),directives=[REPAIR_FRAMING,*plan['instructions']],style_reference_ids=item.get('style_reference_ids',[]),quality=item['quality'],seed=42+count,
             batch_id=value['id'],batch_attempt=item['attempt'],quality_repair=plan))
         plan['executed_job_id']=job['id']
         auto.update(status='queued',stage=f'Concept layout repair {count}/{limit}; quality preserved');return None
-    auto.update(status='blocked',stage='Needs Attention / concept layout',error=plan['reason']+'. No 3D inference was started; original concepts retained.')
-    return None
+    # Auto production never waits for a person: continue with the least-defective concepts and record why.
+    fewest=min(len(r.get('issues',[])) for r in rejected)
+    kept=sorted(r['source_artifact_id'] for r in rejected if len(r.get('issues',[]))==fewest)
+    record_decision(auto,dict(stage='concept_layout',decision='Continued with the least-defective concepts after bounded repairs',reason=plan['reason'],
+        kept_artifact_ids=kept,issues=sorted({i for r in rejected if r['source_artifact_id'] in kept for i in r.get('issues',[])})))
+    return [image for image in choices if image['id'] in kept]
+
+
+def record_decision(auto,decision):
+    """Idempotent provenance for an automatic decision that replaced a human checkpoint; never an artistic approval."""
+    decisions=auto.setdefault('auto_decisions',[])
+    if not any(d['stage']==decision['stage'] and d.get('kept_artifact_ids')==decision.get('kept_artifact_ids') for d in decisions):
+        decisions.append(dict(decision,at=store.now(),artistic_approval=False))

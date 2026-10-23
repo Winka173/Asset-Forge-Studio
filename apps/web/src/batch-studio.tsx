@@ -5,7 +5,7 @@ import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch, apiUrl } from "./api";
 import "./batch.css";
-import { TriangleBudgetField } from "./triangle-budget";
+import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
 
 type Reference = { id: string; name: string; role: string; url: string };
@@ -561,6 +561,7 @@ export function BatchStudio({
         preferred_engine: editing.preferred_engine,
         candidates: editing.candidates,
         triangle_budget: editing.triangle_budget ?? null,
+        game_texture_size: editing.triangle_budget ? gameTextureSize() ?? null : null,
         target_outputs: outputsText.split(',').map(s => s.trim()).filter(Boolean),
         confirmed: editing.confirmed && dimensionsValid(editing),
         selected: editing.selected,

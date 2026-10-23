@@ -24,3 +24,8 @@ Không tự đồng ý điều khoản bằng tài khoản người dùng; khôn
 
 - Weights: `h94/IP-Adapter` `sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors` and `models/image_encoder` (OpenCLIP ViT-H/14), cached in the local Hugging Face hub; loaded offline (`local_files_only`). Repository license: Apache-2.0. The OpenCLIP ViT-H/14 image encoder was trained on LAION-2B; commercial use of outputs still follows the SDXL CreativeML Open RAIL++-M terms already recorded for concept generation.
 - Downloaded with explicit user authorization ("làm hết") after the user freed disk space. Not bundled with desktop builds.
+
+## Hunyuan3D-2.1 shape (evaluation install) — 2026-10-23
+
+- Code `Tencent-Hunyuan/Hunyuan3D-2.1` commit `82920d643c0dc2f7bfd7255f45f62d386edfe60c`; weights `tencent/Hunyuan3D-2.1/hunyuan3d-dit-v2-1/model.fp16.ckpt` (7.37 GB, SHA-256 matches Hugging Face); background removal `u2net.onnx`. Installed in `C:\Users\Winka\Tools\hunyuan3d21\` (isolated venv, torch 2.8.0+cu128). Shape only; the paint/texture stack was not installed.
+- Tencent Hunyuan 3D 2.1 Community License: not licensed in the EU, UK or South Korea; royalty-free commercial use except products above 1 M MAU at release need a separate licence; outputs may not be used to improve other AI models; Acceptable Use Policy and Notice must be passed on. Status: evaluation only until benchmarked and accepted.

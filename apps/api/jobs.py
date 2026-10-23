@@ -111,7 +111,7 @@ def ensure_blender(job):
         return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,
             batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
             effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),
-            export_fbx=export_fbx,game_triangle_budget=payload.get('triangle_budget'),render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
+            export_fbx=export_fbx,game_triangle_budget=payload.get('triangle_budget'),game_texture_size=payload.get('game_texture_size'),render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
 
 
 def retry(identifier):

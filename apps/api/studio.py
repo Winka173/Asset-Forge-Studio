@@ -317,6 +317,8 @@ def studio(project_id: str = ''):
 class ConceptInput(BaseModel):
     quality_repair: dict | None = None
     interpreted_prompt: str | None = Field(default=None,max_length=100000)
+    # Kept verbatim in the concept conditioning (framing/repair instructions); only the description is bounded.
+    directives: list[str] = Field(default_factory=list,max_length=12)
     style_reference_ids: list[str] = Field(default_factory=list,max_length=5)
     asset_id: str
     request_id: str = Field(min_length=8,max_length=100)
@@ -348,10 +350,13 @@ def concept(body: ConceptInput):
     if overrides:inherited.append('Asset style overrides: '+json.dumps(overrides,ensure_ascii=False))
     style='; '.join(filter(None,[style,*inherited]))
     from .reference_direction import concept_direction
-    try:directed,reference_direction=concept_direction(body.interpreted_prompt or body.prompt,body.style_reference_ids,value['project_id'])
+    base=body.interpreted_prompt or body.prompt
+    try:directed,reference_direction=concept_direction(base,body.style_reference_ids,value['project_id'])
     except ValueError as exc:raise HTTPException(409,str(exc))
+    # Reference colours/subject hints are appended by concept_direction; they must survive description bounding.
+    suffix=directed[len(base):] if directed.startswith(base) else ''
     from engines.concept_prompt import compose,COMPOSITION_POLICY
-    prompt,negative=compose(directed,style,body.quality)
+    prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives])
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
@@ -404,6 +409,7 @@ class Generate(BaseModel):
     auto_blender: bool = True
     benchmark_height_m: float | None = Field(default=None, gt=0, le=1000)
     triangle_budget: int | None = Field(default=None, ge=500, le=5_000_000)
+    game_texture_size: Literal[1024, 2048, 4096] | None = None
     batch_id: str | None = None
     batch_attempt: int = Field(default=0,ge=0)
     quality_lock: bool | None = None
@@ -455,7 +461,7 @@ def generate(body: Generate):
                    steps=body.steps or (50 if engine == 'triposg' else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
                    texture_size=body.texture_size or (2048 if quality == 'Fast' else 4096),
-                   auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget,
+                   auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget, game_texture_size=body.game_texture_size,
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')
     from engines.quality import resolve, fingerprint

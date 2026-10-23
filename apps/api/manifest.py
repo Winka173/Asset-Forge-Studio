@@ -41,6 +41,8 @@ class ManifestItem(BaseModel):
     triangle_budget: int | None = Field(default=None,ge=500,le=5_000_000)
     # Generated concepts compared before image-to-3D; 0 = by quality (Maximum 3, Balanced 2, Fast 1).
     concept_candidates: int = Field(default=0,ge=0,le=6)
+    # Longest-side cap for the game-ready derivative's textures (graphics target); the master keeps source maps.
+    game_texture_size: Literal[1024,2048,4096] | None = None
     target_outputs: list[Literal['glb','fbx']] = Field(default=['glb'],min_length=1,max_length=2)
     selected: bool = True
     confirmed: bool = False

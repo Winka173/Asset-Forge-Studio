@@ -21,4 +21,5 @@
 
 - Fixed in 0.9.1: terminal concept blockers and quarantined/paused queued stages no longer occupy the logical admission window. Regression tests use injected negative conditions with real SQLite/coordinator logic; this is not a 349-output endurance benchmark.
 
-- 2026-10-23: LOD1–3 still decimate unwelded neural meshes (same tearing seen before the game-ready fix). Game-ready textures stay at source resolution (a 40 k GLB is ~33 MB with 4K maps). Style consistency across assets needs reference-image conditioning; not installed (disk headroom).
+- 2026-10-23: (fixed later the same day) LOD1–3 and game-ready copies weld before decimation; game-ready textures follow the graphics target. Style consistency across assets needs reference-image conditioning; not installed (disk headroom).
+- 2026-10-23: Fixed: the concept layout check asked Qwen3-VL about the generic subject "game asset" when the prompt interpretation was the deterministic fallback (manifest-format prompts such as Runavelle), so correct concepts were rejected as `missing_requested_subject`. It now uses the prompt's readable heading (screening policy 4), the verdict key includes the checked subject, and only repair concepts count toward the repair limit (the 3-image concept tournament no longer exhausts it). An explicitly cancelled stage still blocks its asset until Retry/Regenerate.

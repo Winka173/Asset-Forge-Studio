@@ -80,3 +80,9 @@ export function TriangleBudgetField({ value, prompt, onChange }: { value: number
     </div>
   );
 }
+
+// Texture cap for the game-ready copy, from the remembered graphics target (2K/4K keep the source maps).
+export function gameTextureSize(): 1024 | 2048 | undefined {
+  const target = readTarget();
+  return target === "mobile" ? 1024 : target === "pc1080" ? 2048 : undefined;
+}

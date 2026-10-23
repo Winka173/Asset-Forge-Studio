@@ -7,7 +7,7 @@ import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import {WorkspaceTools,InterfaceSettings,ProjectRecoverySettings,useInterfacePreferences} from "./workspace-tools";
 import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
-import { TriangleBudgetField } from "./triangle-budget";
+import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
@@ -643,7 +643,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,triangle_budget:draft.triangleBudget??undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -690,6 +690,7 @@ export function Studio() {
         auto_blender: draft.autoBlender,
         benchmark_height_m: draft.height,
         triangle_budget: draft.triangleBudget ?? undefined,
+        game_texture_size: draft.triangleBudget ? gameTextureSize() : undefined,
       };
       const key = `afs.request.${projectId}`;
       const previous = JSON.parse(localStorage.getItem(key) || "null");

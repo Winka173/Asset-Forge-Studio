@@ -33,6 +33,14 @@ def select(objects):
         bpy.context.view_layer.objects.active = objects[0]
 
 
+def weld_coincident(obj):
+    """Neural meshes arrive unwelded (UV-split vertices); collapse decimation on them tears holes. Welding coincident
+    positions keeps per-loop UVs, so seams survive while the surface decimates as one connected shell."""
+    weld = bmesh.new(); weld.from_mesh(obj.data)
+    bmesh.ops.remove_doubles(weld, verts=weld.verts, dist=max(max(obj.dimensions), 1e-6) * 1e-6)
+    weld.to_mesh(obj.data); weld.free()
+
+
 def bounds(objects):
     points = [obj.matrix_world @ Vector(v) for obj in objects for v in obj.bound_box]
     return [min(p[i] for p in points) for i in range(3)], [max(p[i] for p in points) for i in range(3)]
@@ -274,7 +282,8 @@ def run(request):
         for obj in objects:
             clone = obj.copy(); clone.data = obj.data.copy(); clone.name = f'{obj.name}_LOD{index}'
             bpy.context.scene.collection.objects.link(clone); duplicates.append(clone)
-            modifier = clone.modifiers.new('candidate_decimation', 'DECIMATE')
+            weld_coincident(clone)
+            modifier = clone.modifiers.new('candidate_decimation', 'DECIMATE'); modifier.use_collapse_triangulate = True
             # Keep a closed-volume minimum on tiny meshes; do not create a one-face LOD.
             triangles = sum(max(0, len(p.vertices)-2) for p in clone.data.polygons)
             modifier.ratio = min(1.0, max(ratio, 8 / max(triangles, 1)))
@@ -295,15 +304,28 @@ def run(request):
         for obj in objects:
             clone = obj.copy(); clone.data = obj.data.copy(); clone.name = f'{obj.name}_GAME'
             bpy.context.scene.collection.objects.link(clone); duplicates.append(clone)
-            # Neural meshes arrive unwelded (UV-split vertices); collapse decimation on them tears holes. Welding coincident
-            # positions keeps per-loop UVs, so seams survive while the surface decimates as one connected shell.
-            weld = bmesh.new(); weld.from_mesh(clone.data)
-            bmesh.ops.remove_doubles(weld, verts=weld.verts, dist=max(max(clone.dimensions), 1e-6) * 1e-6)
-            weld.to_mesh(clone.data); weld.free()
+            weld_coincident(clone)
             modifier = clone.modifiers.new('budget_decimation', 'DECIMATE'); modifier.use_collapse_triangulate = True
             triangles = sum(max(0, len(p.vertices)-2) for p in clone.data.polygons)
             modifier.ratio = min(1.0, max(ratio, 8 / max(triangles, 1)))
             select([clone]); bpy.ops.object.modifier_apply(modifier=modifier.name)
+        texture_cap = request.get('game_texture_size')
+        if texture_cap:
+            # Materials and images are shared with the master; copy them so later renders/exports keep source maps.
+            scaled = {}
+            for clone in duplicates:
+                for slot in clone.material_slots:
+                    if not slot.material: continue
+                    material = slot.material.copy(); slot.material = material
+                    for node in (material.node_tree.nodes if material.use_nodes else []):
+                        image = getattr(node, 'image', None)
+                        if image is None or max(image.size) <= texture_cap: continue
+                        if image.name not in scaled:
+                            copy = image.copy(); factor = texture_cap / max(image.size)
+                            copy.scale(max(1, round(image.size[0] * factor)), max(1, round(image.size[1] * factor)))
+                            scaled[image.name] = copy
+                        node.image = scaled[image.name]
+            game_ready['texture_cap'] = texture_cap; game_ready['textures_scaled'] = sorted(scaled)
         export_glb(output / 'GAME.glb', duplicates)
         game_ready.update(status='DERIVED', ratio=ratio, meshes=mesh_stats(duplicates), surface_error=surface_reference.compare(duplicates), quality='NEEDS_REVIEW')
         for clone in duplicates: bpy.data.objects.remove(clone, do_unlink=True)

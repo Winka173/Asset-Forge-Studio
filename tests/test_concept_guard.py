@@ -65,3 +65,14 @@ def test_manual_concept_retry_is_idempotent_and_preserves_quality(tmp_path,monke
     assert jobs.listing()[0]['payload']['effective_config']['quality']==item['quality']
     stored=batch.batch(stored['id']);stored['paused']=True;batch.save(stored)
     assert client.post('/api/production/control',json=body|dict(request_id='different-paused-retry')).status_code==409
+
+
+def test_layout_check_names_the_manifest_subject_when_interpretation_is_deterministic(tmp_path,monkeypatch,qa_project):
+    monkeypatch.setattr(store,'DATA',tmp_path);qa_project();client=TestClient(app)
+    prompt='# BLD_MANA_WELL_T2_Runic_Conduit — MANA WELL T2 Runic Conduit\n\n**Status:** proposed art contract.'
+    model=client.post('/api/assets',json=dict(project_id='runavelle',name='Mana Well',prompt=prompt)).json()
+    stream=io.BytesIO();Image.new('RGB',(16,16),'navy').save(stream,format='PNG')
+    image=client.post('/api/import/concept',params=dict(project_id='runavelle',asset_id=model['id']),files=dict(file=('source.png',stream.getvalue()))).json()
+    item=dict(asset_id=model['id'],interpret_prompt=True,reference_ids=[],prompt=prompt,attempt=0,prompt_interpretation=dict(chunks=[]))
+    assert concept_guard.filter_choices(dict(id='layout-subject-test',project_id='runavelle'),item,[],[image],{}) is None
+    assert jobs.listing()[0]['payload']['subject_en']=='MANA WELL T2 Runic Conduit'

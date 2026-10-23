@@ -5,7 +5,9 @@ from typing import Literal,Annotated
 from pydantic import BaseModel,ConfigDict,Field
 from . import intent_adapter,local_semantics
 
-POLICY_VERSION=3
+# 4: the checked subject falls back to the manifest heading instead of a generic "game asset".
+# 5: subject-neutral framing question (no roof/wall wording that implies a building).
+POLICY_VERSION=5
 
 
 class ObservedLayout(BaseModel):
@@ -60,7 +62,7 @@ def assess(path,subject,prompt,progress):
         'One connected castle with several towers is ONE asset and is allowed. '
         'For a requested CASTLE, a lone watchtower, small house or close-up entrance without a fortified castle complex is plainly_different. '
         'Fail if the main asset is cropped, absent or plainly a different requested subject. '
-        'The entire asset including roof tips, side walls and contact base must fit inside the image with visible margin. '
+        'The entire asset including every top, side extremity and its contact base must fit inside the image with visible margin. '
         'Fail background_scene when trees, mountains, sky/clouds, other buildings, scenery or an illustrated landscape surround the asset. '
         'A small connected foundation, entrance steps, contact shadow or transparent/flat/neutral studio gradient is allowed. '
         'A black background behind a rendered isolated asset is allowed. Do not mistake the floor shadow for scenery. '
