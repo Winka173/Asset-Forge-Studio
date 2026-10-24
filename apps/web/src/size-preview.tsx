@@ -63,8 +63,9 @@ const MIN = 0.1, MAX = 60;
 const toSlider = (v: number) => Math.log(Math.min(MAX, Math.max(MIN, v)) / MIN) / Math.log(MAX / MIN);
 const fromSlider = (t: number) => round(MIN * Math.pow(MAX / MIN, t));
 
-export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libraryReferences = [], confirmed }: {
-  value: Dims; onChange: (dims: Dims) => void; onConfirm: (dims: Dims) => void; prompt: string; modelUrl?: string; libraryReferences?: SizeReference[]; confirmed: boolean;
+export function SizePreview({ value, onChange, onAuto, prompt, modelUrl, libraryReferences = [], confirmed }: {
+  // onChange is a manual size (the caller marks it user-confirmed); onAuto hands the size back to AI.
+  value: Dims; onChange: (dims: Dims) => void; onAuto: () => void; prompt: string; modelUrl?: string; libraryReferences?: SizeReference[]; confirmed: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string[]>(() => defaultReferences(value.h));
@@ -77,7 +78,7 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
   const [modelAspect, setModelAspect] = useState<{ w: number; d: number } | null>(null); // width/depth per metre of height
   const references = useMemo(() => [...BUILTIN_REFERENCES, ...libraryReferences], [libraryReferences]);
   // Live handles into the scene so dragging and typing never rebuild it.
-  const live = useRef<{ update: (dims: Dims) => void; frame: () => void; dragging: () => boolean } | null>(null);
+  const live = useRef<{ update: (dims: Dims) => void; frame: () => void; dragging: () => boolean; references: (list: SizeReference[]) => void; framed: () => number } | null>(null);
   const latest = useRef({ value, onChange, locked });
   latest.current = { value, onChange, locked };
   const pending = useRef<{ dims: Dims; frame: number } | null>(null);
@@ -91,7 +92,10 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
   };
   useEffect(() => () => { if (pending.current) cancelAnimationFrame(pending.current.frame); }, []);
   const emitRef = useRef(emit); emitRef.current = emit;
-  const sceneKey = JSON.stringify([selected, modelUrl, libraryReferences.map((r) => r.id)]);
+  const chosen = useMemo(() => selected.map((id) => references.find((r) => r.id === id)).filter((r): r is SizeReference => !!r?.url), [selected, references]);
+  const chosenRef = useRef(chosen); chosenRef.current = chosen;
+  // Only a different model rebuilds the scene; references are added and removed in place.
+  const sceneKey = modelUrl ?? "";
 
   useEffect(() => {
     const element = host.current;
@@ -119,16 +123,18 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
       mesh.renderOrder = 10; mesh.userData.axis = axis; scene.add(mesh); return mesh;
     });
     let modelBase: T.Vector3 | null = null;
+    let layout = () => {};  // reference shelf placement, assigned below
     const update = (dims: Dims) => {
       box.scale.set(dims.w, dims.h, dims.d); box.position.y = dims.h / 2; edges.scale.copy(box.scale); edges.position.copy(box.position);
       if (modelBase) { const s = dims.h / Math.max(modelBase.y, 1e-6); model.scale.setScalar(s); }
+      layout();
       const radius = Math.max(0.06, Math.max(dims.w, dims.d, dims.h) * 0.035);
       for (const handle of handles) {
         const axis = handle.userData.axis as Axis; handle.scale.setScalar(radius);
         handle.position.set(axis === "w" ? dims.w / 2 + radius : 0, axis === "h" ? dims.h + radius : dims.h / 2, axis === "d" ? dims.d / 2 + radius : 0);
       }
     };
-    live.current = { update, frame: () => frameAll(), dragging: () => dragging !== null }; update(latest.current.value);
+    live.current = { update, frame: () => frameAll(), dragging: () => dragging !== null, references: (list) => showReferences(list), framed: () => framedSize }; update(latest.current.value);
     if (modelUrl) loader.load(modelUrl, (gltf) => {
       if (disposed) return;
       const m = gltf.scene; const b = new T.Box3().setFromObject(m); const size = b.getSize(new T.Vector3());
@@ -136,33 +142,47 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
       update(latest.current.value); setModelAspect({ w: size.x / Math.max(size.y, 1e-6), d: size.z / Math.max(size.y, 1e-6) });
     }, undefined, () => setModelAspect(null));
 
-    // References to the left of the object, laid out from their real loaded bounds.
-    const chosen = selected.map((id) => references.find((r) => r.id === id)).filter((r): r is SizeReference => !!r?.url);
-    const failed: string[] = [];
+    // References stand to the left of the object at their real height. Loaded once, then shown or hidden in place.
+    const shelf = new T.Group(); scene.add(shelf);
+    const loaded = new Map<string, Promise<T.Object3D | null>>();
+    let visible: T.Object3D[] = [];
+    let request = 0;
     let frameAll = () => {};
-    Promise.all(chosen.map((ref) => new Promise<T.Object3D | null>((resolve) => loader.load(ref.url!, (gltf) => resolve(gltf.scene), undefined, () => { failed.push(ref.id); resolve(null); })))).then((models) => {
-      if (disposed) return;
-      setMissing(failed);
+    let framedSize = 0;
+    layout = () => {
       let cursor = -Math.max(latest.current.value.w, 1) / 2 - 1.5;
-      models.forEach((m, index) => {
-        if (!m) return;
-        const ref = chosen[index]; const b = new T.Box3().setFromObject(m); const size = b.getSize(new T.Vector3());
-        m.scale.setScalar(ref.dims.h / Math.max(size.y, 1e-6));
-        const b2 = new T.Box3().setFromObject(m); const width = b2.max.x - b2.min.x;
-        m.position.set(cursor - width / 2 - (b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2); cursor -= width + 1.5;
-        scene.add(m);
+      for (const m of visible) {
+        const b = new T.Box3().setFromObject(m); const width = b.max.x - b.min.x;
+        m.position.x += cursor - width / 2 - (b.min.x + b.max.x) / 2; cursor -= width + 1.5;
+      }
+    };
+    const showReferences = (list: SizeReference[]) => {
+      const token = ++request;
+      Promise.all(list.map((ref) => {
+        if (!loaded.has(ref.url!)) loaded.set(ref.url!, new Promise((resolve) => loader.load(ref.url!, (gltf) => {
+          const m = gltf.scene; const b = new T.Box3().setFromObject(m); const size = b.getSize(new T.Vector3());
+          m.scale.setScalar(ref.dims.h / Math.max(size.y, 1e-6));
+          const b2 = new T.Box3().setFromObject(m); m.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+          resolve(m);
+        }, undefined, () => resolve(null))));
+        return loaded.get(ref.url!)!;
+      })).then((models) => {
+        if (disposed || token !== request) return;
+        setMissing(list.filter((_, i) => !models[i]).map((r) => r.id));
+        shelf.clear(); visible = models.filter((m): m is T.Object3D => !!m); visible.forEach((m) => shelf.add(m)); layout();
+        if (!framedSize) frameAll();  // frame once when the scene opens; toggling references keeps the view
       });
-      frameAll();
-    });
+    };
     const grid = new T.GridHelper(400, 400, 0x55585f, 0x33363c); scene.add(grid);
     frameAll = () => {
-      const all = new T.Box3().expandByObject(target); scene.children.forEach((c) => { if (c.type === "Group" || c.type === "Object3D") all.expandByObject(c); });
+      framedSize = Math.max(latest.current.value.w, latest.current.value.d, latest.current.value.h);
+      const all = new T.Box3().expandByObject(target).expandByObject(shelf);
       all.expandByPoint(new T.Vector3(0, latest.current.value.h, 0));
       const center = all.getCenter(new T.Vector3()); const extent = all.getSize(new T.Vector3());
       const distance = Math.max(extent.x, extent.y * 1.4, 2) * 1.25;
       camera.position.set(center.x + distance * 0.3, center.y + distance * 0.35, distance); controls.target.copy(center); controls.update();
     };
-    frameAll();
+    showReferences(chosenRef.current);
 
     // Dragging a handle resizes along its axis on a camera-facing plane through that axis.
     const raycaster = new T.Raycaster(); const pointer = new T.Vector2();
@@ -186,7 +206,7 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
       const next = keep && !modelUrl ? { w: round(current.w * size / current[dragging]), d: round(current.d * size / current[dragging]), h: round(current.h * size / current[dragging]) } : { ...current, [dragging]: size };
       emitRef.current(next);
     };
-    const up = (event: PointerEvent) => { if (!dragging) return; dragging = null; controls.enabled = true; renderer.domElement.releasePointerCapture(event.pointerId); frameAll(); };
+    const up = (event: PointerEvent) => { if (!dragging) return; dragging = null; controls.enabled = true; renderer.domElement.releasePointerCapture(event.pointerId); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointermove", move); renderer.domElement.addEventListener("pointerup", up);
 
     const resize = () => { const { clientWidth: w, clientHeight: h } = element; renderer.setSize(w, h, false); camera.aspect = w / Math.max(h, 1); camera.updateProjectionMatrix(); };
@@ -206,9 +226,14 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sceneKey]);
+  useEffect(() => { live.current?.references(chosen); }, [chosen]);
   useEffect(() => {
     live.current?.update(value);
-    const timer = window.setTimeout(() => { if (live.current && !live.current.dragging()) live.current.frame(); }, 350);
+    const timer = window.setTimeout(() => {
+      const current = live.current; if (!current || current.dragging()) return;
+      const size = Math.max(value.w, value.d, value.h), framed = current.framed();
+      if (!framed || size > framed * 1.5 || size < framed / 3) current.frame();
+    }, 350);
     return () => window.clearTimeout(timer);
   }, [value]);
 
@@ -236,6 +261,10 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
         </div>
       </div>
       <div className="size-preview-controls">
+        <label className="size-preview-ai">
+          <input type="checkbox" role="switch" checked={!confirmed} onChange={(e) => (e.target.checked ? onAuto() : onChange(shown))} />
+          <span><strong>Let AI decide the size</strong><small>{confirmed ? "Off: your size is used exactly. Turn on to return to the suggested size." : `Suggested ${suggested.w} × ${suggested.d} × ${suggested.h} m. Editing any size switches this off.`}</small></span>
+        </label>
         <div className="size-preview-dims">
           {AXES.map(({ axis, label }) => (
             <label key={axis}>{label} (m)
@@ -263,10 +292,7 @@ export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libr
             {libraryReferences.filter((r) => selected.includes(r.id)).map((r) => <button key={r.id} type="button" aria-pressed onClick={() => toggle(r.id)}>{r.label} ✕</button>)}
           </div>
         )}
-        <div className="size-preview-actions">
-          <button type="button" className="text-button" onClick={() => onChange(suggested)}>Suggested size</button>
-          <button type="button" className="btn-accent" onClick={() => onConfirm(shown)}>{confirmed ? "Size confirmed ✓" : "Use this size"}</button>
-        </div>
+
       </div>
     </div>
   );

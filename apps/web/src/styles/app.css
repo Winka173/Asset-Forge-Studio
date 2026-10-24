@@ -459,3 +459,7 @@ button.dashboard-row .production-dot { margin-top: 0; }
 .reference-picker-grid button.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 .reference-picker-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .reference-picker-none { display: grid; place-items: center; height: 100%; font-size: 11px; color: var(--text-2); padding: 4px; text-align: center; }
+.size-preview-ai { display: flex; align-items: flex-start; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface-2); cursor: pointer; }
+.size-preview-ai input { margin-top: 3px; }
+.size-preview-ai span { display: grid; gap: 2px; }
+.size-preview-ai small { color: var(--text-2); }

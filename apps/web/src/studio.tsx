@@ -1258,11 +1258,11 @@ export function Studio() {
                   {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
                     const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);
                       return spec?.target_height_m&&glb?[{id:a.id,label:a.name,url:apiUrl(glb.url),dims:{w:spec.target_width_m??1,d:spec.target_depth_m??1,h:spec.target_height_m}}]:[];}).slice(0,12);
-                    return <div className="create-size"><p className="create-size-status">{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"confirmed — the delivered model is scaled to this height":"suggested — press Use this size to apply it, or continue and AI sizes it"}`}</p>
+                    return <div className="create-size"><p className="create-size-status">{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"your size — the delivered model is scaled to this height":"AI decides — this is the suggestion; AI may refine it from the prompt"}`}</p>
                       <SizePreview value={dims} prompt={draft.prompt} confirmed={!!draft.sizeConfirmed} libraryReferences={libraryReferences}
                         modelUrl={candidate?.metadata.stage==="blender_processed"?apiUrl(candidate.url):undefined}
-                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:false})}
-                        onConfirm={next=>{change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true});setNotice(`Size set to ${next.w} × ${next.d} × ${next.h} m. The delivered model is scaled to this height.`);}}/>
+                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true})}
+                        onAuto={()=>change({width:null,depth:null,height:project?.target_height_m??null,sizeConfirmed:false})}/>
                     </div>;})()}
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(1)}>Back</button><button className="primary" onClick={()=>setCreateStep(3)}>Continue to options <Icon name="Arrow" size={17}/></button></div>
                   </div>}
