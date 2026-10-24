@@ -11,17 +11,26 @@ from . import jobs, store
 router = APIRouter(prefix='/api')
 
 
+def host_status():
+    # RAM, CPU and library-disk headroom for the top bar; a heavy TRELLIS stage needs about 36 GB of free RAM.
+    import psutil, shutil
+    memory = psutil.virtual_memory(); disk = shutil.disk_usage(store.DATA)
+    return dict(ram_used_gib=round((memory.total - memory.available) / 2**30, 1), ram_total_gib=round(memory.total / 2**30, 1), ram_available_gib=round(memory.available / 2**30, 1),
+                cpu_percent=psutil.cpu_percent(interval=None), disk_free_gib=round(disk.free / 2**30, 1), disk_total_gib=round(disk.total / 2**30, 1))
+
+
 @router.get('/gpu')
 def gpu_status(response: Response):
     import subprocess
     response.headers['Cache-Control'] = 'no-store'
+    host = host_status()
     try:
         result = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.used,memory.total,utilization.gpu', '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=5)
         if result.returncode: raise ValueError('nvidia-smi failed')
         parts = result.stdout.splitlines()[0].split(',')
-        return dict(available=True, sampled_at=store.now(), name=parts[0].strip(), used_mib=float(parts[1]), total_mib=float(parts[2]), utilization_percent=float(parts[3]))
+        return dict(available=True, sampled_at=store.now(), name=parts[0].strip(), used_mib=float(parts[1]), total_mib=float(parts[2]), utilization_percent=float(parts[3]), host=host)
     except (OSError, ValueError, IndexError, subprocess.TimeoutExpired):
-        return dict(available=False, reason='Không đọc được GPU local')
+        return dict(available=False, reason='Không đọc được GPU local', host=host)
 
 
 def project(identifier):

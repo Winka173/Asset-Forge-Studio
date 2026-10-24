@@ -68,3 +68,13 @@ def test_finalize_keeps_only_the_delivered_glb_rig_and_thumbnail(tmp_path, monke
     left = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob('*') if p.is_file() and p.suffix != '.sqlite' and 'jobs' in p.parts)
     assert left == ['jobs/bl/output/LOD0.glb', 'jobs/bl/output/fit_three_quarter.png', 'jobs/bl/output/report.json', 'jobs/rig/output/rigged.glb']
     assert shipped.is_file() and studio.asset(aid)['concept_artifact_id'] is None
+
+
+def test_keep_final_preview_lists_reasons_and_refuses_undelivered_assets(tmp_path, monkeypatch, qa_project):
+    from fastapi.testclient import TestClient
+    from apps.api.main import app
+    monkeypatch.setattr(store, 'DATA', tmp_path); qa_project(); client = TestClient(app)
+    model = client.post('/api/assets', json=dict(project_id='runavelle', name='Shed', prompt='A shed')).json()
+    plans = client.post('/api/production/finalize/preview', json=dict(asset_ids=[model['id']])).json()
+    assert plans[0]['eligible'] is False and 'delivered' in plans[0]['reason'] and 'doomed' not in plans[0]
+    assert client.post('/api/production/finalize', json=dict(asset_ids=[model['id']])).status_code == 409

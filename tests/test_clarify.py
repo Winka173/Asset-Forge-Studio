@@ -15,7 +15,7 @@ QUESTIONS = [dict(id='kind', question='Loại rồng?', options=['Phương Tây'
 def client(tmp_path, monkeypatch, qa_project):
     monkeypatch.setattr(store, 'DATA', tmp_path); qa_project()
     monkeypatch.setattr(intent_adapter, 'available', lambda: True)
-    monkeypatch.setattr(clarify, 'ask', lambda prompt, style: QUESTIONS)
+    monkeypatch.setattr(clarify, 'ask', lambda prompt, style, asked=(): QUESTIONS)
     return TestClient(app)
 
 
@@ -55,7 +55,7 @@ def test_switch_off_never_asks(client):
 
 
 def test_detailed_prompt_without_questions_continues(client, monkeypatch):
-    monkeypatch.setattr(clarify, 'ask', lambda prompt, style: [])
+    monkeypatch.setattr(clarify, 'ask', lambda prompt, style, asked=(): [])
     asset_id, group = start(client, True)
     run_questions(asset_id); automation.advance(group)
     assert sorted(kinds(asset_id)) == ['prompt_analysis', 'prompt_questions']
@@ -67,3 +67,28 @@ def test_traits_the_request_already_names_are_not_asked():
     size = Question(id='size_role', question='Kích thước và vai trò?', options=['Boss', 'Prop'], importance=10)
     assert already_stated(colour, 'boss 1 con rồng khổng lồ đỏ') and already_stated(size, 'boss 1 con rồng khổng lồ đỏ')
     assert not already_stated(colour, 'tạo 1 con rồng') and not already_stated(size, 'a dragon')
+
+
+def test_answers_get_a_follow_up_round_until_nothing_important_is_left(client, monkeypatch):
+    asset_id, group = start(client, True)
+    run_questions(asset_id); automation.advance(group)
+    # Answering without handing anything to AI triggers a follow-up check that knows what was asked.
+    seen = {}
+    def follow_up(prompt, style, asked=()):
+        seen.update(prompt=prompt, asked=list(asked))
+        return [dict(id='kind', question='Loại rồng?', options=['A', 'B'], importance=9), dict(id='wing', question='Cánh rách hay lành?', options=['Rách', 'Lành'], importance=7)]
+    monkeypatch.setattr(clarify, 'ask', follow_up)
+    state = client.post(f'/api/batches/{group}/items/{asset_id}/answers', json=dict(answers=dict(kind='Wyvern', colour='Đỏ', pose='Bay'))).json()
+    assert state['state'] == 'followup' and state['round'] == 2 and 'prompt_analysis' not in kinds(asset_id)
+    round_two = [j for j in jobs.listing() if j['payload'].get('asset_id') == asset_id and j['payload'].get('round') == 2]
+    assert round_two and 'Loại rồng? Wyvern' in round_two[0]['payload']['prompt']
+    from apps.api.clarify import execute
+    folder = store.DATA / 'jobs' / round_two[0]['id']; folder.mkdir(parents=True, exist_ok=True); jobs.transition(round_two[0]['id'], 'RUNNING'); execute(round_two[0], folder)
+    automation.advance(group)
+    item = next(i for i in batch.batch(group)['items'] if i['asset_id'] == asset_id)
+    # The repeated question is dropped; only the new one is asked.
+    assert [q['id'] for q in item['clarification']['questions']] == ['wing'] and seen['asked'] == ['Loại rồng?', 'Màu chủ đạo?', 'Tư thế?']
+    state = client.post(f'/api/batches/{group}/items/{asset_id}/answers', json=dict(answers={}, ai_decides_from='wing')).json()
+    assert state['state'] == 'answered'
+    analysis = next(j for j in jobs.listing() if j['payload'].get('asset_id') == asset_id and j['payload']['kind'] == 'prompt_analysis')
+    assert 'Loại rồng? Wyvern' in analysis['payload']['original_prompt'] and 'Tư thế? Bay' in analysis['payload']['original_prompt']

@@ -8,11 +8,13 @@ from . import jobs, store
 from engines import clarify
 
 router = APIRouter(prefix='/api/batches')
+# A follow-up round runs only when the user answered without handing the rest to AI.
+MAX_ROUNDS = 3
 
 
 def execute(job, folder):
     payload = job['payload']; warnings = []
-    try: questions = clarify.ask(payload['prompt'], payload.get('project_style', ''))
+    try: questions = clarify.ask(payload['prompt'], payload.get('project_style', ''), payload.get('asked', []))
     except Exception as exc:  # Questions are optional; Auto continues and decides.
         questions = []; warnings.append('Questions unavailable; Auto decides: ' + str(exc)[:300])
     target = folder / 'questions.json'; temporary = folder / 'questions.json.part'
@@ -27,26 +29,36 @@ def style_summary(snapshot):
 def admit(value, item, current, auto):
     """True while this asset waits for its questions (or the user's answers). Other assets keep running."""
     if not item.get('allow_questions') or not item.get('interpret_prompt'): return False
-    if (item.get('clarification') or {}).get('state') in ('answered', 'none'): return False
-    done = [j for j in current if j['payload']['kind'] == 'prompt_questions' and j['status'] in jobs.TERMINAL]
+    state = item.get('clarification') or {}
+    if state.get('state') in ('answered', 'none'): return False
+    if state.get('state') == 'waiting': auto.update(status='waiting_for_answers', stage='Waiting for your answers (other assets continue)'); return True
+    round_ = state.get('round', 1)
+    mine = [j for j in current if j['payload']['kind'] == 'prompt_questions' and j['payload'].get('round', 1) == round_]
+    done = [j for j in mine if j['status'] in jobs.TERMINAL]
     if not done:
-        if not any(j['payload']['kind'] == 'prompt_questions' for j in current):
+        if not mine:
             snapshot = value.get('style_snapshot') or {}
             jobs.enqueue(dict(kind='prompt_questions', engine='qwen3_vl_local_cpu', project_id=value['project_id'], asset_id=item['asset_id'], batch_id=value['id'],
-                              batch_attempt=item['attempt'], prompt=item.get('resolved_prompt') or item['prompt'], project_style=style_summary(snapshot), use_gpu=False, timeout_seconds=900, priority=item.get('priority', 0)))
-        auto.update(status='queued', stage='Prepare questions about the request / local CPU'); return True
+                              batch_attempt=item['attempt'], prompt=(item.get('resolved_prompt') or item['prompt']) + confirmed(state), round=round_,
+                              asked=[q['question'] for q in state.get('asked', [])], project_style=style_summary(snapshot), use_gpu=False, timeout_seconds=900, priority=item.get('priority', 0)))
+        auto.update(status='queued', stage=('Prepare questions' if round_ == 1 else f'Check the answers (round {round_})') + ' / local CPU'); return True
     path = store.DATA / 'jobs' / done[-1]['id'] / 'questions.json'
-    questions = json.loads(path.read_text(encoding='utf-8'))['questions'] if path.is_file() else []
+    asked = {q['id'] for q in state.get('asked', [])} | {q['question'].casefold() for q in state.get('asked', [])}
+    questions = [q for q in (json.loads(path.read_text(encoding='utf-8'))['questions'] if path.is_file() else []) if q['id'] not in asked and q['question'].casefold() not in asked]
     if not questions:
-        item['clarification'] = dict(state='none', questions=[]); return False
-    item['clarification'] = dict(state='waiting', questions=questions, asked_at=(item.get('clarification') or {}).get('asked_at') or store.now())
+        state.update(state='answered' if state.get('asked') else 'none', questions=[]); item['clarification'] = state; return False
+    item['clarification'] = state | dict(state='waiting', round=round_, questions=questions, asked_at=store.now())
     auto.update(status='waiting_for_answers', stage='Waiting for your answers (other assets continue)'); return True
 
 
+def confirmed(state):
+    return clarify.details(state.get('asked', []), state.get('answers', {}))
+
+
 def analysis_text(item):
-    """The immutable original prompt plus the user's confirmed answers; this is what prompt analysis reads."""
+    """The immutable original prompt plus every answer the user confirmed; this is what prompt analysis reads."""
     state = item.get('clarification') or {}
-    return item['prompt'] + (clarify.details(state.get('questions', []), state.get('answers', {})) if state.get('state') == 'answered' else '')
+    return item['prompt'] + (confirmed(state) if state.get('state') == 'answered' else '')
 
 
 class Answers(BaseModel):
@@ -65,7 +77,12 @@ def answer(identifier: str, asset_id: str, body: Answers):
         ids = [q['id'] for q in state['questions']]
         cut = ids.index(body.ai_decides_from) if body.ai_decides_from in ids else len(ids)
         answers = {k: v[:500] for k, v in body.answers.items() if k in ids[:cut] and v.strip()}
-        state.update(state='answered', answers=answers, ai_decides=ids[cut:] + [k for k in ids[:cut] if k not in answers], answered_at=store.now())
+        delegated = ids[cut:] + [k for k in ids[:cut] if k not in answers]
+        state.update(asked=state.get('asked', []) + state['questions'], answers=state.get('answers', {}) | answers,
+                     ai_decides=state.get('ai_decides', []) + delegated, questions=[], answered_at=store.now())
+        # Another round only checks real answers; handing anything to AI ends the questions.
+        followup = bool(answers) and not body.ai_decides_from and state.get('round', 1) < MAX_ROUNDS
+        state.update(state='followup', round=state.get('round', 1) + 1) if followup else state.update(state='answered')
         batch.save(value)
     automation.advance(identifier)
     return state

@@ -70,13 +70,55 @@ def job_summary(j):
     return {k:j.get(k) for k in ('id','status','created_at','updated_at','progress','error')}|dict(kind=j['payload']['kind'],engine=j['payload'].get('engine'),seed=j['payload'].get('seed'),artifact_id=j['payload'].get('artifact_id'),asset_id=j['payload'].get('asset_id'),project_id=j['payload'].get('project_id'),batch_id=j['payload'].get('batch_id'),batch_attempt=j['payload'].get('batch_attempt',0),priority=j['payload'].get('priority',0),paused=j['payload'].get('production_paused',False))
 
 
-def item_summary(i,group,all_jobs,all_paused=False,model=None):
+def wait_context(all_jobs,models):
+    """Shared facts for explaining why waiting assets have not started."""
+    with store.connect() as db:row=db.execute('SELECT payload FROM drafts WHERE project_id=?',('__afs_production__',)).fetchone()
+    pause=json.loads(row['payload']) if row else {}
+    running=[j for j in all_jobs if j['status'] not in jobs.TERMINAL|{'QUEUED'}]
+    queued=[j for j in all_jobs if j['status']=='QUEUED']
+    name=lambda j:(models.get(j['payload'].get('asset_id')) or {}).get('name') or 'another asset'
+    return dict(paused_since=pause.get('updated_at') if pause.get('paused') else None,running=running,queued=queued,name=name)
+
+
+def wait_reason(i,group,related,auto,context):
+    """Why a started asset is not running right now (None while it runs or is finished)."""
+    if not context or not i.get('started') or auto.get('status') in ('exported','completed','failed','blocked','cancelled'):return None
+    if any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related):return None
+    if context['paused_since']:
+        return dict(code='paused_all',since=context['paused_since'],message='All production is paused. Press Resume all to continue.')
+    if group['paused'] or i.get('production_paused'):return dict(code='paused',message='This asset or its batch is paused. Press Resume to continue.')
+    if auto.get('status')=='waiting_for_answers':return dict(code='questions',message='Waiting for your answers to its questions.')
+    waiting=next((j for j in related if j['status']=='QUEUED'),None)
+    if waiting:
+        progress=waiting.get('progress') or {}
+        if progress.get('reason_code') in ('HOST_RAM_ADMISSION','HOST_COMMIT_ADMISSION'):return dict(code='ram',message=progress.get('stage') or 'Waiting for free memory.')
+        kind=jobs.resource_class(waiting['payload'])
+        busy=[j for j in context['running'] if jobs.resource_class(j['payload'])==kind]
+        if busy:
+            score=scheduling_score(waiting,waiting['payload'].get('priority',0))
+            ahead=sum(1 for j in context['queued'] if j['id']!=waiting['id'] and jobs.resource_class(j['payload'])==kind and eligible(j['payload']) and scheduling_score(j,j['payload'].get('priority',0))>score)
+            current=busy[0];stage=(current.get('progress') or {}).get('stage') or current['payload']['kind']
+            where='the GPU' if kind=='gpu' else 'a CPU slot'
+            return dict(code=kind,message=f"Waiting for {where}: {context['name'](current)} is running ({stage}). {ahead} waiting ahead of this asset.",ahead=ahead)
+        return dict(code='queued',message='Queued; starting shortly.')
+    stage=auto.get('stage') or ''
+    if 'dependency' in stage.lower():
+        return dict(code='dependency',message='Waiting for assets it depends on: '+', '.join(i.get('dependencies',[])[:4])+'.')
+    if auto.get('status') in ('queued','running',None) and i.get('started'):
+        others=sum(1 for j in context['running']+context['queued'] if j['payload'].get('batch_id')==group['id'] and j['payload'].get('asset_id')!=i['asset_id'])
+        if others:return dict(code='slot',message=f"Waiting for a free production slot; other assets in this batch are in progress ({stage or 'pending'}).")
+    return None
+
+
+def item_summary(i,group,all_jobs,all_paused=False,model=None,context=None):
     related=[j for j in all_jobs if j['payload'].get('asset_id')==i['asset_id'] and j['payload'].get('batch_id')==group['id'] and j['payload'].get('batch_attempt',0)==i.get('attempt',0) and j['payload'].get('kind')!='rig']
     revisions=(model or {}).get('revisions',[])
     if revisions:
         revision_jobs=[j for j in all_jobs if j['id'] in revisions[-1].get('job_ids',[])]
         if revision_jobs and max(j['created_at'] for j in revision_jobs)>=max((j['created_at'] for j in related),default=''):
             related=revision_jobs
+        elif not revision_jobs and revisions[-1].get('state') not in ('published','staged','cancelled','failed') and revisions[-1].get('created_at','')>max((j['created_at'] for j in related),default=''):
+            related=[]  # a new prompt was just submitted: show its pipeline as pending, not the previous result
     retried={j['payload'].get('retry_of') for j in related};related=[j for j in related if j['id'] not in retried]
     auto=i.get('automation',{});status=auto.get('status') or ('running' if any(j['status'] not in jobs.TERMINAL for j in related) else 'draft')
     active=any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related)
@@ -85,21 +127,22 @@ def item_summary(i,group,all_jobs,all_paused=False,model=None):
     if paused and i.get('started') and status!='cancelled' and status not in ('exported','completed','failed','blocked'):status='pausing' if active else 'paused'
     running=next((j for j in related if j['status'] not in jobs.TERMINAL|{'QUEUED'}),None)
     stage=(running.get('progress') or {}).get('stage') if running else None
-    return dict(id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=stage or auto.get('stage'),current_stage=stage or auto.get('stage'),attempt=i.get('attempt',0),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
+    waiting=wait_reason(i,group,related,auto,context)
+    return dict(waiting=waiting,id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=stage or auto.get('stage'),current_stage=stage or auto.get('stage'),attempt=i.get('attempt',0),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
 
 
 @router.get('')
 def overview():
     from .statuses import refresh_all,FIELDS
     models=refresh_all()
-    all_jobs=jobs.listing();groups=[];all_paused=global_paused();seen=set()
+    all_jobs=jobs.listing();groups=[];all_paused=global_paused();seen=set();context=wait_context(all_jobs,models)
     with store.connect() as db:projects={r['id']:json.loads(r['payload'])['name'] for r in db.execute('SELECT id,payload FROM projects')}
     for value in batches():
         if value.get('revision_of'):continue
         # Imported drafts are shown only after explicit generation admission.
         if not any(i.get('started') for i in value['items']) and not any(j['payload'].get('batch_id')==value['id'] for j in all_jobs):continue
         admitted={j['payload'].get('asset_id') for j in all_jobs if j['payload'].get('batch_id')==value['id']}
-        items=[item_summary(i,value,all_jobs,all_paused,models.get(i['asset_id'])) for i in value['items'] if i['asset_id'] not in seen and (i.get('started') or i['asset_id'] in admitted)]
+        items=[item_summary(i,value,all_jobs,all_paused,models.get(i['asset_id']),context) for i in value['items'] if i['asset_id'] not in seen and (i.get('started') or i['asset_id'] in admitted)]
         if not items:continue
         seen.update(i['id'] for i in items)
         for i in items:
@@ -127,7 +170,7 @@ def overview():
         leaves=[j for j in history if j['id'] not in retried]
         current=next((j for j in leaves if j['status'] not in jobs.TERMINAL),leaves[0]);root=history[-1]
         loose.append(job_summary(current)|dict(id=root['id'],display_name=models.get(asset_id,{}).get('name',asset_id),jobs=[job_summary(j) for j in leaves])|{key:models.get(asset_id,{}).get(key) for key in FIELDS})
-    return dict(groups=groups,standalone=loose,paused=all_paused,gpu_concurrency=1,updated_at=store.now())
+    return dict(groups=groups,standalone=loose,paused=all_paused,paused_since=context['paused_since'],gpu_concurrency=1,updated_at=store.now())
 
 
 def artifact_info(a):return {k:a.get(k) for k in ('id','name','role','url','sha256','metadata','created_at')}

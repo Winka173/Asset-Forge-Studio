@@ -172,3 +172,18 @@ def test_standalone_stages_are_nested_and_asset_pause_survives_handoff(client):
     assert production.eligible(jobs.get(third['id'])['payload'])
     client.post('/api/production/control',json=body|dict(action='cancel'))
     assert all(jobs.get(j['id'])['status']=='CANCELLED' for j in (second,third))
+
+
+def test_waiting_assets_explain_what_they_wait_for(client):
+    model=client.post('/api/assets',json=dict(project_id='runavelle',name='Tower',prompt='A stone tower')).json()
+    client.post('/api/automation/single',json=dict(asset_id=model['id'],request_id='wait-reason-0001',quality='Maximum',engine='trellis2_community',seeds=[42]))
+    waiting=lambda:next(i for g in client.get('/api/production').json()['groups'] for i in g['items'] if i['id']==model['id'])['waiting']
+    assert client.post('/api/production/control',json=dict(scope='all',action='pause')).status_code==200
+    reason=waiting();assert reason['code']=='paused_all' and reason['since']
+    assert client.post('/api/production/control',json=dict(scope='all',action='resume')).status_code==200
+    # Another asset holds the GPU: the queued stage names it.
+    other=client.post('/api/assets',json=dict(project_id='runavelle',name='Castle',prompt='A castle')).json()
+    busy=jobs.enqueue(dict(kind='inference',engine='trellis2_community',asset_id=other['id'],project_id='runavelle'));jobs.transition(busy['id'],'RUNNING')
+    mine=[j for j in jobs.listing() if j['payload'].get('asset_id')==model['id'] and j['status']=='QUEUED']
+    assert mine and jobs.resource_class(mine[0]['payload'])=='gpu'
+    reason=waiting();assert reason['code']=='gpu' and 'Castle' in reason['message']

@@ -444,7 +444,7 @@ def advance(identifier):
                     model['published_artifact_id']=winner['artifact_id'];model.setdefault('publication_history',[]).append(dict(artifact_id=winner['artifact_id'],export_id=exported['id'],at=store.now(),action='automatic_delivery',sha256=winner['sha256']))
                 model.setdefault('settings',{})['automatic_selection']=winner
                 if not staged and intermediates.enabled(studio.project(value['project_id'])):
-                    model['settings']['intermediate_cleanup']=intermediates.prune(item['asset_id'],export_settings)
+                    model['settings']['intermediate_cleanup']=intermediates.prune(item['asset_id'],export_settings);intermediates.forget(item['asset_id'])
                 studio.save_asset(model)
             except RouteWaiting as exc:
                 auto.update(status='queued',stage=exc.hold['reason'],waiting_engine_key=exc.hold['health_key']);auto.pop('error',None)

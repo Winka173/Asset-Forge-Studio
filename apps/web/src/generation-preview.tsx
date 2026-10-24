@@ -1,7 +1,7 @@
 import './generation-preview.css';
 
 /** Activity artwork, never a streamed mesh or an estimate of inference completion. */
-export function GenerationPreview({stage,reference,onPipeline,state='running',onRetry}:{stage:string;reference?:{name:string;url:string};onPipeline:()=>void;state?:'running'|'waiting'|'paused'|'blocked';onRetry?:()=>void}) {
+export function GenerationPreview({stage,state='running',onRetry}:{stage:string;state?:'running'|'waiting'|'paused'|'blocked';onRetry?:()=>void}) {
  return <div className="generation-preview" data-state={state} aria-label="Asset generation activity">
   <div className="generation-preview-art" aria-hidden="true">
    <div className="generation-preview-halo" />
@@ -22,8 +22,6 @@ export function GenerationPreview({stage,reference,onPipeline,state='running',on
    <h2>{state==='blocked'?'Asset needs attention':state==='paused'?'Your progress is saved':state==='waiting'?'Your asset is in the queue':'Building your asset'}</h2><p>{stage}</p>
    <small>The full 3D model appears after processing, validation and delivery finish. Intermediate images stay as thumbnails.</small>
   </div>
-  <button className="generation-preview-details" onClick={onPipeline}>View pipeline <span aria-hidden="true">↗</span></button>
   {onRetry&&<button className="generation-preview-details" onClick={onRetry}>Try another concept</button>}
-  {reference&&<div className="generation-preview-reference"><img src={reference.url} alt="Input thumbnail"/><span>Source thumbnail<small>{reference.name}</small></span></div>}
  </div>;
 }

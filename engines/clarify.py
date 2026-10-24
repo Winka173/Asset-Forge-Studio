@@ -27,7 +27,7 @@ def vietnamese(text):
     return bool(re.search(r'[ăâđêôơưạảãáàặẳẵắằậẩẫấầẹẻẽéèệểễếềịỉĩíìọỏõóòộổỗốồợởỡớờụủũúùựửữứừỵỷỹýỳ]', text, re.I))
 
 
-def ask(prompt, project_style):
+def ask(prompt, project_style, asked=()):
     selected = intent_adapter.model()
     language = 'Vietnamese' if vietnamese(prompt) else 'English'
     # A few words name only the subject; a longer request usually fixes most visual traits already.
@@ -44,7 +44,9 @@ def ask(prompt, project_style):
             f'At most {LIMIT} questions, most important first (importance 10 = changes the silhouette). '
             + amount +
             f'Write question and options in {language}; 2-4 short concrete options each; ids are short snake_case words.')),
-            dict(role='user', content=f'Request: {prompt}\nProject style: {project_style or "none"}')]), timeout=600)
+            dict(role='user', content=f'Request: {prompt}\nProject style: {project_style or "none"}' + (
+                '\nAlready asked (never repeat; ask a follow-up only if an answer above is unclear, contradictory or opens a new important visual choice): '
+                + '; '.join(asked) if asked else ''))]), timeout=600)
     found = Questions.model_validate_json(answer['message']['content']).questions
     unique = [q for q in {q.id: q for q in found}.values() if not already_stated(q, prompt)]
     return [q.model_dump() for q in sorted(unique, key=lambda q: -q.importance)][:LIMIT]

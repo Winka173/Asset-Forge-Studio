@@ -77,6 +77,14 @@ def image_input(path):
     return base64.b64encode(stream.getvalue()).decode('ascii')
 
 
+def aggregate_role(has_images,usage,roles):
+    # Rebuilding the supplied image needs an explicit 'source' verdict. A request the model found unrelated
+    # to the image ('none') keeps it as colour/material style only, so it can never replace the subject's shape.
+    if not has_images:return 'none'
+    if usage in ('source','style'):return usage
+    return 'source' if 'source' in roles else 'style'
+
+
 def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,checkpoint=lambda value:None,prior=None):
     from apps.api import store
     started=time.monotonic();selected=model();records=[];images=[]
@@ -171,8 +179,7 @@ def interpret(prompt,references,project,usage,progress,cancelled=lambda:False,ch
         checkpoint(dict(signature=signature,chunks=answers))
     current=next((m for m in local_semantics.probe()['models'] if m['name']==selected['name']),None)
     if not current or current['digest']!=selected['digest']:raise ValueError('Interpreter model changed during analysis')
-    roles={r['interpretation']['reference_role'] for r in answers}
-    role='none' if not images else usage if usage in ('source','style') else 'style' if 'style' in roles else 'source'
+    role=aggregate_role(bool(images),usage,{r['interpretation']['reference_role'] for r in answers})
     # Image-ready descriptions lead CLIP conditioning; translations and original
     # source remain immutable in the record. If a description drops a number,
     # retain the full translation too instead of silently losing constraints.

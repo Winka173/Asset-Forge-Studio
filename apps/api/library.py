@@ -50,6 +50,8 @@ def thumbnail_source(artifacts):
 @router.get('')
 def listing(project_id:str,search:str='',category:str='',status:str='',qa:str='',art:str='',published:str='',favorite:bool=False,sort:str='recent',archived:bool=False,offset:int=0,limit:int=1000):
     models,artifacts=data(project_id);values=[]
+    from .intermediates import disk_usage
+    usage=disk_usage([m['id'] for m in models if bool(m.get('archived'))==archived])
     for m in models:
         if bool(m.get('archived'))!=archived:continue
         mine=[a for a in artifacts if a.get('asset_id')==m['id']];candidates=[a for a in mine if a['role']=='candidate'];latest=next((a for a in reversed(candidates) if a['metadata'].get('stage')=='blender_processed'),candidates[-1] if candidates else None)
@@ -57,7 +59,9 @@ def listing(project_id:str,search:str='',category:str='',status:str='',qa:str=''
         if latest:
             p=store.safe_path(latest['relative_path']);size=p.stat().st_size if p.exists() else 0
         value={k:m.get(k) for k in ('id','project_id','asset_type','name','category','tags','favorite','updated_at','archived','master_artifact_id','published_artifact_id',*statuses.FIELDS)}
-        value.update(source_id=m.get('settings',{}).get('source_asset_id'),thumbnail_url=f'/api/library/assets/{m["id"]}/thumbnail' if kind else None,thumbnail_kind=kind,latest_artifact_id=latest['id'] if latest else None,triangles=latest['metadata'].get('triangles') if latest else None,bytes=size,version_count=max(1+len(m.get('revisions',[])),len(m.get('fx_recipe_versions',[])),len(m.get('scene_versions',[])),sum(a['role']=='world_plan' for a in mine)),candidate_count=len(candidates),published=bool(m.get('published_artifact_id') or m.get('production_status')=='completed' and m.get('export_status')=='exported' and not m.get('revisions')))
+        measured=(latest or {}).get('metadata',{}).get('dimensions_xyz_m')
+        # glTF is Y-up: width X, depth Z, height Y.
+        value.update(disk_bytes=usage.get(m['id'],0),finalized=bool(m.get('finalized')),dimensions_m=dict(w=round(measured[0],2),d=round(measured[2],2),h=round(measured[1],2)) if measured else None,source_id=m.get('settings',{}).get('source_asset_id'),thumbnail_url=f'/api/library/assets/{m["id"]}/thumbnail' if kind else None,thumbnail_kind=kind,latest_artifact_id=latest['id'] if latest else None,triangles=latest['metadata'].get('triangles') if latest else None,bytes=size,version_count=max(1+len(m.get('revisions',[])),len(m.get('fx_recipe_versions',[])),len(m.get('scene_versions',[])),sum(a['role']=='world_plan' for a in mine)),candidate_count=len(candidates),published=bool(m.get('published_artifact_id') or m.get('production_status')=='completed' and m.get('export_status')=='exported' and not m.get('revisions')))
         hay=' '.join([m['name'],m.get('settings',{}).get('source_asset_id',''),m.get('category',''),*m.get('tags',[])])
         if search and search.casefold() not in hay.casefold():continue
         if favorite and not m.get('favorite'):continue

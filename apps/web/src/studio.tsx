@@ -1,3 +1,4 @@
+import {Check as IcCheck,Save as IcSave,Shuffle as IcShuffle,WandSparkles as IcWandSparkles} from "lucide-react";
 import {ToastNotice} from './workspace-feedback';
 import {VideoStudio} from './video-studio';
 import {LocalToolsSettings,useStartupToolDetection} from "./local-tools";
@@ -11,6 +12,7 @@ import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { StyleProfileCard } from "./style-profile";
 import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
 import { PromptExamples } from "./prompt-examples";
+import { ImagePicker } from "./image-picker";
 import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -271,6 +273,7 @@ export function Studio() {
     [sort, setSort] = useState("recent");
   const [gpu, setGpu] = useState<{
     available: boolean;
+    host?: { ram_used_gib: number; ram_total_gib: number; ram_available_gib: number; cpu_percent: number; disk_free_gib: number; disk_total_gib: number };
     name?: string;
     used_mib?: number;
     total_mib?: number;
@@ -1008,7 +1011,7 @@ export function Studio() {
                 title={`${p==='Home'?'Projects':p} · Alt+${pages.indexOf(p) + 1}`}
                 data-tooltip={p==='Home'?'Projects':p}
                 aria-keyshortcuts={`Alt+${pages.indexOf(p) + 1}`}
-                onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:undefined}
+                onClick={p==='Create'?(event)=>{event.preventDefault();newAsset();}:p==='Library'?()=>{try{localStorage.setItem(`afs.library.open.${projectId}`,'');}catch{/* view state only */}dispatchEvent(new Event('afs-library-home'));}:undefined}
               >
                 {page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}
                 <Icon name={p} size={18} />
@@ -1049,6 +1052,11 @@ export function Studio() {
           </div>
           <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
 
+            {gpu?.host&&(()=>{const h=gpu.host;const tight=h.ram_available_gib<36;const low=h.disk_free_gib<50;return <div className="host-chips" aria-label="Machine resources">
+              <span className={`host-chip${tight?' warn':''}`} title={`RAM ${h.ram_used_gib} of ${h.ram_total_gib} GB used, ${h.ram_available_gib} GB free.${tight?' A 3D (TRELLIS) stage needs about 36 GB free and may wait or page to disk.':''}`}>RAM {h.ram_used_gib} / {h.ram_total_gib} GB</span>
+              <span className="host-chip" title="CPU load">CPU {Math.round(h.cpu_percent)}%</span>
+              <span className={`host-chip${low?' warn':''}`} title={`Library disk: ${h.disk_free_gib} GB free of ${h.disk_total_gib} GB. Each delivered asset keeps about 160 MB after working-file cleanup.`}>Disk {h.disk_free_gib} GB free</span>
+            </div>;})()}
             <div className="gpu-chip-wrap" ref={gpuRef}>
               <button className="quiet-button gpu-chip" aria-expanded={gpuOpen} aria-label="GPU status" onClick={()=>setGpuOpen(v=>!v)}>
                 <span className="live-dot" />
@@ -1269,7 +1277,7 @@ export function Studio() {
                   {createStep===3&&<div className="create-settings-step">
                   <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <div className="generate-actions">
-                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept needs your approval</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Concept approval saved. You can create 3D now.');})}>Approve concept</button></div>}
+                    {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept needs your approval</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Concept approval saved. You can create 3D now.');})}><IcCheck size={15} aria-hidden="true"/>Approve concept</button></div>}
                     <button
                       className="primary generate-button"
                       disabled={
@@ -1346,7 +1354,7 @@ export function Studio() {
                       }
                     >
                       <option value="auto">
-                        Auto · best verified local fit
+                        Auto · TRELLIS.2 first (current default)
                       </option>
                       {engines
                         .filter((e) =>
@@ -1467,7 +1475,7 @@ export function Studio() {
                         })
                       }
                     >
-                      Save draft to library
+                      <IcSave size={15} aria-hidden="true"/>Save draft to library
                     </button>
                   </div>
                   </details>
@@ -1672,7 +1680,7 @@ export function Studio() {
                               );
                             }}
                           >
-                            Variations
+                            <IcShuffle size={15} aria-hidden="true"/>Variations
                           </button>
                           <button className="btn-accent"
                             disabled={!candidate || busy}
@@ -1695,7 +1703,7 @@ export function Studio() {
                               })
                             }
                           >
-                            Enhance in Blender
+                            <IcWandSparkles size={15} aria-hidden="true"/>Enhance in Blender
                           </button>
                           <button
                             disabled={!candidate || busy}
@@ -1917,53 +1925,13 @@ export function Studio() {
                   </details>
                   <label className="studio-field">
                     Project cover
-                    <Select
-                      aria-label="Project cover"
-                      value={project?.cover_artifact_id || ""}
-                      onChange={(e) =>
-                        run(async () => {
-                          await request(`/api/projects/${projectId}`, {
-                            ...project,
-                            cover_artifact_id: e.target.value || null,
-                          });
-                          await reload();
-                        })
-                      }
-                    >
-                      <option value="">Default concept</option>
-                      {data.artifacts
-                        .filter((a) =>
-                          ["concept", "reference"].includes(a.role),
-                        )
-                        .map((a) => (
-                          <option value={a.id} key={a.id}>
-                            {a.name}
-                          </option>
-                        ))}
-                    </Select>
+                    <ImagePicker label="Project cover" noneLabel="Default concept" images={data.artifacts.filter((a) => ["concept", "reference"].includes(a.role))} value={project?.cover_artifact_id || ""}
+                      onChange={(id) => run(async () => { await request(`/api/projects/${projectId}`, { ...project, cover_artifact_id: id || null }); await reload(); })} />
                   </label>
                   <label className="studio-field">
                     Style anchor
-                    <Select
-                      aria-label="Style anchor"
-                      value={(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id || ""}
-                      onChange={(e) =>
-                        run(async () => {
-                          await request(`/api/projects/${projectId}`, { ...project, style_anchor_artifact_id: e.target.value || null });
-                          await reload();
-                          setNotice(e.target.value ? "Style anchor saved. New concepts in this project follow its look." : "Style anchor removed.");
-                        })
-                      }
-                    >
-                      <option value="" data-description="Concepts follow the prompt and Art Bible text only.">No style anchor</option>
-                      {data.artifacts
-                        .filter((a) => ["concept", "reference"].includes(a.role))
-                        .map((a) => (
-                          <option value={a.id} key={a.id} data-description="New concepts take palette, materials and rendering style from this image; the prompt still decides the subject.">
-                            {a.name}
-                          </option>
-                        ))}
-                    </Select>
+                    <ImagePicker label="Style anchor" noneLabel="No style anchor" images={data.artifacts.filter((a) => ["concept", "reference"].includes(a.role))} value={(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id || ""}
+                      onChange={(id) => run(async () => { await request(`/api/projects/${projectId}`, { ...project, style_anchor_artifact_id: id || null }); await reload(); setNotice(id ? "Style anchor saved. New concepts in this project follow its look." : "Style anchor removed."); })} />
                     <small>Pick an approved asset image. Every new concept in this game follows its style.</small>
                   </label>
                   {(project as Project & {style_anchor_artifact_id?: string | null})?.style_anchor_artifact_id && (
@@ -2357,7 +2325,7 @@ export function Studio() {
                     })
                   }
                 >
-                  Approve this master
+                  <IcCheck size={15} aria-hidden="true"/>Approve this master
                 </button>
               </>
             )}

@@ -1,3 +1,4 @@
+import {ArrowUpToLine as IcArrowUpToLine,CircleX as IcCircleX,Copy as IcCopy,Download as IcDownload,Eye as IcEye,FolderOpen as IcFolderOpen,Pencil as IcPencil,RefreshCw as IcRefreshCw,RotateCcw as IcRotateCcw,Save as IcSave,SkipForward as IcSkipForward} from "lucide-react";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import { Select } from "./select";
 import { ActivityIndicator } from "./activity-indicator";
@@ -8,7 +9,7 @@ import "./batch.css";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
 import { ScaleLineup } from "./scale-lineup";
-import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
+import { AllowQuestionsSwitch, openQuestions, useAllowQuestions } from "./questions";
 import { PromptExamples } from "./prompt-examples";
 
 type Reference = { id: string; name: string; role: string; url: string };
@@ -363,7 +364,9 @@ export function BatchStudio({
         const id = list.find((b) => b.id === saved)?.id;
         if (id) {
           const detail = await call<Batch>(`/api/batches/${id}`);
-          if (alive) adopt(detail);
+          // Only an unsubmitted batch reopens; a submitted one lives in Production and Saved batches.
+          if (alive && !detail.items.some((item) => item.started)) adopt(detail);
+          else try { localStorage.removeItem(`afs.batch.selected.${projectId}`); } catch { /* selection is view state only */ }
         }
       })
       .catch((e) => {
@@ -481,7 +484,7 @@ export function BatchStudio({
     await call(path,{...payload,request_id:requestId,regenerate_completed:true});
     localStorage.removeItem(key);
   }
-  const [allowQuestions] = useAllowQuestions();
+  const [allowQuestions] = useAllowQuestions("batch");
   async function runBatch(ids = selectedItems.map((item) => item.asset_id)) {
     if (!batch) return;
     await execute(async () => {
@@ -630,7 +633,9 @@ export function BatchStudio({
                   setBatch(null);
                   setSelectedBatch("");
                   selectedRef.current = "";
-                  try { localStorage.removeItem(`afs.batch.selected.${projectId}`); } catch { /* In-memory selection still clears. */ }
+                  try { localStorage.removeItem(`afs.batch.selected.${projectId}`); localStorage.removeItem(`afs.batch.draft.${projectId}`); } catch { /* In-memory selection still clears. */ }
+                  // A new batch starts from an empty brief, not the previous batch's prompt and file.
+                  uploadedFile.current = null; setName(""); setPrompt(""); setSourceFile(null);
                   return;
                 }
                 adopt(await call<Batch>(`/api/batches/${e.target.value}`));
@@ -793,9 +798,9 @@ export function BatchStudio({
                 >
                   {batch.paused ? "Resume batch" : "Pause batch"}
                 </button>
-                <button className="secondary btn-danger" disabled={busy} onClick={()=>control('cancel')}>Cancel batch</button>
-                <button className="secondary btn-info" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}>Retry failed</button>
-                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}>Skip failed</button></>}
+                <button className="secondary btn-danger" disabled={busy} onClick={()=>control('cancel')}><IcCircleX size={15} aria-hidden="true"/>Cancel batch</button>
+                <button className="secondary btn-info" disabled={busy || !batch.items.some(failed)} onClick={()=>control('retry_failed')}><IcRotateCcw size={15} aria-hidden="true"/>Retry failed</button>
+                <button className="secondary" disabled={busy || !batch.items.some(failed)} onClick={()=>control('skip_failed')}><IcSkipForward size={15} aria-hidden="true"/>Skip failed</button></>}
                 <button
                   className={selectedItems.length>0&&selectedItems.length<batch.items.length?'primary':'secondary'}
                   disabled={
@@ -809,10 +814,10 @@ export function BatchStudio({
                   <Glyph kind="play" />
                   Generate Selected ({selectedItems.length})
                 </button>
-                {automatic&&<AllowQuestionsSwitch/>}
+                {automatic&&<AllowQuestionsSwitch scope="batch"/>}
               </div>
             <details className="batch-delivery-settings"><summary>Export settings <span>GLB Only by default</span></summary><BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/></details>
-            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate all</span><span>No GPU starts until Generate</span></div>
+            <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate all</span>{(()=>{const asking=batch.items.filter(item=>(item as {clarification?:{state?:string}}).clarification?.state==="waiting").length;return asking?<button type="button" className="questions-badge" onClick={()=>openQuestions()}>{asking} need your answers</button>:null;})()}<span>No GPU starts until Generate</span></div>
             <details className="batch-scale-lineup"><summary>Scale lineup <span>sizes are set automatically after prompt analysis</span></summary>
               <ScaleLineup batchId={batch.id} refreshKey={batch.items.map(i=>`${i.asset_id}:${i.target_height_m}:${i.selected}`).join('|')} onSelect={id=>{const item=batch.items.find(i=>i.asset_id===id);if(item)edit(item);}}/>
             </details>
@@ -885,14 +890,14 @@ export function BatchStudio({
                     })
                   }
                 >
-                  Retry selected issues
+                  <IcRotateCcw size={15} aria-hidden="true"/>Retry selected issues
                 </button>
                 <button
                   className="text-button"
                   disabled={busy}
                   onClick={() => control("duplicate")}
                 >
-                  Duplicate config
+                  <IcCopy size={15} aria-hidden="true"/>Duplicate config
                 </button>
               </div>
             </div>
@@ -1004,7 +1009,7 @@ export function BatchStudio({
                         </span>
                         <span className="batch-row-meta">
                           {item.automation?.stage && <span>Stage: {item.automation.stage} · </span>}
-                          {item.automation?.export && <span className="batch-row-meta">Exported: {item.automation.export.filename} · {(item.automation.export.files.reduce((sum,file)=>sum+file.bytes,0)/1048576).toFixed(1)} MB <a href={apiUrl(item.automation.export.files.find(file=>file.name.endsWith('.glb'))?.url)} download>GLB</a><button className="text-button" onClick={()=>{if(window.__TAURI__)window.__TAURI__.core.invoke('desktop_open_export_directory',{path:item.automation!.export!.export_directory}).catch(error=>setError(String(error)));}}>Open folder</button></span>}
+                          {item.automation?.export && <span className="batch-row-meta">Exported: {item.automation.export.filename} · {(item.automation.export.files.reduce((sum,file)=>sum+file.bytes,0)/1048576).toFixed(1)} MB <a href={apiUrl(item.automation.export.files.find(file=>file.name.endsWith('.glb'))?.url)} download>GLB</a><button className="text-button" onClick={()=>{if(window.__TAURI__)window.__TAURI__.core.invoke('desktop_open_export_directory',{path:item.automation!.export!.export_directory}).catch(error=>setError(String(error)));}}><IcFolderOpen size={15} aria-hidden="true"/>Open folder</button></span>}
                           {item.automation?.error && <span className="error-text">{item.automation.error}</span>}
                           {item.versions?.length || 0} saved version
                           {item.versions?.length !== 1 ? "s" : ""}
@@ -1012,7 +1017,7 @@ export function BatchStudio({
                       </td>
                       <td>
                         <div className="batch-row-actions">
-                          <button className="batch-edit-action" title="Edit this asset prompt, dimensions and generation settings. Does not start generation." onClick={() => edit(item)}>Edit settings</button>
+                          <button className="batch-edit-action" title="Edit this asset prompt, dimensions and generation settings. Does not start generation." onClick={() => edit(item)}><IcPencil size={15} aria-hidden="true"/>Edit settings</button>
                           {item.concept_artifact_id &&
                             (["Concept Ready", "Awaiting Approval"].includes(
                               item.status,
@@ -1026,7 +1031,7 @@ export function BatchStudio({
                                   setNotes("");
                                 }}
                               >
-                                Review concept
+                                <IcEye size={15} aria-hidden="true"/>Review concept
                               </button>
                             )}
                           {item.versions?.length > 0 && (
@@ -1036,28 +1041,16 @@ export function BatchStudio({
                               onClick={() => onOpenAsset?.(item.asset_id)}
                               disabled={!onOpenAsset}
                             >
-                              Review candidates
+                              <IcEye size={15} aria-hidden="true"/>Review candidates
                             </button>
                           )}
-                          {item.automation?.stage==='Review before export' && <button className="batch-deliver-action" title="Authorize the existing validated result to continue export. This does not regenerate the asset." disabled={busy} onClick={()=>itemAction(item,'authorize_export')}>Continue export</button>}
-                          <Select
-                            aria-label={`Actions ${item.name}`}
-                            title="Queue actions: prioritize, skip, retry the interrupted checkpoint, or explicitly regenerate a new version."
-                            value=""
-                            disabled={busy}
-                            onChange={(e) => {
-                              if (e.target.value)
-                                itemAction(item, e.target.value);
-                            }}
-                          >
-                            <option value="">More…</option>
-                            <option value="prioritize">Prioritize</option>
-                            <option value="skip">Skip asset</option>
-                            <option value="retry">Retry checkpoint</option>
-                            <option value="regenerate">
-                              Regenerate explicitly
-                            </option>
-                          </Select>
+                          {item.automation?.stage==='Review before export' && <button className="batch-deliver-action" title="Authorize the existing validated result to continue export. This does not regenerate the asset." disabled={busy} onClick={()=>itemAction(item,'authorize_export')}><IcDownload size={15} aria-hidden="true"/>Continue export</button>}
+                          <span className="batch-row-actions" role="group" aria-label={`Actions ${item.name}`}>
+                            <button type="button" className="icon-button" disabled={busy} title="Prioritize: run this asset next" aria-label={`Prioritize ${item.name}`} onClick={() => itemAction(item, "prioritize")}><IcArrowUpToLine size={15} aria-hidden="true"/></button>
+                            <button type="button" className="icon-button" disabled={busy} title="Skip this asset" aria-label={`Skip ${item.name}`} onClick={() => itemAction(item, "skip")}><IcSkipForward size={15} aria-hidden="true"/></button>
+                            <button type="button" className="icon-button" disabled={busy} title="Retry the interrupted checkpoint" aria-label={`Retry ${item.name}`} onClick={() => itemAction(item, "retry")}><IcRotateCcw size={15} aria-hidden="true"/></button>
+                            <button type="button" className="icon-button" disabled={busy} title="Regenerate a new version explicitly" aria-label={`Regenerate ${item.name}`} onClick={() => itemAction(item, "regenerate")}><IcRefreshCw size={15} aria-hidden="true"/></button>
+                          </span>
                         </div>
                       </td>
                     </tr>
@@ -1133,14 +1126,14 @@ export function BatchStudio({
                 disabled={busy}
                 onClick={() => control("cancel")}
               >
-                Cancel batch jobs
+                <IcCircleX size={15} aria-hidden="true"/>Cancel batch jobs
               </button>
             </section>
             <section className="batch-export">
               <div className="batch-panel-title">
                 <h2>Export what exists.</h2>
               </div>
-              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}>Export all completed</button></div>
+              <div className="batch-run-actions"><button className="primary" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'selected'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors, ${result.skipped.length} without validated outputs. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}><IcDownload size={15} aria-hidden="true"/>Export selected</button><button className="secondary btn-info" disabled={busy} onClick={()=>execute(async()=>{const result=await call<{status:string;completed:unknown[];errors:{error:string}[];skipped:unknown[]}>(`/api/export-profiles/batches/${batch.id}`,{selection:'all_completed'});setNotice(`${result.status}: ${result.completed.length} exported, ${result.errors.length} errors. No AI restarted.`);if(result.errors.length)setError(result.errors.map(item=>item.error).join('\n'));})}><IcDownload size={15} aria-hidden="true"/>Export all completed</button></div>
               <p>
                 The ZIP contains only real generated outputs. Failed assets or assets without a mesh are never presented as finished models.
               </p>
@@ -1428,7 +1421,7 @@ export function BatchStudio({
                 }
                 onClick={saveItem}
               >
-                Save specifications
+                <IcSave size={15} aria-hidden="true"/>Save specifications
               </button>
             </div>
           </section>
