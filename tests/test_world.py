@@ -105,3 +105,16 @@ def test_legacy_world_original_prompt_recovers_from_first_immutable_source(clien
     stored=studio.asset(value['id']);assert stored['original_prompt']==plan['prompt']
     assert stored['original_prompt_sha256']==hashlib.sha256(plan['prompt'].encode()).hexdigest()
     assert len(client.get('/api/world/assets/'+value['id']).json()['plans'])==2
+
+
+def test_one_click_map_records_an_automatic_technical_approval_and_queues_the_build(client,monkeypatch):
+    from apps.api import studio,world
+    monkeypatch.setattr(world,'generate',lambda identifier,body:dict(status='QUEUED',plan=identifier,request=body.request_id))
+    body=dict(project_id='runavelle',name='Two lanes',prompt='Two-lane tower-defense map',width_m=128,depth_m=128,seed=7,request_id='world-auto-qa-1')
+    result=client.post('/api/world/auto',json=body).json()
+    asset=studio.asset(result['asset_id']);approvals=asset['settings']['world_plan_approvals']
+    assert result['build']['plan']==result['plan_id'] and result['approval']=='automatic technical'
+    assert [a['kind'] for a in approvals]==['automatic'] and 'Not an artistic approval' in approvals[0]['notes']
+    # Retrying the same click reuses the saved plan and does not stack approvals.
+    again=client.post('/api/world/auto',json=body).json()
+    assert again['plan_id']==result['plan_id'] and len(studio.asset(result['asset_id'])['settings']['world_plan_approvals'])==1

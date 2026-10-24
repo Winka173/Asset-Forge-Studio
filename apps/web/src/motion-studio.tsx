@@ -1,0 +1,32 @@
+import {Download as IcDownload,ExternalLink as IcExternalLink,PersonStanding as IcPerson} from "lucide-react";
+import {useEffect,useState} from 'react';
+import {apiUrl} from './api';
+import {ErrorNotice} from './error-notice';
+import {managementCall} from './asset-management';
+type Clip={id:string;role:string;name:string;url:string;metadata:{job_id?:string;frames?:number;fps?:number;joints?:number}};
+type Job={id:string;status:string;error?:string;progress?:{stage:string}};
+type Caps={installed:boolean;license:string;needs:{vram_gb:string;free_ram_gb:number;disk_gb:number};limitations:string[]};
+const busy=(j?:Job)=>Boolean(j&&!['REVIEW_REQUIRED','FAILED','BLOCKED','CANCELLED'].includes(j.status));
+
+export function MotionStudio({projectId,assetId,onSaved,onProduction}:{projectId:string;assetId?:string;onSaved:(id:string)=>void;onProduction:(jobId:string)=>void}){
+ const [caps,setCaps]=useState<Caps|null>(null),[prompt,setPrompt]=useState(''),[duration,setDuration]=useState(4),[seed,setSeed]=useState(42),[characters,setCharacters]=useState<{id:string;name:string}[]>([]),[character,setCharacter]=useState(''),[view,setView]=useState<{clips:Clip[];jobs:Job[]}|null>(null),[error,setError]=useState(''),[sending,setSending]=useState(false);
+ useEffect(()=>{managementCall<Caps>('/api/motion/capabilities').then(setCaps).catch(e=>setError(String(e)));managementCall<{id:string;name:string}[]>(`/api/motion/characters?project_id=${encodeURIComponent(projectId)}`).then(setCharacters).catch(()=>setCharacters([]));},[projectId]);
+ useEffect(()=>{if(!assetId)return;let alive=true;const load=()=>managementCall<{clips:Clip[];jobs:Job[]}>(`/api/motion/assets/${assetId}`).then(v=>{if(alive)setView(v);}).catch(e=>{if(alive)setError(String(e));});load();const timer=setInterval(load,4000);return()=>{alive=false;clearInterval(timer);};},[assetId]);
+ const job=view?.jobs.at(-1),clips=(view?.clips||[]).filter(c=>c.metadata.job_id===job?.id);
+ async function generate(){if(sending)return;setSending(true);setError('');try{const body={project_id:projectId,prompt,duration,seed,character_artifact_id:character||null,asset_id:assetId||null},key='afs.motion.'+projectId,signature=JSON.stringify(body);let prior;try{prior=JSON.parse(localStorage.getItem(key)||'null');}catch{}const request_id=prior?.signature===signature?prior.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({signature,id:request_id}));const result=await managementCall<{asset_id:string}>('/api/motion',{...body,request_id});onSaved(result.asset_id);}catch(e){setError(String(e));}finally{setSending(false);}}
+ return <section className="fx-studio motion-studio" aria-label="Motion studio">
+  <header><div className="overline">TEXT TO MOTION / KIMODO (EXPERIMENTAL)</div><h2>Animation clip</h2><p>Describe a movement. Kimodo generates it on a standard humanoid skeleton and Blender exports FBX and GLB clips.</p></header>
+  {error&&<ErrorNotice message={error} onDismiss={()=>setError('')}/>}
+  {caps&&!caps.installed&&<p role="status" className="world-notice">Kimodo is not installed. Run scripts/install_kimodo.sh (about {caps.needs.disk_gb} GB).</p>}
+  <label className="studio-field">Describe the movement<textarea aria-label="Motion description" value={prompt} onChange={e=>setPrompt(e.target.value)} rows={3} placeholder="A knight swings a sword overhead, then steps back"/><small>Several actions in a row: separate them with full stops.</small></label>
+  <div className="fx-flipbook-options">
+   <label className="studio-field">Length (seconds)<input type="number" aria-label="Motion length" min={1} max={10} step={0.5} value={duration} onChange={e=>setDuration(Math.min(10,Math.max(1,Number(e.target.value)||4)))}/></label>
+   <label className="studio-field">Apply to character<select aria-label="Character for the motion" value={character} onChange={e=>setCharacter(e.target.value)}><option value="">Skeleton only</option>{characters.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select><small>{characters.length?'Auto-rigged characters in this game.':'No auto-rigged character yet.'}</small></label>
+   <label className="studio-field">Seed<input type="number" aria-label="Motion seed" min={0} value={seed} onChange={e=>setSeed(Math.max(0,Math.floor(Number(e.target.value)||0)))}/></label>
+  </div>
+  <button className="primary" disabled={sending||busy(job)||!caps?.installed||prompt.trim().length<3} onClick={generate}><IcPerson size={15} aria-hidden="true"/>{sending?'Queuing...':busy(job)?'Generating...':'Generate motion'}</button>
+  {job&&<p role="status" className="fx-job-status">{job.status==='REVIEW_REQUIRED'?'Clip exported and checked. Not an artistic approval.':job.error||job.progress?.stage||job.status} <button className="quiet-button" onClick={()=>onProduction(job.id)}><IcExternalLink size={14} aria-hidden="true"/>Production</button></p>}
+  {clips.length>0&&<div className="fx-downloads">{clips.map(c=><a key={c.id} className="quiet-button" href={apiUrl(c.url)} download={c.name}><IcDownload size={14} aria-hidden="true"/>{c.name}</a>)}</div>}
+  {caps&&<details><summary>Needs and limits</summary><p className="fx-hint">GPU: {caps.needs.vram_gb} GB VRAM, about {caps.needs.free_ram_gb} GB free RAM. {caps.license}.</p><ul>{caps.limitations.map(l=><li key={l}>{l}</li>)}</ul></details>}
+ </section>;
+}

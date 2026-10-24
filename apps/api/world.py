@@ -176,3 +176,28 @@ def export_world(identifier:str,body:ExportWorld):
         db.execute('INSERT INTO asset_exports VALUES (?,?,?)',(result['id'],identifier,json.dumps({k:v for k,v in result.items() if k!='id'})))
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',(body.request_id,request_hash,json.dumps(result)))
     return studio.output_files(result)
+
+
+class AutoWorld(Preview):
+    asset_id:str|None=None
+    request_id:str=Field(min_length=8,max_length=100)
+
+
+@router.post('/auto',status_code=201)
+def auto(body:AutoWorld):
+    """Prompt -> map in one click: plan, save, automatic technical layout approval, native build (same steps as the manual flow).
+
+    The automatic approval only records that the deterministic layout passed its terrain/prop checks; it is not an
+    artistic approval, and the manual Review steps remain available for anyone who wants to check the layout first."""
+    from engines.world_editor import code_hashes
+    preview_body=Preview(**{k:getattr(body,k) for k in Preview.model_fields})
+    plan=WorldPlan.model_validate(preview(preview_body)['plan'])
+    saved=save_plan(SavePlan(plan=plan,asset_id=body.asset_id,request_id=body.request_id+':plan'))
+    record=saved['artifact'];asset=studio.asset(saved['asset_id'])
+    authorization=dict(artifact_id=record['id'],sha256=record['sha256'],generator_hash=fingerprint(code_hashes()),reviewer='Auto (technical layout checks)',
+        notes='Automatic: terrain and prop checks passed. Not an artistic approval.',created_at=store.now(),kind='automatic',
+        scope='this exact procedural layout/config only; not production artistic approval')
+    entries=asset.setdefault('settings',{}).setdefault('world_plan_approvals',[])
+    if not any(a.get('artifact_id')==record['id'] and a.get('kind')=='automatic' for a in entries):entries.append(authorization);studio.save_asset(asset)
+    job=generate(record['id'],Generate(request_id=body.request_id+':build'))
+    return dict(asset_id=saved['asset_id'],plan_id=record['id'],build=job,approval='automatic technical')

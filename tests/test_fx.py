@@ -12,7 +12,8 @@ def test_plan_explicit_values_provenance_and_no_gpu_admission(client):
     r=client.post('/api/fx/plan',json=dict(project_id='runavelle',prompt='Ice sword slash, 3 seconds',overrides=dict(intensity=2.1))).json()
     assert r['recipe']['element']=='ice' and r['recipe']['duration']==3 and r['recipe']['intensity']==2.1
     assert r['provenance']['element']['kind']=='explicit' and r['provenance']['segments']['kind']=='defaulted' and jobs.listing()==[]
-    assert client.post('/api/fx/plan',json=dict(project_id='runavelle',prompt='fire and ice')).status_code==422
+    # Two elements no longer block: the first named leads (see test_planning_decides_instead_of_blocking).
+    assert client.post('/api/fx/plan',json=dict(project_id='runavelle',prompt='fire and ice')).json()['recipe']['element']=='fire'
     assert client.post('/api/fx/plan',json=dict(project_id='runavelle',overrides=dict(project_id='other'))).status_code==422
 
 def test_recipe_versions_idempotent_same_global_gpu_queue_and_cross_project_guards(client):
@@ -118,3 +119,13 @@ def test_standalone_cpu_validation_can_recover_without_gpu_opt_in(client):
     job=jobs.enqueue(dict(kind='blender',project_id='runavelle',asset_id=model['id'],use_gpu=False))
     automation.startup_recovery()
     assert production.eligible(jobs.get(job['id'])['payload']) and not studio.asset(model['id']).get('production_paused')
+
+
+def test_planning_decides_instead_of_blocking(client):
+    plan = lambda prompt: client.post('/api/fx/plan', json=dict(project_id='runavelle', prompt=prompt)).json()
+    # Two elements: the first named leads and the decision is recorded.
+    value = plan('một nhát chém lửa và băng, 10 giây')
+    assert value['recipe']['element'] == 'fire' and 'First of fire, ice' in value['provenance']['element']['source']
+    # A duration outside the supported range is brought into range, not rejected.
+    assert value['recipe']['duration'] == 6 and value['provenance']['duration']['kind'] == 'inferred'
+    assert plan('toxic venom slash')['recipe']['element'] == 'poison' and plan('thunder strike 2s')['recipe']['duration'] == 2

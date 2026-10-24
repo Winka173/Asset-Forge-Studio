@@ -29,3 +29,25 @@ Không tự đồng ý điều khoản bằng tài khoản người dùng; khôn
 
 - Code `Tencent-Hunyuan/Hunyuan3D-2.1` commit `82920d643c0dc2f7bfd7255f45f62d386edfe60c`; weights `tencent/Hunyuan3D-2.1/hunyuan3d-dit-v2-1/model.fp16.ckpt` (7.37 GB, SHA-256 matches Hugging Face); background removal `u2net.onnx`. Installed in `C:\Users\Winka\Tools\hunyuan3d21\` (isolated venv, torch 2.8.0+cu128). Shape only; the paint/texture stack was not installed.
 - Tencent Hunyuan 3D 2.1 Community License: not licensed in the EU, UK or South Korea; royalty-free commercial use except products above 1 M MAU at release need a separate licence; outputs may not be used to improve other AI models; Acceptable Use Policy and Notice must be passed on. Status: evaluation only until benchmarked and accepted.
+
+## nvdiffrast (used by TRELLIS.2, MV-Adapter, TRELLIS.2 texturing) — noted 2026-10-25
+
+- NVIDIA Source Code License (1-Way Commercial), §3.3: non-commercial (research or evaluation) use only. The user confirmed (2026-10-25) that assets are made for a game they play alone, so this is accepted for this installation. Re-review before any commercial release.
+
+## TRELLIS.2 texturing pipeline (experimental texturer) — added 2026-10-25
+
+- Upstream `microsoft/TRELLIS.2` commit `75fbf0183001ed9876c8dbb35de6b68552ee08bd` (MIT) cloned to `C:\Users\Winka\Tools\trellis2-upstream`; runs in the existing TRELLIS.2 bundle venv with its offline checkpoints (`texturing_pipeline.json`, `slat_flow_imgshape2tex_*`, `tex_dec_*`, `shape_enc_*`), DINOv3 and RMBG-2.0 from the bundle's MODELS folder. No new downloads. Inference not yet run in this app.
+
+## Kimodo text-to-motion — added 2026-10-25
+
+- Code `nv-tlabs/kimodo` commit `e1c219c99b4b94ba48be1fb6a1cbc64ecee4c954` (Apache-2.0) in `C:\Users\Winka\Tools\kimodo\code`; environment `.local/envs/kimodo` (torch 2.8.0+cu128). Installed by `scripts/install_kimodo.sh` at the user's request.
+- Weights: `nvidia/Kimodo-SOMA-RP-v1.2` (NVIDIA Open Model License, commercially usable). The SMPL-X variant (NVIDIA R&D licence) is deliberately not installed.
+- Text encoder: `McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp` + `-supervised` adapters (MIT) on Meta-Llama-3-8B-Instruct (Meta Llama 3 Community License). The base weights come from the ungated `NousResearch/Meta-Llama-3-8B-Instruct`; its four safetensors have the same SHA-256 as the gated `meta-llama` repo (checked against Hub LFS metadata). The adapters' `base_model_name_or_path` is rewritten to the local copy.
+
+## Blender Mantaflow flipbooks — added 2026-10-25
+
+- Uses the installed Blender 4.5.14 LTS (GPL application, not bundled). Rendered sprite sheets are the user's output; no third-party model weights.
+
+## FlexGEMM triton kernels — added 2026-10-25
+
+- `JeffreyXiang/FlexGEMM` source (MIT) cloned to `C:\Users\Winka\Tools\flexgemm-src`; only its pure-Python triton kernels are loaded at runtime by the TRELLIS.2 texturer. Python headers copied from the local Python 3.11 into the TRELLIS.2 bundle (additive) so triton can build its helper. Real run: 160 s, 13.5 GB peak VRAM.

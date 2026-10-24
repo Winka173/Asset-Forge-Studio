@@ -103,6 +103,18 @@ SHAPES = {
 }
 
 
+# Experimental second texturer: TRELLIS.2 texturing (upstream source; the bundle's venv, MODELS and offline checkpoints).
+TRELLIS2_TEXTURE = dict(python=str(HOME / 'Tools/trellis2/code/venv/Scripts/python.exe'), upstream_path=str(HOME / 'Tools/trellis2-upstream'),
+                        models_path=str(HOME / 'Tools/trellis2/code/MODELS'), flexgemm_path=str(HOME / 'Tools/flexgemm-src'))
+
+
+def trellis2_texture_ready():
+    models = Path(TRELLIS2_TEXTURE['models_path'])
+    return (Path(TRELLIS2_TEXTURE['python']).is_file() and (Path(TRELLIS2_TEXTURE['flexgemm_path']) / 'flex_gemm/kernels/triton/__init__.py').is_file() and (Path(TRELLIS2_TEXTURE['upstream_path']) / 'trellis2/pipelines/trellis2_texturing.py').is_file()
+            and any((models / 'hub/models--microsoft--TRELLIS.2-4B/snapshots').glob('*/texturing_pipeline.json'))
+            and (models / 'dinov3/model.safetensors').is_file() and (models / 'RMBG-2.0/model.safetensors').is_file())
+
+
 def texture_ready():
     weights = list((HOME / '.cache/huggingface/hub/models--huanngzh--mv-adapter/snapshots').glob('*/mvadapter_ig2mv_sdxl.safetensors'))
     return MVADAPTER['python'].is_file() and all((MVADAPTER['engine'] / 'checkpoints' / name).is_file() for name in ('RealESRGAN_x2plus.pth', 'big-lama.pt')) and bool(weights)
@@ -133,6 +145,9 @@ class TexturedShapeAdapter(LocalAdapter):
                        shape_command=[str(shape['python']), '-B', '-u', str(store.ROOT / shape['worker'])], shape_cwd=str(store.ROOT),
                        texture_engine_path=str(MVADAPTER['engine']), texture_python=str(MVADAPTER['python']), texture_worker=str(store.ROOT / 'engines/mvadapter_texture_worker.py'),
                        uv_size=int(job.get('texture_size') or 4096), u2net_home=str(HOME / 'Tools/hunyuan3d21/u2net'))
+        if job.get('texturer') == 'trellis2':
+            if not trellis2_texture_ready(): raise ValueError('TRELLIS.2 texturing source, environment or offline weights missing')
+            request.update(texturer='trellis2', trellis2_texture=dict(TRELLIS2_TEXTURE, worker=str(store.ROOT / 'engines/trellis2_texture_worker.py')))
         command = [str(MVADAPTER['python']), '-B', '-u', str(store.ROOT / 'engines/textured_shape_worker.py'), '--request', job['request_path']]
         progress({'event': 'prepared', 'engine': self.id, 'estimate': self.estimate(request)})
         return command, store.ROOT, request

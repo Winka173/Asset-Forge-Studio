@@ -98,3 +98,11 @@ nav[aria-label="Video creation steps"] { display: flex; gap: var(--sp-2); flex-w
 nav[aria-label="Video creation steps"] > button { border-radius: var(--r-full); min-height: 32px; background: var(--surface-1); color: var(--text-2); }
 nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-pressed="true"], [aria-selected="true"], .selected) { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent); }
 .world-result > .world-preview-empty { margin: var(--sp-4) var(--sp-5); }
+
+/* Simulated flipbook (Blender Mantaflow) */
+.fx-flipbook { display: flex; flex-direction: column; gap: var(--sp-3); padding-top: var(--sp-5); border-top: 1px solid var(--border); }
+.fx-flipbook > header > h3 { margin: 0; }
+.fx-flipbook > button.primary { align-self: flex-start; }
+.fx-flipbook-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--sp-3); }
+.fx-flipbook-result { display: flex; gap: var(--sp-4); align-items: flex-start; flex-wrap: wrap; }
+.fx-flipbook-player { width: 220px; aspect-ratio: 1; border-radius: var(--r-md); background-repeat: no-repeat; background-color: var(--surface-2); }

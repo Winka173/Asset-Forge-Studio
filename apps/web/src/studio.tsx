@@ -17,7 +17,7 @@ import { EnginePicker } from "./engine-picker";
 import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Activity, ArrowRight, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
+import { Activity, ArrowRight, PersonStanding, Box, Check, Columns2, Download, FolderOpen, House, Image as ImageIcon, Layers, ChevronDown, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Star, Upload, X, type LucideIcon } from "lucide-react";
 import { apiFetch, apiUrl } from "./api";
 import { CompareViewer } from "./viewer";
 import { QualityLab } from "./quality-lab";
@@ -27,6 +27,7 @@ import { BatchStudio } from "./batch-studio";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
 import { FxStudio } from "./fx-studio";
+import { MotionStudio } from "./motion-studio";
 import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
@@ -141,6 +142,7 @@ type Draft = {
   depth?: number | null;
   sizeConfirmed?: boolean;
   engines?: string[];
+  texturer?: 'mvadapter' | 'trellis2';
 };
 const initialDraft: Draft = {
   mode: "Text",
@@ -187,7 +189,7 @@ const activeStates = [
 ];
 const icons: Record<string, LucideIcon> = {
   Home: House, Create: Plus, Library: FolderOpen, Production: Layers, Jobs: Activity,
-  Compare: Columns2, Settings: Settings2, Cube: Box, Image: ImageIcon, Arrow: ArrowRight,
+  Compare: Columns2, Settings: Settings2, Cube: Box, Motion: PersonStanding, Image: ImageIcon, Arrow: ArrowRight,
   Check: Check, Star: Star, Upload: Upload, Close: X, Search: Search, Download: Download,
 };
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
@@ -242,7 +244,7 @@ function normalizeDraft(value:Draft):Draft {const seeds:unknown=value.seeds;retu
 export function Studio() {
   useStartupToolDetection();
   const interfacePreferences=useInterfacePreferences();
-  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'|'video'>('single');
+  const [creationMode,setCreationMode]=useState<'single'|'batch'|'world'|'fx'|'video'|'motion'>('single');
   const [createStep,setCreateStep]=useState(0);
   const [page, setPage] = useState<Page>(route),
     [projectId, setProjectId] = useState(
@@ -465,7 +467,7 @@ export function Studio() {
       setDraft(normalizeDraft(restored));
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
-      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':routeAsset.asset_type==='cinematic'?'video':'single');setCreateStep(['map_environment','vfx','cinematic'].includes(routeAsset.asset_type||'')?1:3);}
+      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':routeAsset.asset_type==='cinematic'?'video':routeAsset.asset_type==='animation'?'motion':'single');setCreateStep(['map_environment','vfx','cinematic','animation'].includes(routeAsset.asset_type||'')?1:3);}
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -667,7 +669,7 @@ export function Studio() {
       setNotice(`Drawing ${result.options.length} sprite option${result.options.length>1?'s':''} in the project style. Transparent PNGs appear in the Library when each cutout passes its checks.`);
     });
   }
-  function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx','cinematic'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
+  function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx','cinematic','animation'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   const [allowQuestions]=useAllowQuestions();
@@ -681,7 +683,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={allow_questions:allowQuestions,asset_id:model.id,quality:draft.quality,engine:draft.engine,engines:(draft.engines?.length||0)>1?draft.engines:[],seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={allow_questions:allowQuestions,asset_id:model.id,quality:draft.quality,engine:draft.engine,engines:(draft.engines?.length||0)>1?draft.engines:[],texturer:draft.texturer||'',seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -798,8 +800,8 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
-    setCreateStep(['map_environment','vfx','cinematic'].includes(asset.asset_type||'')?1:3);
-    setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':asset.asset_type==='cinematic'?'video':'single');
+    setCreateStep(['map_environment','vfx','cinematic','animation'].includes(asset.asset_type||'')?1:3);
+    setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':asset.asset_type==='cinematic'?'video':asset.asset_type==='animation'?'motion':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
     setDraft(normalizeDraft({
@@ -1094,12 +1096,13 @@ export function Studio() {
             <small>AI runs locally. Exported files are organised by project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
-            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':createStep===2?'How big is it?':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':createStep===2?'Compare it with real buildings and characters, drag the handles, then use the size.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
+            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':createStep===2?'How big is it?':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.',motion:'Animate a movement.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':createStep===2?'Compare it with real buildings and characters, drag the handles, then use the size.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
             <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Size & scale','Options & generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
-            {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Preview',tone:'purple'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
+            {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Flipbook',tone:'purple'},{id:'motion',icon:'Motion',title:'Motion',detail:'Describe a movement and get an animation clip for a humanoid.',hint:'Kimodo / FBX / GLB (experimental)',tone:'green'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
           </section>}
           {projectId && page==='Create' && createStep>0 && creationMode==='video' && <VideoStudio key={`${projectId}:${selectedAsset?.asset_type==='cinematic'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='cinematic'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='fx' && <FxStudio key={`${projectId}:${selectedAsset?.asset_type==='vfx'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='vfx'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
+          {projectId && page==='Create' && createStep>0 && creationMode==='motion' && <MotionStudio key={`${projectId}:${selectedAsset?.asset_type==='animation'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='animation'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='world' && <WorldStudio key={`${projectId}:${selectedAsset?.asset_type==='map_environment'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='map_environment'?selectedAsset.id:undefined} artifacts={data.artifacts} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}}/>}
           {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error&&<ErrorNotice message={error} onRefresh={()=>reload().catch(e=>setError(String(e)))} onEdit={page==='Create'&&creationMode==='single'?()=>setCreateStep(1):undefined} onDismiss={()=>setError('')}/>}
@@ -1338,6 +1341,7 @@ export function Studio() {
                   </div>
                   <EnginePicker engines={engines} value={draft.engines?.length?draft.engines:[draft.engine==="auto"?"trellis2_community":draft.engine]}
                     onChange={(ids)=>change({engines:ids,engine:ids.length===1?(ids[0]==="trellis2_community"?"auto":ids[0]):"auto",steps:ids.length===1&&["triposg","hunyuan3d21"].includes(ids[0])?50:draft.quality==="Fast"?12:draft.quality==="Balanced"?24:32})}/>
+                  {(draft.engines?.length?draft.engines:[draft.engine]).some(id=>["triposg","trellis_v1","hunyuan3d21"].includes(id))&&<label className="studio-field">Texturing for shape models<Select aria-label="Shape model texturing" value={draft.texturer||"mvadapter"} onChange={e=>change({texturer:e.target.value as 'mvadapter'|'trellis2'})}><option value="mvadapter" data-description="Tested default: six SDXL views painted onto the mesh, then colour matched to the concept with a roughness map.">MV-Adapter (tested)</option><option value="trellis2" data-description="Experimental, not yet tested here: TRELLIS.2 bakes base colour, metallic and roughness from the concept. Same 16 GB GPU slot.">TRELLIS.2 texturing (experimental)</option></Select><small>Applies to TripoSG, TRELLIS v1 and Hunyuan3D-2.1. TRELLIS.2 already textures its own models.</small></label>}
 </details>
                   <details className="advanced"><summary>Output requirements & compatibility</summary><OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/></details>
                   <details className="advanced">

@@ -151,7 +151,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','prompt_questions','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
+    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','prompt_questions','batch_semantics','animation_retime','cinematic_render','tool_update','fx_flipbook'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -348,6 +348,14 @@ class Worker:
                 return
             if payload['kind']=='procedural_geometry':
                 from .procedural import execute
+                execute(job,folder,self)
+                return
+            if payload['kind']=='fx_flipbook':
+                from .fx_flipbook import execute
+                execute(job,folder,self)
+                return
+            if payload['kind']=='motion':
+                from .motion import execute
                 execute(job,folder,self)
                 return
             if payload['kind']=='tool_update':
@@ -691,7 +699,7 @@ class Worker:
         request_path = folder / 'request.json'
         request = {'image': str(source), 'output': str(folder / 'output'), 'seed': payload['seed'],
                    'effective_config':payload.get('effective_config'),'effective_config_hash':payload.get('effective_config_hash'),
-                   'steps': payload['steps'], 'pipeline_type': payload['pipeline_type'], 'texture_size': payload['texture_size'],
+                   'steps': payload['steps'], 'pipeline_type': payload['pipeline_type'], 'texture_size': payload['texture_size'], 'texturer': payload.get('texturer'),
                    'export_triangle_target': payload.get('effective_config',{}).get('geometry',{}).get('export_triangle_target',1_000_000), 'supplied_alpha_input': bool(source_record['metadata'].get('has_transparency')),
                    'input_review': 'NEEDS_REVIEW', 'request_path': str(request_path)}
         if payload.get('resume_mesh_checkpoint'):

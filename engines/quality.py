@@ -60,9 +60,10 @@ def resolve(options, reference, project):
     pipeline=options.get('pipeline_type') or ('512' if quality=='Fast' else '1024_cascade')
     texture=options.get('texture_size') or (2048 if quality=='Fast' else 4096)
     candidate_count=len(options.get('seeds',[42]))
+    texturer=(options.get('texturer') or 'mvadapter') if engine in SHAPE_ENGINES else None
     required=options.get('required_stages',[])
     # Shape engines get a projected basecolor texture (MV-Adapter); metallic/roughness maps are not produced.
-    unsupported=[stage for stage in required if stage=='pbr' and engine in SHAPE_ENGINES]
+    unsupported=[stage for stage in required if stage=='pbr' and engine in SHAPE_ENGINES and texturer!='trellis2']
     if any(stage in required for stage in ['normal_bake','ao_bake']):unsupported.extend(s for s in required if s in ['normal_bake','ao_bake'])
     if unsupported:raise ValueError('Engine/pipeline does not implement required stage: '+', '.join(unsupported))
     guidance=7.0
@@ -79,7 +80,8 @@ def resolve(options, reference, project):
         geometry=dict(pipeline_type=pipeline,octree_depth=9 if engine=='triposg' else None,decode_chunk_size=10000 if engine=='triposg' else None,
                       # An explicit budget above the default only raises master detail; it never lowers the locked 1 M export.
                       export_triangle_target=max(1000000,int(options.get('triangle_budget') or 0)) if engine=='trellis2_community' else 1000000),
-        texture=dict(size=texture,pbr='native basecolor/metallic-roughness' if engine=='trellis2_community' else 'basecolor projected by MV-Adapter'),
+        texture=dict(size=texture,pbr='native basecolor/metallic-roughness' if engine=='trellis2_community' else 'native basecolor/metallic-roughness (TRELLIS.2 texturing, experimental)' if texturer=='trellis2' else 'basecolor projected by MV-Adapter',
+                     **(dict(texturer=texturer) if engine in SHAPE_ENGINES else {})),
         blender=dict(enabled=options.get('auto_blender',True),profile='existing_quality_pipeline_v1',height_m=options.get('benchmark_height_m') or project.get('target_height_m'),
                      render_views=['front','three_quarter','side','back','top','gameplay'],render_resolutions=['mobile','pc1440'],bake='not_requested'),
         lod=dict(ratios=[.65,.35,.15]),export=dict(formats=['glb','fbx'],preserve_master=True),candidate_count=candidate_count,

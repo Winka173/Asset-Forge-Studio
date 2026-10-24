@@ -51,12 +51,22 @@ def main():
     if not alpha.is_file(): alpha = image  # TripoSG keeps no copy of its input
     texture_request = dict(engine_path=req['texture_engine_path'], mesh=str(output / 'shape/raw.glb'), image=str(alpha),
                            output_dir=str(output / 'texture'), seed=req['seed'], uv_size=req.get('uv_size', 4096), steps=req.get('texture_steps', 50))
+    trellis2 = req.get('texturer') == 'trellis2'
+    if trellis2:  # same floater removal and face budget as MV-Adapter (CPU), then the TRELLIS.2 texturer in its own venv
+        (output / 'prepare_request.json').write_text(json.dumps(dict(texture_request, prepare_only=True), indent=2), encoding='utf-8')
+        run([req['texture_python'], '-B', '-u', req['texture_worker'], '--request', str(output / 'prepare_request.json')], req['texture_engine_path'], output / 'prepare.log')
+        prepared = json.loads((output / 'texture/prepare_report.json').read_text(encoding='utf-8'))['mesh']
+        texture_request = dict(req['trellis2_texture'], mesh=prepared, image=str(alpha), output_dir=str(output / 'texture'), seed=req['seed'], uv_size=req.get('uv_size', 4096))
+        command = [req['trellis2_texture']['python'], '-B', '-u', req['trellis2_texture']['worker']]; cwd = req['trellis2_texture']['upstream_path']
+    else:
+        command = [req['texture_python'], '-B', '-u', req['texture_worker']]; cwd = req['texture_engine_path']
     (output / 'texture_request.json').write_text(json.dumps(texture_request, indent=2), encoding='utf-8')
-    run([req['texture_python'], '-B', '-u', req['texture_worker'], '--request', str(output / 'texture_request.json')], req['texture_engine_path'], output / 'texture.log')
+    run([*command, '--request', str(output / 'texture_request.json')], cwd, output / 'texture.log')
     texture = json.loads((output / 'texture/texture_report.json').read_text(encoding='utf-8'))
     shutil.copyfile(texture['textured_glb'], output / 'raw.glb')
     shutil.copyfile(alpha, output / 'source_alpha.png')
-    report = dict(shape, engine=req['engine'], shape_engine=shape.get('engine'), texture=texture, pbr='basecolor projected by MV-Adapter (no metallic/roughness maps)',
+    pbr = 'native base colour/metallic/roughness from TRELLIS.2 texturing (experimental)' if trellis2 else 'basecolor projected by MV-Adapter (no metallic/roughness maps)'
+    report = dict(shape, engine=req['engine'], shape_engine=shape.get('engine'), texture=texture, texturer='trellis2' if trellis2 else 'mvadapter', pbr=pbr,
                   status='GENERATED_NEEDS_REVIEW', duration_seconds=round(shape.get('duration_seconds', 0) + texture['seconds'], 1))
     (output / 'generation.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print('RESULT ' + json.dumps(dict(engine=req['engine'], seconds=report['duration_seconds'], texture_vram_gib=texture['peak_vram_gib'])), flush=True)

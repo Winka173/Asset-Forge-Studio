@@ -44,9 +44,13 @@ class Plan(BaseModel):
 @router.post('/plan')
 def plan(body:Plan):
     studio.project(body.project_id)
-    aliases={'fire':r'\bfire\b|\bl\u1eeda\b','ice':r'\bice\b|\bfrost\b|\bb\u0103ng\b','lightning':r'\blightning\b|\bs\u00e9t\b','wind':r'\bwind\b|\bgi\u00f3\b','earth':r'\bearth\b|\b\u0111\u1ea5t\b','poison':r'\bpoison\b|\b\u0111\u1ed9c\b'}
-    matches=[element for element,pattern in aliases.items() if re.search(pattern,body.prompt,re.I)]
-    if len(matches)>1 and 'element' not in body.overrides:raise HTTPException(422,'Choose one element for this recipe. Multi-element composition is not implemented.')
+    # English and Vietnamese words per element (diacritics as escapes so the source stays ASCII-safe).
+    aliases={'fire':r'\bfire\b|\bflames?\b|\bburning\b|\bl\u1eeda\b|\bch\u00e1y\b','ice':r'\bice\b|\bfrost\b|\bfrozen\b|\bb\u0103ng\b|\btuy\u1ebft\b',
+             'lightning':r'\blightning\b|\bthunder\b|\belectric\b|\bs\u00e9t\b|\b\u0111i\u1ec7n\b','wind':r'\bwind\b|\bgust\b|\btornado\b|\bgi\u00f3\b|\bl\u1ed1c\b',
+             'earth':r'\bearth\b|\brock\b|\bstone\b|\b\u0111\u1ea5t\b|\b\u0111\u00e1\b','poison':r'\bpoison\b|\btoxic\b|\bvenom\b|\bacid\b|\b\u0111\u1ed9c\b'}
+    found={element:match.start() for element,pattern in aliases.items() if (match:=re.search(pattern,body.prompt,re.I))}
+    # One element per recipe: the first one named leads (multi-element composition is not implemented); decided, never blocking.
+    matches=sorted(found,key=found.get)
     values={};provenance={}
     if body.base_recipe_id:
         record=studio.scoped_artifact(body.base_recipe_id,body.project_id)
@@ -57,9 +61,12 @@ def plan(body:Plan):
         provenance={k:dict(kind='inherited',source='Recipe '+record['sha256']) for k in values}
     values.update(project_id=body.project_id,name=body.name.strip() or values.get('name') or ((matches[0] if matches else 'fire').title()+' sword slash'),prompt=body.prompt)
     provenance.setdefault('element',dict(kind='defaulted',source='Fire slash template'))
-    if matches:values['element']=matches[0];provenance['element']=dict(kind='explicit',source='Recognized element in original prompt')
+    if matches:values['element']=matches[0];provenance['element']=dict(kind='explicit' if len(matches)==1 else 'inferred',source='Recognized element in original prompt' if len(matches)==1 else f"First of {', '.join(matches)} named in the prompt; one element per effect")
     duration=re.search(r'\b(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s|gi\u00e2y)\b',body.prompt,re.I)
-    if duration:values['duration']=float(duration[1]);provenance['duration']=dict(kind='explicit',source='Duration in original prompt')
+    if duration:
+        asked=float(duration[1]);bounds=Recipe.model_fields['duration'].metadata;low=next(m.ge for m in bounds if hasattr(m,'ge'));high=next(m.le for m in bounds if hasattr(m,'le'))
+        values['duration']=min(high,max(low,asked))
+        provenance['duration']=dict(kind='explicit',source='Duration in original prompt') if values['duration']==asked else dict(kind='inferred',source=f'{asked:g} s asked; effects run {low:g}-{high:g} s, so {values["duration"]:g} s')
     if 'accent_color' not in values:
         from .style_profile import accent_colour
         accent=accent_colour(body.project_id,studio.project(body.project_id))

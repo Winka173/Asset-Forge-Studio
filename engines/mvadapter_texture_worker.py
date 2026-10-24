@@ -24,7 +24,7 @@ def reduce_for_uv(source, output, max_faces):
     """UV unwrapping needs a manifold mesh of practical size: quadric-decimate to a texture-master budget, then
     merge duplicate vertices and repair non-manifold edges/vertices (no smoothing, so the silhouette is kept)."""
     import open3d as o3d, numpy as np, trimesh
-    from mvadapter.utils.mesh_utils.mesh_process import merge_close_vertices, mesh_to_meshlab, meshlab_to_mesh, repair_non_manifold
+    from mvadapter.utils.mesh_utils.mesh_process import merge_close_vertices, mesh_to_meshlab, meshlab_to_mesh, remove_isolated_pieces, repair_non_manifold
     mesh = trimesh.load(source, force='mesh', process=False)
     vertices, faces = np.asarray(mesh.vertices, np.float32), np.asarray(mesh.faces, np.int64)
     if len(faces) > max_faces:
@@ -34,9 +34,19 @@ def reduce_for_uv(source, output, max_faces):
         work = work.simplify_quadric_decimation(target_reduction=1.0 - max_faces / len(faces))
         vertices, faces = work.vertex.positions.numpy(), work.triangle.indices.numpy()
     print('STAGE MV-Adapter / repair mesh for UV unwrapping', flush=True)
-    ms = mesh_to_meshlab(vertices, faces); merge_close_vertices(ms); repair_non_manifold(ms)
+    ms = mesh_to_meshlab(vertices, faces); merge_close_vertices(ms)
+    # Floating fragments (TripoSG left ~100 around the base) become ragged texture speckles; parts under 0.2% of the faces go.
+    remove_isolated_pieces(ms, mincomponentsize=max(50, int(len(faces) * 0.002))); repair_non_manifold(ms)
     vertices, faces, _ = meshlab_to_mesh(ms)
     target = output / 'shape_for_texture.glb'; trimesh.Trimesh(vertices, faces, process=False).export(target)
+    return target
+
+
+def unwrap(engine, source, target):
+    """UV-unwrap in a separate CPU process while the GPU paints the views (same function the texture stage calls)."""
+    sys.path.insert(0, engine)
+    from mvadapter.utils.mesh_utils.mesh_process import process_raw
+    process_raw(source, target, preprocess=False)
     return target
 
 
@@ -51,9 +61,18 @@ def main():
     from mvadapter.utils import make_image_grid
     from scripts.inference_ig2mv_sdxl import prepare_pipeline, run_pipeline
 
-    started = time.monotonic(); torch.cuda.reset_peak_memory_stats()
+    started = time.monotonic()
     mesh_path = reduce_for_uv(Path(request['mesh']), output, int(request.get('max_faces', 300000)))
+    if request.get('prepare_only'):  # CPU only: the cleaned, budgeted mesh for another texturer (TRELLIS.2)
+        (output / 'prepare_report.json').write_text(json.dumps(dict(mesh=str(mesh_path), seconds=round(time.monotonic() - started, 1)), indent=2), encoding='utf-8')
+        return
+    torch.cuda.reset_peak_memory_stats()
     stage = lambda text: print('STAGE ' + text, flush=True)
+    timings = {'prepare_mesh': round(time.monotonic() - started, 1)}
+    from concurrent.futures import ProcessPoolExecutor
+    unwrapped = str(mesh_path).replace('.glb', '_unwarp.glb')
+    pool = ProcessPoolExecutor(max_workers=1); unwrap_job = pool.submit(unwrap, str(engine), str(mesh_path), unwrapped)
+    tick = time.monotonic()
     views = output / 'views.png'; views_peak = 0
     # A retry after a projection failure reuses the already generated views (same seed and inputs).
     if not (request.get('reuse_views') and views.is_file()):
@@ -84,13 +103,19 @@ def main():
         views = output / 'views.png'; make_image_grid(images, rows=1).save(views)
         views_peak = torch.cuda.max_memory_allocated()
         del pipe; torch.cuda.empty_cache()
+    timings['views'] = round(time.monotonic() - tick, 1); tick = time.monotonic()
+    unwrap_job.result(); pool.shutdown(); timings['wait_for_uv'] = round(time.monotonic() - tick, 1); tick = time.monotonic()
     stage('MV-Adapter / project views to UV texture')
     texture = TexturePipeline(upscaler_ckpt_path=str(engine / 'checkpoints/RealESRGAN_x2plus.pth'), inpaint_ckpt_path=str(engine / 'checkpoints/big-lama.pt'), device='cuda')
-    result = texture(mesh_path=str(mesh_path), save_dir=str(output), save_name='textured', uv_unwarp=True, preprocess_mesh=False, uv_size=int(request.get('uv_size', 4096)),
+    result = texture(mesh_path=unwrapped, save_dir=str(output), save_name='textured', uv_unwarp=False, preprocess_mesh=False, uv_size=int(request.get('uv_size', 4096)),
                      rgb_path=str(views), rgb_process_config=ModProcessConfig(view_upscale=True, inpaint_mode='view'), camera_azimuth_deg=[x - 90 for x in [0, 90, 180, 270, 180, 180]])
-    glb = Path(result.shaded_model_save_path)
-    report = dict(engine='mvadapter_texture', textured_glb=str(glb), views=str(views), seconds=round(time.monotonic() - started, 1),
-                  peak_vram_gib=round(max(views_peak, torch.cuda.max_memory_allocated()) / 2**30, 2), uv_size=int(request.get('uv_size', 4096)), seed=int(request.get('seed', 42)))
+    shaded = Path(result.shaded_model_save_path); timings['projection'] = round(time.monotonic() - tick, 1); tick = time.monotonic()
+    # Colour fidelity to the concept + roughness map; the untouched MV-Adapter GLB stays next to it.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from engines.texture_finish import finish
+    glb = output / 'textured_finished.glb'; material = finish(shaded, request['image'], glb); timings['finish'] = round(time.monotonic() - tick, 1)
+    report = dict(engine='mvadapter_texture', textured_glb=str(glb), unfinished_glb=str(shaded), material=material, views=str(views), seconds=round(time.monotonic() - started, 1),
+                  peak_vram_gib=round(max(views_peak, torch.cuda.max_memory_allocated()) / 2**30, 2), uv_size=int(request.get('uv_size', 4096)), seed=int(request.get('seed', 42)), timings=timings)
     (output / 'texture_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print('RESULT ' + json.dumps(report), flush=True)
 

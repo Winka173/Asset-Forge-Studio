@@ -17,6 +17,10 @@ if($Mode -eq 'Clean'){
   Write-Output 'Cleaned temporary packaging files; latest build, libraries, AI environments and weights preserved.'
   exit 0
 }
+# QA runs (smoke/verify scripts) launch the app with AFS_DESKTOP_CONFIG_DIR, which creates one isolated WebView
+# profile per run; the user's own profile has no '.profile' suffix and is never touched.
+function Remove-QaProfiles{foreach($afsProfileRoot in @($env:APPDATA,$env:LOCALAPPDATA)){Get-ChildItem -LiteralPath $afsProfileRoot -Directory -Filter 'com.assetforgestudio.*.profile*' -ErrorAction SilentlyContinue|Where-Object{$_.Name -match '^com\.assetforgestudio\.(desktop|expansion)\.profile[0-9a-f]+$' -and $_.LastWriteTime -lt (Get-Date).AddHours(-1)}|ForEach-Object{Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction SilentlyContinue}}}
+if($Mode -eq 'Build' -or $Mode -eq 'Clean'){Remove-QaProfiles}
 if($Mode -eq 'Smoke'){& node desktop/smoke.mjs;Assert-Exit 'Native desktop smoke';exit 0}
 if(-not(Test-Path -LiteralPath $afsCli)){& npm ci;Assert-Exit 'Desktop npm install'}
 if($Mode -eq 'Dev'){& $afsCli dev;Assert-Exit 'Desktop development';exit 0}

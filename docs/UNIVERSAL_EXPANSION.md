@@ -56,8 +56,8 @@ Official MCP source checks are recorded with HEAD, license and last-push timesta
 - [ ] Unreal native import test — deferred at the user's request; no fake .uasset/.umap outputs.
 - [x] Experimental World Plan and native Unity map vertical slice: immutable reviewed plan, 16-bit terrain, roads/build zones, actual same-project prefab instances, native NavMesh paths, cold Editor reopen, real camera renders, project export ZIP and master selection. Packaged desktop refresh/idempotency, cross-project reset and relaunch evidence: `evidence/universal_world_native.json`. See [scope and limitations](WORLD_PLAN_SLICE.md). This is a procedural technical slice, not text-to-map AI or artistic approval.
 - [ ] Map expansion: rivers/bridges, biome/scatter generation, production terrain materials, player performance budgets; Unreal when resumed.
-- [ ] Rig/deformation/retarget slice and native clips.
-- [ ] Editable realtime VFX/material slice.
+- [ ] Rig/deformation/retarget slice and native clips. Kimodo text-to-motion (real GPU run 2026-10-25: 3 s clip in 22 s, 1.1 GB VRAM) to FBX/GLB, plus retarget onto UniRig characters by topology (22 bones mapped on a real rig; body deforms correctly, auto-rig weights drag worn/held props on large motions). Unity Humanoid import untested.
+- [ ] Editable realtime VFX/material slice. Mantaflow fire/smoke/explosion flipbooks (CPU), Stylized cartoon look by default (flat colour bands, ranked flame ramp) or Realistic; tested in Blender 2026-10-25.
 - [ ] Separate validated sprite/UI/audio/cinematic slices.
 - [ ] Mixed-type batch, performance budgets, commercial-provenance approval workflow and production hardening.
 

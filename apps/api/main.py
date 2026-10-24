@@ -375,6 +375,10 @@ from .library import router as library_router
 app.include_router(library_router)
 from .fidelity import router as fidelity_router
 app.include_router(fidelity_router)
+from .motion import router as motion_router
+app.include_router(motion_router)
+from .fx_flipbook import router as fx_flipbook_router
+app.include_router(fx_flipbook_router)
 from .fx import router as fx_router
 app.include_router(fx_router)
 from .notifications import router as notifications_router

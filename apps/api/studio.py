@@ -446,6 +446,7 @@ class Generate(BaseModel):
     steps: int | None = Field(default=None, ge=1, le=100)
     pipeline_type: Literal['512', '1024_cascade'] | None = None
     texture_size: Literal[2048, 4096] | None = None
+    texturer: Literal['mvadapter', 'trellis2'] | None = None  # shape engines only; MV-Adapter is the tested default
     auto_blender: bool = True
     benchmark_height_m: float | None = Field(default=None, gt=0, le=1000)
     triangle_budget: int | None = Field(default=None, ge=500, le=5_000_000)
@@ -500,6 +501,7 @@ def generate(body: Generate):
                    steps=body.steps or (50 if engine in ('triposg', 'hunyuan3d21') else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
                    texture_size=body.texture_size or (2048 if quality == 'Fast' else 4096),
+                   texturer=(body.texturer or 'mvadapter') if engine in ('triposg','trellis_v1','hunyuan3d21') else None,
                    auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget, game_texture_size=body.game_texture_size,
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')
