@@ -9,3 +9,4 @@
 .prompt-examples-list{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.prompt-examples-list button.selected{outline:2px solid var(--accent,#7aa2ff)}
 .prompt-examples-actions{display:flex;gap:8px;align-items:center;margin-bottom:6px}.prompt-examples-actions strong{margin-right:auto}
 .prompt-examples-text{max-height:360px;overflow:auto;white-space:pre-wrap;word-break:break-word;padding:10px;border:1px solid var(--border,#444);border-radius:8px;font-size:12px}
+.prompt-field-head{display:flex;justify-content:space-between;align-items:center;gap:8px}

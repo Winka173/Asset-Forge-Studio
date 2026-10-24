@@ -451,6 +451,8 @@ export function Studio() {
       } else if (routeAssetId) {
         history.replaceState(null, "", "#create");
       }
+      const generated = !routeAsset && result.assets.find((asset) => asset.id === restored.assetId && (asset.versions?.length || result.jobs.some((job) => job.payload.asset_id === asset.id)));
+      if (generated) restored = { ...initialDraft, mode: restored.mode, height: result.project?.target_height_m ?? null };
       lastSavedDraft.current = {
         projectId: id,
         serialized: JSON.stringify(savedOnServer),
@@ -677,8 +679,9 @@ export function Studio() {
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
-        await reload();setAssetId(model.id);setVersionId('');setPreviewTab('Model');
+        await reload();setPreviewTab('Model');
         openProduction(result.batch_id,model.id);
+        setDraft({...initialDraft,mode:draft.mode,height:project?.target_height_m??null});setAssetId('');setVersionId('');setCreateStep(0);
         setNotice('Generation queued. Follow progress in Production.');
         return;
       }
@@ -1190,7 +1193,7 @@ export function Studio() {
                     ))}
                   </div>
                   <label className="studio-field prompt-field">
-                    Describe your asset
+                    <span className="prompt-field-head">Describe your asset{(draft.prompt||draft.assetId||draft.source)&&<button type="button" className="text-button" title="Start a new asset with empty settings; existing assets stay in the Library" onClick={(e)=>{e.preventDefault();newAsset(draft.mode);}}>Clear / new asset</button>}</span>
                     <textarea
                       className="prompt-input"
                       autoFocus
