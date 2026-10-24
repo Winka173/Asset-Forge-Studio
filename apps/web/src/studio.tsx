@@ -13,6 +13,7 @@ import { StyleProfileCard } from "./style-profile";
 import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
 import { PromptExamples } from "./prompt-examples";
 import { ImagePicker } from "./image-picker";
+import { EnginePicker } from "./engine-picker";
 import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -139,6 +140,7 @@ type Draft = {
   width?: number | null;
   depth?: number | null;
   sizeConfirmed?: boolean;
+  engines?: string[];
 };
 const initialDraft: Draft = {
   mode: "Text",
@@ -679,7 +681,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={allow_questions:allowQuestions,asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={allow_questions:allowQuestions,asset_id:model.id,quality:draft.quality,engine:draft.engine,engines:(draft.engines?.length||0)>1?draft.engines:[],seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -1055,12 +1057,12 @@ export function Studio() {
             {gpu?.host&&(()=>{const h=gpu.host;const tight=h.ram_available_gib<36;const low=h.disk_free_gib<50;return <div className="host-chips" aria-label="Machine resources">
               <span className={`host-chip${tight?' warn':''}`} title={`RAM ${h.ram_used_gib} of ${h.ram_total_gib} GB used, ${h.ram_available_gib} GB free.${tight?' A 3D (TRELLIS) stage needs about 36 GB free and may wait or page to disk.':''}`}>RAM {h.ram_used_gib} / {h.ram_total_gib} GB</span>
               <span className="host-chip" title="CPU load">CPU {Math.round(h.cpu_percent)}%</span>
-              <span className={`host-chip${low?' warn':''}`} title={`Library disk: ${h.disk_free_gib} GB free of ${h.disk_total_gib} GB. Each delivered asset keeps about 160 MB after working-file cleanup.`}>Disk {h.disk_free_gib} GB free</span>
+              <span className={`host-chip${low?' warn':''}`} title={`Library disk: ${h.disk_free_gib} GB free of ${h.disk_total_gib} GB. Each delivered asset keeps about 160 MB after working-file cleanup.`}>Disk {h.disk_free_gib} / {h.disk_total_gib} GB free</span>
             </div>;})()}
             <div className="gpu-chip-wrap" ref={gpuRef}>
               <button className="quiet-button gpu-chip" aria-expanded={gpuOpen} aria-label="GPU status" onClick={()=>setGpuOpen(v=>!v)}>
                 <span className="live-dot" />
-                {gpu?.available ? `${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB` : "GPU"}
+                {gpu?.available ? `VRAM ${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB` : "GPU"}
               </button>
               {gpuOpen && <div className="gpu-popover" role="dialog" aria-label="GPU details">
                 <strong className="gpu-name" title={gpu?.name}>{gpu?.available ? gpu.name?.replace("NVIDIA GeForce ", "") : "GPU status unavailable"}</strong>
@@ -1334,49 +1336,8 @@ export function Studio() {
                       ))}
                     </div>
                   </div>
-                  <label className="studio-field">
-                    Engine
-                    <Select
-                      aria-label="Engine"
-                      value={draft.engine}
-                      onChange={(e) =>
-                        change({
-                          engine: e.target.value,
-                          steps:
-                            e.target.value === "triposg"
-                              ? 50
-                              : draft.quality === "Fast"
-                                ? 12
-                                : draft.quality === "Balanced"
-                                  ? 24
-                                  : 32,
-                        })
-                      }
-                    >
-                      <option value="auto">
-                        Auto · TRELLIS.2 first (current default)
-                      </option>
-                      {engines
-                        .filter((e) =>
-                          ["trellis2_community", "triposg"].includes(e.id),
-                        )
-                        .map((e) => (
-                          <option
-                            key={e.id}
-                            value={e.id}
-                            disabled={!e.installed}
-                          >
-                            {e.id === "triposg"
-                              ? "TripoSG · geometry only"
-                              : "TRELLIS.2 · geometry + PBR"}
-                            {!e.installed && " · unavailable"}
-                          </option>
-                        ))}
-                    </Select>
-                    <small>
-                      Only engines that have produced real output appear here.
-                    </small>
-                  </label>
+                  <EnginePicker engines={engines} value={draft.engines?.length?draft.engines:[draft.engine==="auto"?"trellis2_community":draft.engine]}
+                    onChange={(ids)=>change({engines:ids,engine:ids.length===1?(ids[0]==="trellis2_community"?"auto":ids[0]):"auto",steps:ids.length===1&&["triposg","hunyuan3d21"].includes(ids[0])?50:draft.quality==="Fast"?12:draft.quality==="Balanced"?24:32})}/>
 </details>
                   <details className="advanced"><summary>Output requirements & compatibility</summary><OutputContract projectId={projectId} assetId={selectedAsset?.id} mode={draft.mode} prompt={draft.prompt} source={draft.source} engine={draft.engine} autoBlender={draft.autoBlender}/></details>
                   <details className="advanced">

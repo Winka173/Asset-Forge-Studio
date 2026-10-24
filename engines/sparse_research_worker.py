@@ -28,7 +28,8 @@ def main():
     req = json.loads(Path(parser.parse_args().request).read_text(encoding='utf-8-sig'))
     engine = req['engine']; output = Path(req['output']).resolve()
     if engine not in ('trellis_v1', 'hi3dgen'): raise ValueError('Unknown research engine')
-    if output.exists() or not output.is_relative_to((ROOT / 'data').resolve()):
+    allowed = Path(os.environ.get('AFS_DATA', ROOT / 'data')).resolve()  # the configured library, like the other engine workers
+    if output.exists() or not output.is_relative_to(allowed):
         raise ValueError('Require new immutable output inside workspace data')
     output.mkdir(parents=True)
     report = dict(status='RUNNING', engine=engine, request=req, network='OFFLINE',

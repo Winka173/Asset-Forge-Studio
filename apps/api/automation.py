@@ -11,6 +11,7 @@ from typing import Literal
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
 from . import store,jobs,studio,intermediates
+from engines.adapters import SHAPE_ENGINES
 from .quality_repair import RepairBudget
 
 # Concepts generated and compared per asset before image-to-3D when the item does not set its own count.
@@ -128,9 +129,11 @@ def resolve_specs(item,project,snapshot):
 
 def plan_engines(item,source=None):
     from engines.adapters import ADAPTERS
-    explicit=item['preferred_engine']!='auto'
-    names=[item['preferred_engine']] if explicit else ['trellis2_community','triposg']
-    compatible=[name for name in names if ADAPTERS[name].installed and (name!='triposg' or source and source['metadata'].get('has_transparency'))]
+    # Several engines only when the user picked them; Auto is the current default engine (TRELLIS.2) alone.
+    explicit=bool(item.get('engines')) or item['preferred_engine']!='auto'
+    names=list(item.get('engines') or []) or ([item['preferred_engine']] if item['preferred_engine']!='auto' else ['trellis2_community'])
+    # Shape engines cut the subject out themselves (local u2net) when the image has no alpha.
+    compatible=[name for name in names if ADAPTERS[name].installed]
     if item['quality']!='Maximum' and not explicit:compatible=compatible[:1]
     return compatible
 
@@ -513,7 +516,9 @@ class Single(BaseModel):
     asset_id:str
     request_id:str=Field(min_length=8,max_length=100)
     quality:Literal['Fast','Balanced','Maximum']='Maximum'
-    engine:Literal['auto','trellis2_community','triposg']='auto'
+    engine:Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21']='auto'
+    # Generate candidates with each of these engines (Advanced); empty uses `engine`.
+    engines:list[Literal['trellis2_community','triposg','trellis_v1','hunyuan3d21']]=Field(default_factory=list,max_length=4)
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     triangle_budget:int|None=Field(default=None,ge=500,le=5_000_000)
     game_texture_size:Literal[1024,2048,4096]|None=None
@@ -546,7 +551,7 @@ def single(body:Single):
             if prior:return dict(batch_id=prior['batch_id'],asset_id=body.asset_id,batch=batch.detail(batch.batch(prior['batch_id'])))
             identifier=uuid.uuid4().hex
             from .manifest import ManifestItem
-            row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,candidates=len(body.seeds),triangle_budget=body.triangle_budget,game_texture_size=body.game_texture_size,quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
+            row=ManifestItem(name=model['name'],prompt=model['prompt'],asset_id=model['id'],preferred_engine=body.engine,engines=list(dict.fromkeys(body.engines)),candidates=len(body.seeds),triangle_budget=body.triangle_budget,game_texture_size=body.game_texture_size,quality=body.quality,reference_ids=[body.reference_id] if body.reference_id else []).model_dump()
             row.update(attempt=0,started=False,version=1,quality_lock=body.quality=='Maximum',seeds=body.seeds)
             for key in ('target_width_m','target_depth_m','target_height_m'):
                 if getattr(body,key) is not None:

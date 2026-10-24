@@ -60,8 +60,8 @@ def test_single_auto_idempotency_and_source_seeds(client):
 def test_explicit_engine_policy_not_silently_changed(client):
     value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt=json.dumps([dict(name='Shape only',prompt='Tower',preferred_engine='triposg')]),format='json')).json()
     result=automation.start(value['id'])
-    assert result['items'][0]['automation']['engines']==[]
-    assert result['items'][0]['automation']['status']=='blocked' and jobs.listing()==[]
+    # The explicit engine is kept (never swapped for the default); it cuts the subject out itself, so no alpha is required.
+    assert result['items'][0]['automation']['engines']==['triposg']
 
 
 def test_project_edit_preserves_workflow_and_delivery_preferences(client):
@@ -176,3 +176,15 @@ def test_single_uses_confirmed_size_preview_dimensions(client):
     item=batch.batch(group)['items'][0]
     assert (item['target_width_m'],item['target_depth_m'],item['target_height_m'])==(0.8,0.8,1.1)
     assert item['spec_provenance']['target_height_m']['kind']=='explicit' and 'Size & scale' in item['spec_provenance']['target_height_m']['source']
+
+
+def test_auto_uses_the_default_engine_and_ticked_engines_run_each(monkeypatch):
+    from apps.api.automation import plan_engines
+    from engines.adapters import ADAPTERS
+    for adapter in ADAPTERS.values(): monkeypatch.setattr(adapter, 'probe', lambda: dict(installed=True))
+    alpha = dict(metadata=dict(has_transparency=True))
+    item = dict(preferred_engine='auto', quality='Maximum')
+    assert plan_engines(item, alpha) == ['trellis2_community']
+    assert plan_engines(dict(item, engines=['trellis2_community', 'hunyuan3d21', 'triposg']), alpha) == ['trellis2_community', 'hunyuan3d21', 'triposg']
+    # Shape engines cut the subject out themselves, so an image without alpha (or a concept still to come) keeps them.
+    assert plan_engines(dict(item, engines=['trellis2_community', 'trellis_v1']), None) == ['trellis2_community', 'trellis_v1']

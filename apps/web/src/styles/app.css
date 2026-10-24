@@ -501,3 +501,14 @@ button > svg.lucide, a > svg.lucide { flex: none; vertical-align: -3px; margin-r
 .keep-final-footer > div { display: flex; gap: var(--sp-2); }
 @media (max-width: 640px) { .keep-final-columns { grid-template-columns: 1fr; } }
 .library-card-size { color: var(--text); font-weight: 600; }
+.engine-picker { border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--sp-2) var(--sp-3); display: grid; gap: var(--sp-2); }
+.engine-picker legend { font-size: var(--fs-sm); padding: 0 4px; }
+.engine-picker legend small { color: var(--text-2); margin-left: 6px; }
+.engine-option { display: flex; gap: var(--sp-2); align-items: flex-start; cursor: pointer; }
+.engine-option input { margin-top: 4px; }
+.engine-option > span { display: grid; gap: 2px; }
+.engine-option small { color: var(--text-2); }
+.engine-option em { color: var(--accent); font-style: normal; font-weight: 400; }
+.engine-option .engine-needs { font-family: var(--font-mono, monospace); color: var(--text); }
+.engine-option .engine-note { color: var(--warning, #f0a94b); }
+.engine-option.unavailable { opacity: .55; cursor: not-allowed; }

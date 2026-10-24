@@ -61,8 +61,9 @@ def test_output_routing_gaps_and_no_gpu_submission(client):
     routed=client.post('/api/platform/route',json=request).json()
     assert not any(s['id']=='concept' for s in routed['graph']['stages'])
     assert routed['dry_run'] and routed['enqueued_jobs']==0 and not jobs.listing()
-    pbr=client.post('/api/platform/route',json=request|dict(desired_outputs=['basecolor'])).json()
-    assert pbr['status']=='blocked' and any('Shape-only' in s for s in pbr['capability_gaps'])
+    # TripoSG now gets an MV-Adapter basecolor texture; metallic/roughness maps remain TRELLIS.2-only.
+    pbr=client.post('/api/platform/route',json=request|dict(desired_outputs=['metallic_roughness'])).json()
+    assert pbr['status']=='blocked' and any('metallic/roughness' in s for s in pbr['capability_gaps'])
     audio=client.post('/api/platform/route',json=request|dict(asset_type='audio',desired_outputs=['wav'])).json()
     assert audio['status']=='blocked' and audio['graph']['stages']==[]  # No universal Blender chain.
     commercial=client.post('/api/platform/route',json=request|dict(commercial=True)).json()

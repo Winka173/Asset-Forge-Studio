@@ -325,7 +325,7 @@ class ResolveInput(BaseModel):
     group_id:str
     asset_ids:list[str]=Field(min_length=1,max_length=1000)
     prompt:str|None=Field(default=None,max_length=100000)
-    engine:Literal['auto','trellis2_community','triposg']|None=None
+    engine:Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21']|None=None
 
 
 @router.post('/resolve-input')

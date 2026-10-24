@@ -35,9 +35,9 @@ class Capability(BaseModel):
 def registry():
     values=[]
     for identifier,adapter in ADAPTERS.items():
-        probe=adapter.probe();is_tripo=identifier=='triposg'
+        probe=adapter.probe();is_tripo=identifier in ('triposg','trellis_v1','hunyuan3d21')
         values.append(Capability(id=identifier,label=identifier,asset_types=[AssetType.static_3d],inputs=['approved_alpha_image'] if is_tripo else ['approved_image'],
-            outputs=['glb','geometry']+([] if is_tripo else ['basecolor','metallic_roughness','uv']),installed=probe['installed'],
+            outputs=['glb','geometry','basecolor','uv']+([] if is_tripo else ['metallic_roughness']),installed=probe['installed'],
             status='experimental' if probe['installed'] else 'unavailable',dependency_health=probe,
             license=Provenance(source_code='MIT' if is_tripo else 'community bundle; per-dependency audit',model_weights='MIT' if is_tripo else 'mixed; audit required',
                 commercial='review_required' if is_tripo else 'blocked',restrictions=['Input reference rights must be reviewed']+([] if is_tripo else ['Bundled RMBG/DINO and community modifications not cleared commercially'])),
@@ -107,9 +107,9 @@ def route(body:RouteRequest):
     if chosen=='auto':chosen=next((e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e!='triposg' or (source and source['metadata'].get('has_transparency')))),None)
     provider=next((p for p in caps['providers'] if p['id']==chosen),None)
     if not provider or not provider['installed']:gaps.append('No compatible installed local 3D adapter; no fallback will run')
-    if chosen=='triposg' and (uses_concept or not source or not source['metadata'].get('has_transparency')):gaps.append('TripoSG requires a reviewed alpha image; no implicit segmentation')
-    if chosen=='triposg' and set(body.desired_outputs)&{'basecolor','metallic_roughness','uv'}:gaps.append('Shape-only engine cannot satisfy requested PBR/UV contract')
-    if chosen=='triposg' and native:gaps.append('This Unity PBR profile requires real basecolor/MR maps; shape-only native import profile is not validated')
+    shape_engine=chosen in ('triposg','trellis_v1','hunyuan3d21')
+    if shape_engine and 'metallic_roughness' in body.desired_outputs:gaps.append('MV-Adapter texturing gives basecolor only; metallic/roughness maps are not produced')
+    if shape_engine and native:gaps.append('This Unity PBR profile requires metallic/roughness maps; basecolor-only native import is not validated')
     if native and not next(p for p in caps['providers'] if p['id']=='unity_editor')['installed']:gaps.append('Pinned native Unity Editor/importer is missing')
     needs_blender=native or body.auto_blender or bool(set(body.desired_outputs)&{'fbx','lod','blend','previews'})
     if needs_blender and not next(p for p in caps['providers'] if p['id']=='blender_headless')['installed']:gaps.append('Blender required by requested outputs is missing')

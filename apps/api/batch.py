@@ -278,7 +278,7 @@ def advance(identifier):
                     source=studio.scoped_artifact(item['concept_artifact_id'],value['project_id'])
                     engines=[item['preferred_engine']]
                     if engines==['auto']:
-                        engines=[e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e!='triposg' or source['metadata'].get('has_transparency'))]
+                        engines=[e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e not in ('triposg','trellis_v1','hunyuan3d21') or source['metadata'].get('has_transparency'))]
                         if value['mode']!='Maximum Quality Batch':engines=engines[:1]
                     if not engines:raise ValueError('No installed engine supports this input; no fallback or quality downgrade')
                     for engine in engines:

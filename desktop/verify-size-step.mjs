@@ -37,6 +37,9 @@ try{
  await ai.check();await sleep(500);check('ai_switch_restores_suggestion',await ai.isChecked()&&await value('Height (m)')===before.h,{h:await value('Height (m)'),suggested:before.h});
  await page.getByRole('button',{name:'Continue to options'}).click();
  await page.getByRole('switch',{name:'Allow questions'}).waitFor();check('allow_questions_switch_on_options_step',true,null);
+ await page.locator('.create-settings-step details').evaluateAll(all=>all.forEach(d=>{d.open=true;}));await sleep(500);
+ const engines=await page.locator('.engine-option').evaluateAll(all=>all.map(e=>({text:e.textContent,checked:e.querySelector('input').checked,disabled:e.querySelector('input').disabled})));
+ check('four_engines_with_requirements',engines.length===4&&engines.every(e=>/GPU/.test(e.text)&&!e.disabled),engines);check('trellis2_is_default',engines[0]?.checked===true&&engines.filter(e=>e.checked).length===1,engines.map(e=>e.checked));
  await page.screenshot({path:path.join(run,'options-step.png')});
  check('no_page_errors',report.errors.length===0,report.errors);
  report.status='PASS';

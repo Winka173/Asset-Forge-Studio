@@ -438,7 +438,7 @@ def approve_concept(identifier:str,artifact_id:str,body:ConceptApproval):
 class Generate(BaseModel):
     asset_id: str
     request_id: str = Field(min_length=8, max_length=100)
-    engine: Literal['auto', 'triposg', 'trellis2_community'] = 'auto'
+    engine: Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21'] = 'auto'
     quality: Literal['Fast', 'Balanced', 'Maximum'] = 'Maximum'
     artifact_id: str
     prompt: str | None = Field(default=None, max_length=100000)
@@ -494,11 +494,10 @@ def generate(body: Generate):
         engine = next((e for e in ('trellis2_community', 'triposg') if ADAPTERS[e].installed and
                        (e != 'triposg' or source['metadata'].get('has_transparency'))), '')
     if engine not in ADAPTERS or not ADAPTERS[engine].installed: raise HTTPException(409, 'Chưa có engine local phù hợp. Không tạo output giả.')
-    if engine == 'triposg' and not source['metadata'].get('has_transparency'): raise HTTPException(400, 'TripoSG cần ảnh PNG có alpha thật')
     quality = body.quality
     payload = dict(kind='inference', batch_id=body.batch_id, batch_attempt=body.batch_attempt,project_id=value['project_id'], asset_id=value['id'], artifact_id=source['id'], engine=engine,
                    prompt=body.prompt if body.prompt is not None else value['prompt'], project_style_snapshot=config,
-                   steps=body.steps or (50 if engine == 'triposg' else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
+                   steps=body.steps or (50 if engine in ('triposg', 'hunyuan3d21') else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
                    texture_size=body.texture_size or (2048 if quality == 'Fast' else 4096),
                    auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget, game_texture_size=body.game_texture_size,

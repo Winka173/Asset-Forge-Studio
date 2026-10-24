@@ -375,7 +375,7 @@ class Worker:
                         transition(identifier,'BLOCKED',str(exc));return
                 if payload['kind']=='inference':
                     actual=dict(engine=payload['engine'],steps=payload['steps'],seed=payload['seed'],pipeline=payload['pipeline_type'],
-                                texture=payload['texture_size'] if payload['engine']!='triposg' else None,blender=payload['auto_blender'])
+                                texture=payload['texture_size'],blender=payload['auto_blender'])
                     locked=dict(engine=effective['engine_id'],steps=effective['inference_steps'],seed=effective['seed'],pipeline=effective['geometry']['pipeline_type'],
                                 texture=effective['texture']['size'],blender=effective['blender']['enabled'])
                     if actual!=locked:
