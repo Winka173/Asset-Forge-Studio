@@ -154,3 +154,11 @@ def english_hint(text):
     words = [*dict.fromkeys(found(VI_MODIFIERS))][:2] + [*dict.fromkeys(found(VI_COLOURS))][:2] + [nouns[0]]
     rest = [n for n in nouns[1:] if n != nouns[0]]
     return ' '.join(words) + (' with ' + ' and '.join(rest[:2]) if rest else '')
+
+
+def aspect(item):
+    """Concept frame for the target proportions: height >= 1.4x the footprint is portrait, footprint >= 1.4x height landscape."""
+    w, d, h = (item.get(k) for k in ('target_width_m', 'target_depth_m', 'target_height_m'))
+    if not h or not (w or d): return 'square'
+    footprint = max(w or 0, d or 0)
+    return 'portrait' if h >= 1.4 * footprint else 'landscape' if footprint >= 1.4 * h else 'square'

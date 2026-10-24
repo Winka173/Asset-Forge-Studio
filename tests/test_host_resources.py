@@ -163,3 +163,16 @@ def test_unknown_claim_is_visible_and_never_silently_discarded(tmp_path,monkeypa
     job=jobs.enqueue(dict(kind='procedural_geometry'));receipt,_=host.check(job,'cpu')
     assert not receipt['allowed'] and 'unreadable' in receipt['reason']
     assert broken.read_text()=='{}'
+
+
+def test_lone_gpu_stage_may_page_but_commit_stays_a_hard_gate(tmp_path,monkeypatch):
+    setup(tmp_path,monkeypatch,0)
+    job=jobs.enqueue(dict(kind='inference',engine='unknown_unavailable_test_engine'))
+    need=host.estimate(job['payload'])['bytes']
+    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-4*host.GIB))
+    assert host.check(job,'gpu')[0]['allowed'] and not host.check(job,'cpu')[0]['allowed']
+    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-8*host.GIB))
+    assert host.check(job,'gpu')[0]['reason_code']=='HOST_RAM_ADMISSION'
+    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-4*host.GIB))
+    monkeypatch.setattr(host,'commit_memory',lambda:dict(status='measured',available_bytes=8*host.GIB))
+    assert host.check(job,'gpu')[0]['reason_code']=='HOST_COMMIT_ADMISSION'

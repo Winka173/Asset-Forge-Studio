@@ -75,6 +75,8 @@ class ProjectInput(BaseModel):
     style_anchor_mode: Literal['profile', 'image'] | None = None
     # Characters/creatures get an experimental rigged copy after delivery unless this is False.
     auto_rig: bool | None = None
+    # After a game delivery, working files (checkpoints, .blend, extra LODs, render passes) are deleted unless this is False.
+    cleanup_intermediates: bool | None = None
     art_bible: dict = Field(default_factory=dict)
     palette: list[str] = Field(default_factory=list, max_length=32)
     material_language: str = Field(default='', max_length=10000)
@@ -328,6 +330,8 @@ class ConceptInput(BaseModel):
     directives: list[str] = Field(default_factory=list,max_length=12)
     # Extra negative terms for this request (e.g. held items generated as separate assets).
     negative_terms: list[str] = Field(default_factory=list,max_length=12)
+    # Frame shape from the asset's target proportions (tall towers portrait, wide halls landscape).
+    aspect: Literal['square','portrait','landscape'] = 'square'
     style_reference_ids: list[str] = Field(default_factory=list,max_length=5)
     asset_id: str
     request_id: str = Field(min_length=8,max_length=100)
@@ -381,6 +385,9 @@ def concept(body: ConceptInput):
     # swordsman touched the frame), so full-body characters render in portrait and wide creatures in landscape.
     from engines.concept_prompt import rig_class,subject_anchor
     shape=rig_class(subject_anchor(base)) if body.framing=='asset_3d' and COMPOSITION_POLICY>=8 else None
+    # Buildings and props follow their target proportions too (measured overnight: tall/wide buildings in a square
+    # frame were cropped and became incomplete 3D chunks). Characters keep their pose-based bucket.
+    if shape is None and body.framing=='asset_3d' and body.aspect in ('portrait','landscape'):shape={'portrait':'humanoid','landscape':'creature'}[body.aspect]
     width,height={'humanoid':(832,1216),'creature':(1216,832)}.get(shape,(size,size)) if size==1024 else {'humanoid':(640,896),'creature':(896,640)}.get(shape,(size,size))
     try:effective=resolve_concept(prompt,body.seed,steps,size,config,body.quality)
     except (OSError, ValueError) as exc:raise HTTPException(409,'SDXL conditioning could not be locked: '+str(exc)) from exc

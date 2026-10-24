@@ -51,3 +51,11 @@ def test_batch_size_overview_is_read_only(tmp_path, monkeypatch, qa_project):
 def test_untranslated_vietnamese_gets_an_english_subject_hint(text, hint):
     from apps.api.size_rules import english_hint
     assert english_hint(text) == hint
+
+
+def test_concept_frame_follows_target_proportions():
+    from apps.api.size_rules import aspect
+    assert aspect(dict(target_width_m=4, target_depth_m=4, target_height_m=12)) == 'portrait'     # tower
+    assert aspect(dict(target_width_m=10, target_depth_m=8, target_height_m=7)) == 'landscape'    # barracks
+    assert aspect(dict(target_width_m=6, target_depth_m=5, target_height_m=6)) == 'square'       # house
+    assert aspect(dict(target_width_m=None, target_depth_m=None, target_height_m=None)) == 'square'

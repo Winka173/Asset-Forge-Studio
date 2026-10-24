@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Literal
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
-from . import store,jobs,studio
+from . import store,jobs,studio,intermediates
 from .quality_repair import RepairBudget
 
 # Concepts generated and compared per asset before image-to-3D when the item does not set its own count.
@@ -332,9 +332,10 @@ def advance(identifier):
                             from .held_items import ensure_companions,concept_conditioning
                             ensure_companions(value,item,studio.project(value['project_id']),lambda:studio.studio(value['project_id']))
                             hand_directives,hand_negatives=concept_conditioning(item)
+                            from .size_rules import aspect as size_aspect
                             concept_count=item.get('concept_candidates') or CONCEPT_CANDIDATES[item['quality']]
                             for index in range(concept_count):
-                                studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept'+(f':{index}' if index else ''),prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),directives=hand_directives,negative_terms=hand_negatives,quality=item['quality'],seed=42+index*7919,batch_id=identifier,batch_attempt=item['attempt']))
+                                studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+':concept'+(f':{index}' if index else ''),prompt=item.get('resolved_prompt') or item['prompt'],style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),directives=hand_directives,negative_terms=hand_negatives,aspect=size_aspect(item),quality=item['quality'],seed=42+index*7919,batch_id=identifier,batch_attempt=item['attempt']))
                             active_assets.add(item['asset_id']);auto.update(status='queued',stage='concept');continue
                         generated=[v for v in valid if v[2]['role']=='concept' and v[2]['id'] not in item['reference_ids']]
                         if generated and len(generated)==len(valid):
@@ -349,6 +350,7 @@ def advance(identifier):
                             # extra concepts with a targeted directive before Auto decides with what it has.
                             from .concept_rank import requested_hues,HUE_NAMES
                             from .held_items import concept_conditioning
+                            from .size_rules import aspect as size_aspect
                             hues=requested_hues(request_text);best=ranked[0][1]
                             extra=[j for j in current if j['payload']['kind']=='concept' and (j['payload'].get('quality_repair') or {}).get('kind')=='tournament']
                             colour_miss=bool(hues) and best.get('eligible') and best.get('requested_colour_match',1)<0.15
@@ -356,7 +358,7 @@ def advance(identifier):
                                 directives=(['The subject is predominantly '+' and '.join(HUE_NAMES[h] for h in hues)+'.'] if colour_miss else [])+([] if best.get('eligible') else ['Zoomed out: the entire subject fits inside the frame with wide empty margins on every side.'])
                                 studio.concept(studio.ConceptInput(asset_id=item['asset_id'],request_id=prefix+f':tournament-repair:{len(extra)}',prompt=item.get('resolved_prompt') or item['prompt'],
                                     style_reference_ids=item.get('style_reference_ids',[]),interpreted_prompt=item.get('prompt_interpretation',{}).get('generation_prompt_en'),
-                                    directives=[*directives,*concept_conditioning(item)[0]],negative_terms=concept_conditioning(item)[1],
+                                    directives=[*directives,*concept_conditioning(item)[0]],negative_terms=concept_conditioning(item)[1],aspect=size_aspect(item),
                                     quality=item['quality'],seed=1009+len(extra)*7919,batch_id=identifier,batch_attempt=item['attempt'],
                                     quality_repair=dict(kind='tournament',issues=(['requested_colour'] if colour_miss else [])+([] if best.get('eligible') else ['framing']))))
                                 active_assets.add(item['asset_id']);auto.update(status='queued',stage='Extra concept: '+' / '.join(d.split(':')[0].rstrip('.') for d in directives));continue
@@ -435,7 +437,10 @@ def advance(identifier):
                 if not model.get('master_artifact_id'):model.update(status='Completed',art_review_status='not_reviewed')
                 if not staged:
                     model['published_artifact_id']=winner['artifact_id'];model.setdefault('publication_history',[]).append(dict(artifact_id=winner['artifact_id'],export_id=exported['id'],at=store.now(),action='automatic_delivery',sha256=winner['sha256']))
-                model.setdefault('settings',{})['automatic_selection']=winner;studio.save_asset(model)
+                model.setdefault('settings',{})['automatic_selection']=winner
+                if not staged and intermediates.enabled(studio.project(value['project_id'])):
+                    model['settings']['intermediate_cleanup']=intermediates.prune(item['asset_id'],export_settings)
+                studio.save_asset(model)
             except RouteWaiting as exc:
                 auto.update(status='queued',stage=exc.hold['reason'],waiting_engine_key=exc.hold['health_key']);auto.pop('error',None)
             except Exception as exc:

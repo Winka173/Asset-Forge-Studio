@@ -35,7 +35,7 @@ def budget_check(value,item,all_jobs,stage,cause,prediction=None):
     limits=RepairBudget.model_validate(value['automation']['settings'].get('repair_budget',{})).model_dump()
     scoped=[j for j in all_jobs if j['payload'].get('batch_id')==value['id'] and j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_attempt',0)==item['attempt']]
     repairs=[j for j in scoped if j['payload'].get('quality_repair')]
-    used=dict(attempts=len(repairs),stage_attempts=sum(j['payload']['kind']==stage for j in repairs),cause_attempts=sum(j['payload']['quality_repair']['root_cause']==cause for j in repairs),gpu_seconds=0.,cpu_seconds=0.,disk_bytes=0)
+    used=dict(attempts=len(repairs),stage_attempts=sum(j['payload']['kind']==stage for j in repairs),cause_attempts=sum((j['payload']['quality_repair'] or {}).get('root_cause')==cause for j in repairs),gpu_seconds=0.,cpu_seconds=0.,disk_bytes=0)
     for job in scoped:
         measured=measurements(job);used[measured['resource']+'_seconds']+=measured['seconds'] or 0;used['disk_bytes']+=measured['disk_bytes']
     reason=None

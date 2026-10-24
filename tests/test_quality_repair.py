@@ -122,3 +122,11 @@ def test_a_corner_watermark_alone_does_not_reject_a_concept(context,monkeypatch)
     for check in [j for j in jobs.listing() if j['payload']['kind']=='concept_layout']:
         for state in ('RUNNING','GENERATED','VALIDATING','REVIEW_REQUIRED'):jobs.transition(check['id'],state)
     assert [c['id'] for c in concept_guard.filter_choices(value,item,jobs.listing(),[image],{})]==[image['id']]
+
+
+def test_budget_tolerates_tournament_repairs_without_a_root_cause(context):
+    """Regression (overnight batch): tournament extra concepts carry quality_repair without root_cause."""
+    value,item=context
+    extra=jobs.enqueue(dict(kind='concept',asset_id=item['asset_id'],batch_id=value['id'],batch_attempt=0,quality_repair=dict(kind='tournament',issues=['framing'])))
+    budget=quality_repair.budget_check(value,item,[extra],'concept','CONCEPT_MISSING_REQUESTED_SUBJECT',None)
+    assert budget['used']['attempts']==1 and budget['used']['cause_attempts']==0

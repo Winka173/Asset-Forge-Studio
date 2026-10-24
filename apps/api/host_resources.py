@@ -14,6 +14,9 @@ from .host_memory import commit_memory
 
 GIB=1024**3
 HEADROOM=2*GIB
+# A lone GPU stage may start this far below its physical allowance: Windows pages idle apps to disk (slower, never lower quality).
+# The commit check below still needs the full allowance, so the stage cannot run out of memory.
+PAGING_TOLERANCE=6*GIB
 _estimates={}
 
 
@@ -160,7 +163,7 @@ def check(job,kind,token=None):
         if unknown_claim:reason='Resource admission record is unreadable; inspect host-ram claims before starting heavy work'
         elif orphan_gpu and kind=='gpu':reason='An earlier GPU worker is still running; waiting for it to exit safely'
         elif commit and commit['status']!='measured':reason='Windows system commit measurement unavailable; no heavy stage started';code='HOST_COMMIT_ADMISSION'
-        elif usable<physical_required+HEADROOM:reason=f"Waiting for RAM / stage allowance {physical_required/GIB:.1f} GiB + 2 GiB reserve; {usable/GIB:.1f} GiB available after existing claims"
+        elif usable<physical_required+HEADROOM and (live or kind!='gpu' or usable<physical_required-PAGING_TOLERANCE):reason=f"Waiting for RAM / stage allowance {physical_required/GIB:.1f} GiB + 2 GiB reserve; {usable/GIB:.1f} GiB available after existing claims"
         elif commit_usable is not None and commit_usable<allowance['commit_bytes']+HEADROOM:reason=f"Waiting for Windows commit / stage allowance {allowance['commit_bytes']/GIB:.1f} GiB + 2 GiB reserve; {commit_usable/GIB:.1f} GiB available after existing claims";code='HOST_COMMIT_ADMISSION'
         allowed=reason is None
         receipt=dict(schema_version=2,allowed=allowed,reason=reason,reason_code=None if allowed else code or 'HOST_RAM_ADMISSION',at=store.now(),

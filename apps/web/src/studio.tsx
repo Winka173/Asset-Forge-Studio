@@ -1979,6 +1979,25 @@ export function Studio() {
                       />
                     </label>
                   )}
+                  {project && (
+                    <label>
+                      Working files after delivery
+                      <Select
+                        aria-label="Working files after delivery"
+                        value={(project as Project & {cleanup_intermediates?: boolean | null}).cleanup_intermediates === false ? "keep" : "clean"}
+                        onChange={(e) =>
+                          run(async () => {
+                            await request(`/api/projects/${projectId}`, { ...project, cleanup_intermediates: e.target.value === "clean" });
+                            await reload();
+                            setNotice(e.target.value === "clean" ? "Checkpoints, .blend scenes, extra LODs and render passes are deleted once the GLB is delivered." : "All working files are kept after delivery.");
+                          })
+                        }
+                      >
+                        <option value="clean" data-description="Keeps the delivered GLB, the raw model, concepts and previews (about 160 MB per asset). Deletes checkpoints, .blend scenes, extra LODs and render passes (about 640 MB) unless an export setting needs them.">Delete working files (keep final GLB)</option>
+                        <option value="keep" data-description="Keeps every intermediate file (about 800 MB per asset) for re-finishing without the GPU.">Keep everything</option>
+                      </Select>
+                    </label>
+                  )}
                   <button
                     className="danger-button"
                     disabled={!project}
