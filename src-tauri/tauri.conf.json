@@ -23,7 +23,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob: http://127.0.0.1:*; connect-src blob: ipc: http://ipc.localhost http://127.0.0.1:*; font-src 'self' data:; media-src 'self' blob: http://127.0.0.1:*; worker-src 'self' blob:"
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data: blob: http://127.0.0.1:*; connect-src 'self' blob: ipc: http://ipc.localhost http://127.0.0.1:*; font-src 'self' data:; media-src 'self' blob: http://127.0.0.1:*; worker-src 'self' blob:"
     }
   },
   "bundle": {

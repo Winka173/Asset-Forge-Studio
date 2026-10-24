@@ -1,10 +1,13 @@
 // Shared navigation for the minimal Create flow and collapsed controls used by native verification scripts.
-// Step 2 ("Describe") holds only the prompt and reference; name, counts and engine options live in the Advanced section of step 3.
+// Step 2 ("Describe") holds only the prompt and reference; step 3 is Size & scale; name, counts and engine options live in the Advanced section of step 4.
 
 export async function toGenerateStep(page) {
   const advanced = page.locator('.create-advanced');
   if (await advanced.count()) return;
-  await page.getByRole('button', {name: 'Continue to generation'}).click();
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  // 3D assets pass the Size & scale step; sprites skip it.
+  const options = page.getByRole('button', {name: 'Continue to options'});
+  if (await options.count()) await options.click();
   await advanced.waitFor({state: 'attached'});
 }
 

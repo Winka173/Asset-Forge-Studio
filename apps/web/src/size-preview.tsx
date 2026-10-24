@@ -6,17 +6,19 @@ import { suggestAssetClass } from "./triangle-budget";
 import { apiFetch } from "./api";
 
 export type Dims = { w: number; d: number; h: number };
-export type SizeReference = { id: string; label: string; dims: Dims; url?: string };
+export type SizeReference = { id: string; label: string; dims: Dims; url?: string; group?: string };
+type Axis = keyof Dims;
 
-// Familiar real-world references (metres). Procedural low-poly stand-ins; library assets can be added by the caller.
-export const BUILTIN_REFERENCES: (SizeReference & { shape: "human" | "door" | "barrel" | "house" | "tower" | "castle" | "tree" })[] = [
-  { id: "human", label: "Human 1.8 m", dims: { w: 0.5, d: 0.3, h: 1.8 }, shape: "human" },
-  { id: "door", label: "Door", dims: { w: 1.2, d: 0.2, h: 2.2 }, shape: "door" },
-  { id: "barrel", label: "Barrel", dims: { w: 0.7, d: 0.7, h: 1.0 }, shape: "barrel" },
-  { id: "tree", label: "Tree", dims: { w: 4, d: 4, h: 7 }, shape: "tree" },
-  { id: "house", label: "Small house", dims: { w: 6, d: 5, h: 6 }, shape: "house" },
-  { id: "tower", label: "Watchtower", dims: { w: 4, d: 4, h: 12 }, shape: "tower" },
-  { id: "castle", label: "Large castle", dims: { w: 30, d: 30, h: 22 }, shape: "castle" },
+const asset = (file: string) => `${import.meta.env.BASE_URL}size-references/${file}`;
+
+// Real generated models (decimated with scripts/size_reference_pack.py), shown at their real height.
+export const BUILTIN_REFERENCES: SizeReference[] = [
+  { id: "house", label: "Small · house 6 m", group: "Buildings", dims: { w: 5, d: 4, h: 6 }, url: asset("house.glb") },
+  { id: "watchtower", label: "Medium · watchtower 13 m", group: "Buildings", dims: { w: 9, d: 13, h: 13 }, url: asset("watchtower.glb") },
+  { id: "castle", label: "Large · castle 24 m", group: "Buildings", dims: { w: 26, d: 23, h: 24 }, url: asset("castle.glb") },
+  { id: "dwarf", label: "Dwarf 1.3 m", group: "Characters", dims: { w: 0.8, d: 0.6, h: 1.3 }, url: asset("dwarf.glb") },
+  { id: "human", label: "Human 1.8 m", group: "Characters", dims: { w: 1, d: 0.6, h: 1.8 }, url: asset("human.glb") },
+  { id: "dragon", label: "Dragon boss 7 m", group: "Characters", dims: { w: 9, d: 10, h: 7 }, url: asset("dragon.glb") },
 ];
 
 // Starting size per asset class (provisional until the user confirms it).
@@ -45,138 +47,222 @@ export function useSuggestedDims(prompt: string): Dims {
   return dims;
 }
 
-type Catalogue = (SizeReference & { shape: string })[];
-let catalogue: Promise<Catalogue> | null = null;
-function loadCatalogue(): Promise<Catalogue> {
-  catalogue ??= apiFetch("/api/size-rules/references").then((r) => (r.ok ? r.json() : [])).catch(() => []);
-  return catalogue;
-}
-
 function defaultReferences(h: number) {
-  return h < 3 ? ["human", "barrel", "door"] : h < 15 ? ["human", "house", "tower"] : ["human", "tower", "castle"];
+  return h < 3 ? ["dwarf", "human"] : h < 15 ? ["human", "house", "watchtower"] : ["human", "watchtower", "castle"];
 }
 
-function stand_in(shape: string, dims: Dims, material: T.Material) {
-  const group = new T.Group();
-  const box = (w: number, h: number, d: number, y: number, x = 0, z = 0) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), material); m.position.set(x, y, z); group.add(m); };
-  const cyl = (r: number, h: number, y: number, x = 0, z = 0, top = r) => { const m = new T.Mesh(new T.CylinderGeometry(top, r, h, 16), material); m.position.set(x, y, z); group.add(m); };
-  const { w, d, h } = dims;
-  if (shape === "human") { cyl(0.18, 1.45, 0.725); const head = new T.Mesh(new T.SphereGeometry(0.15, 16, 12), material); head.position.y = 1.62; group.add(head); }
-  else if (shape === "door") box(w, h, d, h / 2);
-  else if (shape === "barrel") cyl(w / 2, h, h / 2, 0, 0, w * 0.42);
-  else if (shape === "tree") { cyl(0.35, h * 0.45, h * 0.225); const crown = new T.Mesh(new T.SphereGeometry(w / 2, 16, 12), material); crown.position.y = h * 0.68; group.add(crown); }
-  else if (shape === "house") { box(w, h * 0.55, d, h * 0.275); const roof = new T.Mesh(new T.ConeGeometry(Math.max(w, d) * 0.72, h * 0.45, 4), material); roof.position.y = h * 0.775; roof.rotation.y = Math.PI / 4; group.add(roof); }
-  else if (shape === "tower") { box(w, h * 0.8, d, h * 0.4); const roof = new T.Mesh(new T.ConeGeometry(w * 0.75, h * 0.2, 8), material); roof.position.y = h * 0.9; group.add(roof); }
-  else if (shape === "castle") {
-    const r = w * 0.09, wall = h * 0.45;
-    for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) cyl(r, h * 0.75, h * 0.375, x * (w / 2 - r), z * (d / 2 - r));
-    box(w, wall, 1, wall / 2, 0, -d / 2 + 0.5); box(w, wall, 1, wall / 2, 0, d / 2 - 0.5); box(1, wall, d, wall / 2, -w / 2 + 0.5); box(1, wall, d, wall / 2, w / 2 - 0.5);
-    box(w * 0.35, h, d * 0.35, h / 2);
-  }
-  return group;
-}
+const AXES: { axis: Axis; label: string; color: number; css: string }[] = [
+  { axis: "w", label: "Width", color: 0xe5534b, css: "#e5534b" },
+  { axis: "d", label: "Depth", color: 0x4c8dff, css: "#4c8dff" },
+  { axis: "h", label: "Height", color: 0x3fb950, css: "#3fb950" },
+];
+const DIRECTION: Record<Axis, T.Vector3> = { w: new T.Vector3(1, 0, 0), d: new T.Vector3(0, 0, 1), h: new T.Vector3(0, 1, 0) };
+const round = (v: number) => +(v < 2 ? v.toFixed(2) : v < 20 ? v.toFixed(1) : v.toFixed(0));
+// Log-scale sliders: 0.1 m – 60 m with fine control at small sizes.
+const MIN = 0.1, MAX = 60;
+const toSlider = (v: number) => Math.log(Math.min(MAX, Math.max(MIN, v)) / MIN) / Math.log(MAX / MIN);
+const fromSlider = (t: number) => round(MIN * Math.pow(MAX / MIN, t));
 
 export function SizePreview({ value, onChange, onConfirm, prompt, modelUrl, libraryReferences = [], confirmed }: {
   value: Dims; onChange: (dims: Dims) => void; onConfirm: (dims: Dims) => void; prompt: string; modelUrl?: string; libraryReferences?: SizeReference[]; confirmed: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string[]>(() => defaultReferences(value.h));
-  const [locked, setLocked] = useState(true);
+  const [picked, setPicked] = useState(false);
+  const sizeClass = value.h < 3 ? "small" : value.h < 15 ? "medium" : "large";
+  useEffect(() => { if (!picked) setSelected(defaultReferences(value.h)); }, [sizeClass]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [locked, setLocked] = useState(false);
+  const [missing, setMissing] = useState<string[]>([]);
   const suggested = useSuggestedDims(prompt);
-  const [modelAspect, setModelAspect] = useState<{ w: number; d: number } | null>(null);
-  const [extra, setExtra] = useState<Catalogue>([]);
-  useEffect(() => { let alive = true; loadCatalogue().then((list) => { if (alive) setExtra(list.filter((r) => !BUILTIN_REFERENCES.some((b) => b.id === r.id))); }); return () => { alive = false; }; }, []);
-  const references = useMemo(() => [...BUILTIN_REFERENCES, ...extra, ...libraryReferences], [extra, libraryReferences]);
-  const key = JSON.stringify([value, selected, modelUrl, libraryReferences.map((r) => r.id)]);
+  const [modelAspect, setModelAspect] = useState<{ w: number; d: number } | null>(null); // width/depth per metre of height
+  const references = useMemo(() => [...BUILTIN_REFERENCES, ...libraryReferences], [libraryReferences]);
+  // Live handles into the scene so dragging and typing never rebuild it.
+  const live = useRef<{ update: (dims: Dims) => void; frame: () => void; dragging: () => boolean } | null>(null);
+  const latest = useRef({ value, onChange, locked });
+  latest.current = { value, onChange, locked };
+  const pending = useRef<{ dims: Dims; frame: number } | null>(null);
+  // Local copy keeps sliders and fields responsive; the parent gets one coalesced update per frame.
+  const [local, setLocal] = useState(value);
+  useEffect(() => { if (!pending.current) setLocal(value); }, [value]);
+  const emit = (dims: Dims) => {
+    latest.current.value = dims; live.current?.update(dims); setLocal(dims);
+    if (pending.current) { pending.current.dims = dims; return; }
+    pending.current = { dims, frame: requestAnimationFrame(() => { const next = pending.current!.dims; pending.current = null; latest.current.onChange(next); }) };
+  };
+  useEffect(() => () => { if (pending.current) cancelAnimationFrame(pending.current.frame); }, []);
+  const emitRef = useRef(emit); emitRef.current = emit;
+  const sceneKey = JSON.stringify([selected, modelUrl, libraryReferences.map((r) => r.id)]);
 
   useEffect(() => {
     const element = host.current;
     if (!element) return;
     const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-    element.appendChild(renderer.domElement);
+    element.prepend(renderer.domElement);
     const scene = new T.Scene();
     scene.add(new T.HemisphereLight(0xffffff, 0x404048, 1.6));
     const sun = new T.DirectionalLight(0xffffff, 1.4); sun.position.set(5, 10, 7); scene.add(sun);
-    const camera = new T.PerspectiveCamera(40, 1, 0.05, 2000);
+    const camera = new T.PerspectiveCamera(40, 1, 0.05, 4000);
     const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
-    const refMaterial = new T.MeshStandardMaterial({ color: 0x8a8f99, roughness: 0.85 });
-    const objectMaterial = new T.MeshStandardMaterial({ color: 0xf0a94b, roughness: 0.6, transparent: true, opacity: 0.85 });
     const loader = new GLTFLoader();
     let disposed = false;
-    // New object at the origin, references to its left with 1 m gaps.
-    let cursor = -value.w / 2 - 1;
-    const placed: T.Object3D[] = [];
-    for (const id of selected) {
-      const ref = references.find((r) => r.id === id);
-      if (!ref) continue;
-      const shape = BUILTIN_REFERENCES.find((r) => r.id === id)?.shape ?? (ref as SizeReference & { shape?: string }).shape;
-      const node = shape && !ref.url ? stand_in(shape, ref.dims, refMaterial) : new T.Group();
-      node.position.x = cursor - ref.dims.w / 2; cursor -= ref.dims.w + 1;
-      scene.add(node); placed.push(node);
-      if (ref.url) loader.load(ref.url, (gltf) => { if (disposed) return; const m = gltf.scene; const box = new T.Box3().setFromObject(m); const size = box.getSize(new T.Vector3()); const s = ref.dims.h / Math.max(size.y, 1e-6); m.scale.setScalar(s); const b2 = new T.Box3().setFromObject(m); m.position.sub(new T.Vector3((b2.min.x + b2.max.x) / 2, b2.min.y, (b2.min.z + b2.max.z) / 2)); node.add(m); });
-    }
+
+    // The new object: a translucent box (or the real model) with one drag handle per axis.
+    const objectMaterial = new T.MeshStandardMaterial({ color: 0xf0a94b, roughness: 0.6, transparent: true, opacity: 0.55 });
+    const box = new T.Mesh(new T.BoxGeometry(1, 1, 1), objectMaterial);
+    const edges = new T.LineSegments(new T.EdgesGeometry(box.geometry), new T.LineBasicMaterial({ color: 0xffd08a }));
     const target = new T.Group(); scene.add(target);
-    if (modelUrl) {
-      loader.load(modelUrl, (gltf) => {
-        if (disposed) return;
-        const m = gltf.scene; const box = new T.Box3().setFromObject(m); const size = box.getSize(new T.Vector3());
-        const s = value.h / Math.max(size.y, 1e-6); m.scale.setScalar(s);
-        const b2 = new T.Box3().setFromObject(m); m.position.sub(new T.Vector3((b2.min.x + b2.max.x) / 2, b2.min.y, (b2.min.z + b2.max.z) / 2));
-        target.add(m); setModelAspect({ w: size.x * s, d: size.z * s });
-      }, undefined, () => setModelAspect(null));
-    } else {
-      const box = new T.Mesh(new T.BoxGeometry(value.w, value.h, value.d), objectMaterial); box.position.y = value.h / 2; target.add(box);
-      const edges = new T.LineSegments(new T.EdgesGeometry(box.geometry), new T.LineBasicMaterial({ color: 0xffd08a })); edges.position.copy(box.position); target.add(edges);
-    }
-    // Ground grid in 1 m cells sized to the scene.
-    const span = Math.max(4, Math.ceil((-cursor + value.w) * 1.2), Math.ceil(value.d * 3));
-    const grid = new T.GridHelper(span * 2, span * 2, 0x55585f, 0x33363c); scene.add(grid);
-    const all = new T.Box3().expandByObject(target); placed.forEach((p) => all.expandByObject(p)); all.expandByPoint(new T.Vector3(0, value.h, 0));
-    const center = all.getCenter(new T.Vector3()); const extent = all.getSize(new T.Vector3());
-    const distance = Math.max(extent.x, extent.y * 1.4, 2) * 1.3;
-    camera.position.set(center.x + distance * 0.35, center.y + distance * 0.35, distance); controls.target.copy(center); controls.update();
+    const model = new T.Group(); target.add(model);
+    if (!modelUrl) { target.add(box); target.add(edges); }
+    const handles = AXES.filter((a) => !modelUrl || a.axis === "h").map(({ axis, color }) => {
+      const mesh = new T.Mesh(new T.SphereGeometry(1, 20, 14), new T.MeshBasicMaterial({ color, depthTest: false, transparent: true }));
+      mesh.renderOrder = 10; mesh.userData.axis = axis; scene.add(mesh); return mesh;
+    });
+    let modelBase: T.Vector3 | null = null;
+    const update = (dims: Dims) => {
+      box.scale.set(dims.w, dims.h, dims.d); box.position.y = dims.h / 2; edges.scale.copy(box.scale); edges.position.copy(box.position);
+      if (modelBase) { const s = dims.h / Math.max(modelBase.y, 1e-6); model.scale.setScalar(s); }
+      const radius = Math.max(0.06, Math.max(dims.w, dims.d, dims.h) * 0.035);
+      for (const handle of handles) {
+        const axis = handle.userData.axis as Axis; handle.scale.setScalar(radius);
+        handle.position.set(axis === "w" ? dims.w / 2 + radius : 0, axis === "h" ? dims.h + radius : dims.h / 2, axis === "d" ? dims.d / 2 + radius : 0);
+      }
+    };
+    live.current = { update, frame: () => frameAll(), dragging: () => dragging !== null }; update(latest.current.value);
+    if (modelUrl) loader.load(modelUrl, (gltf) => {
+      if (disposed) return;
+      const m = gltf.scene; const b = new T.Box3().setFromObject(m); const size = b.getSize(new T.Vector3());
+      m.position.sub(new T.Vector3((b.min.x + b.max.x) / 2, b.min.y, (b.min.z + b.max.z) / 2)); model.add(m); modelBase = size;
+      update(latest.current.value); setModelAspect({ w: size.x / Math.max(size.y, 1e-6), d: size.z / Math.max(size.y, 1e-6) });
+    }, undefined, () => setModelAspect(null));
+
+    // References to the left of the object, laid out from their real loaded bounds.
+    const chosen = selected.map((id) => references.find((r) => r.id === id)).filter((r): r is SizeReference => !!r?.url);
+    const failed: string[] = [];
+    let frameAll = () => {};
+    Promise.all(chosen.map((ref) => new Promise<T.Object3D | null>((resolve) => loader.load(ref.url!, (gltf) => resolve(gltf.scene), undefined, () => { failed.push(ref.id); resolve(null); })))).then((models) => {
+      if (disposed) return;
+      setMissing(failed);
+      let cursor = -Math.max(latest.current.value.w, 1) / 2 - 1.5;
+      models.forEach((m, index) => {
+        if (!m) return;
+        const ref = chosen[index]; const b = new T.Box3().setFromObject(m); const size = b.getSize(new T.Vector3());
+        m.scale.setScalar(ref.dims.h / Math.max(size.y, 1e-6));
+        const b2 = new T.Box3().setFromObject(m); const width = b2.max.x - b2.min.x;
+        m.position.set(cursor - width / 2 - (b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2); cursor -= width + 1.5;
+        scene.add(m);
+      });
+      frameAll();
+    });
+    const grid = new T.GridHelper(400, 400, 0x55585f, 0x33363c); scene.add(grid);
+    frameAll = () => {
+      const all = new T.Box3().expandByObject(target); scene.children.forEach((c) => { if (c.type === "Group" || c.type === "Object3D") all.expandByObject(c); });
+      all.expandByPoint(new T.Vector3(0, latest.current.value.h, 0));
+      const center = all.getCenter(new T.Vector3()); const extent = all.getSize(new T.Vector3());
+      const distance = Math.max(extent.x, extent.y * 1.4, 2) * 1.25;
+      camera.position.set(center.x + distance * 0.3, center.y + distance * 0.35, distance); controls.target.copy(center); controls.update();
+    };
+    frameAll();
+
+    // Dragging a handle resizes along its axis on a camera-facing plane through that axis.
+    const raycaster = new T.Raycaster(); const pointer = new T.Vector2();
+    let dragging: Axis | null = null;
+    const ray = (event: PointerEvent) => { const r = renderer.domElement.getBoundingClientRect(); pointer.set(((event.clientX - r.left) / r.width) * 2 - 1, -((event.clientY - r.top) / r.height) * 2 + 1); raycaster.setFromCamera(pointer, camera); };
+    const down = (event: PointerEvent) => {
+      ray(event); const hit = raycaster.intersectObjects(handles)[0];
+      if (!hit) return;
+      dragging = hit.object.userData.axis as Axis; controls.enabled = false; renderer.domElement.setPointerCapture(event.pointerId); event.preventDefault();
+    };
+    const move = (event: PointerEvent) => {
+      if (!dragging) { ray(event); renderer.domElement.style.cursor = raycaster.intersectObjects(handles).length ? "grab" : ""; return; }
+      ray(event);
+      const direction = DIRECTION[dragging]; const view = camera.getWorldDirection(new T.Vector3());
+      const normal = new T.Vector3().crossVectors(direction, new T.Vector3().crossVectors(view, direction)).normalize();
+      const anchor = new T.Vector3(0, dragging === "h" ? 0 : latest.current.value.h / 2, 0);
+      const point = raycaster.ray.intersectPlane(new T.Plane().setFromNormalAndCoplanarPoint(normal, anchor), new T.Vector3());
+      if (!point) return;
+      const along = point.sub(anchor).dot(direction); const size = round(Math.max(MIN, dragging === "h" ? along : along * 2));
+      const { value: current, locked: keep } = latest.current;
+      const next = keep && !modelUrl ? { w: round(current.w * size / current[dragging]), d: round(current.d * size / current[dragging]), h: round(current.h * size / current[dragging]) } : { ...current, [dragging]: size };
+      emitRef.current(next);
+    };
+    const up = (event: PointerEvent) => { if (!dragging) return; dragging = null; controls.enabled = true; renderer.domElement.releasePointerCapture(event.pointerId); frameAll(); };
+    renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointermove", move); renderer.domElement.addEventListener("pointerup", up);
+
     const resize = () => { const { clientWidth: w, clientHeight: h } = element; renderer.setSize(w, h, false); camera.aspect = w / Math.max(h, 1); camera.updateProjectionMatrix(); };
     const observer = new ResizeObserver(resize); observer.observe(element); resize();
     let frame = 0; const tick = () => { frame = requestAnimationFrame(tick); controls.update(); renderer.render(scene, camera); }; tick();
     return () => {
-      disposed = true; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose();
-      scene.traverse((o) => { const mesh = o as T.Mesh; mesh.geometry?.dispose?.(); });
-      refMaterial.dispose(); objectMaterial.dispose(); renderer.dispose(); renderer.domElement.remove();
+      disposed = true; live.current = null; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose();
+      renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerup", up);
+      scene.traverse((o) => {
+        const mesh = o as T.Mesh; mesh.geometry?.dispose?.();
+        for (const material of ([] as T.Material[]).concat((mesh.material as T.Material | T.Material[]) ?? [])) {
+          for (const slot of Object.values(material)) if (slot instanceof T.Texture) slot.dispose();
+          material.dispose();
+        }
+      });
+      renderer.dispose(); renderer.domElement.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [sceneKey]);
+  useEffect(() => {
+    live.current?.update(value);
+    const timer = window.setTimeout(() => { if (live.current && !live.current.dragging()) live.current.frame(); }, 350);
+    return () => window.clearTimeout(timer);
+  }, [value]);
 
-  const set = (axis: keyof Dims, next: number) => {
+  const set = (axis: Axis, next: number) => {
     if (!Number.isFinite(next) || next <= 0) return;
-    if (!locked || modelUrl) { onChange({ ...value, [axis]: next }); return; }
-    const factor = next / value[axis];
-    onChange({ w: +(value.w * factor).toFixed(2), d: +(value.d * factor).toFixed(2), h: +(value.h * factor).toFixed(2) });
+    const current = latest.current.value;
+    if (!locked || modelUrl) { emit({ ...current, [axis]: next }); return; }
+    const factor = next / current[axis];
+    emit({ w: round(current.w * factor), d: round(current.d * factor), h: round(current.h * factor) });
   };
-  const shown = modelUrl && modelAspect ? { ...value, w: +modelAspect.w.toFixed(2), d: +modelAspect.d.toFixed(2) } : value;
+  // With a real model, width and depth follow its proportions per metre of height.
+  const shown = modelUrl && modelAspect ? { ...local, w: round(modelAspect.w * local.h), d: round(modelAspect.d * local.h) } : local;
+  const toggle = (id: string) => { setPicked(true); setSelected((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id])); };
   return (
     <div className="size-preview">
-      <div className="size-preview-scene" ref={host} role="img" aria-label={`New object ${shown.w} by ${shown.d} by ${shown.h} metres next to ${selected.join(", ")}`} />
+      <div className="size-preview-scene" ref={host} role="img" aria-label={`New object ${shown.w} by ${shown.d} by ${shown.h} metres next to ${selected.join(", ")}`}>
+        <div className="size-preview-sliders" aria-label="Drag to resize">
+          {AXES.filter((a) => !modelUrl || a.axis === "h").map(({ axis, label, css }) => (
+            <label key={axis} style={{ color: css }}>
+              <span>{label} {shown[axis]} m</span>
+              <input type="range" min={0} max={1} step={0.005} value={toSlider(local[axis])} aria-label={`${label} slider`} style={{ accentColor: css }} onChange={(e) => set(axis, fromSlider(Number(e.target.value)))} />
+            </label>
+          ))}
+          <small>or drag the coloured handles</small>
+        </div>
+      </div>
       <div className="size-preview-controls">
         <div className="size-preview-dims">
-          {(["w", "d", "h"] as const).map((axis) => (
-            <label key={axis}>{axis === "w" ? "Width" : axis === "d" ? "Depth" : "Height"} (m)
-              <input type="number" min={0.05} max={1000} step={axis === "h" && value.h > 20 ? 1 : 0.1} value={shown[axis]} disabled={!!modelUrl && axis !== "h"} onChange={(e) => set(axis, Number(e.target.value))} />
+          {AXES.map(({ axis, label }) => (
+            <label key={axis}>{label} (m)
+              <input type="number" min={0.05} max={1000} step={axis === "h" && local.h > 20 ? 1 : 0.1} value={shown[axis]} disabled={!!modelUrl && axis !== "h"} onChange={(e) => set(axis, Number(e.target.value))} />
             </label>
           ))}
           {!modelUrl && <label className="size-preview-lock"><input type="checkbox" checked={locked} onChange={(e) => setLocked(e.target.checked)} /> Keep proportions</label>}
         </div>
         {modelUrl && <small>Width and depth follow the model&apos;s own proportions; only height scales it.</small>}
-        <div className="size-preview-refs" role="group" aria-label="Compare with">
-          {references.filter((ref) => selected.includes(ref.id) || BUILTIN_REFERENCES.some((b) => b.id === ref.id)).map((ref) => (
-            <button key={ref.id} type="button" aria-pressed={selected.includes(ref.id)} onClick={() => setSelected((list) => (list.includes(ref.id) ? list.filter((id) => id !== ref.id) : [...list, ref.id]))}>{ref.label}</button>
-          ))}
-          <select aria-label="Add a scale reference" value="" onChange={(e) => e.target.value && setSelected((list) => [...new Set([...list, e.target.value])])}>
-            <option value="">More references…</option>
-            {libraryReferences.length > 0 && <optgroup label="From this game">{libraryReferences.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}</optgroup>}
-            <optgroup label="Common sizes">{extra.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}</optgroup>
-          </select>
-        </div>
+        {(["Buildings", "Characters"] as const).map((group) => (
+          <div key={group} className="size-preview-refs" role="group" aria-label={`Compare with ${group.toLowerCase()}`}>
+            <span className="size-preview-group">{group}</span>
+            {BUILTIN_REFERENCES.filter((r) => r.group === group).map((ref) => (
+              <button key={ref.id} type="button" aria-pressed={selected.includes(ref.id)} disabled={missing.includes(ref.id)} title={missing.includes(ref.id) ? "Reference model not installed" : undefined} onClick={() => toggle(ref.id)}>{ref.label}</button>
+            ))}
+          </div>
+        ))}
+        {libraryReferences.length > 0 && (
+          <div className="size-preview-refs" role="group" aria-label="Compare with assets from this game">
+            <span className="size-preview-group">This game</span>
+            <select aria-label="Add an asset from this game" value="" onChange={(e) => { if (!e.target.value) return; setPicked(true); setSelected((list) => [...new Set([...list, e.target.value])]); }}>
+              <option value="">Add a model…</option>
+              {libraryReferences.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+            </select>
+            {libraryReferences.filter((r) => selected.includes(r.id)).map((r) => <button key={r.id} type="button" aria-pressed onClick={() => toggle(r.id)}>{r.label} ✕</button>)}
+          </div>
+        )}
         <div className="size-preview-actions">
           <button type="button" className="text-button" onClick={() => onChange(suggested)}>Suggested size</button>
           <button type="button" className="btn-accent" onClick={() => onConfirm(shown)}>{confirmed ? "Size confirmed ✓" : "Use this size"}</button>

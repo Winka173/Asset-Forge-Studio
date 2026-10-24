@@ -255,7 +255,7 @@ export function Studio() {
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [draftStatus, setDraftStatus] = useState("");
-  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx','video'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?2:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
+  useEffect(()=>{if(!projectId||loadedProject!==projectId)return;try{const saved=JSON.parse(localStorage.getItem('afs.create.flow.'+projectId)||'null');const routeId=route()==='Create'?location.hash.split('/')[1]:undefined;if(routeId&&saved?.assetId!==routeId)return;if(saved&&['single','batch','world','fx','video'].includes(saved.mode)){setCreationMode(saved.mode);setCreateStep(Math.max(0,Math.min(saved.mode==='single'?3:1,Number(saved.step)||0)));}}catch{/* A damaged navigation cache never affects the saved prompt. */}},[loadedProject,projectId]);
   useEffect(()=>{if(projectId&&loadedProject===projectId)localStorage.setItem('afs.create.flow.'+projectId,JSON.stringify({mode:creationMode,step:createStep,assetId:draft.assetId||''}));},[projectId,loadedProject,creationMode,createStep,draft.assetId]);
   const [workflow,setWorkflow]=useState({mode:'auto' as 'auto'|'assisted'|'expert',checkpoints:{concept:false,candidate:false,export:false},retry_limit:1,disk_reserve_gb:10,max_active_assets:2,auto_resume:false,prompt_interpretation:true,architecture_strategy:'ai_detail' as 'ai_detail'|'procedural_blockout',review_policy:'auto' as 'auto'|'review_flagged'|'manual_approval'});
   const [workflowReady,setWorkflowReady]=useState(false);
@@ -460,7 +460,7 @@ export function Studio() {
       setDraft(normalizeDraft(restored));
       setLoadedProject(id);
       setAssetId(routeAsset?.id || "");
-      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':routeAsset.asset_type==='cinematic'?'video':'single');setCreateStep(['map_environment','vfx','cinematic'].includes(routeAsset.asset_type||'')?1:2);}
+      if(routeAsset){setCreationMode(routeAsset.asset_type==='map_environment'?'world':routeAsset.asset_type==='vfx'?'fx':routeAsset.asset_type==='cinematic'?'video':'single');setCreateStep(['map_environment','vfx','cinematic'].includes(routeAsset.asset_type||'')?1:3);}
       setVersionId(routeAsset?.master_artifact_id || "");
     }
   }
@@ -542,7 +542,7 @@ export function Studio() {
       }
       if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && page === "Create" && creationMode === "single" && createStep > 0 && (source || draft.prompt.trim()) && !busy) {
         event.preventDefault();
-        if(createStep===1)setCreateStep(2);else generate();
+        if(createStep===1)setCreateStep(draft.output==="sprite"?3:2);else if(createStep===2)setCreateStep(3);else generate();
       }
     };
     document.addEventListener("keydown", handler);
@@ -666,6 +666,7 @@ export function Studio() {
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
   const [allowQuestions]=useAllowQuestions();
+  const [showAllReferences,setShowAllReferences]=useState(false);
   async function generate() {
     if(candidate&&selectedAsset){refineSelected();return;}
     if(draft.output==="sprite"){await generateSprite();return;}
@@ -792,7 +793,7 @@ export function Studio() {
     navigate("Create");
   }
   function openAsset(asset: Asset) {
-    setCreateStep(['map_environment','vfx','cinematic'].includes(asset.asset_type||'')?1:2);
+    setCreateStep(['map_environment','vfx','cinematic'].includes(asset.asset_type||'')?1:3);
     setCreationMode(asset.asset_type==='map_environment'?'world':asset.asset_type==='vfx'?'fx':asset.asset_type==='cinematic'?'video':'single');
     setAssetId(asset.id);
     setVersionId(asset.master_artifact_id || "");
@@ -1083,8 +1084,8 @@ export function Studio() {
             <small>AI runs locally. Exported files are organised by project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
-            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
-            <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
+            <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':createStep===2?'How big is it?':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':createStep===2?'Compare it with real buildings and characters, drag the handles, then use the size.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
+            <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Size & scale','Options & generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
             {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Create sword slashes and elemental effects with editable recipes.',hint:'Realtime Unity effect / Preview',tone:'purple'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
           </section>}
           {projectId && page==='Create' && createStep>0 && creationMode==='video' && <VideoStudio key={`${projectId}:${selectedAsset?.asset_type==='cinematic'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='cinematic'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
@@ -1185,7 +1186,7 @@ export function Studio() {
             <>
               <div className="create-flow-draft"><span className="draft-indicator" role="status">{draftStatus}</span>{selectedAsset&&<span>Editing {selectedAsset.name}</span>}</div>
               <div className={`create-workspace create-single-flow step-${createStep}`}>
-                <section className="create-controls" aria-label={createStep===1?'Asset description':'Generation settings'}>
+                <section className="create-controls" aria-label={createStep===1?'Asset description':createStep===2?'Size and scale':'Generation settings'}>
                   {createStep===1&&<div className="create-input-step">
                   <div className="segmented create-output" role="radiogroup" aria-label="Output">
                     {([["3d","3D model"],["sprite","2D sprite"]] as const).map(([value,label])=>(
@@ -1236,25 +1237,36 @@ export function Studio() {
                       {source && <span className="replace-image">Replace image</span>}
                     </label>
                     {data.artifacts.some((a) => ["concept", "reference"].includes(a.role)) && (
-                      <label className="studio-field">
-                        Or pick one from this project
-                        <Select aria-label="Project reference" value={draft.source} onChange={(e) => change({ source: e.target.value })}>
-                          <option value="">No reference</option>
-                          {data.artifacts
-                            .filter((a) => ["concept", "reference"].includes(a.role))
-                            .map((a) => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                                {a.metadata.has_transparency ? " · alpha" : ""}
-                              </option>
-                            ))}
-                        </Select>
-                      </label>
+                      <div className="studio-field reference-picker" role="group" aria-label="Project reference">
+                        <span>Or pick one from this project</span>
+                        <div className="reference-picker-grid">
+                          <button type="button" className={!draft.source?"selected":""} aria-pressed={!draft.source} onClick={() => change({ source: "" })}><span className="reference-picker-none">No reference</span></button>
+                          {data.artifacts.filter((a) => ["concept", "reference"].includes(a.role)).slice().reverse().slice(0, showAllReferences ? undefined : 11).map((a) => (
+                            <button key={a.id} type="button" className={draft.source===a.id?"selected":""} aria-pressed={draft.source===a.id} title={a.name} onClick={() => change({ source: a.id })}>
+                              <img src={apiUrl(a.url)} alt={a.name} loading="lazy" />
+                            </button>
+                          ))}
+                        </div>
+                        {data.artifacts.filter((a) => ["concept", "reference"].includes(a.role)).length > 11 && <button type="button" className="text-button" onClick={() => setShowAllReferences(v => !v)}>{showAllReferences ? "Show fewer" : "Show all images"}</button>}
+                      </div>
                     )}
                   </div>
-                  <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(2)}>Continue to generation <Icon name="Arrow" size={17}/></button></div>
+                  <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(draft.output==="sprite"?3:2)}>Continue <Icon name="Arrow" size={17}/></button></div>
                   </div>}
-                  {createStep===2&&<div className="create-settings-step">
+                  {createStep===2&&<div className="create-settings-step create-size-step">
+                  <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
+                  {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
+                    const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);
+                      return spec?.target_height_m&&glb?[{id:a.id,label:a.name,url:apiUrl(glb.url),dims:{w:spec.target_width_m??1,d:spec.target_depth_m??1,h:spec.target_height_m}}]:[];}).slice(0,12);
+                    return <div className="create-size"><p className="create-size-status">{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"confirmed — the delivered model is scaled to this height":"suggested — press Use this size to apply it, or continue and AI sizes it"}`}</p>
+                      <SizePreview value={dims} prompt={draft.prompt} confirmed={!!draft.sizeConfirmed} libraryReferences={libraryReferences}
+                        modelUrl={candidate?.metadata.stage==="blender_processed"?apiUrl(candidate.url):undefined}
+                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:false})}
+                        onConfirm={next=>{change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true});setNotice(`Size set to ${next.w} × ${next.d} × ${next.h} m. The delivered model is scaled to this height.`);}}/>
+                    </div>;})()}
+                  <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(1)}>Back</button><button className="primary" onClick={()=>setCreateStep(3)}>Continue to options <Icon name="Arrow" size={17}/></button></div>
+                  </div>}
+                  {createStep===3&&<div className="create-settings-step">
                   <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   <div className="generate-actions">
                     {workflow.mode==='expert' && sourceNeedsApproval && <div className="capability-note"><strong>Concept needs your approval</strong><label className="studio-field">Concept reviewer<input value={reviewer} onChange={e=>setReviewer(e.target.value)}/></label><button className="btn-success" disabled={busy||!reviewer.trim()} onClick={()=>run(async()=>{await request(`/api/assets/${selectedAsset!.id}/concepts/${source!.id}/approve`,{reviewer,notes:'Approved concept for image-to-3D; not Meshy parity approval'});await reload();setNotice('Concept approval saved. You can create 3D now.');})}>Approve concept</button></div>}
@@ -1275,15 +1287,6 @@ export function Studio() {
                     </button>
                     {workflow.mode!=='expert'&&draft.output!=="sprite"&&<AllowQuestionsSwitch/>}
                   </div>
-                  {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
-                    const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);
-                      return spec?.target_height_m&&glb?[{id:a.id,label:a.name,url:apiUrl(glb.url),dims:{w:spec.target_width_m??1,d:spec.target_depth_m??1,h:spec.target_height_m}}]:[];}).slice(0,12);
-                    return <details className="advanced create-size"><summary>Size &amp; scale <span>{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"confirmed":"suggested, not applied"}`}</span></summary>
-                      <SizePreview value={dims} prompt={draft.prompt} confirmed={!!draft.sizeConfirmed} libraryReferences={libraryReferences}
-                        modelUrl={candidate?.metadata.stage==="blender_processed"?apiUrl(candidate.url):undefined}
-                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:false})}
-                        onConfirm={next=>{change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true});setNotice(`Size set to ${next.w} × ${next.d} × ${next.h} m. The delivered model is scaled to this height.`);}}/>
-                    </details>;})()}
                   <details className="advanced create-advanced"><summary>Advanced options <span>Optional · defaults keep maximum quality</span></summary>
                   <label className="studio-field">Asset name <input value={draft.name} onChange={(e) => change({ name: e.target.value })} placeholder={autoAssetName(draft.prompt)||"Named from your prompt"} maxLength={160}/></label>
                   {draft.mode==='Text + Image'&&<label className="studio-field">How to use this image<Select aria-label="Reference image purpose" value={draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style')} onChange={e=>change({referenceUsage:e.target.value as 'auto'|'source'|'palette_style'})}><option value="auto" disabled={!data.capabilities.prompt_interpretation?.available||workflow.mode==='expert'} data-description={data.capabilities.prompt_interpretation?.available?"Local Qwen3-VL interprets your prompt and image, translates the requested subject, and chooses reconstruction or a new asset strategy. Inferred decisions remain visible; no artistic approval is implied.":"Local Qwen3-VL weights/runtime are unavailable. No cloud or paid fallback."}>Auto - understand prompt and image</option><option value="palette_style" data-description="Creates the requested new subject using reference colors and a supported local strategy. Does not copy the reference shape. Full semantic style transfer is not installed.">New subject - reference colors</option><option value="source" data-description="Reconstruct this exact image in 3D. Text is saved as context and cannot change the image's geometry.">Reconstruct this image</option></Select><small>{(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='palette_style'?'Prompt / supported local strategy / Blender / GLB. The reference does not replace the requested subject; style fidelity remains reviewable.':(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available&&workflow.mode!=='expert'?'auto':'palette_style'))==='auto'?'Local vision/language analysis chooses how the image should be used. Inspect inferred decisions in Production.':'Image / 3D. Asking for a castle will not change a watchtower image into a castle.'}</small></label>}
@@ -1472,7 +1475,7 @@ export function Studio() {
                   <p className="control-footnote">Local pipeline. Technical QA and exports run automatically in Auto mode. Artistic review stays optional and independent.</p>
                   </div>}
                 </section>
-                <section className="create-preview" hidden={createStep===1&&!source&&!candidate}>
+                <section className="create-preview" hidden={(createStep===1&&!source&&!candidate)||createStep===2}>
                   <div className="preview-tabs">
                     <div>
                       {["Model", "Concept"].map((tab) => (
