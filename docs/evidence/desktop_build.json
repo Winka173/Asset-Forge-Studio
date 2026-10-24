@@ -1,23 +1,30 @@
 ﻿{
     "version":  "0.9.19",
-    "timestamp_utc":  "20261024T093656Z",
-    "git_commit":  "882a59c75c3177e22b3165b3f431573869ff2b6e",
+    "timestamp_utc":  "20261024T095443Z",
+    "git_commit":  "8cf9d5c4dcd0d2863fc552773fd986e9c8c54e0a",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/automation.py",
+                          " M apps/api/batch.py",
                           " M apps/api/host_resources.py",
-                          " M apps/api/quality_repair.py",
-                          " M apps/api/size_rules.py",
-                          " M apps/api/studio.py",
+                          " M apps/api/intermediates.py",
+                          " M apps/api/jobs.py",
+                          " M apps/api/main.py",
+                          " M apps/api/prompt_intent.py",
+                          " M apps/api/statuses.py",
+                          " M apps/web/src/asset-management.tsx",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/production.tsx",
                           " M apps/web/src/studio.tsx",
                           " M docs/afspipeline/DECISIONS.md",
-                          " M tests/test_host_resources.py",
-                          " M tests/test_quality_repair.py",
-                          " M tests/test_size_rules.py",
-                          "?? apps/api/intermediates.py",
+                          " M tests/test_intermediates.py",
+                          "?? apps/api/clarify.py",
+                          "?? apps/web/src/app.css",
+                          "?? apps/web/src/questions.tsx",
+                          "?? engines/clarify.py",
                           "?? prompt/",
-                          "?? tests/test_intermediates.py"
+                          "?? tests/test_clarify.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -26,7 +33,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261024T093656Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261024T095443Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -37,11 +44,11 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "745bc5c7d501057f41db28969a5edd6be91fd45daf8ea877582c11667f67ac75",
-                            "Asset Forge Studio_0.9.19_x64-setup.exe":  "7f9cd14deaaf08124776bb1f62d9cfb7e7deb57a80b5f0abc9dc8f1f5cb693e0",
-                            "afs-backend.exe":  "9e284ae55ee9f77995a289a6c12b7f5657754968f8d390168b5e95f97ffbe981"
+                            "Asset Forge Studio.exe":  "602fc0b9d045e26aea7466be0d693fb41cf594f10897e807c0b800a9f3af4b7f",
+                            "Asset Forge Studio_0.9.19_x64-setup.exe":  "a9485b00f017db76288785c6fabd5743fd2c1d0c3e66d41a70402eec6606d900",
+                            "afs-backend.exe":  "b936adc562fb76ad11add801db63ce2e15afe264ce637d3ecd83731394aa5d9d"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-24T09-41-39-815Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-24T10-00-49-053Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
     "installer":  "Asset Forge Studio_0.9.19_x64-setup.exe",

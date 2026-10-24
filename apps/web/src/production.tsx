@@ -6,6 +6,7 @@ import {ToastNotice,AssetExportAction} from './workspace-feedback';
 import {ErrorNotice} from "./error-notice";
 import {useEffect,useRef,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
+import {QuestionsPanel} from './questions';
 import {Select} from './select';
 import {CompareViewer} from './viewer';
 import {ActivityIndicator} from './activity-indicator';
@@ -131,6 +132,7 @@ export function ProductionWorkspace({onAdd,onReview,onLibrary}:{onAdd:()=>void;o
   <header className="production-heading"><div><div className="overline">LOCAL PRODUCTION / SHARED GPU QUEUE</div><h1>Production</h1><p>{running} active · One heavy GPU stage · Maximum Quality preserved</p></div><div className="production-actions"><button onClick={()=>setLeft(v=>!v)} aria-label="Toggle queue explorer">Queue</button><button onClick={()=>setRight(v=>!v)} aria-label="Toggle asset inspector">Inspector</button><button className={data.paused?'btn-success':undefined} disabled={working} onClick={()=>act(data.paused?'resume':'pause','all')}>{data.paused?'Resume all':'Pause all'}</button><button className="primary" onClick={onAdd}>＋ Add jobs</button></div></header>
   {error&&<ErrorNotice message={error} onRefresh={()=>refresh().catch(e=>setError(String(e)))} onDismiss={()=>setError('')}/>}
   <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
+  <QuestionsPanel onAnswered={()=>{refresh().catch(()=>{});setNotice('Answers saved. Generation continues for this asset.');}}/>
   {data.paused&&<div className="production-notice">All new work is paused. Active stages may finish their checkpoint; existing files remain available.</div>}
   <div className="production-panels">
    {left&&<aside ref={explorer} style={stored('afs.production.explorerWidth','')?{width:Math.min(440,Math.max(200,Number(stored('afs.production.explorerWidth','280'))))}:undefined} className="production-explorer"><div className="production-panel-title"><strong>Queue explorer</strong><span>{data.groups.reduce((n,g)=>n+g.items.length,0)+data.standalone.length} assets</span></div><input aria-label="Search production assets" placeholder="Search name or source ID…" value={query} onChange={e=>{setQuery(e.target.value);setScroll(0);if(list.current)list.current.scrollTop=0;}}/><Select aria-label="Production status filter" value={filter} onChange={e=>{setFilter(e.target.value);setScroll(0);if(list.current)list.current.scrollTop=0;}}>{['all','running','queued','paused','completed','exported','failed','needs_review','attention'].map(s=><option key={s} value={s}>{s==='attention'?'Needs Attention':title(s)}</option>)}</Select><label className="production-follow"><input type="checkbox" checked={follow} onChange={e=>setFollow(e.target.checked)}/> Auto-follow running asset</label>

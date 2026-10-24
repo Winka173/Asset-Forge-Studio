@@ -346,6 +346,10 @@ from .style_profile import router as style_profile_router
 app.include_router(style_profile_router)
 from .sprite import router as sprite_router
 app.include_router(sprite_router)
+from .intermediates import router as intermediates_router
+app.include_router(intermediates_router)
+from .clarify import router as clarify_router
+app.include_router(clarify_router)
 from .size_rules import router as size_rules_router
 app.include_router(size_rules_router)
 from .batch import router as batch_router

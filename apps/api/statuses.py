@@ -100,12 +100,14 @@ def refresh_all():
         if queued and paused:production='paused';stage='paused'
         if active:
             job=active[0];kind=job['payload']['kind'];stage='running'
-            production='preparing' if kind=='prompt_analysis' else 'validating' if kind in ('concept_layout','model_visual_check') else 'validating' if job['status']=='VALIDATING' else 'processing' if kind in ('blender','procedural_geometry','animation_retime') else 'generating'
+            production='preparing' if kind in ('prompt_analysis','prompt_questions') else 'validating' if kind in ('concept_layout','model_visual_check') else 'validating' if job['status']=='VALIDATING' else 'processing' if kind in ('blender','procedural_geometry','animation_retime') else 'generating'
             if job['status']=='VALIDATING':qa='running'
         elif failed and auto.get('status')!='exported':
             production='failed' if failed[0]['status']=='FAILED' else 'needs_attention';stage='failed' if production=='failed' else 'blocked'
             if failed[0]['payload']['kind']=='blender':qa='failed'
             reasons.append(dict(kind='engine_or_qa',message=failed[0].get('error') or 'Retry the failed stage or change the engine.'))
+        elif auto.get('status')=='waiting_for_answers':
+            production='needs_attention';stage='questions';reasons.append(dict(kind='questions',message='Answer the questions about this request, or let AI decide.'))
         elif auto.get('status') in ('blocked','failed'):
             production='failed' if auto['status']=='failed' else 'needs_attention';stage='blocked';reasons.append(dict(kind='manual_approval' if 'Review' in auto.get('stage','') or 'approval' in auto.get('stage','').lower() else 'input_or_dependency',message=auto.get('error') or auto.get('stage')))
         if (i.get('skipped') or i.get('production_cancelled',g.get('production_cancelled'))) and production!='completed':production='cancelled';stage='skipped'

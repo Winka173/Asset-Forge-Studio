@@ -2,6 +2,7 @@
 import json
 import hashlib
 from . import store,studio,jobs
+from .clarify import analysis_text
 from engines import intent_adapter
 
 
@@ -67,7 +68,7 @@ def admit(value,item,current,auto):
             refs=list(dict.fromkeys(item.get('intent_reference_ids',[])))
             records=[studio.scoped_artifact(r,value['project_id']) for r in refs]
             jobs.enqueue(dict(kind='prompt_analysis',engine='qwen3_vl_local_cpu',project_id=value['project_id'],asset_id=item['asset_id'],
-                batch_id=value['id'],batch_attempt=item['attempt'],original_prompt=item['prompt'],source_prompt_sha256=hashlib.sha256(item['prompt'].encode()).hexdigest(),
+                batch_id=value['id'],batch_attempt=item['attempt'],original_prompt=analysis_text(item),source_prompt_sha256=hashlib.sha256(analysis_text(item).encode()).hexdigest(),
                 reference_ids=refs,reference_hashes=[r['sha256'] for r in records],reference_usage=item.get('intent_reference_usage','auto'),
                 project_style_snapshot=value['style_snapshot'],use_gpu=False,timeout_seconds=1800,priority=item.get('priority',0)))
         auto.update(status='queued',stage='Understand prompt and reference / local CPU')
@@ -78,7 +79,7 @@ def admit(value,item,current,auto):
     path=store.safe_path(artifact['relative_path'])
     if store.digest(path)!=receipt['sha256'] or artifact['sha256']!=receipt['sha256']:raise ValueError('Interpretation checkpoint checksum changed')
     result=json.loads(path.read_text(encoding='utf-8'))
-    if result['source_prompt_sha256']!=hashlib.sha256(item['prompt'].encode()).hexdigest():raise ValueError('Interpretation no longer matches original prompt')
+    if result['source_prompt_sha256']!=hashlib.sha256(analysis_text(item).encode()).hexdigest():raise ValueError('Interpretation no longer matches original prompt')
     if item.get('intent_reference_scope')=='palette_only':
         result['generation_prompt_en']='\n'.join(r['interpretation']['translated_prompt_en'] for r in result['chunks']) or item['prompt']
         result['style_application']='Measured palette only by explicit user selection; semantic traits were not applied'

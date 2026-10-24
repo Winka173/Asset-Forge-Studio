@@ -9,6 +9,7 @@ import {ErrorNotice} from "./error-notice";
 import { Select } from "./select";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { StyleProfileCard } from "./style-profile";
+import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
 import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -661,6 +662,7 @@ export function Studio() {
   function openLibraryAsset(id:string){const model=data.assets.find(a=>a.id===id);if(!model||loadedProject!==projectId)return;if(['map_environment','vfx','cinematic'].includes(model.asset_type||'')){openAsset(model);return;}localStorage.setItem('afs.library.open.'+projectId,id);navigate('Library');dispatchEvent(new CustomEvent('afs-library-open',{detail:id}));}
   function openProduction(groupId:string,selectedAssetId?:string){localStorage.setItem("afs.production.selection",groupId+(selectedAssetId?"/"+selectedAssetId:""));navigate("Production");dispatchEvent(new Event("afs-production-select"));}
   function refineSelected(){if(!selectedAsset)return;localStorage.setItem('afs.inspector.view','refine');localStorage.setItem('afs.library.open.'+projectId,selectedAsset.id);navigate('Library');}
+  const [allowQuestions]=useAllowQuestions();
   async function generate() {
     if(candidate&&selectedAsset){refineSelected();return;}
     if(draft.output==="sprite"){await generateSprite();return;}
@@ -670,7 +672,7 @@ export function Studio() {
         const seeds=draft.seeds.split(',').map(value=>Number(value.trim()));
         if(!draft.seeds.trim()||seeds.length>5||new Set(seeds).size!==seeds.length||seeds.some(value=>!Number.isInteger(value)||value<0||value>4294967295))throw new Error('Use 1–5 distinct integer seeds between 0 and 4294967295.');
         const model=await ensureAsset();
-        const body={asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
+        const body={allow_questions:allowQuestions,asset_id:model.id,quality:draft.quality,engine:draft.engine,seeds,...(draft.sizeConfirmed&&draft.height?{target_width_m:draft.width??undefined,target_depth_m:draft.depth??undefined,target_height_m:draft.height}:{}),triangle_budget:draft.triangleBudget??undefined,game_texture_size:draft.triangleBudget?gameTextureSize():undefined,reference_id:draft.mode!=='Text'?source?.id:undefined,reference_usage:draft.mode==='Text + Image'&&source?.metadata.origin!=='sdxl_local'?(draft.referenceUsage||(data.capabilities.prompt_interpretation?.available?'auto':'palette_style')):'source',workflow};
         const fingerprint=JSON.stringify(body);
         const requestId='auto-'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(fingerprint)))).map(value=>value.toString(16).padStart(2,'0')).join('');
         const result=await request<{batch_id:string}>('/api/automation/single',{...body,request_id:requestId});
@@ -1266,6 +1268,7 @@ export function Studio() {
                       {candidate&&selectedAsset?"Refine this result":busy ? "Preparing local pipeline..." : workflow.mode!=="expert" ? "Generate & export asset" : (!source || draft.mode==="Text") && draft.prompt.trim() ? "Generate concept" : "Generate 3D"}
                       <Icon name="Arrow" size={17} />
                     </button>
+                    {workflow.mode!=='expert'&&draft.output!=="sprite"&&<AllowQuestionsSwitch/>}
                   </div>
                   {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
                     const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);

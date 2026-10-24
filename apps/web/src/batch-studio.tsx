@@ -8,6 +8,7 @@ import "./batch.css";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
 import { ScaleLineup } from "./scale-lineup";
+import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
 
 type Reference = { id: string; name: string; role: string; url: string };
 type Version = {
@@ -479,10 +480,11 @@ export function BatchStudio({
     await call(path,{...payload,request_id:requestId,regenerate_completed:true});
     localStorage.removeItem(key);
   }
+  const [allowQuestions] = useAllowQuestions();
   async function runBatch(ids = selectedItems.map((item) => item.asset_id)) {
     if (!batch) return;
     await execute(async () => {
-      await generationRequest(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic });
+      await generationRequest(`/api/batches/${batch.id}/run`, { selected_ids: ids, automatic, allow_questions: automatic && allowQuestions });
       await refresh(batch.id);
       await onRefresh?.();
       onSubmitted?.(batch.id);
@@ -805,6 +807,7 @@ export function BatchStudio({
                   <Glyph kind="play" />
                   Generate Selected ({selectedItems.length})
                 </button>
+                {automatic&&<AllowQuestionsSwitch/>}
               </div>
             <details className="batch-delivery-settings"><summary>Export settings <span>GLB Only by default</span></summary><BatchExportSettings projectId={projectId} onBusyChange={setExportSettingsBusy}/></details>
             <div className="batch-manifest-summary" role="status"><strong>{batch.items.length} assets</strong><span>{selectedItems.length} / {batch.items.length} selected</span><span>{batch.items.filter(item=>item.source_status?.toLowerCase()==='future').length} Future · included in Generate all</span><span>No GPU starts until Generate</span></div>

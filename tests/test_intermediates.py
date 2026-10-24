@@ -39,3 +39,32 @@ def test_requested_export_components_are_kept(delivered):
 
 def test_projects_can_opt_out():
     assert intermediates.enabled({}) and intermediates.enabled(dict(cleanup_intermediates=None)) and not intermediates.enabled(dict(cleanup_intermediates=False))
+
+
+def test_finalize_keeps_only_the_delivered_glb_rig_and_thumbnail(tmp_path, monkeypatch, qa_project):
+    import json
+    from fastapi.testclient import TestClient
+    from apps.api import studio
+    from apps.api.export_profiles import _schema
+    from apps.api.main import app
+    monkeypatch.setattr(store, 'DATA', tmp_path); qa_project(); client = TestClient(app)
+    model = client.post('/api/assets', json=dict(project_id='runavelle', name='Tower', prompt='A tower')).json(); aid = model['id']
+    monkeypatch.setattr(jobs, 'listing', lambda: [dict(id='inf', status='REVIEW_REQUIRED', payload=dict(asset_id=aid)), dict(id='bl', status='REVIEW_REQUIRED', payload=dict(asset_id=aid))])
+    def put(name, body=b'x'):
+        path = tmp_path / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(body); return path
+    raw = store.add_artifact(put('jobs/inf/output/raw.glb'), 'candidate', 'raw', dict(asset_id=aid, project_id='runavelle'))
+    concept = store.add_artifact(put('jobs/inf/output/concept.png'), 'concept', 'concept', dict(asset_id=aid, project_id='runavelle'))
+    final = store.add_artifact(put('jobs/bl/output/LOD0.glb'), 'candidate', 'LOD0', dict(asset_id=aid, project_id='runavelle', job_id='bl', parent_id=raw['id']))
+    rig = store.add_artifact(put('jobs/rig/output/rigged.glb'), 'rigged', 'rig', dict(asset_id=aid, project_id='runavelle', parent_id=final['id']))
+    put('jobs/bl/output/fit_three_quarter.png'); put('jobs/bl/output/pc1440_front.png'); put('jobs/bl/output/report.json')
+    assert client.post(f'/api/production/assets/{aid}/finalize').status_code == 409  # nothing delivered yet
+    shipped = put('exports/game/tower.glb'); _schema()
+    delivery = dict(id='e1', delivery_scope='game', artifact_id=final['id'], export_directory=str(shipped.parent), output_root=str(tmp_path / 'exports'),
+                    files=[dict(name='tower.glb', sha256=store.digest(shipped))])
+    with store.connect() as db: db.execute('INSERT INTO selective_exports VALUES (?,?,?)', ('e1', aid, json.dumps(delivery)))
+    value = studio.asset(aid); value.update(published_artifact_id=final['id'], concept_artifact_id=concept['id']); studio.save_asset(value)
+    result = client.post(f'/api/production/assets/{aid}/finalize').json()
+    assert set(result['kept']) == {final['id'], rig['id']} and result['files'] == 3
+    left = sorted(p.relative_to(tmp_path).as_posix() for p in tmp_path.rglob('*') if p.is_file() and p.suffix != '.sqlite' and 'jobs' in p.parts)
+    assert left == ['jobs/bl/output/LOD0.glb', 'jobs/bl/output/fit_three_quarter.png', 'jobs/bl/output/report.json', 'jobs/rig/output/rigged.glb']
+    assert shipped.is_file() and studio.asset(aid)['concept_artifact_id'] is None

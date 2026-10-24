@@ -301,6 +301,7 @@ class Run(BaseModel):
     dry_run:bool=False
     request_id:str|None=Field(default=None,min_length=8,max_length=100)
     regenerate_completed:bool=False
+    allow_questions:bool=False
 
 
 def prepare_generation(value,ids,request_id,regenerate_completed,dry_run=False):
@@ -344,7 +345,7 @@ def run_all(identifier:str,body:Run):
 def run(identifier:str,body:Run):
     if body.automatic:
         from .automation import start
-        return start(identifier,body.selected_ids,dry_run=body.dry_run,request_id=body.request_id,regenerate_completed=body.regenerate_completed)
+        return start(identifier,body.selected_ids,dry_run=body.dry_run,request_id=body.request_id,regenerate_completed=body.regenerate_completed,allow_questions=body.allow_questions)
     with LOCK:
         value=batch(identifier);selected=set(body.selected_ids) if body.selected_ids is not None else {i['asset_id'] for i in value['items'] if i['selected']}
         if selected-{i['asset_id'] for i in value['items']}:raise HTTPException(400,'Asset selection is outside this batch')

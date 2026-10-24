@@ -151,7 +151,7 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
+    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','prompt_questions','batch_semantics','animation_retime','cinematic_render','tool_update'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
@@ -340,6 +340,10 @@ class Worker:
                 return
             if payload['kind']=='prompt_analysis':
                 from .prompt_intent import execute
+                execute(job,folder)
+                return
+            if payload['kind']=='prompt_questions':
+                from .clarify import execute
                 execute(job,folder)
                 return
             if payload['kind']=='procedural_geometry':

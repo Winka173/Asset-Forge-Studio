@@ -135,7 +135,7 @@ def plan_engines(item,source=None):
     return compatible
 
 
-def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=None,regenerate_completed=False):
+def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=None,regenerate_completed=False,allow_questions=False):
     from . import batch
     from .export_profiles import resolve_project_settings
     with batch.LOCK:
@@ -148,6 +148,7 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
         snapshot=studio.studio(value['project_id']);project=studio.project(value['project_id'])
         for item in value['items']:
             if item['asset_id'] not in ids:continue
+            item['allow_questions']=allow_questions  # opt-in per explicit Generate; off means Auto decides
             resolve_specs(item,project,snapshot)
             model=studio.asset(item['asset_id'])
             if not any(j['payload'].get('asset_id')==item['asset_id'] and j['payload'].get('batch_id')==identifier and j['payload'].get('batch_attempt',0)==item['attempt'] for j in snapshot['jobs']):item.setdefault('planner_version',1)
@@ -272,6 +273,10 @@ def advance(identifier):
             if any(d is None for d in dependencies):auto.update(status='blocked',stage='Needs Input',error='Unknown dependency ID');continue
             if any(d.get('automation',{}).get('status') not in ('exported','needs_review') for d in dependencies):auto.update(status='queued',stage='Waiting for dependency');continue
             try:
+                from .clarify import admit as ask_questions
+                if ask_questions(value,item,current,auto):
+                    if auto['status']!='waiting_for_answers':active_assets.add(item['asset_id'])
+                    continue
                 from .prompt_intent import admit
                 if admit(value,item,current,auto):active_assets.add(item['asset_id']);continue
                 from .asset_strategy import admit as plan_strategy
@@ -519,6 +524,7 @@ class Single(BaseModel):
     target_width_m:float|None=Field(default=None,gt=0,le=1000)
     target_depth_m:float|None=Field(default=None,gt=0,le=1000)
     target_height_m:float|None=Field(default=None,gt=0,le=1000)
+    allow_questions:bool=False
 
 
 @router.post('/single',status_code=201)
@@ -549,5 +555,5 @@ def single(body:Single):
             row.update(intent_reference_usage='style' if effective_usage=='palette_style' else body.reference_usage,intent_reference_scope='palette_only' if body.reference_usage=='palette_style' else 'semantic')
             project=studio.project(model['project_id']);value=dict(id=identifier,project_id=model['project_id'],name=model['name'],mode={'Fast':'Fast Batch','Balanced':'Quality Batch','Maximum':'Maximum Quality Batch'}[body.quality],quality_lock=body.quality=='Maximum',master_prompt=model['prompt'],style_snapshot=project,warnings=[],items=[row],paused=True,created_at=store.now(),updated_at=store.now())
             db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,model['project_id'],json.dumps(value)));db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('auto-single:'+body.request_id,studio.request_digest(body),json.dumps(dict(batch_id=identifier))))
-        result=start(identifier,workflow=body.workflow.model_dump() if body.workflow else None)
+        result=start(identifier,workflow=body.workflow.model_dump() if body.workflow else None,allow_questions=body.allow_questions)
     return dict(batch_id=identifier,asset_id=body.asset_id,batch=result)
