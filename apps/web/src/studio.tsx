@@ -10,6 +10,7 @@ import { Select } from "./select";
 import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { StyleProfileCard } from "./style-profile";
 import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
+import { PromptExamples } from "./prompt-examples";
 import { SizePreview, useSuggestedDims, type SizeReference } from "./size-preview";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
@@ -1199,6 +1200,7 @@ export function Studio() {
                     />
                     <small>Shape, materials, colours and style. One sentence is enough.</small>
                   </label>
+                  <PromptExamples mode="single"/>
                   <div className="reference-field">
                     <div className="reference-field-head"><span>Reference image <em>Optional</em></span>{source&&<button className="text-button" onClick={()=>change({source:''})}>Remove</button>}</div>
                     <label

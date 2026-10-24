@@ -80,6 +80,11 @@ def normalize(row):
     if isinstance(row.get('style_constraints'),str):row['style_constraints']=json.loads(row['style_constraints'] or '{}')
     for key in ['target_width_m','target_depth_m','target_height_m']:
         if row.get(key)=='':row[key]=None
+    # CSV and table cells are text; empty optional numbers fall back to defaults.
+    for key in ['triangle_budget','game_texture_size','candidates','concept_candidates','priority']:
+        if isinstance(row.get(key),str):
+            if not row[key].strip():row.pop(key)
+            elif re.fullmatch(r'-?\d+',row[key].strip()):row[key]=int(row[key])
     for key in ['selected','confirmed','skipped']:
         if isinstance(row.get(key),str):row[key]=row[key].strip().lower() in ['true','1','yes']
     if 'project' in row:row.pop('project')  # project scope always comes from selected game.

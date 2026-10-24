@@ -1,0 +1,24 @@
+{
+  "assets": [
+    {"id": "PROP_OAK_BARREL", "name": "Oak Barrel", "category": "Prop",
+     "prompt": "Weathered oak barrel with three wrought-iron hoops and a wooden lid, slightly dented, warm brown wood",
+     "width_m": 0.8, "depth_m": 0.8, "height_m": 1.1, "materials": ["oak", "wrought iron"], "family": "Props",
+     "quality": "Balanced", "engine": "auto", "candidates": 1, "concept_candidates": 0, "triangle_budget": 8000,
+     "game_texture_size": 1024, "target_outputs": ["glb"], "priority": 0, "selected": true, "skipped": false},
+    {"id": "BLD_ARCHER_TOWER_T1", "name": "Archer Tower T1", "category": "Building",
+     "prompt": "Archer watchtower: square grey stone base, timber upper platform with crenellated wooden railing, red cloth roof and a small banner on top",
+     "width_m": 5, "depth_m": 5, "height_m": 10, "materials": ["stone", "oak", "cloth"], "family": "Archer Tower",
+     "quality": "Maximum", "game_texture_size": 2048, "priority": 10, "style_constraints": {"silhouette": "chunky, readable from an elevated camera"}},
+    {"id": "BLD_ARCHER_TOWER_T2", "name": "Archer Tower T2", "category": "Building",
+     "prompt": "Taller stone archer tower with arrow slits, stone parapet, slate cone roof and two banners; same palette as Archer Tower T1",
+     "width_m": 6, "depth_m": 6, "height_m": 13, "materials": ["stone", "slate", "cloth"], "family": "Archer Tower",
+     "dependencies": ["BLD_ARCHER_TOWER_T1"], "quality": "Maximum", "priority": 9},
+    {"id": "UNIT_KNIGHT", "name": "Knight", "category": "Character",
+     "prompt": "Elite knight in polished silver plate armour with royal blue tabard and gold trim, plumed helmet, cape, holding a longsword and a kite shield with a lion crest",
+     "width_m": 1.1, "depth_m": 0.9, "height_m": 2, "materials": ["steel", "cloth", "leather"], "family": "Units",
+     "quality": "Maximum", "engine": "trellis2_community", "candidates": 2, "concept_candidates": 3, "target_outputs": ["glb", "fbx"], "priority": 5},
+    {"id": "FUT_BOSS_FROST_WYVERN", "name": "Frost Wyvern", "category": "Creature", "status": "FUTURE",
+     "prompt": "Giant frost wyvern boss, pale ice-blue scales with dark navy spines, crystalline ice shards along back and tail, torn membrane wings half spread, glowing white eyes",
+     "width_m": 9, "depth_m": 12, "height_m": 6, "materials": ["scales", "ice"], "family": "Bosses", "quality": "Maximum", "game_texture_size": 4096}
+  ]
+}

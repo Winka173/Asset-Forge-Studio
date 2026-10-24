@@ -9,6 +9,7 @@ import { TriangleBudgetField, gameTextureSize } from "./triangle-budget";
 import { BatchReferences } from "./batch-references";
 import { ScaleLineup } from "./scale-lineup";
 import { AllowQuestionsSwitch, useAllowQuestions } from "./questions";
+import { PromptExamples } from "./prompt-examples";
 
 type Reference = { id: string; name: string; role: string; url: string };
 type Version = {
@@ -729,6 +730,7 @@ export function BatchStudio({
               {analyzing ? 'Analyzing…' : 'Analyze prompt'}
             </button>
           </div>
+          <PromptExamples mode="batch" />
         </section>
         <section className="batch-context">
           <div className="batch-panel-title">
