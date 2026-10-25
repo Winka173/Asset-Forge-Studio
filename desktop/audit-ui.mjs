@@ -24,16 +24,22 @@ const project=await api('/api/projects',{name:'Audit Game'});
 for(const glb of ['ArcherTowerLOD2.glb','RiggedFigure.glb'])await upload('/api/library/import',path.join(root,'.local/fixtures',glb),{project_id:project.id}).catch(e=>errors.push('seed '+e.message));
 const prompt=path.join(root,'prompt/Runavelle_V4_Next50.md');
 let batch=null;if(fs.existsSync(prompt)){const text=fs.readFileSync(prompt,'utf8').split(/\r?\n---\r?\n/).slice(0,4).join('\n---\n');const f=new FormData();f.append('file',new Blob([text]),'audit.md');f.append('project_id',project.id);f.append('name','Audit batch');batch=await api('/api/batches/import',null,f).catch(e=>{errors.push('batch '+e.message);return null;});}
+// A quick CPU job so Production has an asset with an inspector; one batch item waits for answers (questions modal).
+const mesh=await api('/api/fx/mesh',{project_id:project.id,kind:'shockwave',request_id:'audit-mesh-0001'}).catch(e=>{errors.push('mesh '+e.message);return null;});
+if(batch){const py=path.join(root,'.venv/Scripts/python.exe');const code=`import json,sqlite3,sys
+db=sqlite3.connect(sys.argv[1]);row=db.execute('SELECT payload FROM batches WHERE id=?',(sys.argv[2],)).fetchone();v=json.loads(row[0]);i=v['items'][0]
+i['clarification']=dict(state='waiting',round=1,asked_at='2026-10-25T00:00:00+00:00',questions=[dict(id='colour',question='Main colours?',options=['Đỏ và vàng kim','Xanh lam và bạc','Trắng và xám đá','Nâu gỗ và đen'],importance=9),dict(id='material',question='Wall material?',options=['Đá xám','Gạch đỏ','Gỗ sồi','Kim loại'],importance=8)])
+db.execute('UPDATE batches SET payload=? WHERE id=?',(json.dumps(v),sys.argv[2]));db.commit()`;await new Promise(r=>spawn(py,['-c',code,path.join(run,'Library/studio.sqlite'),batch.id]).on('exit',r));}
 await page.evaluate(id=>localStorage.setItem('afs.project',id),project.id);await page.reload();await page.locator('.studio-sidebar').waitFor();await sleep(1500);
 const report=[];
 async function shot(name,action,full=false){try{if(action)await action();await sleep(900);await page.screenshot({path:path.join(shots,name+'.png'),fullPage:full});report.push({name,ok:true});}catch(e){report.push({name,ok:false,error:String(e.message||e).slice(0,200)});}}
 const nav=label=>page.locator('.studio-sidebar nav a',{hasText:label}).first().click();
 const closeModal=async()=>{await page.keyboard.press('Escape');await sleep(300);};
-await shot('01-home',()=>nav('Home'));
+await shot('01-home',()=>nav('Projects'));
 await shot('02-create-cards',async()=>{await nav('Create');const change=page.getByRole('button',{name:'Change workflow'});if(await change.count())await change.click();});
 for(const[name,title]of[['03-create-single','Single asset'],['04-create-batch','Batch assets'],['05-create-map','Map / World'],['06-create-effects','Effects'],['07-create-motion','Motion'],['08-create-video','Video / Cinematic']]){
-  await shot(name,async()=>{const change=page.getByRole('button',{name:'Change workflow'});if(await change.count())await change.click();await page.locator('.create-workflow-card',{hasText:title}).first().click();},name==='06-create-effects');}
-await shot('09-production',async()=>{await nav('Production');const row=page.locator('.production-row button, .production-explorer button').filter({hasText:/./}).nth(1);if(await row.count())await row.click();});
+  await shot(name,async()=>{await nav('Create');for(const label of ['Change workflow','Choose workflow']){const b=page.getByRole('button',{name:label});if(await b.count()){await b.first().click();break;}}await page.locator('.create-workflow-card',{hasText:title}).first().click();},['06-create-effects','07-create-motion'].includes(name));}
+await sleep(8000);await shot('09-production',async()=>{await nav('Production');await page.mouse.move(900,600);const row=page.locator('.production-explorer').getByText(/Shockwave/).first();if(await row.count())await row.click();});
 for(const tab of['Overview','Sources','Checks','Refine','Log'])await shot('10-inspector-'+tab.toLowerCase(),()=>page.getByRole('tab',{name:tab}).click());
 await shot('11-library',()=>nav('Library'));
 await shot('12-library-detail',()=>page.locator('.library-managed-card').first().click());
@@ -41,6 +47,7 @@ await shot('13-delete-modal',()=>page.getByRole('button',{name:/^Delete/}).first
 await shot('14-export-modal',async()=>{await nav('Production');const b=page.getByRole('button',{name:/Export model/}).first();if(await b.count())await b.click();});await closeModal();
 await shot('15-notifications',()=>page.locator('button[aria-label*="otification"]').first().click());await closeModal();
 await shot('16-settings',()=>nav('Settings'));
+await shot('17-questions',async()=>{await nav('Production');await page.locator('.questions-trigger').first().click();});await closeModal();
 fs.writeFileSync(path.join(run,'report.json'),JSON.stringify({executable,project:project.id,batch:batch?.id,shots:report,errors},null,2));
 await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close')).catch(()=>{});for(let n=0;n<60&&child.exitCode===null;n++)await sleep(250);
 await browser.close().catch(()=>{});

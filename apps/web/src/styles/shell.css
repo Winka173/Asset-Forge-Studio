@@ -361,3 +361,16 @@ button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var
 .export-receipt-files li { display: flex; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-md); overflow-wrap: anywhere; }
 .export-receipt-files small { color: var(--text-3); white-space: nowrap; }
 .export-receipt-path { display: block; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); font-size: var(--fs-xs); overflow-wrap: anywhere; color: var(--text-2); }
+/* Top bar never overflows the window: the right group may shrink, secondary labels collapse first. */
+.studio-topbar { min-width: 0; overflow: hidden; }
+.topbar-meta { flex-shrink: 1; min-width: 0; }
+.workspace-tools { min-width: 0; flex-wrap: nowrap; }
+.workspace-tools > * { flex-shrink: 0; }
+@media (max-width: 1900px) { .quick-find-trigger kbd { display: none; } }
+@media (max-width: 1600px) { .continue-work-trigger { display: none; } }
+@media (max-width: 1600px) { .host-chip { font-size: var(--fs-xs); padding: 1px 6px; } }
+@media (max-width: 1400px) { .host-chips { display: none; } }
+@media (max-width: 2000px) { .notification-label { display: none; } .host-chip:not(.warn) { font-size: var(--fs-xs); padding: 1px 6px; } }
+@media (max-width: 1750px) { .host-chip:not(.warn) { display: none; } }
+.questions-prompt > summary { cursor: pointer; color: var(--text-3); font-size: var(--fs-sm); list-style: none; }
+.questions-prompt > small { display: block; max-height: 220px; overflow: auto; margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); white-space: pre-wrap; }

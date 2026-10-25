@@ -102,7 +102,7 @@ function QuestionsList({ pending, reload, onAnswered }: { pending: Pending[]; re
       {error && <p className="form-error" role="alert">{error}</p>}
       {pending.map((entry) => (
         <article key={entry.asset_id} className="questions-card">
-          <header><strong>{entry.name}</strong><small>{entry.prompt}</small></header>
+          <header><strong>{entry.name}</strong><details className="questions-prompt"><summary>{entry.prompt.replace(/\s+/g,' ').slice(0,140)}{entry.prompt.length>140?'…':''}</summary><small>{entry.prompt}</small></details></header>
           <ol className="questions-list">
             {entry.questions.map((q, index) => {
               const value = answers[entry.asset_id]?.[q.id] || "";
