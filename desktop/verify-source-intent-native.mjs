@@ -4,7 +4,7 @@ import fs from 'node:fs';import path from 'node:path';import net from 'node:net'
 const root=path.resolve(import.meta.dirname,'..'),run=path.join(root,'.local/source-intent-native',new Date().toISOString().replaceAll(/[:.]/g,'-'));
 const config=path.join(run,'config'),library=path.join(run,'Library');fs.mkdirSync(config,{recursive:true});
 fs.writeFileSync(path.join(config,'desktop-config.json'),JSON.stringify({workspace:root,library,blender:null,setup_complete:true}));
-const build=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/desktop_build.json'),'utf8').replace(/^\uFEFF/,''));assert.equal(build.version,'0.9.21');
+const build=JSON.parse(fs.readFileSync(path.join(root,'docs/evidence/desktop_build.json'),'utf8').replace(/^\uFEFF/,''));assert.equal(build.version,'0.9.22');
 const source=path.join(root,'.local/fixtures/ArcherTowerSource.png'),hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex'),sourceHash=hash(source);
 const server=net.createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let child,browser,page,closing=false,api,hold,batchId;

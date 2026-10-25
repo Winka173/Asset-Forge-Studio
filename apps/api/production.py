@@ -86,8 +86,11 @@ def wait_reason(i,group,related,auto,context):
     if any(j['status'] not in jobs.TERMINAL|{'QUEUED'} for j in related):return None
     if context['paused_since']:
         return dict(code='paused_all',since=context['paused_since'],message='All production is paused. Press Resume all to continue.')
-    if group['paused'] or i.get('production_paused'):return dict(code='paused',message='This asset or its batch is paused. Press Resume to continue.')
     if auto.get('status')=='waiting_for_answers':return dict(code='questions',message='Waiting for your answers to its questions.')
+    if group['paused']:
+        reason=(group.get('automation') or {}).get('pause_reason')
+        return dict(code='paused',scope='batch',message=reason or 'Its batch is paused. Press Resume to continue.')
+    if i.get('production_paused'):return dict(code='paused',scope='asset',message='This asset is paused. Press Resume to continue.')
     waiting=next((j for j in related if j['status']=='QUEUED'),None)
     if waiting:
         progress=waiting.get('progress') or {}

@@ -344,3 +344,4 @@ button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var
   .studio button.sidebar-group-toggle svg { display: none; }
   .studio .studio-sidebar nav.sidebar-tools > a { height: 36px; opacity: 1; pointer-events: auto; }
 }
+.modal-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); flex-wrap: wrap; }
