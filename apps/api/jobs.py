@@ -151,12 +151,21 @@ def exclusive_worker_lock():
 
 
 def resource_class(payload):
-    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','prompt_questions','batch_semantics','animation_retime','cinematic_render','tool_update','fx_flipbook'):return 'cpu'
+    if payload['kind'] in ('procedural_geometry','model_visual_check','concept_layout','style_profile','sprite_cutout','prompt_analysis','prompt_questions','batch_semantics','animation_retime','cinematic_render','tool_update','fx_flipbook','fx_mesh'):return 'cpu'
     return 'cpu' if payload['kind'] in ['blender','unity_import','world_unity'] and not payload.get('use_gpu',False) else 'gpu'
 
 
 def dependency_readiness(job):
     """Persisted stage dependencies; scheduler changes admission, never quality settings."""
+    if job['payload'].get('await_rigged_asset'):  # motion from an image: wait until that character has an auto-rig
+        target=job['payload']['await_rigged_asset']
+        with store.connect() as db:
+            rigged=db.execute("SELECT 1 FROM artifacts WHERE asset_id=? AND role='rigged' LIMIT 1",(target,)).fetchone()
+        if not rigged:
+            stopped=[j for j in listing() if j['payload'].get('asset_id')==target and j['payload'].get('kind') in ('inference','blender','rig') and j['status'] in {'FAILED','BLOCKED','CANCELLED'}]
+            mine=[j for j in listing() if j['payload'].get('asset_id')==target and j['payload'].get('kind') in ('concept','inference','blender','rig','prompt_analysis') and j['status'] not in TERMINAL]
+            if stopped and not mine:return 'blocked','The character could not be generated or rigged; retry it, then retry this motion'
+            return 'waiting',None
     for identifier in job['payload'].get('depends_on',[]):
         try:parent=get(identifier)
         except KeyError:return 'blocked',f'Missing dependency {identifier}; no automatic replacement'
@@ -352,6 +361,10 @@ class Worker:
                 return
             if payload['kind']=='fx_flipbook':
                 from .fx_flipbook import execute
+                execute(job,folder,self)
+                return
+            if payload['kind']=='fx_mesh':
+                from .fx_mesh import execute
                 execute(job,folder,self)
                 return
             if payload['kind']=='motion':

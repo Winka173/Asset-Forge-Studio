@@ -28,6 +28,7 @@ import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
 import { FxStudio } from "./fx-studio";
 import { MotionStudio } from "./motion-studio";
+import { Lightbox, openImages } from "./lightbox";
 import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
@@ -407,6 +408,10 @@ export function Studio() {
   const categories = Array.from(
     new Set(data.assets.map((a) => a.category || "Unsorted")),
   );
+  // Library "Use in map": open Map with that Unity package as the prop (stored in the map draft).
+  useEffect(() => { const use = (e: Event) => { if (!projectId) return; const key = 'afs.world-draft.' + projectId; try { const draft = JSON.parse(localStorage.getItem(key) || '{}'); localStorage.setItem(key, JSON.stringify({ ...draft, prop: String((e as CustomEvent<string>).detail) })); } catch { /* storage unavailable */ } setAssetId(''); change({ assetId: '' }); setCreationMode('world'); setCreateStep(1); navigate('Create'); }; addEventListener('afs-use-in-map', use); return () => removeEventListener('afs-use-in-map', use); });
+  // Library "Animate": open Motion with that rigged character chosen.
+  useEffect(() => { const animate = (e: Event) => { try { localStorage.setItem('afs.motion.character', String((e as CustomEvent<string>).detail)); } catch { /* storage unavailable */ } setAssetId(''); change({ assetId: '' }); setCreationMode('motion'); setCreateStep(1); navigate('Create'); }; addEventListener('afs-animate', animate); return () => removeEventListener('afs-animate', animate); });
   function navigate(next: Page) {
     location.hash = next.toLowerCase();
     setPage(next);
@@ -974,6 +979,7 @@ export function Studio() {
   }
   return (
     <div data-interface={interfacePreferences.mode} data-motion={interfacePreferences.motion} className={`studio${collapsed ? " sidebar-collapsed" : ""}`}>
+      <Lightbox />
       <aside className="studio-sidebar" data-collapsed={collapsed||undefined}>
         <div className="sidebar-head">
           <a href="#home" className="studio-brand" title="Asset Forge Studio">
@@ -1229,7 +1235,7 @@ export function Studio() {
                       }}
                     >
                       {source ? (
-                        <img src={apiUrl(source.url)} alt="Selected reference image" />
+                        <img src={apiUrl(source.url)} alt="Selected reference image" style={{cursor:"zoom-in"}} onClick={()=>openImages([{src:apiUrl(source.url),name:source.name}])} />
                       ) : (
                         <>
                           <Icon name="Upload" size={22} />

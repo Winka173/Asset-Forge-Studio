@@ -63,7 +63,9 @@ def analysis_text(item):
 
 class Answers(BaseModel):
     answers: dict[str, str] = Field(default_factory=dict)
-    # Answer up to this question; it and every later question are left for AI to decide.
+    # Questions the user handed to AI one by one ("Let AI decide"); the others keep their answers.
+    ai_decides: list[str] = Field(default_factory=list)
+    # Older clients: this question and every later one are left for AI.
     ai_decides_from: str | None = None
 
 
@@ -76,7 +78,7 @@ def answer(identifier: str, asset_id: str, body: Answers):
         if not item or state.get('state') != 'waiting': raise HTTPException(409, 'This asset is not waiting for answers.')
         ids = [q['id'] for q in state['questions']]
         cut = ids.index(body.ai_decides_from) if body.ai_decides_from in ids else len(ids)
-        answers = {k: v[:500] for k, v in body.answers.items() if k in ids[:cut] and v.strip()}
+        answers = {k: v[:500] for k, v in body.answers.items() if k in ids[:cut] and k not in body.ai_decides and v.strip()}
         delegated = ids[cut:] + [k for k in ids[:cut] if k not in answers]
         state.update(asked=state.get('asked', []) + state['questions'], answers=state.get('answers', {}) | answers,
                      ai_decides=state.get('ai_decides', []) + delegated, questions=[], answered_at=store.now())

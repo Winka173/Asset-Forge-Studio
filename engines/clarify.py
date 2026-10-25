@@ -14,7 +14,7 @@ class Question(BaseModel):
     model_config = ConfigDict(extra='forbid')
     id: str = Field(min_length=1, max_length=40)
     question: str = Field(min_length=3, max_length=300)
-    options: list[str] = Field(min_length=2, max_length=4)
+    options: list[str] = Field(min_length=2, max_length=10)
     importance: int = Field(ge=1, le=10)
 
 
@@ -38,7 +38,7 @@ def ask(prompt, project_style, asked=()):
     else:
         amount = 'This request is detailed: ask only about visually important traits it truly leaves open, usually 0-3 questions; return an empty list when nothing important is missing. '
     answer = local_semantics.request('/api/chat', dict(model=selected['name'], stream=False, think=False, format=Questions.model_json_schema(), keep_alive=0,
-        options=dict(temperature=0, num_ctx=4096, num_predict=1500, num_gpu=0, num_thread=8), messages=[dict(role='system', content=(
+        options=dict(temperature=0, num_ctx=4096, num_predict=3000, num_gpu=0, num_thread=8), messages=[dict(role='system', content=(
             'You help a game artist turn a short request into ONE game-ready 3D asset. First write `subject`: the object the request names, in English '
             '(ignore typos; e.g. a house, villa, sword, knight). Every question and option must be about that exact subject; never introduce another creature or object. '
             'List the questions whose answers would visibly change the result '
@@ -47,7 +47,7 @@ def ask(prompt, project_style, asked=()):
             'Never ask about camera, background, file format, polycount or engine. Never ask what the request already states. '
             f'At most {LIMIT} questions, most important first (importance 10 = changes the silhouette). '
             + amount +
-            f'Write question and options in {language}; 2-4 short concrete options each; ids are short snake_case words.')),
+            f'Write question and options in {language}; 2-10 short concrete options each (one per genuinely different choice, usually 4-8; never pad with near-duplicates); ids are short snake_case words.')),
             dict(role='user', content=f'Request: {prompt}\nProject style: {project_style or "none"}' + (
                 '\nAlready asked (never repeat; ask a follow-up only if an answer above is unclear, contradictory or opens a new important visual choice): '
                 + '; '.join(asked) if asked else ''))]), timeout=600)

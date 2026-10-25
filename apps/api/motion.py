@@ -41,6 +41,8 @@ class Motion(BaseModel):
     character_artifact_id:str|None=None
     # Or an uploaded character still being auto-rigged: the motion waits for that rig job.
     rig_job_id:str|None=None
+    # Or a character being generated from an image (Single): the motion waits until it is auto-rigged.
+    await_rig_of_asset:str|None=None
     asset_id:str|None=None
     request_id:str=Field(min_length=8,max_length=100)
 
@@ -102,7 +104,8 @@ def create(body:Motion):
     config=dict(schema_version=1,engine_id='kimodo-soma-rp-v1.2',stage='text_to_motion',input_prompt=body.prompt,duration=body.duration,seed=body.seed,steps=100,fps=30,
                 text_encoder_device='cpu',worker_sha256=store.digest(WORKER),convert_sha256=store.digest(CONVERT),artistic_approval=False,
                 **(dict(character_artifact_id=character['id'],character_sha256=character['sha256'],retarget_sha256=store.digest(RETARGET)) if character else {}),
-                **(dict(character_from_rig_job=body.rig_job_id,retarget_sha256=store.digest(RETARGET)) if body.rig_job_id and not character else {}))
+                **(dict(character_from_rig_job=body.rig_job_id,retarget_sha256=store.digest(RETARGET)) if body.rig_job_id and not character else {}),
+                **(dict(character_from_asset=body.await_rig_of_asset,retarget_sha256=store.digest(RETARGET)) if body.await_rig_of_asset and not character and not body.rig_job_id else {}))
     checksum=fingerprint(body.model_dump())
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');prior=studio.cached(db,'motion:'+body.request_id,checksum)
@@ -119,7 +122,8 @@ def create(body:Motion):
         db.execute('INSERT INTO assets VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload',(asset['id'],asset['project_id'],json.dumps(asset)))
         job=jobs.enqueue(dict(kind='motion',engine='kimodo',project_id=asset['project_id'],asset_id=asset['id'],name=name+' motion',effective_config=config,
                               effective_config_hash=fingerprint(config),timeout_seconds=3600,purpose='text_to_motion_clip',
-                              **(dict(depends_on=[body.rig_job_id]) if config.get('character_from_rig_job') else {})),db=db)
+                              **(dict(depends_on=[body.rig_job_id]) if config.get('character_from_rig_job') else {}),
+                              **(dict(await_rigged_asset=body.await_rig_of_asset) if config.get('character_from_asset') else {})),db=db)
         result=dict(asset_id=asset['id'],job=job)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('motion:'+body.request_id,checksum,json.dumps(result)))
     return result
@@ -177,6 +181,10 @@ def execute(job,folder,worker):
         rigged=next((a for a in _artifacts_of_job(config['character_from_rig_job']) if a['role']=='rigged'),None)
         if not rigged:raise ValueError('The auto-rig job produced no rigged character')
         config=dict(config,character_artifact_id=rigged['id'],character_sha256=rigged['sha256'])
+    if config.get('character_from_asset'):
+        with store.connect() as db:row=db.execute("SELECT * FROM artifacts WHERE asset_id=? AND role='rigged' ORDER BY created_at DESC LIMIT 1",(config['character_from_asset'],)).fetchone()
+        if not row:raise ValueError('The character from the image has no rigged copy yet')
+        rigged=store.artifact(row);config=dict(config,character_artifact_id=rigged['id'],character_sha256=rigged['sha256'])
     if config.get('character_artifact_id') and not retarget(job,folder,worker,config,clip,safe,glb,meta,blender):return
     jobs.transition(job['id'],'REVIEW_REQUIRED')
 

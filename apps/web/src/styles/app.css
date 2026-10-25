@@ -513,3 +513,34 @@ button > svg.lucide, a > svg.lucide { flex: none; vertical-align: -3px; margin-r
 .engine-option .engine-note { color: var(--warning, #f0a94b); }
 .engine-option.unavailable { opacity: .55; cursor: not-allowed; }
 .questions-backdrop { z-index: 20000; }
+
+/* Questions: one card per question, chip answers, per-question "Let AI decide". */
+.questions-dialog { width: min(820px, 100%); }
+.questions-list { list-style: none; margin: 0 0 var(--sp-4); padding: 0; display: grid; gap: var(--sp-3); }
+.questions-item { display: grid; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-2); }
+.questions-item[data-ai] { border-style: dashed; opacity: 0.75; }
+.questions-item-head { display: flex; align-items: center; gap: var(--sp-3); }
+.questions-item-head strong { flex: 1; font-size: var(--fs-md); }
+.questions-number { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: var(--fs-sm); font-weight: 600; }
+.questions-item .questions-options { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: 0; }
+.questions-item .questions-options button { min-height: 34px; padding: 6px 14px; border: 1px solid var(--border-strong); border-radius: var(--r-full); background: var(--surface-1); color: var(--text); font-weight: 500; }
+.questions-item .questions-options button:hover:not(:disabled) { border-color: var(--accent); }
+.questions-item .questions-options button.selected { outline: none; background: var(--accent); border-color: var(--accent); color: var(--text-inverse); }
+.questions-item .questions-other { width: 100%; }
+.questions-item .questions-ai { display: inline-flex; align-items: center; gap: 6px; margin: 0; flex: none; min-height: 30px; padding: 4px 12px; border-radius: var(--r-full); border: 1px solid var(--border-strong); background: transparent; color: var(--text-2); opacity: 1; }
+.questions-item .questions-ai[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.questions-footnote { margin-left: var(--sp-3); color: var(--text-3); }
+/* Visual hints on suggested answers */
+.questions-item .questions-options button { display: inline-flex; align-items: center; gap: 8px; }
+.answer-visual { display: inline-flex; gap: 3px; }
+.answer-visual i { display: block; width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgb(255 255 255 / 0.25); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25); }
+.answer-swatch { border-radius: 50% !important; }
+.material-wood { background: repeating-linear-gradient(100deg, #8a5a33 0 3px, #a8703f 3px 6px, #7a4d2b 6px 8px); }
+.material-stone { background: radial-gradient(circle at 30% 30%, #9a9a96 0 25%, transparent 26%), radial-gradient(circle at 70% 65%, #7d7e7b 0 30%, transparent 31%), #8c8d89; }
+.material-brick { background: linear-gradient(#b0553b 0 45%, #d9cbb5 45% 55%, #9d4a33 55%); }
+.material-metal { background: linear-gradient(135deg, #6f757d, #d9dde2 45%, #868c94 60%, #c9cdd2); }
+.material-crystal { background: linear-gradient(135deg, #b9e6ff, #6fb7e8 50%, #e9f7ff); }
+.material-cloth { background: repeating-linear-gradient(45deg, #9b3b3b 0 2px, #b84d4d 2px 4px); }
+.material-tile { background: repeating-linear-gradient(0deg, #6b2f24 0 4px, #8d4030 4px 7px); }
+.material-thatch { background: repeating-linear-gradient(75deg, #c9a45a 0 2px, #a8843f 2px 4px); }
+.questions-item .questions-options button.selected .answer-visual i { border-color: rgb(0 0 0 / 0.4); }

@@ -34,7 +34,7 @@ async def lifespan(app):
         close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.9.23", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.9.26", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -379,6 +379,10 @@ from .asset_delete import router as asset_delete_router
 app.include_router(asset_delete_router)
 from .motion import router as motion_router
 app.include_router(motion_router)
+from .fx_mesh import router as fx_mesh_router
+app.include_router(fx_mesh_router)
+from .fx_textures import router as fx_textures_router
+app.include_router(fx_textures_router)
 from .fx_flipbook import router as fx_flipbook_router
 app.include_router(fx_flipbook_router)
 from .fx import router as fx_router

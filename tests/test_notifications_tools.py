@@ -17,13 +17,17 @@ def test_notification_sqlite_history_read_clear_and_cross_game_filters(client):
     other=client.post('/api/projects',json=dict(name='Another game')).json()
     b=client.post('/api/assets',json=dict(project_id=other['id'],name='Source B')).json()
     assert client.get('/api/notifications').json()['total']==0
-    # Explicit failed-stage regression fixtures; these are not generated assets.
-    for asset in (a,b):
+    # Item-level notifications: each asset waiting for answers (stage updates are not notifications).
+    import json
+    from apps.api import store
+    for n,asset in enumerate((a,b)):
         job=jobs.enqueue(dict(kind='concept',asset_id=asset['id'],project_id=asset['project_id']))
         jobs.transition(job['id'],'RUNNING');jobs.transition(job['id'],'FAILED','Unit-only failure; no successful output claimed')
+        item=dict(asset_id=asset['id'],name=asset['name'],clarification=dict(state='waiting',round=1,questions=[dict(id='q',question='Colour?',options=['red','blue'],importance=9)],asked_at=store.now()))
+        with store.connect() as db:db.execute('INSERT INTO batches VALUES (?,?,?)',(f'b{n}',asset['project_id'],json.dumps(dict(id=f'b{n}',project_id=asset['project_id'],items=[item]))))
     value=client.get('/api/notifications').json();assert value['total']==value['unread_count']==2
-    assert all(n['kind']=='failed' and n['target'].startswith('job/') for n in value['items'])
-    scoped=client.get('/api/notifications',params=dict(project_id='runavelle',kind='failed')).json()
+    assert all(n['kind']=='questions' and 'question' in n['title'] for n in value['items'])
+    scoped=client.get('/api/notifications',params=dict(project_id='runavelle',kind='questions')).json()
     assert scoped['total']==1 and scoped['items'][0]['asset_name']=='Source A'
     identifier=scoped['items'][0]['id']
     assert client.post('/api/notifications/read',json=dict(ids=[identifier])).json()['updated']==1

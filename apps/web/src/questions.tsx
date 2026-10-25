@@ -1,4 +1,6 @@
+import { Sparkles as IcSparkles } from "lucide-react";
 import { createPortal } from "react-dom";
+import { AnswerVisual } from "./answer-visuals";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "./api";
 
@@ -78,14 +80,18 @@ export function QuestionsButton({ onAnswered }: { onAnswered?: () => void }) {
   );
 }
 
+const AI = "__ai_decides__";  // per-question marker: this one is left for AI
+
 function QuestionsList({ pending, reload, onAnswered }: { pending: Pending[]; reload: () => Promise<void>; onAnswered?: () => void }) {
   const [answers, setAnswers] = useState<Record<string, Record<string, string>>>({});
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
-  async function submit(entry: Pending, aiDecidesFrom?: string) {
+  async function submit(entry: Pending) {
     setBusy(entry.asset_id); setError("");
     try {
-      const r = await apiFetch(`/api/batches/${entry.batch_id}/items/${entry.asset_id}/answers`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answers: answers[entry.asset_id] || {}, ai_decides_from: aiDecidesFrom ?? null }) });
+      const given = answers[entry.asset_id] || {};
+      const delegated = Object.keys(given).filter((id) => given[id] === AI);
+      const r = await apiFetch(`/api/batches/${entry.batch_id}/items/${entry.asset_id}/answers`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answers: Object.fromEntries(Object.entries(given).filter(([, v]) => v !== AI)), ai_decides: delegated }) });
       if (!r.ok) throw Error((await r.json()).detail || "Answers were not saved");
       await reload(); onAnswered?.();
     } catch (e) { setError(String((e as Error).message || e)); } finally { setBusy(""); }
@@ -97,23 +103,24 @@ function QuestionsList({ pending, reload, onAnswered }: { pending: Pending[]; re
       {pending.map((entry) => (
         <article key={entry.asset_id} className="questions-card">
           <header><strong>{entry.name}</strong><small>{entry.prompt}</small></header>
-          <ol>
-            {entry.questions.map((q) => {
+          <ol className="questions-list">
+            {entry.questions.map((q, index) => {
               const value = answers[entry.asset_id]?.[q.id] || "";
+              const ai = value === AI;
               return (
-                <li key={q.id}>
-                  <span>{q.question}</span>
-                  <div className="questions-options">
-                    {q.options.map((option) => <button key={option} type="button" className={value === option ? "selected" : ""} aria-pressed={value === option} onClick={() => set(entry.asset_id, q.id, option)}>{option}</button>)}
-                    <input aria-label={`Other answer: ${q.question}`} placeholder="Other…" value={q.options.includes(value) ? "" : value} onChange={(e) => set(entry.asset_id, q.id, e.target.value)} />
-                    <button type="button" className="questions-ai" disabled={busy === entry.asset_id} title="Keep answers above; AI decides this and every later question" onClick={() => submit(entry, q.id)}>AI decides from here</button>
+                <li key={q.id} className="questions-item" data-ai={ai || undefined}>
+                  <div className="questions-item-head"><span className="questions-number">{index + 1}</span><strong>{q.question}</strong>
+                    <button type="button" className="questions-ai" aria-pressed={ai} title="Only this question: AI chooses the answer" onClick={() => set(entry.asset_id, q.id, ai ? "" : AI)}><IcSparkles size={14} aria-hidden="true" />Let AI decide</button></div>
+                  <div className="questions-options" aria-disabled={ai || undefined}>
+                    {q.options.map((option) => <button key={option} type="button" className={value === option ? "selected" : ""} aria-pressed={value === option} disabled={ai} onClick={() => set(entry.asset_id, q.id, value === option ? "" : option)}><AnswerVisual text={option} />{option}</button>)}
                   </div>
+                  <input className="questions-other" aria-label={`Other answer: ${q.question}`} placeholder="Or type your own answer…" disabled={ai} value={ai || q.options.includes(value) ? "" : value} onChange={(e) => set(entry.asset_id, q.id, e.target.value)} />
                 </li>
               );
             })}
           </ol>
           <button className="primary" disabled={busy === entry.asset_id} onClick={() => submit(entry)}>Continue with these answers</button>
-          <small> Unanswered questions are decided by AI.</small>
+          <small className="questions-footnote">Questions left empty are decided by AI too.</small>
         </article>
       ))}
     </section>

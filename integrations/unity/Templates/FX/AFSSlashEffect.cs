@@ -16,7 +16,7 @@ public class AFSSlashEffect : MonoBehaviour {
     // only the secondary sparks use the accent material.
     public Color accent=Color.clear;public float accentStrength;public Material accentMaterial;
     public Color Tint(){return ElementTint();}
-    Color ElementTint(){switch(element){case "ice":return new Color(.23f,.77f,1);case "lightning":return new Color(.52f,.38f,1);case "wind":return new Color(.55f,.95f,.8f);case "earth":return new Color(.82f,.5f,.2f);case "poison":return new Color(.45f,.95f,.15f);default:return new Color(1,.29f,.035f);}}
+    Color ElementTint(){switch(element){case "ice":return new Color(.23f,.77f,1);case "lightning":return new Color(.52f,.38f,1);case "wind":return new Color(.55f,.95f,.8f);case "earth":return new Color(.82f,.5f,.2f);case "poison":return new Color(.45f,.95f,.15f);case "holy":return new Color(1,.9f,.5f);case "shadow":return new Color(.36f,.12f,.55f);case "arcane":return new Color(.8f,.35f,1);default:return new Color(1,.29f,.035f);}}
     void OnEnable(){Ensure();Seek(previewTime);}
     void Update(){if(Application.isPlaying&&playing){previewTime=Mathf.Repeat(previewTime+Time.deltaTime,duration);Seek(previewTime);}}
     void OnDestroy(){if(trail){if(Application.isPlaying)Destroy(trail);else DestroyImmediate(trail);}}

@@ -7,17 +7,17 @@ from apps.api import store
 class SparseResearchAdapter(LocalAdapter):
     def paths(self):
         name = 'TRELLIS-v1' if self.id == 'trellis_v1' else 'Hi3DGen'
-        return store.ROOT / '.local/engines' / name, store.ROOT / '.local/envs' / self.id / 'Scripts/python.exe'
+        return store.WORKSPACE / '.local/engines' / name, store.WORKSPACE / '.local/envs' / self.id / 'Scripts/python.exe'
 
     def weights(self):
         if self.id == 'trellis_v1':
             return Path.home() / 'Tools/trellis2/code/MODELS/hub/models--microsoft--TRELLIS-image-large/snapshots/25e0d31ffbebe4b5a97464dd851910efc3002d96'
-        return store.ROOT / 'models/hi3dgen'
+        return store.WORKSPACE / 'models/hi3dgen'
 
     def probe(self):
         source, python = self.paths()
-        required = [self.weights() / 'pipeline.json', store.ROOT / 'models/dinov2/dinov2_vitl14_reg4_pretrain.pth']
-        if self.id == 'hi3dgen': required.append(store.ROOT / 'models/hi3dgen_normal/model_index.json')
+        required = [self.weights() / 'pipeline.json', store.WORKSPACE / 'models/dinov2/dinov2_vitl14_reg4_pretrain.pth']
+        if self.id == 'hi3dgen': required.append(store.WORKSPACE / 'models/hi3dgen_normal/model_index.json')
         return dict(id=self.id, installed=source.is_dir() and python.is_file() and all(p.is_file() for p in required),
                     source=str(source), python=str(python), weights=str(self.weights()), status='RESEARCH_ONLY',
                     license=self.license, capabilities=self.capabilities, input_modalities=self.input_modalities,

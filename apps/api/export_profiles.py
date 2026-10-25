@@ -154,6 +154,14 @@ def save_project_settings(project_id: str, body: ExportSettings):
     return dict(settings=settings, output_root=str(store.DATA / 'exports' / _slug(project_id)))
 
 
+def _ascii_name(name):
+    """Readable file stem from an asset name: Vietnamese diacritics removed (đ -> d), spaces to hyphens."""
+    import unicodedata
+    text = unicodedata.normalize('NFKD', str(name or '').replace('đ', 'd').replace('Đ', 'D'))
+    text = ''.join(c for c in text if not unicodedata.combining(c))
+    return re.sub(r'[^A-Za-z0-9]+', '-', text).strip('-')[:60]
+
+
 def _slug(value):
     text = re.sub(r'[^a-zA-Z0-9._-]+', '-', str(value)).strip(' .-')[:100] or 'asset'
     if text.split('.')[0].upper() in {'CON','PRN','AUX','NUL',*[f'COM{i}' for i in range(1,10)],*[f'LPT{i}' for i in range(1,10)]}:text = 'asset-' + text
@@ -305,7 +313,7 @@ def export_asset(project_id, asset_id, artifact_id=None, settings=None, allow_pu
     requested = [key for key in sources if settings.get(key)]
     missing = [key for key in requested if not sources[key]]
     if missing:raise HTTPException(409, 'Requested outputs are not validated/available: ' + ', '.join(missing) + '. Disable them or create real validated outputs first.')
-    source_id = value.get('settings',{}).get('source_asset_id') or value['id']
+    source_id = value.get('settings',{}).get('source_asset_id') or _ascii_name(value.get('name')) or value['id']
     # Stable source-ID-based basename with a stable identity suffix prevents sanitized/case collisions.
     stem = _slug(source_id) + '--' + hashlib.sha256(value['id'].encode()).hexdigest()[:10]
     selected = sorted([(source, stem + suffix) for kind in requested for source,suffix in sources[kind]],key=lambda pair:pair[1])

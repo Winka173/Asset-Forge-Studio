@@ -264,9 +264,18 @@ def advance(identifier):
                 failed=failures[0];plan=planner.stage(value,item,failed,all_jobs)
                 if not value['paused'] and plan['action']=='retry_stage':
                     submit_stage_retry(plan,failed);auto.update(status='queued',stage='Recover '+failed['payload']['kind'],error=None);active_assets.add(item['asset_id'])
-                else:auto.update(status='failed' if failed['status']=='FAILED' else 'blocked',stage=failed['payload']['kind'],error=plan['reason'])
-                continue
-            delivery_ready=sum(j['payload']['kind'] in ('blender','animation_retime') and j['status']=='REVIEW_REQUIRED' for j in current)>=len(auto.get('engines',[]))*item['candidates'] and bool(auto.get('engines'))
+                else:
+                    # Several models: a model that cannot recover is dropped and recorded; the others still deliver.
+                    lost={j['payload'].get('engine') for j in failures if j['payload']['kind']=='inference'}
+                    alive=[e for e in auto.get('engines',[]) if e not in lost]
+                    if len(auto.get('engines',[]))>1 and alive and all(j['payload']['kind']=='inference' for j in failures):
+                        auto['failed_engines']={j['payload'].get('engine'):(j.get('error') or plan['reason'] or 'failed')[:300] for j in failures}
+                    else:
+                        auto.update(status='failed' if failed['status']=='FAILED' else 'blocked',stage=failed['payload']['kind'],error=plan['reason'])
+                        continue
+                if not auto.get('failed_engines') or any(j['payload'].get('engine') not in auto['failed_engines'] for j in failures if j['payload']['kind']=='inference'):continue
+            expected=len([e for e in auto.get('engines',[]) if e not in (auto.get('failed_engines') or {})])*item['candidates']
+            delivery_ready=bool(expected) and sum(j['payload']['kind'] in ('blender','animation_retime') and j['status']=='REVIEW_REQUIRED' for j in current)>=expected
             if value['paused'] and (not delivery_ready or 'Disk reserve' in (value['automation'].get('pause_reason') or '')):
                 if auto.get('status') not in ('failed','blocked','exported','needs_review'):auto['status']='paused'
                 continue

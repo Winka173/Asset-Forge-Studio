@@ -35,19 +35,20 @@ def sync():
         def record(identity,project_id,asset_id,kind,title,message,at,link):
             if project_id not in projects:return
             identifier=hashlib.sha256(identity.encode()).hexdigest()
-            payload=dict(id=identifier,project_id=project_id,project_name=projects[project_id],asset_id=asset_id,asset_name=assets.get(asset_id,{}).get('name',asset_id),kind=kind,title=title,message=message,created_at=at,target=link)
+            payload=dict(level='item',id=identifier,project_id=project_id,project_name=projects[project_id],asset_id=asset_id,asset_name=assets.get(asset_id,{}).get('name',asset_id),kind=kind,title=title,message=message,created_at=at,target=link)
             db.execute('INSERT OR IGNORE INTO production_notifications VALUES (?,?,?,?,?,?,NULL,NULL)',(identifier,project_id,asset_id,kind,json.dumps(payload),at))
-        cursor=db.execute("SELECT at FROM production_notification_cursor WHERE id='jobs'").fetchone()
-        since=cursor['at'] if cursor else ''
+        # Item-level only: an asset is ready, or an asset waits for answers. Per-stage updates are not notifications.
+        db.execute("DELETE FROM production_notifications WHERE json_extract(payload,'$.level') IS NOT 'item'")
         stamp=store.now()
-        for row in db.execute("SELECT * FROM jobs WHERE updated_at>=? AND status IN ('REVIEW_REQUIRED','FAILED','BLOCKED')",(since,)).fetchall():
-            payload=json.loads(row['payload']);asset_id=payload.get('asset_id');project_id=payload.get('project_id')
-            if not asset_id or not project_id:continue
-            success=row['status']=='REVIEW_REQUIRED';kind=payload.get('kind','stage')
-            label={'cinematic_render':'Cinematic render and MP4 validation','concept':'Concept image','inference':'3D candidate','blender':'Blender processing and technical QA','animation_retime':'Animation retiming and deformation QA','world_unity':'Unity world build','fx_unity':'Unity effect build','unity_import':'Unity import'}.get(kind,kind)
-            message='Stage finished. Artistic review remains independent.' if success else (row['error'] or 'Open the pipeline to inspect the failed or blocked stage.')
-            record('job:'+row['id']+':'+row['status']+':'+row['updated_at'],project_id,asset_id,'completed' if success else 'failed',label+(' completed' if success else ' needs attention'),message,row['updated_at'],target(asset_id,payload.get('batch_id')))
-        db.execute('INSERT OR REPLACE INTO production_notification_cursor VALUES (?,?)',('jobs',stamp))
+        for row in db.execute('SELECT payload FROM batches').fetchall():
+            value=json.loads(row['payload'])
+            for item in value.get('items',[]):
+                clarification=item.get('clarification') or {}
+                if clarification.get('state')!='waiting' or item.get('production_cancelled'):continue
+                count=len(clarification.get('questions',[]))
+                record(f"questions:{value['id']}:{item['asset_id']}:{clarification.get('round',1)}",value.get('project_id'),item['asset_id'],'questions',
+                       f"{item.get('name') or assets.get(item['asset_id'],{}).get('name','Asset')} has {count} question{'s' if count!=1 else ''} for you",'Answer to continue; other assets keep running.',
+                       clarification.get('asked_at') or stamp,(value.get('revision_of') or value['id'])+'/'+item['asset_id'])
         tables={r['name'] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if 'selective_exports' in tables:
             for row in db.execute('SELECT * FROM selective_exports').fetchall():
@@ -57,11 +58,11 @@ def sync():
                 job=db.execute("SELECT payload FROM jobs WHERE json_extract(payload,'$.asset_id')=? ORDER BY created_at DESC LIMIT 1",(asset_id,)).fetchone()
                 batch_id=json.loads(job['payload']).get('batch_id') if job else None
                 staged=value.get('delivery_scope')=='staged'
-                record('export:'+row['id'],model.get('project_id'),asset_id,'completed','Revision files prepared' if staged else 'Asset exported',('Revision saved separately; the game-facing version was preserved.' if staged else 'Validated export recorded: '+value.get('filename',''))+' No artistic approval is implied.',value.get('created_at') or stamp,target(asset_id,batch_id))
+                record('export:'+row['id'],model.get('project_id'),asset_id,'completed',f"{model.get('name','Asset')} "+('revision is ready' if staged else 'is ready'),'Delivered: '+value.get('filename','') if not staged else 'Saved separately; the game version is unchanged.',value.get('created_at') or stamp,target(asset_id,batch_id))
 
 
 @router.get('')
-def listing(project_id:str|None=None,kind:Literal['all','completed','failed']='all',unread:bool=False,limit:int=100,offset:int=0):
+def listing(project_id:str|None=None,kind:Literal['all','completed','questions','failed']='all',unread:bool=False,limit:int=100,offset:int=0):
     sync()
     with store.connect() as db:
         conditions=['cleared_at IS NULL'];args=[]

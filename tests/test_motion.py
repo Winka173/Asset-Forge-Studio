@@ -45,3 +45,11 @@ def test_uploaded_unrigged_glb_is_auto_rigged_and_the_motion_waits_for_it(client
     made=client.post('/api/motion',json=dict(project_id='runavelle',prompt='a knight waves',request_id='motion-unit-up',rig_job_id=up['rig_job_id'])).json()
     assert made['job']['payload']['depends_on']==[up['rig_job_id']] and made['job']['payload']['effective_config']['character_from_rig_job']==up['rig_job_id']
     assert client.post('/api/motion/upload',data=dict(project_id='runavelle'),files=dict(file=('x.png',b'\x89PNG','image/png'))).status_code==400
+
+def test_motion_from_an_image_waits_until_that_character_is_rigged(client,monkeypatch,tmp_path):
+    monkeypatch.setattr(motion,'installed',lambda:True)
+    made=client.post('/api/motion',json=dict(project_id='runavelle',prompt='a knight waves',request_id='motion-unit-img',await_rig_of_asset='char1')).json()
+    job=jobs.get(made['job']['id']);assert job['payload']['await_rigged_asset']=='char1' and jobs.dependency_readiness(job)==('waiting',None)
+    f=tmp_path/'rigged.glb';f.write_bytes(b'glTF-rig')
+    store.add_artifact(f,'rigged','Knight / rigged',dict(project_id='runavelle',asset_id='char1'))
+    assert jobs.dependency_readiness(job)==('ready',None)

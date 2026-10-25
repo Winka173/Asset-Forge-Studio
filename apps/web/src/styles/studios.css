@@ -106,3 +106,13 @@ nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-
 .fx-flipbook-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--sp-3); }
 .fx-flipbook-result { display: flex; gap: var(--sp-4); align-items: flex-start; flex-wrap: wrap; }
 .fx-flipbook-player { width: 220px; aspect-ratio: 1; border-radius: var(--r-md); background-repeat: no-repeat; background-color: var(--surface-2); }
+.fx-scale { position: relative; display: flex; align-items: flex-end; gap: var(--sp-2); }
+.fx-scale-person { width: 22%; max-width: 48px; align-self: flex-end; background: var(--text-3); opacity: 0.45;
+  -webkit-mask: radial-gradient(circle at 50% 9%, #000 0 9%, transparent 9.5%) top/100% 100% no-repeat, linear-gradient(#000, #000) 50% 100%/46% 78% no-repeat;
+  mask: radial-gradient(circle at 50% 9%, #000 0 9%, transparent 9.5%) top/100% 100% no-repeat, linear-gradient(#000, #000) 50% 100%/46% 78% no-repeat; }
+.fx-flipbook-more { padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); display: grid; gap: var(--sp-3); }
+.fx-flipbook-more > summary { cursor: pointer; font-weight: 600; }
+.fx-texture-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--sp-3); }
+.fx-texture-grid a { display: grid; gap: 4px; color: var(--text-2); text-decoration: none; }
+.fx-texture-grid span { aspect-ratio: 1; border-radius: var(--r-md); background-size: 50% 50%; background-repeat: repeat; border: 1px solid var(--border); }
+.fx-texture-grid small { font-size: var(--fs-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

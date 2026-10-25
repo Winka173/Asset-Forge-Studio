@@ -17,7 +17,7 @@ class Recipe(BaseModel):
     project_id:str
     name:str=Field(min_length=1,max_length=200)
     prompt:str=Field(default='',max_length=10000)
-    element:Literal['fire','ice','lightning','wind','earth','poison']='fire'
+    element:Literal['fire','ice','lightning','wind','earth','poison','holy','shadow','arcane']='fire'
     duration:float=Field(default=2.4,ge=1.2,le=6)
     radius:float=Field(default=1.8,ge=1.3,le=4)
     trail_lifetime:float=Field(default=.18,ge=.04,le=.4)
@@ -47,7 +47,7 @@ def plan(body:Plan):
     # English and Vietnamese words per element (diacritics as escapes so the source stays ASCII-safe).
     aliases={'fire':r'\bfire\b|\bflames?\b|\bburning\b|\bl\u1eeda\b|\bch\u00e1y\b','ice':r'\bice\b|\bfrost\b|\bfrozen\b|\bb\u0103ng\b|\btuy\u1ebft\b',
              'lightning':r'\blightning\b|\bthunder\b|\belectric\b|\bs\u00e9t\b|\b\u0111i\u1ec7n\b','wind':r'\bwind\b|\bgust\b|\btornado\b|\bgi\u00f3\b|\bl\u1ed1c\b',
-             'earth':r'\bearth\b|\brock\b|\bstone\b|\b\u0111\u1ea5t\b|\b\u0111\u00e1\b','poison':r'\bpoison\b|\btoxic\b|\bvenom\b|\bacid\b|\b\u0111\u1ed9c\b'}
+             'earth':r'\bearth\b|\brock\b|\bstone\b|\b\u0111\u1ea5t\b|\b\u0111\u00e1\b','poison':r'\bpoison\b|\btoxic\b|\bvenom\b|\bacid\b|\b\u0111\u1ed9c\b','holy':r'\bholy\b|\blight\b|\bradiant\b|\bdivine\b|\bthánh\b|\bánh sáng\b','shadow':r'\bshadow\b|\bdark(ness)?\b|\bvoid\b|\bbóng tối\b|\bhắc ám\b','arcane':r'\barcane\b|\bmana\b|\bmagic\b|\bphép\b|\bma thuật\b'}
     found={element:match.start() for element,pattern in aliases.items() if (match:=re.search(pattern,body.prompt,re.I))}
     # One element per recipe: the first one named leads (multi-element composition is not implemented); decided, never blocking.
     matches=sorted(found,key=found.get)
@@ -83,7 +83,7 @@ def plan(body:Plan):
 def capabilities():
     from engines.unity_editor import probe
     runtime=probe()
-    return dict(installed=runtime['installed'],unity_version=runtime['version'],pipeline=runtime['render_pipeline'],elements=['fire','ice','lightning','wind','earth','poison'],
+    return dict(installed=runtime['installed'],unity_version=runtime['version'],pipeline=runtime['render_pipeline'],elements=['fire','ice','lightning','wind','earth','poison','holy','shadow','arcane'],
                 method='Deterministic editable swept-blade mesh, shader and accent particles; no AI inference',
                 outputs=['unitypackage','editable_runtime_sources','recipe_json','gpu_frame_previews','cold_reopen_report'],
                 constraints=['Procedural sword motion is a demonstration, not humanoid animation or retargeting','Built-in pinned Unity profile only','No GLB replacement for realtime shaders/behavior','No target-player performance or artistic acceptance claim'])

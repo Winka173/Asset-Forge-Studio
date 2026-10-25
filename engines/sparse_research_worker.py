@@ -17,6 +17,8 @@ os.environ.update(HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1', HF_HUB_DISABLE_T
                   DO_NOT_TRACK='1', SPCONV_ALGO='native', ATTN_BACKEND='flash_attn')
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
+# Engine sources (.local) and weights (models) live in the workspace; the packaged app runs this code from a temp folder.
+WORKSPACE = Path(os.environ.get('AFS_WORKSPACE') or ROOT)
 
 
 def digest(path):
@@ -64,8 +66,8 @@ def main():
         # Load local DINO code with pretrained=False, then exact local register checkpoint.
         # This prevents torch.hub's implicit network fetch and keeps model load weights-only.
         def init_dino(self, name):
-            dino = torch.hub.load(str(ROOT / '.local/engines/dinov2'), name, source='local', pretrained=False)
-            checkpoint = ROOT / 'models/dinov2/dinov2_vitl14_reg4_pretrain.pth'
+            dino = torch.hub.load(str(WORKSPACE / '.local/engines/dinov2'), name, source='local', pretrained=False)
+            checkpoint = WORKSPACE / 'models/dinov2/dinov2_vitl14_reg4_pretrain.pth'
             dino.load_state_dict(torch.load(checkpoint, map_location='cpu', weights_only=True), strict=True)
             dino.eval(); self.models['image_cond_model'] = dino
             self.image_cond_model_transform = transforms.Compose([
@@ -84,11 +86,11 @@ def main():
         image = pipe.preprocess_image(image, **({'resolution': 1024} if engine == 'hi3dgen' else {}))
         if engine == 'hi3dgen':
             # Original official configuration predates the unresolved NiRNE demo route.
-            sys.path.insert(0, str(ROOT / '.local/engines/StableNormal'))
+            sys.path.insert(0, str(WORKSPACE / '.local/engines/StableNormal'))
             from stablenormal.pipeline_yoso_normal import YOSONormalsPipeline
             from diffusers import AutoencoderKL, UNet2DConditionModel
             import importlib.util
-            weights = ROOT / 'models/hi3dgen_normal'
+            weights = WORKSPACE / 'models/hi3dgen_normal'
             local_code = weights / 'controlnet/controlnetvae.py'
             spec = importlib.util.spec_from_file_location('afs_audited_controlnet', local_code)
             module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -99,7 +101,7 @@ def main():
                 controlnet=control, safety_checker=None, t_start=0).to('cuda')
             # The official Predictor handles RGBA mask and [-1,1] -> RGB normal mapping.
             import importlib.util
-            spec = importlib.util.spec_from_file_location('afs_stablenormal_hub', ROOT / '.local/engines/StableNormal/hubconf.py')
+            spec = importlib.util.spec_from_file_location('afs_stablenormal_hub', WORKSPACE / '.local/engines/StableNormal/hubconf.py')
             hub = importlib.util.module_from_spec(spec); spec.loader.exec_module(hub)
             predictor = hub.Predictor(normal)
             image = stage('normal_prediction', lambda: predictor(image, resolution=768, match_input_resolution=True, data_type='object'))

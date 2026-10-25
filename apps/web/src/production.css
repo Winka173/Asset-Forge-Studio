@@ -240,3 +240,14 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
 .production-inspector .production-asset-actions[role="group"] > button { width: 100%; justify-content: center; min-width: 0; }
 .production-inspector .production-asset-actions .production-regenerate-action { grid-column: 1 / -1; }
 .production-id { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inspector-footer-actions { display: grid; gap: var(--sp-2); }
+/* Per-model lanes inside a pipeline step (multi-model items) */
+.pipeline-lanes { list-style: none; margin: var(--sp-2) 0 0; padding: 0; display: grid; gap: 4px; text-align: left; }
+.pipeline-lanes li { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--text-2); white-space: nowrap; }
+.pipeline-lanes li small { margin-left: auto; padding-left: var(--sp-2); color: var(--text-3); }
+.pipeline-lanes i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-3); flex: none; }
+.pipeline-lanes li[data-state="completed"] i { background: var(--success); }
+.pipeline-lanes li[data-state="running"] i { background: var(--accent); animation: afs-ping 1.4s infinite; }
+.pipeline-lanes li[data-state="error"] i { background: var(--danger); }
+.production-models { color: var(--accent); font-weight: 600; }
+.production-models-failed { color: var(--danger); font-weight: 600; }

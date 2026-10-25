@@ -131,7 +131,7 @@ def item_summary(i,group,all_jobs,all_paused=False,model=None,context=None):
     running=next((j for j in related if j['status'] not in jobs.TERMINAL|{'QUEUED'}),None)
     stage=(running.get('progress') or {}).get('stage') if running else None
     waiting=wait_reason(i,group,related,auto,context)
-    return dict(waiting=waiting,id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=stage or auto.get('stage'),current_stage=stage or auto.get('stage'),attempt=i.get('attempt',0),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
+    return dict(waiting=waiting,failed_engines=auto.get('failed_engines') or {},id=i['asset_id'],source_id=i.get('source_asset_id'),name=i['name'],status=status,stage=stage or auto.get('stage'),current_stage=stage or auto.get('stage'),attempt=i.get('attempt',0),error=auto.get('error'),selected=i.get('selected'),started=i.get('started'),future=i.get('source_status')=='FUTURE',priority=i.get('priority',0),paused=bool(paused),jobs=[job_summary(j) for j in related])
 
 
 @router.get('')
