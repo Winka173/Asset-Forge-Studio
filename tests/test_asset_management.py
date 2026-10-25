@@ -157,6 +157,8 @@ def test_chat_reads_messages_together_splits_blender_edits_and_takes_versions_ba
     model,record,_=source(client);url=f'/api/production/assets/{model["id"]}/chat'
     for n,text in enumerate(['make it look older','cao 18m nhé']):
         assert client.post(url,json=dict(parent_artifact_id=record['id'],prompt=text,request_id=f'chat-unit-{n}xx')).json()['position']==n+1
+    # The production detail the chat panel reads must carry the waiting messages.
+    assert [q['prompt'] for q in client.get(f'/api/production/assets/{model["id"]}').json()['asset']['chat_queue']]==['make it look older','cao 18m nhé']
     seen={}
     def read(messages,history,current):seen.update(messages=messages,current=current);return dict(revert_to_version=None,instructions=['Uniformly scale to height 18 m','Make it look older'],summary='Older look, then 18 m tall.')
     monkeypatch.setattr(intent,'interpret',read);revisions.read_chat(model['id'])
@@ -165,7 +167,7 @@ def test_chat_reads_messages_together_splits_blender_edits_and_takes_versions_ba
     assert [e['prompt'] for e in current['chat_queue']]==['Make it look older','Uniformly scale to height 18 m'] and all(e['merged'] for e in current['chat_queue'])
     assert current['chat_notes'][-1]['messages']==['make it look older','cao 18m nhé'] and 'chat_reading' not in current
     revisions.chat_remove(model['id'],current['chat_queue'][0]['id']);revisions.drain_chat_queues()
-    current=studio.asset(model['id']);assert not current['chat_queue'] and current['revisions'][-1]['plan']['method']=='blender_transform'
+    current=studio.asset(model['id']);assert not current['chat_queue'] and current['revisions'][-1]['plan']['method']=='blender_transform' and current['revisions'][-1]['source']=='chat'
     assert [j['payload']['kind'] for j in jobs.listing()]==['blender']
     # Taking the change back returns the chat to the version before it, without new work.
     for j in jobs.listing():jobs.transition(j['id'],'CANCELLED','unit')

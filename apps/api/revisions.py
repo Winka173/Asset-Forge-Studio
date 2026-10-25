@@ -20,6 +20,8 @@ class RevisionInput(BaseModel):
     request_id:str=Field(min_length=8,max_length=100)
     cancel_current:bool=False
     auto_replace:bool=False
+    # 'chat': made from prompt-chat messages; the chat shows the user's own words from its reading note instead.
+    source:Literal['refine','chat']='refine'
 
 
 @router.get('/assets/{asset_id}/animation-clips')
@@ -56,9 +58,10 @@ WATER_COLORS=[(r'\b(?:purple|violet|tím)\b','#8a4dff'),(r'\b(?:teal|cyan|turquo
 # Adding water, or moving it ("water higher", "nước cao hơn, gần rìa", "lower the water", "water level 7 m").
 WATER_REQUEST=re.compile(r'\b(?:add|fill|put|thêm|đổ|bổ sung|cho)\b.*?\b(?:water|nước)\b|\b(?:raise|lower|nâng|hạ|dâng)\b.*?\b(?:water|nước)\b|'
     r'\b(?:water|nước)\b.*?\b(?:cao|thấp|higher|lower|level|đầy|full|rìa|miệng|brim|rim|top)\b',re.I)
-WATER_FULL=re.compile(r'gần\s+(?:rìa|miệng|thành|mép|đỉnh|bằng)|ngang\s+(?:thành|miệng|rìa|mép)|đầy|tràn|\bfull\b|\bbrim\b|(?:to|near|up to)\s+the\s+(?:rim|top|edge)',re.I)
+WATER_FULL=re.compile(r'(?:gần|sát|tới|đến|ngang)\s+(?:(?:tới|đến|với|bằng)\s+)?(?:rìa|miệng|thành|mép|đỉnh|bằng|độ cao giếng)|đầy|tràn|\bfull\b|\bbrim\b|'
+    r'\b(?:to|near|up to|close to|almost to|reach(?:es|ing)?)\s+(?:the\s+)?(?:\w+\s+)?(?:rim|top|edge|mouth|brim)\b',re.I)
 WATER_LOWER=re.compile(r'thấp hơn|\blower\b|\bhạ\b|\bbớt\b|less water|\brút\b|\bgiảm\b',re.I)
-WATER_HIGHER=re.compile(r'cao hơn|\bhigher\b|\braise\b|\bnâng\b|\bdâng\b|more water|\btăng\b',re.I)
+WATER_HIGHER=re.compile(r'cao hơn|\bhigher\b|\braise\b|\brise\b|\bnâng\b|\bdâng\b|more water|\btăng\b',re.I)
 
 
 def water_level(prompt):
@@ -196,7 +199,7 @@ def create(asset_id:str,body:RevisionInput):
         workflow=automation.project_workflow(model['project_id']);workflow['mode']='auto'
         value=dict(id=group_id,project_id=model['project_id'],name=model['name'],mode={'Maximum':'Maximum Quality Batch','Balanced':'Quality Batch','Fast':'Fast Batch'}[quality],quality_lock=quality=='Maximum',master_prompt=effective_prompt,style_snapshot=style,items=[row],warnings=[],paused=False,created_at=store.now(),updated_at=store.now(),revision_id=rev_id,revision_of=base_group['id'] if base_group else None,
             automation=dict(settings=workflow,export_settings=settings,mode='auto',started_at=store.now()))
-        record=dict(id=rev_id,number=len(model.get('revisions',[]))+2,parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],prompt=body.prompt,effective_prompt=effective_prompt,original_prompt_sha256=hashlib.sha256(original.encode()).hexdigest(),plan=planned,group_id=group_id,state='queued',created_at=store.now(),job_ids=[],quality=quality,effective_config=config,effective_config_hash=fingerprint(config) if config else None,effective_specification=source_spec|dict(dimensions=dims),project_style_snapshot=style,reference_ids=list(model.get('reference_ids',[])),export_settings=settings,auto_replace=body.auto_replace,previous_delivery_ids=[e['id'] for e in export_history(asset_id) if e.get('delivery_scope')!='staged'])
+        record=dict(id=rev_id,number=len(model.get('revisions',[]))+2,parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],prompt=body.prompt,effective_prompt=effective_prompt,original_prompt_sha256=hashlib.sha256(original.encode()).hexdigest(),plan=planned,group_id=group_id,state='queued',created_at=store.now(),source=body.source,job_ids=[],quality=quality,effective_config=config,effective_config_hash=fingerprint(config) if config else None,effective_specification=source_spec|dict(dimensions=dims),project_style_snapshot=style,reference_ids=list(model.get('reference_ids',[])),export_settings=settings,auto_replace=body.auto_replace,previous_delivery_ids=[e['id'] for e in export_history(asset_id) if e.get('delivery_scope')!='staged'])
         model.setdefault('original_prompt',original);model.setdefault('original_prompt_sha256',record['original_prompt_sha256']);model.setdefault('revisions',[]).append(record)
         response=dict(revision_id=rev_id,group_id=base_group['id'] if base_group else group_id,execution_group_id=group_id,asset_id=asset_id,plan=planned)
         with store.connect() as db:
@@ -341,6 +344,6 @@ def drain_chat_queues():
             if not all(e.get('merged') for e in queue):
                 _reading.add(asset_id);threading.Thread(target=read_chat,args=(asset_id,),daemon=True).start();continue
             entry=queue.pop(0);save_asset(model)
-            try:create(asset_id,RevisionInput(parent_artifact_id=chat_head(model,entry['parent_artifact_id']),prompt=entry['prompt'],request_id=entry['id']))
+            try:create(asset_id,RevisionInput(parent_artifact_id=chat_head(model,entry['parent_artifact_id']),prompt=entry['prompt'],request_id=entry['id'],source='chat'))
             except HTTPException as exc:
                 model=studio.asset(asset_id);model.setdefault('chat_notes',[]).append(dict(id=entry['id'],kind='error',messages=[entry['prompt']],summary='Could not start this change: '+str(exc.detail),at=store.now()));save_asset(model)

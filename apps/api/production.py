@@ -225,7 +225,7 @@ def detail(asset_id:str):
         if visual.is_file():layout_qa=json.loads(visual.read_text(encoding='utf-8'))
         stages.append(job_summary(j)|dict(source_engine=source_engine(j),events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation','pbr_preservation')} if qa else layout_qa)))
     from .export_profiles import export_history
-    return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','quality_evaluations','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
+    return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','quality_evaluations','review_policy','art_reviews','revisions','published_artifact_id','chat_queue','chat_notes','chat_reading','chat_head','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
 
 
 class Control(BaseModel):

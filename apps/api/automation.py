@@ -448,7 +448,9 @@ def advance(identifier):
                 if revision:
                     exported.update(delivery_scope='staged' if staged else 'game',revision_id=revision['id'])
                     with store.connect() as db:db.execute('UPDATE selective_exports SET payload=? WHERE id=?',(json.dumps(exported),exported['id']))
-                    update_execution(item['asset_id'],revision['id'],dict(state='staged' if staged else 'published',artifact_id=winner['artifact_id'],artifact_sha256=winner['sha256'],job_ids=[j['id'] for j in current],export_id=exported['id'],qa_status='passed',completed_at=store.now()))
+                    # The chat reports what a water edit measured (level, previous level, brim).
+                    water=next((json.loads(f.read_text(encoding='utf-8')) for f in (store.DATA/'jobs'/x['id']/'output/water.json' for x in current if x['payload']['kind']=='blender') if f.is_file()),None)
+                    update_execution(item['asset_id'],revision['id'],dict(state='staged' if staged else 'published',artifact_id=winner['artifact_id'],artifact_sha256=winner['sha256'],job_ids=[j['id'] for j in current],export_id=exported['id'],qa_status='passed',completed_at=store.now(),water=water))
                 auto.update(status='exported',stage='Completed',export=exported,completed_at=store.now());auto.pop('error',None)
                 model=studio.asset(item['asset_id'])
                 if not model.get('master_artifact_id'):model.update(status='Completed',art_review_status='not_reviewed')
