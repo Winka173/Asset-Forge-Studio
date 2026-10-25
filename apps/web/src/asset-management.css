@@ -39,3 +39,7 @@ label.asset-management-check { flex-direction: row; align-items: flex-start; gap
 .asset-motion-refine { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-1); }
 .asset-motion-refine h4 { margin: 0; }
 .asset-recovery-notice { padding: var(--sp-3); border-radius: var(--r-md); background: var(--warning-soft); color: var(--text); font-size: var(--fs-sm); }
+/* Narrow inspector: stack the two selects so their labels are not cut; checkbox labels stay on one row. */
+@container (max-width: 420px) { .asset-management-two { grid-template-columns: minmax(0, 1fr); } }
+label.asset-management-check { display: flex; text-align: left; justify-content: flex-start; }
+.production-inspector details summary small { margin-left: var(--sp-2); }

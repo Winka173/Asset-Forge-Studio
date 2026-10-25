@@ -18,7 +18,17 @@ NEGATIVE_PROMPT=('display pedestal, plinth, display stand, contact sheet, multip
 # Policy 7: characters and creatures get a rig-friendly neutral pose (arms/limbs clear of the body) unless the user asked for a pose.
 # Policy 8: rig framings keep the whole body inside the frame (measured: spread wings and pedestals pushed policy-7 dragons
 # past the frame edges, so only an off-colour dragon stayed eligible) and stand on the ground without a base.
-COMPOSITION_POLICY=8
+# Policy 9: buildings are drawn at human scale (an entrance door a person walks through, windows at people height) unless
+# the request is giant; dwellings (house, shop, inn) keep away from castle/fortress massing and every building from ruins
+# unless asked. Measured: a "HOUSE specialization" with a castle reference came out as a four-tower castle with a tiny
+# door, and a merchant estate as a ruin with broken pieces stuck to it.
+COMPOSITION_POLICY=9
+DWELLING=re.compile(r'\b(?:house|home|hut|cottage|cabin|dwelling|estate|villa|manor|shop|store|inn|tavern|bakery|smithy|forge|farmhouse|mill|stable|workshop|residence)s?\b|nhà|quán|tiệm|biệt thự|dinh thự',re.I)
+FORTIFIED=re.compile(r'\b(?:castle|fortress|fort|citadel|keep|stronghold|tower|turret)s?\b|lâu đài|pháo đài|tháp',re.I)
+GIANT=re.compile(r'\b(?:giant|colossal|titanic|gigantic|enormous|huge)\b|khổng lồ|to lớn|siêu lớn',re.I)
+RUINED=re.compile(r'\b(?:ruin|ruined|ruins|broken|destroyed|abandoned|crumbling|damaged)\b|đổ nát|tàn tích|hoang tàn|bị phá',re.I)
+ENTERABLE=re.compile(r'\b(?:temple|shrine|chapel|church|barracks|building|hall|guild|library|academy|lodge|warehouse|granary)s?\b|đền|chùa|nhà',re.I)
+HUMAN_SCALE='human-scale building, entrance door sized for a person to walk through, windows at people height'
 CONDITIONING_WORDS=160
 FRAMING='single standalone 3D game asset, three-quarter view, full object centered with clear margin, plain neutral studio background'
 # 2D sprites are cut out from a flat background, so the framing asks for no cast shadow and an even backdrop.
@@ -113,5 +123,17 @@ def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directiv
             if restated:description=f'{name}. {restated}'
         description='\n'.join([_bounded(description),*directives])
     rig=rig_class(anchor) if policy>=7 and framing=='asset_3d' else None
-    head=f'{anchor}, {RIG_FRAMINGS[rig] if rig else FRAMINGS[framing]}'+(f', {short_style(style)}' if style else '')+'.'
-    return (head+'\n'+description+('\nVisual style: '+style if style else '')+detail),NEGATIVE_PROMPT
+    scale,negative=building_scale(anchor) if policy>=9 and framing=='asset_3d' and not rig else ('',NEGATIVE_PROMPT)
+    head=f'{anchor}, {RIG_FRAMINGS[rig] if rig else FRAMINGS[framing]}'+(f', {scale}' if scale else '')+(f', {short_style(style)}' if style else '')+'.'
+    return (head+'\n'+description+('\nVisual style: '+style if style else '')+detail),negative
+
+
+def building_scale(anchor):
+    """(extra framing, negative prompt) for a building subject; giant requests keep their own scale."""
+    if not BUILDING.search(anchor) and not DWELLING.search(anchor):return '',NEGATIVE_PROMPT
+    negative=NEGATIVE_PROMPT
+    if not RUINED.search(anchor):negative+=', ruins, rubble, debris, broken fragments, crumbling walls'
+    if DWELLING.search(anchor) and not FORTIFIED.search(anchor):negative+=', castle, fortress, battlements, turrets'
+    # Wells, fountains, walls, bridges and statues have no door to measure a person against.
+    enterable=DWELLING.search(anchor) or FORTIFIED.search(anchor) or ENTERABLE.search(anchor)
+    return ('' if GIANT.search(anchor) or not enterable else HUMAN_SCALE),negative

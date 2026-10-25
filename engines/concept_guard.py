@@ -8,7 +8,9 @@ from . import intent_adapter,local_semantics
 # 4: the checked subject falls back to the manifest heading instead of a generic "game asset".
 # 5: subject-neutral framing question (no roof/wall wording that implies a building).
 # 6: several separate objects (a set or lineup) count as multiple_views_or_panels.
-POLICY_VERSION=6
+# 7: buildings must read at human scale (a door a person walks through) unless giant, and a dwelling must not be a castle
+#    or a ruin with broken pieces unless asked (measured: a house drawn as a four-tower castle, a merchant estate as a ruin).
+POLICY_VERSION=7
 
 
 class ObservedLayout(BaseModel):
@@ -20,6 +22,7 @@ class ObservedLayout(BaseModel):
     framing:Literal['whole_asset_visible','cropped']
     background:Literal['plain_studio','surrounding_scenery']
     lettering:Literal['absent','text_or_decorative_border']
+    building:Literal['not_a_building','sound_and_human_scale','door_missing_or_too_small','castle_for_a_dwelling','ruined_or_broken_pieces']
     observations:list[Annotated[str,Field(max_length=500)]]=Field(min_length=1,max_length=5)
 
 
@@ -28,6 +31,8 @@ def from_observation(facts):
     if facts.composition!='single_asset':issues.append(facts.composition)
     if facts.requested_subject=='plainly_different':issues.append('missing_requested_subject')
     if facts.requested_subject=='uncertain':issues.append('uncertain_source')
+    issues+={'door_missing_or_too_small':['no_human_scale_entrance'],'castle_for_a_dwelling':['missing_requested_subject'],'ruined_or_broken_pieces':['broken_or_ruined_structure']}.get(facts.building,[])
+    issues=list(dict.fromkeys(issues))
     return checked_assessment(Assessment(suitable_single_asset_image=not issues,observed_subject_en=facts.observed_subject_en,issues=issues,
         background_is_plain=facts.background=='plain_studio',border_or_text_visible=facts.lettering!='absent',
         entire_main_asset_visible=facts.framing=='whole_asset_visible',observations=facts.observations))
@@ -38,7 +43,7 @@ class Assessment(BaseModel):
     suitable_single_asset_image:bool
     observed_subject_en:str=Field(min_length=1,max_length=400)
     issues:list[Literal['multiple_views_or_panels','cropped_main_object','missing_requested_subject','no_visible_asset',
-        'background_scene','border_or_text','uncertain_source']]=Field(default_factory=list,max_length=7)
+        'background_scene','border_or_text','uncertain_source','no_human_scale_entrance','broken_or_ruined_structure']]=Field(default_factory=list,max_length=9)
     background_is_plain:bool
     border_or_text_visible:bool
     entire_main_asset_visible:bool
@@ -72,6 +77,11 @@ def assess(path,subject,prompt,progress):
         'Choose background=plain_studio for flat/gradient studio backdrops, surrounding_scenery only for actual landscape or other surrounding objects. '
         'Choose framing=cropped if an important piece is cut by the image edge. '
         'Choose lettering=text_or_decorative_border for visible writing or poster framing. '
+        'building: not_a_building for props, characters, plants, effects and structures people do not walk into (wells, fountains, walls, bridges, statues, fences, platforms, terrain). For a building people enter judge an ordinary 1.75 m person: '
+        'door_missing_or_too_small when no entrance is visible or the main door would not let a person walk in upright compared with the windows, steps and walls; '
+        'castle_for_a_dwelling when a house, home, shop, inn or estate is drawn as a castle or fortress (several defensive towers, battlements); '
+        'ruined_or_broken_pieces when walls, roof or top look broken, jagged, half-collapsed or cluttered with irregular chunks and shards instead of clean shapes, and the request did not ask for ruins; '
+        'otherwise sound_and_human_scale. A request that explicitly asks for a giant or colossal structure keeps its own scale. '
         'Choose requested_subject=uncertain if the subject cannot be determined, not matches by default. '
         'Do not score aesthetics, material quality, game readiness or artistic approval. '
         'Report only observed issues; unknown is not a quality pass. Return JSON schema: '+json.dumps(ObservedLayout.model_json_schema()))

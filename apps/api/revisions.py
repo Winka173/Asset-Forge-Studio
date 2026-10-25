@@ -69,6 +69,13 @@ def revision_plan(asset_id,body):
                 refinement_goal='Change only named roof basecolor; preserve geometry, topology, UV and other materials',
                 explanation='Direct named roof material edit in Blender. No concept or image-to-3D inference. Geometry invariance and export reimport are checked.',
                 parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],capabilities=dict(direct_material_edit=True,direct_mesh_edit=False),artistic_evaluation='not_available')
+    water=re.search(r'\b(?:add|fill|put|thêm|đổ|bổ sung|cho)\b.*?\b(?:water|nước)\b',body.prompt,re.I)
+    if water and body.method!='regenerate' and executable('blender'):
+        color=re.search(r'#[0-9a-fA-F]{6}',body.prompt)
+        return dict(method='blender_water',earliest_stage='blender',target_height_m=None,water=dict(color=color[0]) if color else {},
+            refinement_goal='Add a water surface inside the basin; preserve the model geometry, materials and scale',
+            explanation='Blender finds the basin at the middle of the model and adds a separate semi-transparent "Water" mesh. No image-to-3D inference; the model itself is unchanged.',
+            parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],capabilities=dict(direct_mesh_edit=False,direct_material_edit=False,water_surface=True),artistic_evaluation='not_available')
     clip_match=re.fullmatch(r'\s*(?:set\s+)?clip\s+(\d+)\s+speed\s+(?:to\s+)?(\d+(?:\.\d+)?)x\s*[.!]?\s*',body.prompt,re.I)
     if clip_match and body.method!='regenerate':
         from engines.animation_clip import clips
@@ -148,12 +155,13 @@ def create(asset_id:str,body:RevisionInput):
         if planned['method']=='animation_retime':
             config=dict(schema_version=1,quality=quality,operation='animation_retime',clip_index=planned['clip_index'],speed=planned['clip_speed'],source_sha256=parent['sha256'],qa='headless_blender_deformation_comparison',preserve_original_binary=True)
         if planned['method']=='blender_material' and config:config['revision']=dict(id=rev_id,parent=parent['id'],method='named_material_edit',material_edit=planned['material_edit'])
-        candidate_count=1 if planned['method'] in ('blender_transform','blender_material','animation_retime') else (config or {}).get('candidate_count',1)
+        if planned['method']=='blender_water' and config:config['revision']=dict(id=rev_id,parent=parent['id'],method='water_surface',water=planned['water'])
+        candidate_count=1 if planned['method'] in ('blender_transform','blender_material','blender_water','animation_retime') else (config or {}).get('candidate_count',1)
         row=ManifestItem(asset_id=asset_id,name=model['name'],prompt=effective_prompt,source_asset_id=model.get('settings',{}).get('source_asset_id') or asset_id,
             category=model.get('category') or 'Prop',quality=quality,candidates=candidate_count,preferred_engine=(config or {}).get('engine_id') if (config or {}).get('engine_id') in ('triposg','trellis2_community') else 'auto',target_height_m=dims.get('target_height_m'),target_width_m=dims.get('target_width_m'),target_depth_m=dims.get('target_depth_m')).model_dump()
         row['seeds']=list((config or {}).get('seeds') or [42+n for n in range(candidate_count)])[:candidate_count]
         row.update(attempt=0,started=True,version=1,quality_lock=quality=='Maximum',priority=100 if body.priority=='next' else 0,revision_id=rev_id)
-        engines=['blender_animation'] if planned['method']=='animation_retime' else [(config or {}).get('engine_id','trellis2_community')] if planned['method'] in ('blender_transform','blender_material') else automation.plan_engines(row)
+        engines=['blender_animation'] if planned['method']=='animation_retime' else [(config or {}).get('engine_id','trellis2_community')] if planned['method'] in ('blender_transform','blender_material','blender_water') else automation.plan_engines(row)
         if planned['method'] in ('blender_transform','blender_material') and source_spec.get('asset_generation_spec',{}).get('route')=='procedural_castle':
             row['asset_generation_spec']=copy.deepcopy(source_spec['asset_generation_spec']);row['structural_parent_spec_hash']=source_spec.get('structural_parent_spec_hash') or fingerprint(row['asset_generation_spec'])
             if planned['method']=='blender_transform':row['asset_generation_spec']['bounds_m']=[dims['target_width_m'],dims['target_depth_m'],dims['target_height_m']]

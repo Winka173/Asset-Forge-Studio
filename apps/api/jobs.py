@@ -92,6 +92,18 @@ def reconcile_timeout(identifier):
         db.execute("UPDATE jobs SET status='BLOCKED',updated_at=?,payload=? WHERE id=?",(store.now(),json.dumps(payload),identifier))
 
 
+# Assets whose name says they hold water get a water surface in their basin during Blender processing (none when no basin).
+WATER_HOLDER=re.compile(r'\b(?:well|fountain|pool|pond|basin|spring|bath|cistern|trough)s?\b|giếng|đài phun|hồ nước|suối|bể nước',re.I)
+
+
+def holds_water(name):return bool(WATER_HOLDER.search(name.replace('_',' ')))
+
+
+def added_water(folder):
+    path=folder/'output/water.json'
+    return path.is_file() and bool(json.loads(path.read_text(encoding='utf-8')).get('added'))
+
+
 def ensure_blender(job):
     """Atomic child admission repairs a crash between validated inference and postprocessing."""
     payload=job['payload']
@@ -108,7 +120,9 @@ def ensure_blender(job):
             if row:
                 export=json.loads(row['payload']).get('automation',{}).get('export_settings')
                 if export is not None:export_fbx=bool(export.get('fbx'))
-        return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,
+        asset=db.execute('SELECT payload FROM assets WHERE id=?',(payload['asset_id'],)).fetchone()
+        water=dict(optional=True) if asset and holds_water(json.loads(asset['payload']).get('name','')) else None
+        return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,water=water,
             batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
             effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),
             export_fbx=export_fbx,game_triangle_budget=payload.get('triangle_budget'),game_texture_size=payload.get('game_texture_size'),render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay'],parent_job=job['id'],depends_on=[job['id']]),db=db)
@@ -450,7 +464,7 @@ class Worker:
                 raise ValueError('Invalid pipeline output provenance or reopen check')
             inspections = {f'LOD{i}.glb': inspect_glb(folder / f'output/LOD{i}.glb') for i in range(4)}
             from .pbr_preservation import compare as compare_pbr
-            preservation = compare_pbr(source, folder / 'output/LOD0.glb', intentional_material_edit=bool(payload.get('material_edit')))
+            preservation = compare_pbr(source, folder / 'output/LOD0.glb', intentional_material_edit=bool(payload.get('material_edit')) or added_water(folder))
             preservation_path = folder / 'output/pbr_preservation.json'
             temporary = preservation_path.with_suffix('.json.part')
             temporary.write_text(json.dumps(preservation, indent=2), encoding='utf-8')

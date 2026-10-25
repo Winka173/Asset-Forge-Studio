@@ -269,3 +269,4 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
 .wait-chip.wait-ram, .wait-chip.wait-gpu, .wait-chip.wait-cpu, .wait-chip.wait-slot { color: var(--warning); background: var(--warning-soft); }
 .wait-chip.wait-questions { color: var(--accent); background: var(--accent-soft); }
 .wait-chip.wait-paused, .wait-chip.wait-paused_all, .wait-chip.wait-dependency, .wait-chip.wait-queued { color: var(--text-2); background: var(--surface-3); }
+.inspector-empty { color: var(--text-3); font-size: var(--fs-sm); margin: var(--sp-2) 0; }

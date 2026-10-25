@@ -261,6 +261,15 @@ def run(request):
         if epsilon > 0: bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=epsilon)
         if request.get('recalculate_normals', False): bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         bm.to_mesh(obj.data); bm.free(); obj.data.update()
+    water_report = None
+    if request.get('water') is not None:
+        # Requested water surface (well, fountain, pool): a separate "Water" mesh; the model's own meshes stay unchanged.
+        sys.path.insert(0, str(Path(__file__).parent))
+        from add_water import add_water
+        options = dict(request['water']); optional = options.pop('optional', False)
+        water, water_report = add_water(objects, **options); write(output / 'water.json', water_report)
+        if water: objects.append(water)
+        elif not optional: raise ValueError('No basin to hold water: ' + water_report.get('reason', 'no enclosed basin'))
     bpy.context.view_layer.update()
     after = mesh_stats(objects); low, high = bounds(objects)
     if material_change:

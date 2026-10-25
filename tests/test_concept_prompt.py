@@ -17,7 +17,7 @@ def test_policy_four_front_loads_subject_framing_and_style():
 def test_policy_four_keeps_every_description_word():
     prompt, _ = compose(LONG, '', None, policy=4)
     assert LONG.strip() in prompt
-    assert COMPOSITION_POLICY == 8
+    assert COMPOSITION_POLICY == 9
 
 
 def test_policy_three_output_is_unchanged_for_locked_configs():
@@ -95,3 +95,13 @@ def test_full_body_characters_render_in_portrait_and_creatures_in_landscape(tmp_
         asset = client.post('/api/assets', json=dict(project_id='runavelle', name=name, prompt=prompt)).json()
         job = studio.concept(studio.ConceptInput(asset_id=asset['id'], request_id=f'aspect-{name}-0001', prompt=prompt, quality='Maximum'))
         assert (job['payload']['width'], job['payload']['height']) == expected and job['payload']['effective_config']['width'] == expected[0]
+
+
+def test_buildings_are_drawn_at_human_scale_unless_giant():
+    from engines.concept_prompt import HUMAN_SCALE, building_scale
+    scale, negative = building_scale('Merchant house with a shop front')
+    assert scale == HUMAN_SCALE and 'castle' in negative and 'ruins' in negative
+    assert 'castle' not in building_scale('Castle keep with towers')[1]
+    assert building_scale('Giant temple for titans')[0] == ''
+    assert 'ruins' not in building_scale('Ruined temple')[1]
+    assert building_scale('Wooden barrel') == ('', building_scale('Wooden barrel')[1]) and 'ruins' not in building_scale('Wooden barrel')[1]

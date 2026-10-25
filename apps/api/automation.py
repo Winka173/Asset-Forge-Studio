@@ -296,7 +296,7 @@ def advance(identifier):
                 if not auto.get('engines'):auto.update(status='blocked',stage='Needs Input',error='No compatible verified local geometry route; configure Settings. No fallback/download.');continue
                 from .revisions import execution_context,update_execution
                 revision=execution_context(item)
-                processing=bool(item.get('processing_source') or revision and revision['plan']['method'] in ('blender_transform','blender_material'))
+                processing=bool(item.get('processing_source') or revision and revision['plan']['method'] in ('blender_transform','blender_material','blender_water'))
                 if revision and revision['plan']['method']=='animation_retime':
                     if not any(j['payload']['kind']=='animation_retime' for j in current):
                         jobs.enqueue(dict(kind='animation_retime',engine='blender_animation',artifact_id=revision['parent_artifact_id'],project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'],clip_index=revision['plan']['clip_index'],speed=revision['plan']['clip_speed'],
@@ -305,8 +305,8 @@ def advance(identifier):
                 elif processing:
                     if not any(j['payload']['kind']=='blender' for j in current):
                         processing_source=item.get('processing_source') or dict(artifact_id=revision['parent_artifact_id'],normalize=True)
-                        jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=False if revision and revision['plan']['method']=='blender_material' else processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
-                            material_edit=revision['plan'].get('material_edit') if revision else None,
+                        jobs.enqueue(dict(kind='blender',artifact_id=processing_source['artifact_id'],normalize=False if revision and revision['plan']['method'] in ('blender_material','blender_water') else processing_source.get('normalize',False),target_height_m=revision['plan']['target_height_m'] if revision else None,
+                            material_edit=revision['plan'].get('material_edit') if revision else None,water=revision['plan'].get('water') if revision else None,
                             export_fbx=bool(value['automation']['export_settings'].get('fbx')),
                             project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'] if revision else None,
                             effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay']))
