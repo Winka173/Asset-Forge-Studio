@@ -21,14 +21,23 @@ class Preview(BaseModel):
     seed:int=Field(default=42,ge=0,le=4294967295)
     # Any project image (e.g. a character this map must suit); only its colours are used, never its shape.
     style_reference_id:str|None=None
+    # Several reference images (style/colour only, never shape); their palettes are combined.
+    style_reference_ids:list[str]=Field(default_factory=list,max_length=5)
 
 
 @router.post('/preview-plan')
 def preview(body:Preview):
     studio.project(body.project_id)
     plan=template(body.project_id,body.name,body.prompt,body.width_m,body.depth_m,body.seed)
+    references=list(dict.fromkeys([*([body.style_reference_id] if body.style_reference_id else []),*body.style_reference_ids]))
+    for ref in references:studio.scoped_artifact(ref,body.project_id)
+    if references:
+        # Measured palettes only: a preview queues no job.
+        from .style_profile import terrain_from_references
+        seeded,notes=terrain_from_references(body.project_id,studio.project(body.project_id),references)
+        plan=plan.model_copy(update=seeded|dict(assumptions=plan.assumptions+[f'Terrain colours from the chosen reference image{"s" if len(references)>1 else ""}: '+'; '.join(notes)]))
     from .style_profile import terrain_colours
-    seeded=terrain_colours(body.project_id,studio.project(body.project_id),[body.style_reference_id] if body.style_reference_id else ())
+    seeded=terrain_colours(body.project_id,studio.project(body.project_id)) if not references else {}
     if seeded:plan=plan.model_copy(update=seeded|dict(assumptions=plan.assumptions+['Terrain colours seeded from '+('the chosen reference image' if body.style_reference_id else 'the project style palette')+' ('+', '.join(seeded)+'); still provisional until plan approval']))
     _,_,_,qa=terrain(plan)
     return dict(plan=plan.model_dump(),qa=qa,planner='explicit deterministic template; prompt stored as context, not interpreted by AI',enqueued_jobs=0)
@@ -193,6 +202,10 @@ def auto(body:AutoWorld):
     preview_body=Preview(**{k:getattr(body,k) for k in Preview.model_fields})
     plan=WorldPlan.model_validate(preview(preview_body)['plan'])
     saved=save_plan(SavePlan(plan=plan,asset_id=body.asset_id,request_id=body.request_id+':plan'))
+    references=list(dict.fromkeys([*([body.style_reference_id] if body.style_reference_id else []),*body.style_reference_ids]))
+    if references:
+        from .style_profile import ensure
+        ensure(body.project_id,studio.project(body.project_id),references)  # the reference's full style profile (CPU), kept for the next maps and assets
     record=saved['artifact'];asset=studio.asset(saved['asset_id'])
     authorization=dict(artifact_id=record['id'],sha256=record['sha256'],generator_hash=fingerprint(code_hashes()),reviewer='Auto (technical layout checks)',
         notes='Automatic: terrain and prop checks passed. Not an artistic approval.',created_at=store.now(),kind='automatic',

@@ -108,6 +108,8 @@ class Analyze(BaseModel):
     mode:str='Quality Batch'
     reference_ids:list[str]=Field(default_factory=list,max_length=50)
     source_filename:str=Field(default='manifest.txt',max_length=255)
+    # auto: 2D when the text asks for 2D/sprites/icons (per item for a list), else 3D.
+    output:Literal['auto','3d','2d']='auto'
 
 
 @router.post('/analyze',status_code=201)
@@ -116,13 +118,13 @@ def analyze(body:Analyze):
 
 
 @router.post('/import',status_code=201)
-async def import_file(file:UploadFile=File(...),project_id:str=Form(...),name:str=Form('Asset batch'),format:str=Form('auto'),mode:str=Form('Quality Batch'),reference_ids:str=Form('[]')):
+async def import_file(file:UploadFile=File(...),project_id:str=Form(...),name:str=Form('Asset batch'),format:str=Form('auto'),mode:str=Form('Quality Batch'),reference_ids:str=Form('[]'),output:str=Form('auto')):
     # UploadFile spools to disk; cap reads explicitly instead of accepting an unbounded body.
     content=await file.read(16_000_001)
     if len(content)>16_000_000:raise HTTPException(413,'File exceeds 16 MB. Split the manifest; no data was truncated.')
     try:
         text=content.decode('utf-8-sig')
-        body=Analyze(project_id=project_id,name=name,master_prompt=text,format=format,mode=mode,reference_ids=json.loads(reference_ids),source_filename=file.filename or 'manifest.txt')
+        body=Analyze(project_id=project_id,name=name,master_prompt=text,format=format,mode=mode,reference_ids=json.loads(reference_ids),source_filename=file.filename or 'manifest.txt',output=output if output in ('auto','3d','2d') else 'auto')
     except (UnicodeError,ValueError,ValidationError):raise HTTPException(400,'Expected a UTF-8 manifest within the supported limits (10 million characters). Check the file encoding and fields.')
     return analyze_source(body,content)
 
@@ -147,12 +149,22 @@ def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
     for value in previous:
         if value['mode']==body.mode and sorted(value.get('import_reference_ids',[]))==sorted(set(body.reference_ids)):
             result=detail(value);result['reused_import']=True;return result
+    split_model=None
     try:rows,warnings=parse(body.master_prompt,body.format)
     except ValidationError as exc:
         raise HTTPException(400,'Invalid manifest item: '+'; '.join('.'.join(map(str,e['loc']))+': '+e['msg'] for e in exc.errors(include_input=False,include_context=False)))
-    except ValueError as exc:raise HTTPException(400,str(exc))
+    except ValueError as exc:
+        # A one-sentence request ('4 2D models of a knight, warrior, archer, mage'): the local model lists the named assets.
+        if not str(exc).startswith('Không tìm thấy danh sách asset') or len(body.master_prompt)>3000:raise HTTPException(400,str(exc))
+        from engines.request_split import split
+        try:rows,split_model=split(body.master_prompt)
+        except ValueError as reason:raise HTTPException(400,str(reason))
+        except Exception as failure:raise HTTPException(400,str(exc)+' (Local AI could not split the request: '+str(failure)[:200]+')')
+        warnings=[f'Local AI ({split_model}, CPU) listed the {len(rows)} assets named in your request; nothing was added. Check names and prompts before Generate.']
     identifier=uuid.uuid4().hex;items=[]
     report=diagnostics(body.master_prompt,body.format,rows,warnings)
+    if split_model:report.update(parser_method='local_ai_request_split',local_ai_used=True,parsed_count=len(rows),primary_count=len(rows))
+    from engines.request_split import TWO_D
     folder=store.DATA/'batches'/identifier/'source';folder.mkdir(parents=True,exist_ok=True)
     original_path=folder/'original';original_path.write_bytes(original)
     text_path=folder/'decoded.txt';text_path.write_bytes(body.master_prompt.encode('utf-8'))
@@ -165,10 +177,12 @@ def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
         prior=existing.get(item['source_asset_id']) if item['source_asset_id'] else None
         item['asset_id']=prior['id'] if prior else uuid.uuid5(uuid.NAMESPACE_URL,'afs-project-source:'+body.project_id+':'+item['source_asset_id']).hex if item['source_asset_id'] else uuid.uuid5(uuid.UUID(identifier),item['name']).hex
         item['quality']={'Fast Batch':'Fast','Quality Batch':'Balanced','Maximum Quality Batch':'Maximum'}[body.mode]
+        item['output']=body.output if body.output!='auto' else ('2d' if row.get('output')=='2d' or TWO_D.search(item['name']+' '+item['prompt']) or (split_model and TWO_D.search(body.master_prompt)) else '3d')
         item.update(reference_ids=list(dict.fromkeys(body.reference_ids+item['reference_ids'])),attempt=0,started=False,version=1,quality_lock=body.mode=='Maximum Quality Batch')
         for ref in item['reference_ids']:studio.scoped_artifact(ref,body.project_id)
         model=prior or dict(id=item['asset_id'],project_id=body.project_id,name=item['name'],prompt=item['prompt'],category=item['category'],favorite=False,status='Candidate',
             master_artifact_id=None,reference_ids=item['reference_ids'],settings=dict(batch_id=identifier,source_asset_id=item['source_asset_id'],source_status=item['source_status'],style_base=project,style_overrides=item['style_constraints']),approvals=[],created_at=store.now(),updated_at=store.now())
+        if item['output']=='2d':model['asset_type']='sprite_2d'
         model.setdefault('source_import_history',[]).append(dict(batch_id=identifier,source_file_sha256=source_file['sha256'],prompt_sha256=hashlib.sha256(item['prompt'].encode()).hexdigest(),at=store.now()))
         items.append((item,model))
     value=dict(id=identifier,project_id=body.project_id,name=body.name,master_prompt=body.master_prompt,mode=body.mode,paused=True,

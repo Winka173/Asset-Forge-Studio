@@ -17,7 +17,7 @@ def test_policy_four_front_loads_subject_framing_and_style():
 def test_policy_four_keeps_every_description_word():
     prompt, _ = compose(LONG, '', None, policy=4)
     assert LONG.strip() in prompt
-    assert COMPOSITION_POLICY == 9
+    assert COMPOSITION_POLICY == 10
 
 
 def test_policy_three_output_is_unchanged_for_locked_configs():

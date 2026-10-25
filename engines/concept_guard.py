@@ -10,7 +10,9 @@ from . import intent_adapter,local_semantics
 # 6: several separate objects (a set or lineup) count as multiple_views_or_panels.
 # 7: buildings must read at human scale (a door a person walks through) unless giant, and a dwelling must not be a castle
 #    or a ruin with broken pieces unless asked (measured: a house drawn as a four-tower castle, a merchant estate as a ruin).
-POLICY_VERSION=7
+# 8: a character asked to hold nothing (or whose weapons are separate assets) must have empty hands (measured: a
+#    'no weapon held' knight was drawn with sword and shield and passed the check).
+POLICY_VERSION=8
 
 
 class ObservedLayout(BaseModel):
@@ -23,15 +25,17 @@ class ObservedLayout(BaseModel):
     background:Literal['plain_studio','surrounding_scenery']
     lettering:Literal['absent','text_or_decorative_border']
     building:Literal['not_a_building','sound_and_human_scale','door_missing_or_too_small','castle_for_a_dwelling','ruined_or_broken_pieces']
+    hands:Literal['not_a_character','empty','holding_an_object']
     observations:list[Annotated[str,Field(max_length=500)]]=Field(min_length=1,max_length=5)
 
 
-def from_observation(facts):
+def from_observation(facts,empty_hands=False):
     issues=[]
     if facts.composition!='single_asset':issues.append(facts.composition)
     if facts.requested_subject=='plainly_different':issues.append('missing_requested_subject')
     if facts.requested_subject=='uncertain':issues.append('uncertain_source')
     issues+={'door_missing_or_too_small':['no_human_scale_entrance'],'castle_for_a_dwelling':['missing_requested_subject'],'ruined_or_broken_pieces':['broken_or_ruined_structure']}.get(facts.building,[])
+    if empty_hands and facts.hands=='holding_an_object':issues.append('holding_item')
     issues=list(dict.fromkeys(issues))
     return checked_assessment(Assessment(suitable_single_asset_image=not issues,observed_subject_en=facts.observed_subject_en,issues=issues,
         background_is_plain=facts.background=='plain_studio',border_or_text_visible=facts.lettering!='absent',
@@ -43,7 +47,7 @@ class Assessment(BaseModel):
     suitable_single_asset_image:bool
     observed_subject_en:str=Field(min_length=1,max_length=400)
     issues:list[Literal['multiple_views_or_panels','cropped_main_object','missing_requested_subject','no_visible_asset',
-        'background_scene','border_or_text','uncertain_source','no_human_scale_entrance','broken_or_ruined_structure']]=Field(default_factory=list,max_length=9)
+        'background_scene','border_or_text','uncertain_source','no_human_scale_entrance','broken_or_ruined_structure','holding_item']]=Field(default_factory=list,max_length=10)
     background_is_plain:bool
     border_or_text_visible:bool
     entire_main_asset_visible:bool
@@ -61,7 +65,7 @@ def checked_assessment(answer):
     return answer
 
 
-def assess(path,subject,prompt,progress):
+def assess(path,subject,prompt,progress,empty_hands=False):
     selected=intent_adapter.model();started=time.monotonic();progress('Local concept layout check / Qwen3-VL / CPU')
     system=('Check only if this generated image is a usable SINGLE image-to-3D source. '
         'Fail multiple separate rendered views, inset panels, contact sheets or turnarounds. '
@@ -77,6 +81,8 @@ def assess(path,subject,prompt,progress):
         'Choose background=plain_studio for flat/gradient studio backdrops, surrounding_scenery only for actual landscape or other surrounding objects. '
         'Choose framing=cropped if an important piece is cut by the image edge. '
         'Choose lettering=text_or_decorative_border for visible writing or poster framing. '
+        'hands: not_a_character for objects and buildings; for a character or creature holding_an_object when any hand holds or carries something '
+        '(weapon, shield, staff, tool, even strapped to the arm or resting against the body), otherwise empty. '
         'building: not_a_building for props, characters, plants, effects and structures people do not walk into (wells, fountains, walls, bridges, statues, fences, platforms, terrain). For a building people enter judge an ordinary 1.75 m person: '
         'door_missing_or_too_small when no entrance is visible or the main door would not let a person walk in upright compared with the windows, steps and walls; '
         'castle_for_a_dwelling when a house, home, shop, inn or estate is drawn as a castle or fortress (several defensive towers, battlements); '
@@ -89,7 +95,7 @@ def assess(path,subject,prompt,progress):
         options=dict(temperature=0,num_ctx=8192,num_predict=700,num_gpu=0,num_thread=8),messages=[dict(role='system',content=system),
         dict(role='user',content=json.dumps(dict(requested_subject_en=subject,original_request=prompt)),images=[intent_adapter.image_input(path)])]),timeout=600)
     if not response.get('done') or response.get('done_reason')=='length':raise ValueError('Concept layout response incomplete; not passed')
-    facts=ObservedLayout.model_validate_json(response['message']['content']);answer=from_observation(facts)
+    facts=ObservedLayout.model_validate_json(response['message']['content']);answer=from_observation(facts,empty_hands)
     current=next((m for m in local_semantics.probe()['models'] if m['name']==selected['name']),None)
     if not current or current['digest']!=selected['digest']:raise ValueError('Concept screening model changed during inference; report not accepted')
     return dict(schema_version=3,screening_policy=POLICY_VERSION,**answer.model_dump(),observed_facts=facts.model_dump(),model=selected['name'],model_digest=selected['digest'],

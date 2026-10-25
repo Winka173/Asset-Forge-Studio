@@ -3,10 +3,10 @@ import {useEffect,useRef,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
 
 type Reference={id:string;name:string;role:string;url:string};
-type Props={projectId:string;assetId?:string;references:Reference[];selected:string[];onSelected:(ids:string[])=>void;onUploaded:(value:Reference)=>void;onBusy:(busy:boolean)=>void;disabled?:boolean;title:string;description:string};
+type Props={purpose?:string;projectId:string;assetId?:string;references:Reference[];selected:string[];onSelected:(ids:string[])=>void;onUploaded:(value:Reference)=>void;onBusy:(busy:boolean)=>void;disabled?:boolean;title:string;description:string};
 
 /** Upload uses the same validated, project-scoped artifact endpoint as Single. */
-export function BatchReferences({projectId,assetId,references,selected,onSelected,onUploaded,onBusy,disabled,title,description}:Props){
+export function BatchReferences({purpose,projectId,assetId,references,selected,onSelected,onUploaded,onBusy,disabled,title,description}:Props){
  const [uploading,setUploading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const owner=useRef(''),lock=useRef(false),selectedRef=useRef(selected);
  const scope=projectId+':'+(assetId||'batch');owner.current=scope;selectedRef.current=selected;
@@ -26,7 +26,7 @@ export function BatchReferences({projectId,assetId,references,selected,onSelecte
     if(owner.current!==started)break;
     onUploaded(value);const next=[...new Set([...selectedRef.current,value.id])];selectedRef.current=next;onSelected(next);count++;
    }catch(e){failures.push(`${file.name}: ${e instanceof Error?e.message:String(e)}`);}
-  }}finally{if(owner.current===started){lock.current=false;setUploading(false);onBusy(false);setError(failures.join('\n'));if(count)setNotice(`Saved ${count} local images and selected them as the 3D source. Generation has not started.`);}}
+  }}finally{if(owner.current===started){lock.current=false;setUploading(false);onBusy(false);setError(failures.join('\n'));if(count)setNotice(`Saved ${count} local images and selected them as ${purpose||'the 3D source'}. Generation has not started.`);}}
  }
  const images=references.filter(ref=>['concept','reference','golden'].includes(ref.role));
  return <section className="batch-reference-upload" aria-label={title} aria-busy={uploading}>

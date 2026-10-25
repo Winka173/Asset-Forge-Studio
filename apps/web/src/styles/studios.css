@@ -125,3 +125,4 @@ nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-
 .asset-kind-conflict > span { display: flex; flex-wrap: wrap; gap: 6px; }
 .asset-kind-conflict button { min-height: 30px; padding: 4px 12px; font-size: var(--fs-sm); }
 .asset-kind-warn, .asset-kind-note { color: var(--warning); font-size: var(--fs-xs); }
+.batch-output-chip { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: var(--r-full); border: 1px solid var(--accent-line); background: var(--accent-soft); color: var(--accent); font-size: var(--fs-xs); font-weight: 600; vertical-align: middle; }

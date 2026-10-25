@@ -26,6 +26,8 @@ class ManifestItem(BaseModel):
     name: str = Field(min_length=1,max_length=200)
     category: str = Field(default='',max_length=200)
     kind: Literal['auto','building','character','creature','prop','vehicle','nature'] = 'auto'
+    # 2d: a transparent sprite (concept + cutout, no 3D); 3d: the 3D model pipeline.
+    output: Literal['3d','2d'] = '3d'
     prompt: str = Field(default='',max_length=100000)
     style_constraints: dict = Field(default_factory=dict)
     target_width_m: float | None = Field(default=None,gt=0,le=1000)

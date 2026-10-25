@@ -22,7 +22,14 @@ NEGATIVE_PROMPT=('display pedestal, plinth, display stand, contact sheet, multip
 # the request is giant; dwellings (house, shop, inn) keep away from castle/fortress massing and every building from ruins
 # unless asked. Measured: a "HOUSE specialization" with a castle reference came out as a four-tower castle with a tiny
 # door, and a merchant estate as a ruin with broken pieces stuck to it.
-COMPOSITION_POLICY=9
+# Policy 10: a request to hold nothing ("no weapon held", "Remove weapons", "không cầm gì") is written as empty hands
+# and the weapons move to the negative prompt. Measured: SDXL drew swords for "no weapon held" (the word itself
+# conditions the image), and a "Remove weapons" revision came back armed again.
+COMPOSITION_POLICY=10
+NEGATED_HELD=re.compile(r'\b(?:no|without|remove[sd]?|drop|not\s+(?:holding|carrying|wielding))\s+(?:any\s+|the\s+|all\s+|his\s+|her\s+)?(?:held\s+)?'
+    r'(?:weapons?|swords?|shields?|blades?|spears?|axes?|bows?|staffs?|items?|props?)(?:\s+(?:held|in\s+(?:the\s+|his\s+|her\s+)?hands?))?\b|'
+    r'không\s+cầm\s+(?:gì|vũ\s+khí)[^,.;\n]*|bỏ\s+(?:hết\s+)?vũ\s+khí[^,.;\n]*|tay\s+không|không\s+(?:có\s+)?vũ\s+khí',re.I)
+WEAPON_NEGATIVES='sword, shield, spear, axe, bow, staff, dagger, mace, hammer, weapon, holding an object'
 DWELLING=re.compile(r'\b(?:house|home|hut|cottage|cabin|dwelling|estate|villa|manor|shop|store|inn|tavern|bakery|smithy|forge|farmhouse|mill|stable|workshop|residence)s?\b|nhà|quán|tiệm|biệt thự|dinh thự',re.I)
 FORTIFIED=re.compile(r'\b(?:castle|fortress|fort|citadel|keep|stronghold|tower|turret)s?\b|lâu đài|pháo đài|tháp',re.I)
 GIANT=re.compile(r'\b(?:giant|colossal|titanic|gigantic|enormous|huge)\b|khổng lồ|to lớn|siêu lớn',re.I)
@@ -112,6 +119,8 @@ def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directiv
     directives=[d.strip() for d in directives if d and d.strip()]
     if policy<6 and directives:description='\n'.join([description,*directives]);directives=[]  # earlier policies appended them to the text
     description=_clean(description)
+    empty_hands=policy>=10 and bool(NEGATED_HELD.search(description))
+    if empty_hands:description=NEGATED_HELD.sub('empty open hands',description)
     detail=('\nProduction game-asset beauty render, finely resolved surface relief, readable crafted edges, '
         'rich coherent material variation and carefully finished textures. Preserve the requested stylization.') if quality=='Maximum' else ''
     if policy==3:
@@ -127,6 +136,7 @@ def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directiv
     rig=rig_for(anchor,kind) if policy>=7 and framing=='asset_3d' else None
     # An explicit asset type (engines/asset_kind.py) replaces the subject detection; Auto keeps it.
     scale,negative=building_scale(anchor,forced=kind=='building') if policy>=9 and framing=='asset_3d' and not rig and kind in ('auto','building') else ('',NEGATIVE_PROMPT)
+    if empty_hands:scale=', '.join(filter(None,[scale,'both hands empty and open, holding nothing']));negative=negative+', '+WEAPON_NEGATIVES
     head=f'{anchor}, {RIG_FRAMINGS[rig] if rig else FRAMINGS[framing]}'+(f', {scale}' if scale else '')+(f', {short_style(style)}' if style else '')+'.'
     return (head+'\n'+description+('\nVisual style: '+style if style else '')+detail),negative
 

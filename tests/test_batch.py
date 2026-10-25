@@ -136,3 +136,15 @@ def test_simultaneous_first_library_connections(client):
     with ThreadPoolExecutor(max_workers=8) as pool:
         results=list(pool.map(open_library,range(32)))
     assert results==[(3,1)]*32
+
+
+def test_one_sentence_request_lists_named_assets_as_2d_sprites(client,monkeypatch):
+    import engines.request_split as request_split
+    from apps.api import studio
+    monkeypatch.setattr(request_split,'split',lambda text:([dict(name=n,prompt='A '+e,output='3d') for n,e in (('hiệp sĩ','knight'),('cung thủ','archer'))],'stub'))
+    batch=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='cho tôi 2 model 2d của hiệp sĩ, cung thủ',mode='Maximum Quality Batch')).json()
+    # 2D follows the user's words even when the model says 3d; the asset becomes a sprite asset.
+    assert [(i['name'],i['output']) for i in batch['items']]==[('hiệp sĩ','2d'),('cung thủ','2d')]
+    assert studio.asset(batch['items'][0]['asset_id'])['asset_type']=='sprite_2d' and batch['import_diagnostics']['parser_method']=='local_ai_request_split'
+    rejected=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='x'*3100,mode='Maximum Quality Batch'))
+    assert rejected.status_code==400

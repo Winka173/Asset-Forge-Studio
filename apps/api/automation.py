@@ -296,6 +296,11 @@ def advance(identifier):
                 settle_kind(item)
                 from .prompt_intent import admit
                 if admit(value,item,current,auto):active_assets.add(item['asset_id']);continue
+                # 2D items: sprite concepts and cutouts instead of the 3D pipeline.
+                from .sprite import admit_batch as admit_sprite
+                if admit_sprite(value,item,auto):
+                    if auto['status'] not in ('exported','failed'):active_assets.add(item['asset_id'])
+                    continue
                 from .asset_strategy import admit as plan_strategy
                 spec=plan_strategy(value,item,auto)
                 if not auto.get('engines'):auto.update(status='blocked',stage='Needs Input',error='No compatible verified local geometry route; configure Settings. No fallback/download.');continue

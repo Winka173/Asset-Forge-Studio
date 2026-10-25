@@ -38,3 +38,10 @@ def test_rig_jobs_never_count_as_delivery_work(tmp_path, monkeypatch, qa_project
     value = dict(id='g', project_id='runavelle'); item = dict(asset_id='a', attempt=0)
     rig = dict(id='r', status='FAILED', payload=dict(kind='rig', batch_id='g', asset_id='a', batch_attempt=0))
     assert automation.snapshot_item_state(value, item, [rig], []) == []
+
+
+def test_companion_concepts_fit_the_concept_request_limits():
+    from apps.api.held_items import concept_conditioning
+    from apps.api.studio import ConceptInput
+    directives, negatives = concept_conditioning(dict(companion_of='hero'))
+    ConceptInput(asset_id='a', request_id='companion-1', prompt='A single sword', directives=directives, negative_terms=negatives)

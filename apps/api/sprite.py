@@ -61,3 +61,31 @@ def execute(job, folder):
         store.add_artifact(file['path'], 'sprite', f"Sprite {file['size']}px", dict(project_id=p['project_id'], asset_id=p['asset_id'], job_id=job['id'], parent_id=source['id'],
             size=file['size'], upscaled=file['upscaled'], usable=report['usable'], cutout=report, artistic_approval=False))
     jobs.transition(job['id'], 'GENERATED'); jobs.transition(job['id'], 'VALIDATING'); jobs.transition(job['id'], 'REVIEW_REQUIRED')
+
+
+SPRITE_SEEDS = [42, 43, 44]
+
+
+def admit_batch(value, item, auto):
+    """A batch item with output 2d takes the Single 2D route: sprite-framed concepts then cutouts (no 3D), as this item's jobs.
+    Returns True while the item is handled here (running or finished); 3D items return False."""
+    if item.get('output') != '2d': return False
+    mine = [j for j in jobs.listing() if j['payload'].get('batch_id') == value['id'] and j['payload'].get('asset_id') == item['asset_id'] and j['payload'].get('batch_attempt', 0) == item['attempt']]
+    concepts = [j for j in mine if j['payload']['kind'] == 'concept']; cutouts = [j for j in mine if j['payload']['kind'] == 'sprite_cutout']
+    model = studio.asset(item['asset_id'])
+    if model.get('asset_type') != 'sprite_2d': model['asset_type'] = 'sprite_2d'; studio.save_asset(model)
+    if not concepts:
+        prompt = (item.get('prompt_interpretation') or {}).get('generation_prompt_en') or item.get('resolved_prompt') or item['prompt']
+        for seed in SPRITE_SEEDS:
+            concepts.append(studio.concept(studio.ConceptInput(asset_id=item['asset_id'], request_id=f"{value['id']}:{item['asset_id']}:{item['attempt']}:sprite:{seed}"[:100], prompt=prompt,
+                quality=item['quality'], seed=seed, framing='sprite_2d', batch_id=value['id'], batch_attempt=item['attempt'], style_reference_ids=item.get('style_reference_ids', []))))
+    for concept in concepts:
+        if not any(c['payload'].get('concept_job_id') == concept['id'] for c in cutouts):
+            cutouts.append(jobs.enqueue(dict(kind='sprite_cutout', project_id=value['project_id'], asset_id=item['asset_id'], concept_job_id=concept['id'], depends_on=[concept['id']],
+                                             batch_id=value['id'], batch_attempt=item['attempt'], sizes=[256, 512, 1024], use_gpu=False, timeout_seconds=300)))
+    if any(j['status'] not in jobs.TERMINAL for j in concepts + cutouts):
+        auto.update(status='running', stage='2D sprite: concept and cutout'); return True
+    good = [j for j in cutouts if j['status'] == 'REVIEW_REQUIRED']
+    if good: auto.update(status='exported', stage=f'2D sprites ready ({len(good)} options) in Library', error=None)
+    else: auto.update(status='failed', stage='2D sprite', error='No cutout found a clean object in the sprite concepts; Retry makes new options.')
+    return True

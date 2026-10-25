@@ -188,6 +188,10 @@ def create(asset_id:str,body:RevisionInput):
         row['seeds']=list((config or {}).get('seeds') or [42+n for n in range(candidate_count)])[:candidate_count]
         row.update(attempt=0,started=True,version=1,quality_lock=quality=='Maximum',priority=100 if body.priority=='next' else 0,revision_id=rev_id)
         engines=['blender_animation'] if planned['method']=='animation_retime' else [(config or {}).get('engine_id','trellis2_community')] if planned['method'] in ('blender_transform','blender_material','blender_water') else automation.plan_engines(row)
+        # A regeneration runs every model the original used (measured: a 3-model knight revision ran only TRELLIS.2).
+        original_item=next((i for i in (base_group or {}).get('items',[]) if i['asset_id']==asset_id),None)
+        if planned['method']=='regenerate' and original_item and len((original_item.get('automation') or {}).get('engines') or [])>1:
+            engines=list(original_item['automation']['engines']);row.update(engines=engines,texturer=original_item.get('texturer',''))
         if planned['method'] in ('blender_transform','blender_material') and source_spec.get('asset_generation_spec',{}).get('route')=='procedural_castle':
             row['asset_generation_spec']=copy.deepcopy(source_spec['asset_generation_spec']);row['structural_parent_spec_hash']=source_spec.get('structural_parent_spec_hash') or fingerprint(row['asset_generation_spec'])
             if planned['method']=='blender_transform':row['asset_generation_spec']['bounds_m']=[dims['target_width_m'],dims['target_depth_m'],dims['target_height_m']]
@@ -282,6 +286,7 @@ def lineage(model,artifact_id):
 def chat(asset_id:str,body:ChatInput):
     with batch.LOCK:
         model=studio.asset(asset_id);queue=model.setdefault('chat_queue',[])
+        if not model.get('revisions') and model.get('production_status') not in (None,'completed'):raise HTTPException(409,'The first generation is still running; prompt chat opens when it finishes.')
         if not any(e['id']==body.request_id for e in queue):
             if len(queue)>=CHAT_QUEUE_MAX:raise HTTPException(409,f'{CHAT_QUEUE_MAX} messages are already waiting; wait for some to finish.')
             queue.append(dict(id=body.request_id,prompt=body.prompt,parent_artifact_id=body.parent_artifact_id,at=store.now()));save_asset(model)

@@ -134,6 +134,7 @@ class QualityRepairPlanner:
         if 'background_scene' in issues:instructions.append('Photograph the isolated object against a uniform neutral studio sweep.')
         if 'border_or_text' in issues:instructions.append('Only the physical asset and its contact shadow occupy the image.')
         if 'no_human_scale_entrance' in issues:instructions.append('Human-scale building: a clearly visible entrance door tall enough for a person to walk in upright, windows at people height.')
+        if 'holding_item' in issues:instructions.append('Both hands empty and open, holding nothing; no weapon, shield or tool anywhere on the figure.')
         if 'broken_or_ruined_structure' in issues:instructions.append('Intact, well-kept building with clean solid walls and roof; no rubble, debris or broken pieces.')
         no_progress=bool(previous and previous[-1].get('issues')==issues)
         action='repair_concept' if budget['allowed'] and instructions and not no_progress else 'needs_attention'

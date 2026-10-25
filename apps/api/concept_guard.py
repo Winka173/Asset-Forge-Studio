@@ -48,6 +48,12 @@ def repair_prompt(item):
     return prompt
 
 
+def wants_empty_hands(item):
+    """Weapons are separate assets, or the request (or a revision) asks for nothing in the hands."""
+    from engines.concept_prompt import NEGATED_HELD
+    return bool(item.get('held_items')) or bool(NEGATED_HELD.search(' '.join(filter(None,[item.get('prompt'),item.get('resolved_prompt')]))))
+
+
 def execute(job,folder):
     from engines.concept_guard import assess
     p=job['payload'];source=studio.scoped_artifact(p['artifact_id'],p['project_id'],p['asset_id'])
@@ -55,7 +61,7 @@ def execute(job,folder):
     if store.digest(path)!=p['source_sha256'] or source['sha256']!=p['source_sha256']:raise ValueError('Concept check source changed')
     with (folder/'worker.log').open('a',encoding='utf-8') as log:
         def progress(message):log.write('STAGE '+message+'\n');log.flush()
-        try:result=assess(path,p['subject_en'],p['original_prompt'],progress)
+        try:result=assess(path,p['subject_en'],p['original_prompt'],progress,empty_hands=p.get('empty_hands',False))
         except (OSError,ValueError,TimeoutError) as exc:
             from .inspection import inspect_image
             measured=inspect_image(path)
@@ -97,7 +103,8 @@ def filter_choices(value,item,current,choices,auto):
         if not reports:
             jobs.enqueue(dict(kind='concept_layout',engine='qwen3_vl_local_cpu',project_id=value['project_id'],asset_id=item['asset_id'],
                 batch_id=value['id'],batch_attempt=item['attempt'],artifact_id=image['id'],source_sha256=image['sha256'],subject_en=subject,
-                original_prompt=item['prompt'],screening_policy=POLICY_VERSION,use_gpu=False,timeout_seconds=900,priority=item.get('priority',0),evaluation_key=key))
+                original_prompt=item['prompt'],screening_policy=POLICY_VERSION,use_gpu=False,timeout_seconds=900,priority=item.get('priority',0),evaluation_key=key,
+                empty_hands=wants_empty_hands(item)))
             auto.update(status='queued',stage='Check concept layout before 3D');return None
         if not all(j['status']=='REVIEW_REQUIRED' for j in reports):auto.update(status='queued',stage='Check concept layout before 3D');return None
         result=receipt(reports[-1])

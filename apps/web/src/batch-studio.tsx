@@ -23,6 +23,7 @@ type Version = {
 };
 type ManifestItem = {
   kind?: string;
+  output?: string;
   kind_note?: { chosen: string; used: string; reason: string };
   asset_id: string;
   triangle_budget?: number | null;
@@ -215,7 +216,7 @@ export function BatchStudio({
     [prompt, setPrompt] = useState(""),
     [format, setFormat] = useState("auto"),
     [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
-    [models, setModels] = useState<string[]>(["trellis2_community"]), [keepFinal, setKeepFinal] = useState(true), [texturer, setTexturer] = useState(""), [engineList, setEngineList] = useState<{id:string;installed:boolean}[]>([]),
+    [models, setModels] = useState<string[]>(["trellis2_community"]), [keepFinal, setKeepFinal] = useState(true), [output, setOutput] = useState<"auto" | "3d" | "2d">("auto"), [texturer, setTexturer] = useState(""), [engineList, setEngineList] = useState<{id:string;installed:boolean}[]>([]),
     [references, setReferences] = useState<string[]>([]);
   const [sourceFile, setSourceFile] = useState<{name:string;bytes:number}|null>(null);
   const [exportSettingsBusy,setExportSettingsBusy]=useState(false);
@@ -446,7 +447,7 @@ export function BatchStudio({
       let created: Batch;
       const batchName=name.trim()||filename?.replace(/\.[^.]+$/,'')||'Untitled batch';
       if (file) {
-        const body=new FormData();body.append('file',file);body.append('project_id',projectId);body.append('name',batchName);body.append('format',inputFormat);body.append('mode',mode);body.append('reference_ids',JSON.stringify(references));
+        const body=new FormData();body.append('file',file);body.append('project_id',projectId);body.append('name',batchName);body.append('format',inputFormat);body.append('mode',mode);body.append('output',output);body.append('reference_ids',JSON.stringify(references));
         created=await call<Batch>('/api/batches/import',body);
       } else created = await call<Batch>("/api/batches/analyze", {
         project_id: projectId,
@@ -456,6 +457,7 @@ export function BatchStudio({
         mode,
         reference_ids: references,
         source_filename: filename,
+        output,
       });
       if (models.join() !== 'trellis2_community' || texturer) created = await call<Batch>(`/api/batches/${created.id}/models`, { engines: models, texturer });
       if (keepFinal) created = await call<Batch>(`/api/batches/${created.id}/options`, { keep_final_only: true });
@@ -769,6 +771,7 @@ export function BatchStudio({
               ))}
             </Select>
           </label>
+          <label className="studio-field">Output<Select aria-label="Batch output" value={output} onChange={e=>setOutput(e.target.value as "auto"|"3d"|"2d")}><option value="auto">Auto · 2D when the prompt says 2D / sprite / icon</option><option value="3d">3D models</option><option value="2d">2D sprites (transparent PNG)</option></Select></label>
           <label className="batch-keep-final"><input type="checkbox" checked={keepFinal} onChange={e=>setKeepFinal(e.target.checked)}/> Keep final only after each delivery <small>Once an item is delivered, its concepts, candidates, checks and working files are deleted; the final GLB, its source model and a thumbnail stay. Saves several GB per batch.</small></label>
           <details className="advanced batch-models"><summary>Models <span>{models.length>1?`${models.length} models per item`:models[0]==='trellis2_community'?'TRELLIS.2 (default)':models[0]}</span></summary>
             <EnginePicker engines={engineList} value={models} onChange={(ids)=>setModels(ids.length?ids:["trellis2_community"])}/>
@@ -981,6 +984,7 @@ export function BatchStudio({
                         >
                           {item.name}
                         </button>
+                        {item.output === "2d" && <span className="batch-output-chip" title="2D sprite: concept and cutout, no 3D model">2D</span>}
                         <span className="batch-row-meta">
                           {item.asset_family ||
                             item.category ||

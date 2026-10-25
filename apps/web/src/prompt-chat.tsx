@@ -19,7 +19,7 @@ function reply(r:Revision){
   return `Working on v${r.number}${r.stage&&r.stage!=='pending'?` · ${r.stage}`:''}…`;
 }
 
-export function PromptChat({asset,artifacts,currentArtifactId,onSelectVersion,onChanged}:{asset:ManagedAsset;artifacts:ManagedArtifact[];currentArtifactId?:string;onSelectVersion?:(id:string)=>void;onChanged:()=>Promise<void>|void}){
+export function PromptChat({asset,artifacts,currentArtifactId,onSelectVersion,onChanged,locked}:{asset:ManagedAsset;artifacts:ManagedArtifact[];currentArtifactId?:string;onSelectVersion?:(id:string)=>void;onChanged:()=>Promise<void>|void;locked?:string}){
   const [open,setOpen]=useState(()=>{try{return localStorage.getItem('afs.prompt-chat')==='open';}catch{return false;}});
   const [text,setText]=useState('');const [busy,setBusy]=useState(false);const [errors,setErrors]=useState<{at:number;text:string}[]>([]);const [sent,setSent]=useState<{id:string;prompt:string}[]>([]);
   const list=useRef<HTMLDivElement>(null);const changed=useRef(onChanged);changed.current=onChanged;
@@ -41,7 +41,8 @@ export function PromptChat({asset,artifacts,currentArtifactId,onSelectVersion,on
   async function call(work:()=>Promise<unknown>,label:string){setBusy(true);try{await work();await onChanged();return true;}catch(e){setErrors(x=>[...x,{at:Date.now(),text:label+'\n→ '+String(e).replace(/^Error: /,'')}]);return false;}finally{setBusy(false);}}
   function send(){const prompt=text.trim();if(!prompt||!parent||busy)return;const id=crypto.randomUUID();setText('');setSent(x=>[...x,{id,prompt}]);call(()=>managementCall(`/api/production/assets/${asset.id}/chat`,{parent_artifact_id:parent.id,prompt,request_id:id}),prompt).then(ok=>{if(!ok)setSent(x=>x.filter(m=>m.id!==id));});}
   const remove=(id:string)=>call(()=>managementCall(`/api/production/assets/${asset.id}/chat/${id}/remove`,{}),'Remove');
-  if(!open)return <button className="prompt-chat-fab" title="Keep prompting on this model" aria-label="Open prompt chat" onClick={()=>setOpen(true)}><IcChat size={20} aria-hidden="true"/>{working&&<span className="prompt-chat-dot" aria-label="A change is running"/>}</button>;
+  // Changes would build on a version that is still being made: the chat waits for the first generation to finish.
+  if(!open||locked)return <button className="prompt-chat-fab" disabled={Boolean(locked)} title={locked||"Keep prompting on this model"} aria-label={locked||"Open prompt chat"} onClick={()=>setOpen(true)}><IcChat size={20} aria-hidden="true"/>{working&&<span className="prompt-chat-dot" aria-label="A change is running"/>}</button>;
   return <section className="prompt-chat" aria-label="Prompt chat">
     <header><strong>Prompt on this model</strong><small>{parent?'Changes continue from the newest version':'No model yet'}</small><button aria-label="Close prompt chat" onClick={()=>setOpen(false)}><IcX size={16} aria-hidden="true"/></button></header>
     <div className="prompt-chat-list" ref={list}>

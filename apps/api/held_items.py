@@ -29,7 +29,8 @@ PROPS = dict(sword=(1.0, 'a longsword standing upright, blade pointing up, hilt 
              spear=(2.2, 'a spear standing upright, point at the top'), axe=(0.8, 'a battle axe standing upright, head at the top'),
              hammer=(0.9, 'a war hammer standing upright, head at the top'), staff=(1.7, 'a magic staff standing upright'), dagger=(0.35, 'a dagger standing upright, blade pointing up'))
 MATERIALS = re.compile(r'\b(?:steel|iron|gold(?:en)?|silver|bronze|copper|wood(?:en)?|oak|leather|bone|crystal|obsidian|blue|red|green|white|black|purple|crimson|azure|navy|ivory|teal|cyan|orange|brown|grey|gray)\b', re.I)
-NOT_A_CHARACTER = ['person', 'character', 'knight', 'warrior', 'soldier', 'human', 'figure', 'armour', 'armor', 'body', 'hands', 'arms', 'helmet', 'face']
+# At most 12 terms fit a concept request (measured: 14 failed both companions before their concept).
+NOT_A_CHARACTER = ['person', 'character', 'knight', 'warrior', 'human figure', 'armour', 'body', 'hands', 'helmet', 'face']
 
 
 def detect(text):

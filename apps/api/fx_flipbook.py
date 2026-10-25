@@ -40,6 +40,8 @@ class Flipbook(BaseModel):
     color:str|None=Field(default=None,pattern=r'^#[0-9a-fA-F]{6}$')
     # Without a manual tint, smoke and outer flame lean toward the project palette accent (fire keeps its core).
     match_palette:bool=True
+    # Reference images: their palette sets the accent; their style profile is analysed and kept with the effect.
+    style_reference_ids:list[str]=Field(default_factory=list,max_length=5)
     asset_id:str|None=None
     request_id:str=Field(min_length=8,max_length=100)
 
@@ -58,13 +60,17 @@ def create(body:Flipbook):
     from .local_tools import executable
     if not executable('blender'):raise HTTPException(409,'Blender is not installed; simulated effects need the local Blender')
     project=studio.project(body.project_id);preset,provenance=resolve(body)
-    accent=None
-    if body.match_palette and not body.color:
+    accent=None;profile_state=None
+    for ref in body.style_reference_ids:studio.scoped_artifact(ref,body.project_id)
+    if body.style_reference_ids:
+        from .style_profile import ensure
+        profile_state=ensure(body.project_id,project,body.style_reference_ids)[0]
+    if (body.match_palette or body.style_reference_ids) and not body.color:
         from .style_profile import accent_colour
-        accent=accent_colour(body.project_id,project)
+        accent=accent_colour(body.project_id,project,style_reference_ids=body.style_reference_ids)
     name=body.name.strip() or body.prompt.strip().split('\n')[0][:80] or f'{preset.title()} flipbook'
     config=dict(schema_version=1,engine_id='blender_mantaflow',stage='fx_flipbook',preset=preset,preset_provenance=provenance,look=body.look,quality=body.quality,frames=body.frames,cell=body.cell,
-                seed=body.seed,color=body.color,accent=accent,accent_source='Most saturated colour of the project style palette' if accent else None,input_prompt=body.prompt,script_sha256=store.digest(SCRIPT),particles_sha256=store.digest(PARTICLES),**QUALITY[body.quality],
+                seed=body.seed,color=body.color,accent=accent,accent_source=('Most saturated colour of the reference images' if body.style_reference_ids else 'Most saturated colour of the project style palette') if accent else None,style_reference_ids=body.style_reference_ids,style_profile=profile_state,input_prompt=body.prompt,script_sha256=store.digest(SCRIPT),particles_sha256=store.digest(PARTICLES),**QUALITY[body.quality],
                 method='Mantaflow gas simulation, Cycles CPU render, straight-alpha sprite sheet; no AI inference',artistic_approval=False)
     checksum=fingerprint(body.model_dump())
     with store.connect() as db:
@@ -143,6 +149,7 @@ class FlipbookBatch(BaseModel):
     frames:Literal[16,36,64]=36
     cell:Literal[128,256,512]=256
     match_palette:bool=True
+    style_reference_ids:list[str]=Field(default_factory=list,max_length=5)
     request_id:str=Field(min_length=8,max_length=100)
 
 
@@ -151,7 +158,7 @@ def create_many(body:FlipbookBatch):
     """One effect per line (e.g. the tower-defense pack); each line becomes its own effect asset and CPU job."""
     lines=[l.strip() for l in body.lines if l.strip()]
     return [create(Flipbook(project_id=body.project_id,name=line[:80],prompt=line,look=body.look,quality=body.quality,frames=body.frames,cell=body.cell,
-                            match_palette=body.match_palette,request_id=f'{body.request_id}:{n}')) for n,line in enumerate(lines)]
+                            match_palette=body.match_palette,style_reference_ids=body.style_reference_ids,request_id=f'{body.request_id}:{n}')) for n,line in enumerate(lines)]
 
 
 @router.get('/unity-importer')

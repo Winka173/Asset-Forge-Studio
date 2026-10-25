@@ -111,6 +111,30 @@ def read(project_id: str):
                 rendering=(observed or {}).get('rendering_style'), stylization=(observed or {}).get('stylization'))
 
 
+def terrain_from_references(project_id, project, style_reference_ids=()):
+    """(plan colour fields, notes) from the references' palettes, kept only when they suit a map: grass must be a real
+    green, the road an earth tone, and the two must stay apart enough to read as a path (else the default stays)."""
+    import colorsys
+    entries = palette_entries(project_id, project, style_reference_ids)
+    if not entries: return {}, ['No reference palette; default terrain colours kept']
+    def hls(entry): return colorsys.rgb_to_hls(*(int(entry['hex'][i:i + 2], 16) / 255 for i in (1, 3, 5)))
+    def hl(hexa): return colorsys.rgb_to_hls(*(int(hexa[i:i + 2], 16) / 255 for i in (1, 3, 5)))
+    greens = [e for e in entries if 70 <= hls(e)[0] * 360 < 170 and hls(e)[2] > 0.15 and 0.12 <= hls(e)[1] <= 0.75]
+    earth = [e for e in entries if 15 <= hls(e)[0] * 360 < 60 and 0.25 <= hls(e)[1] <= 0.65]
+    result, notes = {}, []
+    if greens: result['grass_color'] = max(greens, key=lambda e: e['share'])['hex']; notes.append(f"Grass {result['grass_color']} from the reference palette")
+    else: notes.append('The references have no grass green; default grass kept')
+    if earth: result['road_color'] = max(earth, key=lambda e: e['share'])['hex']
+    else: notes.append('The references have no earth tone; default road kept')
+    grass = result.get('grass_color', '#607247')
+    if 'road_color' in result:
+        (gh, gl, _), (rh, rl, _) = hl(grass), hl(result['road_color'])
+        if min(abs(gh - rh), 1 - abs(gh - rh)) * 360 < 20 and abs(gl - rl) < 0.12:
+            notes.append(f"Road {result.pop('road_color')} too close to the grass to read as a path; default road kept")
+        else: notes.append(f"Road {result['road_color']} from the reference palette")
+    return result, notes
+
+
 def terrain_colours(project_id, project, style_reference_ids=()):
     """Provisional world colours from the project palette: a green for grass, a warm earth tone for roads (else defaults)."""
     import colorsys
@@ -127,13 +151,24 @@ def terrain_colours(project_id, project, style_reference_ids=()):
     return result
 
 
-def accent_colour(project_id, project, minimum_saturation=0.35):
+def palette_entries(project_id, project, style_reference_ids=()):
+    """Palette entries of the chosen reference images (shares split evenly between them), else of the project anchor."""
+    ids = list(dict.fromkeys(style_reference_ids or ())) or [None]
+    entries = []
+    for identifier in ids:
+        source = anchor(project_id, project, [identifier] if identifier else ())
+        if not source: continue
+        found = (find(project_id, source['record']['sha256']) or measured_only(source))['palette']['entries']
+        entries += [dict(e, share=e['share'] / len(ids)) for e in found]
+    return entries
+
+
+def accent_colour(project_id, project, minimum_saturation=0.35, style_reference_ids=()):
     """A genuinely saturated palette colour (e.g. cyan mana) for effect accents; muted palettes get none."""
     import colorsys
-    if mode(project) == 'image': return None
-    source = anchor(project_id, project)
-    if not source: return None
-    entries = (find(project_id, source['record']['sha256']) or measured_only(source))['palette']['entries']
+    if mode(project) == 'image' and not style_reference_ids: return None
+    entries = palette_entries(project_id, project, style_reference_ids)
+    if not entries: return None
     def saturation(entry): return colorsys.rgb_to_hls(*(int(entry['hex'][i:i + 2], 16) / 255 for i in (1, 3, 5)))[2]
     vivid = [e for e in entries if e['share'] >= 0.02 and saturation(e) >= minimum_saturation]
     return max(vivid, key=saturation)['hex'] if vivid else None
