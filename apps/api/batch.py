@@ -10,6 +10,7 @@ from pathlib import Path
 import psutil
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from fastapi.responses import FileResponse, Response
+from typing import Literal
 from pydantic import BaseModel, Field, ValidationError
 from . import store, jobs, studio
 from .manifest import ManifestItem, parse, diagnostics, MAX_MANIFEST_CHARACTERS, MAX_MANIFEST_ASSETS
@@ -223,6 +224,25 @@ def selection(identifier:str,body:Selection):
         for item in value['items']:item['selected']=item['asset_id'] in selected
         save(value)
     return detail(value)
+
+
+class Models(BaseModel):
+    engines:list[Literal['trellis2_community','triposg','trellis_v1','hunyuan3d21']]=Field(default_factory=list,max_length=4)
+    texturer:Literal['','mvadapter','trellis2']=''
+
+
+@router.post('/{identifier}/models')
+def models(identifier:str,body:Models):
+    """Batch-wide model choice for items that have not started; started items keep their recorded configuration."""
+    with LOCK:
+        value=batch(identifier);ids=list(dict.fromkeys(body.engines));changed=0
+        for item in value['items']:
+            if item.get('started'):continue
+            item['engines']=ids if len(ids)>1 else []
+            item['preferred_engine']=ids[0] if len(ids)==1 and ids[0]!='trellis2_community' else 'auto'
+            item['texturer']=body.texturer;changed+=1
+        save(value)
+    return detail(value)|dict(models_applied=changed)
 
 
 @router.post('/{identifier}/items/{asset_id}')

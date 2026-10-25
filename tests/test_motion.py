@@ -33,3 +33,15 @@ def test_character_must_be_a_rigged_model_of_this_game(client,monkeypatch,tmp_pa
     assert client.post('/api/motion',json=dict(body,character_artifact_id=plain['id'])).status_code==409
     made=client.post('/api/motion',json=dict(body,request_id='motion-unit-rig2',character_artifact_id=rig['id'])).json()
     assert made['job']['payload']['effective_config']['character_sha256']==rig['sha256']
+
+def test_uploaded_unrigged_glb_is_auto_rigged_and_the_motion_waits_for_it(client,monkeypatch):
+    from apps.api import rigging
+    monkeypatch.setattr(motion,'installed',lambda:True);monkeypatch.setattr(rigging,'installed',lambda:True)
+    monkeypatch.setattr(rigging,'joints',lambda path:dict(skins=0,joints=0,skinned_primitives=False))
+    up=client.post('/api/motion/upload',data=dict(project_id='runavelle'),files=dict(file=('Knight.glb',b'glTF-fake-model','model/gltf-binary')))
+    assert up.status_code==201,up.text
+    up=up.json();assert up['rigged'] is False and jobs.get(up['rig_job_id'])['payload']['kind']=='rig'
+    assert client.post('/api/motion/upload',data=dict(project_id='runavelle'),files=dict(file=('Knight.glb',b'glTF-fake-model','model/gltf-binary'))).json()['rig_job_id']==up['rig_job_id']
+    made=client.post('/api/motion',json=dict(project_id='runavelle',prompt='a knight waves',request_id='motion-unit-up',rig_job_id=up['rig_job_id'])).json()
+    assert made['job']['payload']['depends_on']==[up['rig_job_id']] and made['job']['payload']['effective_config']['character_from_rig_job']==up['rig_job_id']
+    assert client.post('/api/motion/upload',data=dict(project_id='runavelle'),files=dict(file=('x.png',b'\x89PNG','image/png'))).status_code==400

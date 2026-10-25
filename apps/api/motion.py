@@ -9,7 +9,7 @@ import subprocess
 import uuid
 from pathlib import Path
 from pydantic import BaseModel,Field
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,UploadFile,File,Form
 from . import store,studio,jobs
 from engines.quality import fingerprint
 
@@ -39,6 +39,8 @@ class Motion(BaseModel):
     seed:int=Field(default=42,ge=0,le=2147483647)
     # Optional rigged character (role 'rigged' artifact) to receive the motion.
     character_artifact_id:str|None=None
+    # Or an uploaded character still being auto-rigged: the motion waits for that rig job.
+    rig_job_id:str|None=None
     asset_id:str|None=None
     request_id:str=Field(min_length=8,max_length=100)
 
@@ -48,6 +50,35 @@ def characters(project_id:str):
     """Auto-rigged characters in this game that a clip can be applied to."""
     with store.connect() as db:rows=[store.artifact(r) for r in db.execute("SELECT * FROM artifacts WHERE project_id=? AND role='rigged' ORDER BY created_at DESC",(project_id,))]
     return [dict(id=a['id'],name=a['name'],asset_id=a['metadata'].get('asset_id')) for a in rows]
+
+
+def _asset(project_id,name,request_key):
+    asset=dict(id=uuid.uuid5(uuid.NAMESPACE_URL,'afs-motion-char:'+project_id+':'+request_key).hex,project_id=project_id,asset_type='static_3d',name=name,prompt='',original_prompt='',
+               category='Characters',reference_ids=[],settings={},favorite=False,status='Candidate',master_artifact_id=None,approvals=[],created_at=store.now())
+    with store.connect() as db:db.execute('INSERT INTO assets VALUES (?,?,?) ON CONFLICT(id) DO NOTHING',(asset['id'],project_id,json.dumps(asset)))
+    return asset
+
+
+@router.post('/upload',status_code=201)
+async def upload(file:UploadFile=File(...),project_id:str=Form(...)):
+    """Bring your own character GLB: a skinned one is used as is, an unrigged one is auto-rigged (UniRig) first."""
+    from . import rigging
+    studio.project(project_id)
+    name=Path(file.filename or 'character.glb').stem[:80] or 'Character';data=await file.read(500_000_001)
+    if len(data)>500_000_000:raise HTTPException(413,'GLB is larger than 500 MB')
+    if data[:4]!=b'glTF':raise HTTPException(400,'Upload a binary .glb file')
+    import hashlib;digest=hashlib.sha256(data).hexdigest();asset=_asset(project_id,name,digest)
+    target=store.safe_path(f'projects/{project_id}/assets/{asset["id"]}/uploads/{digest[:16]}.glb');target.parent.mkdir(parents=True,exist_ok=True)
+    if not target.exists():target.write_bytes(data)
+    facts=rigging.joints(target);skinned=bool(facts['skins'] and facts['joints']>=2 and facts['skinned_primitives'])
+    with store.connect() as db:row=db.execute('SELECT * FROM artifacts WHERE relative_path=?',(target.relative_to(store.DATA).as_posix(),)).fetchone()
+    record=store.artifact(row) if row else store.add_artifact(target,'rigged' if skinned else 'character_source',f'{name} / '+('uploaded rigged' if skinned else 'uploaded model'),
+                                                               dict(project_id=project_id,asset_id=asset['id'],origin='user_upload',**facts))
+    if skinned or record['role']=='rigged':return dict(artifact_id=record['id'],rigged=True,name=name)
+    if not rigging.installed():raise HTTPException(409,'This GLB has no skeleton and the local auto-rigger (UniRig) is not installed')
+    existing=next((j for j in jobs.listing() if j['payload'].get('kind')=='rig' and j['payload'].get('artifact_id')==record['id']),None)
+    job=existing or jobs.enqueue(dict(kind='rig',engine=rigging.ENGINE,project_id=project_id,asset_id=asset['id'],artifact_id=record['id'],source_sha256=record['sha256'],seed=12345,timeout_seconds=1800,name=name+' auto-rig'))
+    return dict(artifact_id=record['id'],rigged=False,rig_job_id=job['id'],name=name)
 
 
 @router.get('/capabilities')
@@ -63,11 +94,15 @@ def create(body:Motion):
     if body.character_artifact_id:
         character=store.get_artifact(body.character_artifact_id)
         if character['role']!='rigged' or character['metadata'].get('project_id')!=body.project_id:raise HTTPException(409,'Choose a rigged character from this game')
+    elif body.rig_job_id:
+        rig=jobs.get(body.rig_job_id)
+        if rig['payload'].get('kind')!='rig' or rig['payload'].get('project_id')!=body.project_id:raise HTTPException(409,'Unknown auto-rig job for this game')
     name=body.name.strip() or body.prompt.strip().split('\n')[0][:80]
     # Upstream defaults (100 diffusion steps, 30 fps); the scheduler never lowers them.
     config=dict(schema_version=1,engine_id='kimodo-soma-rp-v1.2',stage='text_to_motion',input_prompt=body.prompt,duration=body.duration,seed=body.seed,steps=100,fps=30,
                 text_encoder_device='cpu',worker_sha256=store.digest(WORKER),convert_sha256=store.digest(CONVERT),artistic_approval=False,
-                **(dict(character_artifact_id=character['id'],character_sha256=character['sha256'],retarget_sha256=store.digest(RETARGET)) if character else {}))
+                **(dict(character_artifact_id=character['id'],character_sha256=character['sha256'],retarget_sha256=store.digest(RETARGET)) if character else {}),
+                **(dict(character_from_rig_job=body.rig_job_id,retarget_sha256=store.digest(RETARGET)) if body.rig_job_id and not character else {}))
     checksum=fingerprint(body.model_dump())
     with store.connect() as db:
         db.execute('BEGIN IMMEDIATE');prior=studio.cached(db,'motion:'+body.request_id,checksum)
@@ -83,7 +118,8 @@ def create(body:Motion):
         asset['updated_at']=store.now()
         db.execute('INSERT INTO assets VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload',(asset['id'],asset['project_id'],json.dumps(asset)))
         job=jobs.enqueue(dict(kind='motion',engine='kimodo',project_id=asset['project_id'],asset_id=asset['id'],name=name+' motion',effective_config=config,
-                              effective_config_hash=fingerprint(config),timeout_seconds=3600,purpose='text_to_motion_clip'),db=db)
+                              effective_config_hash=fingerprint(config),timeout_seconds=3600,purpose='text_to_motion_clip',
+                              **(dict(depends_on=[body.rig_job_id]) if config.get('character_from_rig_job') else {})),db=db)
         result=dict(asset_id=asset['id'],job=job)
         db.execute('INSERT INTO studio_requests VALUES (?,?,?)',('motion:'+body.request_id,checksum,json.dumps(result)))
     return result
@@ -137,8 +173,16 @@ def execute(job,folder,worker):
     store.add_artifact(report['fbx'],'animation_clip_fbx',f'{clip} / clip (FBX)',meta|dict(parent_id=glb['id']))
     store.add_artifact(output/'kimodo/motion.bvh','motion_source',f'{clip} / motion (BVH)',meta|dict(parent_id=glb['id']))
     store.add_artifact(output/'clip/clip.json','qa_report','Motion clip report',dict(project_id=p['project_id'],asset_id=p['asset_id'],job_id=job['id'],parent_id=glb['id']))
+    if config.get('character_from_rig_job'):  # the rig finished before this job was admitted; bind its output now
+        rigged=next((a for a in _artifacts_of_job(config['character_from_rig_job']) if a['role']=='rigged'),None)
+        if not rigged:raise ValueError('The auto-rig job produced no rigged character')
+        config=dict(config,character_artifact_id=rigged['id'],character_sha256=rigged['sha256'])
     if config.get('character_artifact_id') and not retarget(job,folder,worker,config,clip,safe,glb,meta,blender):return
     jobs.transition(job['id'],'REVIEW_REQUIRED')
+
+
+def _artifacts_of_job(job_id):
+    with store.connect() as db:return [store.artifact(r) for r in db.execute('SELECT * FROM artifacts WHERE metadata LIKE ?',(f'%"job_id": "{job_id}"%',))]
 
 
 def retarget(job,folder,worker,config,clip,safe,glb,meta,blender):

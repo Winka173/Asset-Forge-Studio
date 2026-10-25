@@ -1,6 +1,7 @@
 import {ArrowUpToLine as IcArrowUpToLine,CircleX as IcCircleX,Copy as IcCopy,Download as IcDownload,Eye as IcEye,FolderOpen as IcFolderOpen,Pencil as IcPencil,RefreshCw as IcRefreshCw,RotateCcw as IcRotateCcw,Save as IcSave,SkipForward as IcSkipForward} from "lucide-react";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import { Select } from "./select";
+import { EnginePicker } from "./engine-picker";
 import { ActivityIndicator } from "./activity-indicator";
 import { BatchExportSettings } from "./export-settings";
 import { useEffect, useRef, useState } from "react";
@@ -211,6 +212,7 @@ export function BatchStudio({
     [prompt, setPrompt] = useState(""),
     [format, setFormat] = useState("auto"),
     [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
+    [models, setModels] = useState<string[]>(["trellis2_community"]), [texturer, setTexturer] = useState(""), [engineList, setEngineList] = useState<{id:string;installed:boolean}[]>([]),
     [references, setReferences] = useState<string[]>([]);
   const [sourceFile, setSourceFile] = useState<{name:string;bytes:number}|null>(null);
   const [exportSettingsBusy,setExportSettingsBusy]=useState(false);
@@ -259,6 +261,7 @@ export function BatchStudio({
   // Steps keep one concern on screen: write the brief, review/produce the manifest, then export what exists.
   const [stage, setStage] = useState<'brief' | 'manifest' | 'export'>('brief');
   useEffect(() => { setStage(batch ? 'manifest' : 'brief'); }, [batch?.id]);
+  useEffect(() => { apiFetch('/api/engines').then(r => r.json()).then(v => setEngineList(v.engines || [])).catch(() => setEngineList([])); }, []);
   const selectedItems =
     batch?.items.filter((item) => item.selected && !item.skipped) || [];
   const blockedItems = selectedItems.filter(needsSpecs);
@@ -451,6 +454,7 @@ export function BatchStudio({
         reference_ids: references,
         source_filename: filename,
       });
+      if (models.join() !== 'trellis2_community' || texturer) created = await call<Batch>(`/api/batches/${created.id}/models`, { engines: models, texturer });
       adopt(created);
       await refresh(created.id);
       setNotice(
@@ -754,6 +758,11 @@ export function BatchStudio({
               ))}
             </Select>
           </label>
+          <details className="advanced batch-models"><summary>Models <span>{models.length>1?`${models.length} models per item`:models[0]==='trellis2_community'?'TRELLIS.2 (default)':models[0]}</span></summary>
+            <EnginePicker engines={engineList} value={models} onChange={(ids)=>setModels(ids.length?ids:["trellis2_community"])}/>
+            {models.some(id=>["triposg","trellis_v1","hunyuan3d21"].includes(id))&&<label className="studio-field">Texturing for shape models<Select aria-label="Batch shape model texturing" value={texturer||"mvadapter"} onChange={e=>setTexturer(e.target.value==="mvadapter"?"":e.target.value)}><option value="mvadapter">MV-Adapter (tested)</option><option value="trellis2">TRELLIS.2 texturing (experimental)</option></Select></label>}
+            <small>Applies to every item in this import. Items can still be changed one by one before they start.</small>
+          </details>
           <div className="batch-mode-note">
             {mode === "Maximum Quality Batch" ? "Multiple candidates / engines when available, Blender and technical QA. Auto exports valid assets; artistic review stays independent." : mode === "Quality Batch" ? "Quality-focused processing with technical QA. Review stops only at enabled checkpoints." : "Faster processing settings; technical validation still runs before export."}
           </div>
