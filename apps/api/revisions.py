@@ -48,6 +48,28 @@ def origin_config(record):
     return None,None
 
 
+# Named water colours for "add purple water" (English after chat reading, Vietnamese when typed directly); first match wins.
+WATER_COLORS=[(r'\b(?:purple|violet|tím)\b','#8a4dff'),(r'\b(?:teal|cyan|turquoise|xanh ngọc)\b','#1fd6c8'),(r'\b(?:green|xanh lá)\b','#3fbf6f'),(r'\b(?:red|blood|đỏ)\b','#c9343a'),
+    (r'\b(?:gold|golden|yellow|vàng)\b','#e6b422'),(r'\b(?:pink|hồng)\b','#e86fb8'),(r'\b(?:dark|black|đen)\b','#1b2433'),(r'\b(?:blue|xanh dương|xanh biển)\b','#1fa8d8')]
+
+
+# Adding water, or moving it ("water higher", "nước cao hơn, gần rìa", "lower the water", "water level 7 m").
+WATER_REQUEST=re.compile(r'\b(?:add|fill|put|thêm|đổ|bổ sung|cho)\b.*?\b(?:water|nước)\b|\b(?:raise|lower|nâng|hạ|dâng)\b.*?\b(?:water|nước)\b|'
+    r'\b(?:water|nước)\b.*?\b(?:cao|thấp|higher|lower|level|đầy|full|rìa|miệng|brim|rim|top)\b',re.I)
+WATER_FULL=re.compile(r'gần\s+(?:rìa|miệng|thành|mép|đỉnh|bằng)|ngang\s+(?:thành|miệng|rìa|mép)|đầy|tràn|\bfull\b|\bbrim\b|(?:to|near|up to)\s+the\s+(?:rim|top|edge)',re.I)
+WATER_LOWER=re.compile(r'thấp hơn|\blower\b|\bhạ\b|\bbớt\b|less water|\brút\b|\bgiảm\b',re.I)
+WATER_HIGHER=re.compile(r'cao hơn|\bhigher\b|\braise\b|\bnâng\b|\bdâng\b|more water|\btăng\b',re.I)
+
+
+def water_level(prompt):
+    """Where the surface goes: near the brim, an explicit level in metres, one step lower/higher, or the first default."""
+    if WATER_FULL.search(prompt):return dict(mode='full')
+    metres=re.search(r'(\d+(?:[.,]\d+)?)\s*m\b',prompt)
+    if metres:return dict(mode='level',level_m=float(metres[1].replace(',','.')))
+    if WATER_LOWER.search(prompt):return dict(mode='lower')
+    return dict(mode='higher') if WATER_HIGHER.search(prompt) else {}
+
+
 def revision_plan(asset_id,body):
     model=studio.asset(asset_id);parent=studio.scoped_artifact(body.parent_artifact_id,model['project_id'],asset_id)
     if parent['role']!='candidate':raise HTTPException(400,'Choose a real model candidate as the parent version')
@@ -69,12 +91,13 @@ def revision_plan(asset_id,body):
                 refinement_goal='Change only named roof basecolor; preserve geometry, topology, UV and other materials',
                 explanation='Direct named roof material edit in Blender. No concept or image-to-3D inference. Geometry invariance and export reimport are checked.',
                 parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],capabilities=dict(direct_material_edit=True,direct_mesh_edit=False),artistic_evaluation='not_available')
-    water=re.search(r'\b(?:add|fill|put|thêm|đổ|bổ sung|cho)\b.*?\b(?:water|nước)\b',body.prompt,re.I)
+    water=WATER_REQUEST.search(body.prompt)
     if water and body.method!='regenerate' and executable('blender'):
-        color=re.search(r'#[0-9a-fA-F]{6}',body.prompt)
-        return dict(method='blender_water',earliest_stage='blender',target_height_m=None,water=dict(color=color[0]) if color else {},
-            refinement_goal='Add a water surface inside the basin; preserve the model geometry, materials and scale',
-            explanation='Blender finds the basin at the middle of the model and adds a separate semi-transparent "Water" mesh. No image-to-3D inference; the model itself is unchanged.',
+        color=re.search(r'#[0-9a-fA-F]{6}',body.prompt);named=next((hexa for word,hexa in WATER_COLORS if re.search(word,body.prompt,re.I)),None)
+        color=color[0] if color else named;options=water_level(body.prompt)|(dict(color=color) if color else {})
+        return dict(method='blender_water',earliest_stage='blender',target_height_m=None,water=options,
+            refinement_goal='Add or move the water surface inside the basin; preserve the model geometry, materials and scale',
+            explanation='Blender finds the basin at the middle of the model and places one separate semi-transparent "Water" mesh (an earlier water layer is replaced). No image-to-3D inference; the model itself is unchanged.',
             parent_artifact_id=parent['id'],parent_sha256=parent['sha256'],capabilities=dict(direct_mesh_edit=False,direct_material_edit=False,water_surface=True),artistic_evaluation='not_available')
     clip_match=re.fullmatch(r'\s*(?:set\s+)?clip\s+(\d+)\s+speed\s+(?:to\s+)?(\d+(?:\.\d+)?)x\s*[.!]?\s*',body.prompt,re.I)
     if clip_match and body.method!='regenerate':
@@ -209,3 +232,115 @@ def publish(asset_id:str,artifact_id:str):
         if revision:next(r for r in current['revisions'] if r['id']==revision['id']).update(state='published',published_export_id=result['id'])
         db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(current),asset_id))
     return result
+
+
+# Prompt chat: messages wait in the asset's chat_queue. When the asset is idle, the local model reads every waiting message
+# together (engines/chat_intent.py): later ones win, cancelled ones drop, and a change of mind about an applied version
+# moves the chat back to an earlier version (chat_head) instead of editing again. What remains becomes one AI regeneration
+# (all non-Blender changes merged) followed by the verified Blender edits, each from the newest finished version.
+CHAT_QUEUE_MAX=20
+REVISION_DONE={'staged','published','failed','blocked','cancelled','skipped','needs_attention'}
+DIRECT_METHODS=('blender_transform','blender_material','blender_water','animation_retime')
+_reading=set()
+
+
+class ChatInput(BaseModel):
+    parent_artifact_id:str
+    prompt:str=Field(min_length=1,max_length=10000)
+    request_id:str=Field(min_length=8,max_length=100)
+
+
+def chat_busy(model):
+    if any(r.get('state') not in REVISION_DONE for r in model.get('revisions',[])):return True
+    return any(j['payload'].get('asset_id')==model['id'] and j['status'] not in jobs.TERMINAL for j in jobs.listing())
+
+
+def save_asset(model):
+    with store.connect() as db:db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),model['id']))
+
+
+def chat_head(model,fallback):
+    """The version the chat continues from: the newest finished revision since the last revert, else the revert target."""
+    finished=[r for r in model.get('revisions',[]) if r.get('artifact_id') and r.get('state') in ('staged','published')]
+    head=model.get('chat_head')
+    if head:finished=[r for r in finished if r.get('completed_at','')>head['at']]
+    if finished:return max(finished,key=lambda r:r['number'])['artifact_id']
+    return head['artifact_id'] if head else fallback
+
+
+def lineage(model,artifact_id):
+    """(revisions that led to this version, oldest first; the original model it started from)."""
+    by={r['artifact_id']:r for r in model.get('revisions',[]) if r.get('artifact_id')};chain=[]
+    while artifact_id in by and len(chain)<100:chain.append(by[artifact_id]);artifact_id=by[artifact_id]['parent_artifact_id']
+    return chain[::-1],artifact_id
+
+
+@router.post('/assets/{asset_id}/chat')
+def chat(asset_id:str,body:ChatInput):
+    with batch.LOCK:
+        model=studio.asset(asset_id);queue=model.setdefault('chat_queue',[])
+        if not any(e['id']==body.request_id for e in queue):
+            if len(queue)>=CHAT_QUEUE_MAX:raise HTTPException(409,f'{CHAT_QUEUE_MAX} messages are already waiting; wait for some to finish.')
+            queue.append(dict(id=body.request_id,prompt=body.prompt,parent_artifact_id=body.parent_artifact_id,at=store.now()));save_asset(model)
+        return dict(queued=True,position=[e['id'] for e in queue].index(body.request_id)+1)
+
+
+@router.post('/assets/{asset_id}/chat/{request_id}/remove')
+def chat_remove(asset_id:str,request_id:str):
+    with batch.LOCK:
+        model=studio.asset(asset_id);model['chat_queue']=[e for e in model.get('chat_queue',[]) if e['id']!=request_id];save_asset(model)
+        return dict(queue=model['chat_queue'])
+
+
+def chat_entries(asset_id,parent,instructions,base):
+    """One regeneration for every change Blender cannot make directly (first), then each verified Blender edit."""
+    direct,generate=[],[]
+    for text in instructions:
+        try:method=revision_plan(asset_id,RevisionInput(parent_artifact_id=parent,prompt=text,request_id=base[:60]+'-plan'))['method']
+        except HTTPException:method='regenerate'
+        (direct if method in DIRECT_METHODS else generate).append(text)
+    texts=(['; '.join(generate)] if generate else [])+direct
+    return [dict(id=f'{base[:60]}-{n}',prompt=t,merged=True,parent_artifact_id=parent,at=store.now()) for n,t in enumerate(texts)]
+
+
+def read_chat(asset_id):
+    """Background: the local model reads the waiting messages; the queue is replaced by what to do."""
+    try:
+        with batch.LOCK:
+            model=studio.asset(asset_id);queue=list(model.get('chat_queue') or [])
+            if not queue:return
+            model['chat_reading']=True;save_asset(model)
+        fallback=queue[0]['parent_artifact_id'];chain,root=lineage(model,chat_head(model,fallback))
+        from engines.chat_intent import interpret
+        try:intent=interpret([e['prompt'] for e in queue],[(r['number'],r['prompt']) for r in chain],chain[-1]['number'] if chain else 1)
+        except Exception as exc:  # The messages still run as written.
+            intent=dict(revert_to_version=None,instructions=[e['prompt'] for e in queue],summary='Local AI could not read the messages; running them as written. '+str(exc)[:120])
+        with batch.LOCK:
+            model=studio.asset(asset_id);taken={e['id'] for e in queue}
+            note=dict(id=queue[-1]['id'],kind='understood',messages=[e['prompt'] for e in queue if not e.get('merged')],summary=intent['summary'],at=store.now())
+            back=intent['revert_to_version']
+            if back is not None:
+                target=root if back==1 else next((r['artifact_id'] for r in chain if r['number']==back),None)
+                if target:model['chat_head']=dict(artifact_id=target,at=store.now());note.update(reverted_to=target,reverted_to_version=back)
+            entries=chat_entries(asset_id,chat_head(model,fallback),intent['instructions'],queue[-1]['id'])
+            # Messages sent while the model was reading are read in the next round.
+            model['chat_queue']=entries+[e for e in model.get('chat_queue',[]) if e['id'] not in taken]
+            model.pop('chat_reading',None);model.setdefault('chat_notes',[]).append(note);save_asset(model)
+    finally:_reading.discard(asset_id)
+
+
+def drain_chat_queues():
+    """Automation tick: read new messages of idle assets, then start the next planned change from the chat's version."""
+    import threading
+    with store.connect() as db:ids=[r['id'] for r in db.execute('SELECT id FROM assets WHERE payload LIKE ?',('%"chat_queue": [{%',))]
+    for asset_id in ids:
+        if asset_id in _reading:continue
+        with batch.LOCK:
+            model=studio.asset(asset_id);queue=model.get('chat_queue') or []
+            if not queue or chat_busy(model):continue
+            if not all(e.get('merged') for e in queue):
+                _reading.add(asset_id);threading.Thread(target=read_chat,args=(asset_id,),daemon=True).start();continue
+            entry=queue.pop(0);save_asset(model)
+            try:create(asset_id,RevisionInput(parent_artifact_id=chat_head(model,entry['parent_artifact_id']),prompt=entry['prompt'],request_id=entry['id']))
+            except HTTPException as exc:
+                model=studio.asset(asset_id);model.setdefault('chat_notes',[]).append(dict(id=entry['id'],kind='error',messages=[entry['prompt']],summary='Could not start this change: '+str(exc.detail),at=store.now()));save_asset(model)

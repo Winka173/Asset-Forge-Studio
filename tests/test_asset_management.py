@@ -150,3 +150,28 @@ def test_selected_reinspection_is_version_scoped_and_preserves_concurrent_worker
     wrong=client.post('/api/library/bulk',json=dict(action='inspect',asset_ids=[stranger['id']],artifact_id=record['id'])).json()
     assert wrong['errors'] and not wrong['completed']
     assert path.read_bytes()==before and not jobs.listing()
+
+
+def test_chat_reads_messages_together_splits_blender_edits_and_takes_versions_back(client,monkeypatch):
+    import engines.chat_intent as intent
+    model,record,_=source(client);url=f'/api/production/assets/{model["id"]}/chat'
+    for n,text in enumerate(['make it look older','cao 18m nhé']):
+        assert client.post(url,json=dict(parent_artifact_id=record['id'],prompt=text,request_id=f'chat-unit-{n}xx')).json()['position']==n+1
+    seen={}
+    def read(messages,history,current):seen.update(messages=messages,current=current);return dict(revert_to_version=None,instructions=['Uniformly scale to height 18 m','Make it look older'],summary='Older look, then 18 m tall.')
+    monkeypatch.setattr(intent,'interpret',read);revisions.read_chat(model['id'])
+    current=studio.asset(model['id']);assert seen==dict(messages=['make it look older','cao 18m nhé'],current=1)
+    # Everything Blender cannot edit directly is one regeneration that runs first; the verified scale edit follows it.
+    assert [e['prompt'] for e in current['chat_queue']]==['Make it look older','Uniformly scale to height 18 m'] and all(e['merged'] for e in current['chat_queue'])
+    assert current['chat_notes'][-1]['messages']==['make it look older','cao 18m nhé'] and 'chat_reading' not in current
+    revisions.chat_remove(model['id'],current['chat_queue'][0]['id']);revisions.drain_chat_queues()
+    current=studio.asset(model['id']);assert not current['chat_queue'] and current['revisions'][-1]['plan']['method']=='blender_transform'
+    assert [j['payload']['kind'] for j in jobs.listing()]==['blender']
+    # Taking the change back returns the chat to the version before it, without new work.
+    for j in jobs.listing():jobs.transition(j['id'],'CANCELLED','unit')
+    current['revisions'][-1].update(state='staged',artifact_id='v2-artifact',completed_at=store.now());revisions.save_asset(current)
+    client.post(url,json=dict(parent_artifact_id=record['id'],prompt='thôi giữ chiều cao cũ',request_id='chat-unit-undo'))
+    monkeypatch.setattr(intent,'interpret',lambda messages,history,current:dict(revert_to_version=1,instructions=[],summary='Back to the original height.') if history==[(2,'Uniformly scale to height 18 m')] and current==2 else None)
+    revisions.read_chat(model['id']);current=studio.asset(model['id'])
+    assert current['chat_head']['artifact_id']==record['id'] and current['chat_notes'][-1]['reverted_to']==record['id'] and not current['chat_queue']
+    assert revisions.chat_head(current,None)==record['id'] and len(jobs.listing())==1

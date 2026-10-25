@@ -1,14 +1,19 @@
 /* Floating prompt chat on the 3D canvas (Production and Library viewports). */
-.prompt-chat-fab { position: absolute; right: 14px; bottom: 14px; z-index: 5; width: 44px; height: 44px; border-radius: var(--r-full); display: grid; place-items: center;
-  background: var(--accent); color: #1a1205; border: 0; box-shadow: var(--shadow-md); cursor: pointer; }
-.prompt-chat-fab:hover { background: var(--accent-hover); }
+/* button.* + :not(:disabled) out-rank the global button rules (base padding, grey hover, icon margin-right). */
+button.prompt-chat-fab { position: absolute; right: 14px; bottom: 14px; z-index: 5; width: 44px; height: 44px; min-height: 0; padding: 0; gap: 0;
+  border-radius: var(--r-full); display: grid; place-items: center; background: var(--accent); color: #1a1205; border: 0; box-shadow: var(--shadow-md); cursor: pointer; }
+button.prompt-chat-fab:hover:not(:disabled) { background: var(--accent-hover); border: 0; }
+button.prompt-chat-fab:active:not(:disabled) { background: var(--accent-press); transform: scale(0.96); }
+button.prompt-chat-fab:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 3px; }
+.prompt-chat button > svg.lucide, button.prompt-chat-fab > svg.lucide { margin: 0; vertical-align: middle; }
 .prompt-chat-dot { position: absolute; top: 4px; right: 4px; width: 10px; height: 10px; border-radius: var(--r-full); background: #5fd38d; border: 2px solid var(--accent); animation: prompt-chat-pulse 1.4s infinite; }
 @keyframes prompt-chat-pulse { 50% { opacity: .35; } }
 .prompt-chat { position: absolute; right: 14px; bottom: 14px; z-index: 5; width: min(380px, calc(100% - 28px)); max-height: calc(100% - 28px); display: flex; flex-direction: column;
   background: color-mix(in srgb, var(--surface-2) 94%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-lg); overflow: hidden; }
 .prompt-chat > header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 var(--sp-2); padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border); }
 .prompt-chat > header small { grid-row: 2; color: var(--text-3); font-size: var(--fs-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.prompt-chat > header button { grid-row: 1 / 3; grid-column: 2; background: none; border: 0; color: var(--text-2); padding: 4px; cursor: pointer; }
+.prompt-chat > header button { grid-row: 1 / 3; grid-column: 2; width: 30px; height: 30px; min-height: 0; padding: 0; background: none; border: 0; border-radius: var(--r-full); color: var(--text-2); }
+.prompt-chat > header button:hover:not(:disabled) { background: var(--surface-3); border: 0; color: var(--text); }
 .prompt-chat-list { flex: 1 1 auto; min-height: 120px; overflow-y: auto; padding: var(--sp-3); display: flex; flex-direction: column; gap: var(--sp-2); }
 .prompt-chat-pair { display: flex; flex-direction: column; gap: var(--sp-2); }
 .prompt-chat-msg { max-width: 88%; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); font-size: var(--fs-sm); line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -16,10 +21,15 @@
 .prompt-chat-msg.user.original { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-2); }
 .prompt-chat-msg.ai { align-self: flex-start; background: var(--surface-3); border: 1px solid var(--border); }
 .prompt-chat-msg.ai.error, .prompt-chat-msg.ai.state-failed, .prompt-chat-msg.ai.state-blocked { border-color: var(--danger); }
-.prompt-chat-msg.ai button { display: block; margin-top: var(--sp-2); }
 .prompt-chat-hint { color: var(--text-3); font-size: var(--fs-xs); margin: 0; }
 .prompt-chat-suggest { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 var(--sp-3) var(--sp-2); }
 .prompt-chat-suggest button { font-size: var(--fs-xs); padding: 3px 10px; border-radius: var(--r-full); }
 .prompt-chat-input { display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3) var(--sp-3); border-top: 1px solid var(--border); }
 .prompt-chat-input textarea { flex: 1; resize: none; min-height: 40px; }
-.prompt-chat-input button { align-self: stretch; padding: 0 12px; }
+.prompt-chat-input button { align-self: stretch; width: 44px; min-height: 0; padding: 0; }
+.prompt-chat-change { display: block; color: var(--text-3); font-size: var(--fs-xs); margin-bottom: 4px; }
+.prompt-chat-msg.ai.state-waiting { border-style: dashed; color: var(--text-2); }
+.prompt-chat-msg.user { position: relative; }
+.prompt-chat button.prompt-chat-remove { position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; min-height: 0; padding: 0; border-radius: var(--r-full); background: var(--surface-3); border: 1px solid var(--border); display: grid; place-items: center; }
+.prompt-chat button.prompt-chat-remove:hover:not(:disabled) { background: var(--danger); border-color: var(--danger); color: #fff; }
+.prompt-chat-msg.ai button { display: block; margin-top: var(--sp-2); min-height: 30px; padding: 4px var(--sp-3); font-size: var(--fs-sm); }

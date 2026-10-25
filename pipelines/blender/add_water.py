@@ -17,9 +17,25 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 
-def add_water(objects, color='#1fa8d8', fill=0.6, grid=161, name=''):
-    """Returns (the new "Water" object or None, a report). The model's own objects are not changed."""
-    water = None
+def is_water(o):
+    return o.name.startswith('Water') and bool(o.data.materials) and all(m and m.name.startswith('Water') for m in o.data.materials)
+
+
+def add_water(objects, color=None, fill=0.6, grid=161, name='', mode='default', level_m=None):
+    """Returns (the new "Water" object or None, a report). The model's own objects are not changed.
+
+    mode: 'default' (first water: fill of the inner basin), 'higher' / 'lower' (step from the existing water), 'full'
+    (just under the brim of the outermost wall that still holds water) or 'level' (level_m metres). Existing water from an
+    earlier revision is replaced, never stacked, and is not mistaken for the basin floor."""
+    water = None; previous = None
+    old = [o for o in objects if is_water(o)]
+    if old:
+        zs = [(o.matrix_world @ v.co).z for o in old for v in o.data.vertices]; previous = max(zs) if zs else None
+        if color is None:
+            rgba = old[0].data.materials[0].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value if old[0].data.materials[0].use_nodes else None
+            color = '#%02x%02x%02x' % tuple(round(c * 255) for c in rgba[:3]) if rgba is not None else None
+        for o in old: objects.remove(o); bpy.data.objects.remove(o, do_unlink=True)
+    color = color or '#1fa8d8'
     deps = bpy.context.evaluated_depsgraph_get(); verts, polys = [], []
     for o in objects:
         mesh = o.evaluated_get(deps).to_mesh(); base = len(verts)
@@ -50,11 +66,15 @@ def add_water(objects, color='#1fa8d8', fill=0.6, grid=161, name=''):
     def leaks(cells): return any(i in (0, n - 1) or j in (0, n - 1) for i, j in cells)
     # Steep walls keep the area nearly flat while the level rises; the rim is where it starts to grow again (terraces,
     # the outside). Holes smaller than 1% of the grid (a shaft, gaps between rocks) are not the basin yet.
-    spill = None; best = []; first = None; start = None
+    # Keep scanning past that inner rim to the outermost level that still holds water (rim): "fill it to the brim".
+    spill = None; best = []; first = None; start = None; rim = None
     for level in np.linspace(float(height[centre].min()), hi[2], 240):
         cells = central(height < level)
-        if cells and (leaks(cells) or (first and len(cells) > 1.15 * first)): spill = level; break
-        if cells: best = cells
+        if cells and leaks(cells):
+            spill = level if spill is None else spill; break
+        if cells and spill is None and first and len(cells) > 1.15 * first: spill = level
+        if cells and spill is None: best = cells
+        if cells: rim = level
         # The floor is not flat: measure the walls' plateau once the level is 0.3 m above where the floor began.
         if start is None and len(cells) >= 0.01 * n * n: start = level
         if first is None and start is not None and level >= start + 0.3: first = len(cells)
@@ -67,7 +87,16 @@ def add_water(objects, color='#1fa8d8', fill=0.6, grid=161, name=''):
         top = spill
         # The basin floor is bumpy (rocks, a hole by a pillar): measure from its typical height and keep the surface above
         # nearly all of it so the floor does not poke through the water.
-        level = min(top - 0.02, max(floor_z + fill * (top - floor_z), float(np.percentile(floor, 92)) + 0.04))
+        bottom = float(np.percentile(floor, 92)) + 0.04
+        first_level = min(top - 0.02, max(floor_z + fill * (top - floor_z), bottom))
+        brim = max(first_level, (rim - 0.05 * (rim - floor_z)) if rim is not None else top - 0.02)
+        base = previous if previous is not None else first_level
+        if mode == 'full': level = brim
+        elif mode == 'higher' or (mode == 'default' and previous is not None): level = base + max(0.5, 0.4 * (brim - base))
+        elif mode == 'lower': level = base - max(0.5, 0.4 * (base - floor_z))
+        elif mode == 'level' and level_m is not None: level = float(level_m)
+        else: level = first_level
+        level = min(brim, max(bottom, level))
         region = central(height < level) or best
         # One more cell under the walls so the stone hides the stepped grid edge.
         inside = set(region); region = sorted(inside | {(i + di, j + dj) for i, j in inside for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)) if 0 <= i + di < n and 0 <= j + dj < n})
@@ -85,16 +114,18 @@ def add_water(objects, color='#1fa8d8', fill=0.6, grid=161, name=''):
         bsdf.inputs['Emission Color'].default_value = (*rgb, 1); bsdf.inputs['Emission Strength'].default_value = 0.35
         water.data.materials.append(mat)
         area = len(region) * dx * dy
-        report.pop('reason'); report.update(added=True, level_m=round(level, 3), basin_floor_m=round(float(floor_z), 3), spill_level_m=round(float(top), 3), area_m2=round(area, 2), cells=len(region))
+        report.pop('reason'); report.update(added=True, mode=mode, level_m=round(level, 3), previous_level_m=round(previous, 3) if previous is not None else None, basin_floor_m=round(float(floor_z), 3),
+                                            inner_rim_m=round(float(top), 3), brim_m=round(float(brim), 3), area_m2=round(area, 2), cells=len(region), replaced_layers=len(old), color=color)
     return water, report
 
 
 def main():
     p = argparse.ArgumentParser(); p.add_argument('--input', required=True); p.add_argument('--output', required=True)
-    p.add_argument('--color', default='#1fa8d8'); p.add_argument('--fill', type=float, default=0.6); p.add_argument('--grid', type=int, default=161)
+    p.add_argument('--color'); p.add_argument('--fill', type=float, default=0.6); p.add_argument('--grid', type=int, default=161)
+    p.add_argument('--mode', default='default', choices=['default', 'higher', 'lower', 'full', 'level']); p.add_argument('--level-m', type=float)
     a = p.parse_args(sys.argv[sys.argv.index('--') + 1:])
     bpy.ops.wm.read_factory_settings(use_empty=True); bpy.ops.import_scene.gltf(filepath=a.input)
-    _, report = add_water([o for o in bpy.context.scene.objects if o.type == 'MESH'], a.color, a.fill, a.grid, Path(a.input).name)
+    _, report = add_water([o for o in bpy.context.scene.objects if o.type == 'MESH'], a.color, a.fill, a.grid, Path(a.input).name, a.mode, a.level_m)
     bpy.ops.export_scene.gltf(filepath=a.output, export_format='GLB')
     Path(a.output).with_suffix('.water.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print('RESULT', json.dumps(report))

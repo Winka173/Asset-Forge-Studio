@@ -309,7 +309,7 @@ def advance(identifier):
                             material_edit=revision['plan'].get('material_edit') if revision else None,water=revision['plan'].get('water') if revision else None,
                             export_fbx=bool(value['automation']['export_settings'].get('fbx')),
                             project_id=value['project_id'],asset_id=item['asset_id'],batch_id=identifier,batch_attempt=item['attempt'],revision_id=revision['id'] if revision else None,
-                            effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile','pc1440'],views=['front','three_quarter','side','back','top','gameplay']))
+                            effective_config=revision.get('effective_config') if revision else None,effective_config_hash=revision.get('effective_config_hash') if revision else None,render=True,resolutions=['mobile'],views=['front','three_quarter','side','back','top','gameplay']))
                         active_assets.add(item['asset_id']);auto.update(status='queued',stage='Blender revision');continue
                 elif spec and spec['route']=='procedural_castle':
                     if not any(j['payload']['kind']=='procedural_geometry' for j in current):
@@ -523,6 +523,8 @@ def tick():
         if value.get('automation') and any(i.get('started') and not i.get('skipped') and i.get('automation',{}).get('status') not in ('exported','failed') for i in value['items']):
             try:advance(value['id'])
             except HTTPException:continue
+    from .revisions import drain_chat_queues
+    drain_chat_queues()
 
 
 class Single(BaseModel):
