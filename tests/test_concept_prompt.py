@@ -105,3 +105,16 @@ def test_buildings_are_drawn_at_human_scale_unless_giant():
     assert building_scale('Giant temple for titans')[0] == ''
     assert 'ruins' not in building_scale('Ruined temple')[1]
     assert building_scale('Wooden barrel') == ('', building_scale('Wooden barrel')[1]) and 'ruins' not in building_scale('Wooden barrel')[1]
+
+
+def test_asset_kind_detects_and_an_explicit_choice_overrides_the_subject_words():
+    from engines.asset_kind import detect, effective
+    from engines.concept_prompt import HUMAN_SCALE, rig_for
+    assert [detect(t) for t in ('Hero knight holding a sword and shield', 'Red dragon boss', 'Stone archer tower', 'Wooden barrel', 'Siege catapult', 'Oak tree')] == \
+        ['character', 'creature', 'building', 'prop', 'vehicle', 'nature']
+    assert effective('auto', 'Wooden barrel') == 'prop' and effective('building', 'Wooden barrel') == 'building'
+    # A giant boss chosen as a creature gets the creature pose; a chosen building gets the human-scale door rule
+    # even when its name has no building word, but a chosen prop never does.
+    assert rig_for('Colossal stone guardian', 'creature') == 'creature' and rig_for('Knight statue', 'prop') is None
+    assert HUMAN_SCALE in compose('Mana Dwelling of the arcane order', kind='building')[0]
+    assert HUMAN_SCALE not in compose('Merchant house', kind='prop')[0]

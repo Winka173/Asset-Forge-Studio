@@ -167,6 +167,19 @@ class AssetInput(BaseModel):
     reference_ids: list[str] = Field(default_factory=list, max_length=50)
     settings: dict = Field(default_factory=dict)
     category: str = Field(default='', max_length=200)
+    # Asset type for the type-specific steps (engines/asset_kind.py); auto detects it from the subject.
+    kind: Literal['auto','building','character','creature','prop','vehicle','nature'] = 'auto'
+    # The user kept a type that the description contradicts; Auto must not switch it.
+    kind_confirmed: bool = False
+
+
+@router.get('/asset-kind')
+def asset_kind(text: str = ''):
+    """What Auto would choose for this description (shown next to the asset type selector)."""
+    from engines.asset_kind import detect, LABELS
+    from engines.asset_kind import detect_strict
+    sure = detect_strict(text[:4000]); kind = sure or detect(text[:4000])
+    return dict(kind=kind, label=LABELS[kind], sure=bool(sure))
 
 
 @router.post('/assets', status_code=201)
@@ -184,6 +197,8 @@ class AssetUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     prompt: str | None = Field(default=None, max_length=100000)
     category: str | None = Field(default=None, max_length=200)
+    kind: Literal['auto','building','character','creature','prop','vehicle','nature'] | None = None
+    kind_confirmed: bool | None = None
     favorite: bool | None = None
     status: Literal['Candidate', 'Rejected', 'Failed'] | None = None
     settings: dict | None = None
@@ -387,14 +402,16 @@ def concept(body: ConceptInput):
     # Reference colours/subject hints are appended by concept_direction; they must survive description bounding.
     suffix=directed[len(base):] if directed.startswith(base) else ''
     from engines.concept_prompt import compose,COMPOSITION_POLICY
-    prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing)
+    from engines.asset_kind import of_asset
+    subject_kind=of_asset(value,next((i for i in parent['items'] if i['asset_id']==value['id']),None) if body.batch_id else None)
+    prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing,kind=subject_kind)
     if body.negative_terms:negative=', '.join(dict.fromkeys(t.strip() for t in body.negative_terms if t.strip()))+', '+negative
     from engines.quality import resolve_concept,fingerprint
     size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
     # Native SDXL aspect buckets: a standing character fills a square frame top to bottom (measured: every policy-7
     # swordsman touched the frame), so full-body characters render in portrait and wide creatures in landscape.
-    from engines.concept_prompt import rig_class,subject_anchor
-    shape=rig_class(subject_anchor(base)) if body.framing=='asset_3d' and COMPOSITION_POLICY>=8 else None
+    from engines.concept_prompt import rig_for,subject_anchor
+    shape=rig_for(subject_anchor(base),subject_kind) if body.framing=='asset_3d' and COMPOSITION_POLICY>=8 else None
     # Buildings and props follow their target proportions too (measured overnight: tall/wide buildings in a square
     # frame were cropped and became incomplete 3D chunks). Characters keep their pose-based bucket.
     if shape is None and body.framing=='asset_3d' and body.aspect in ('portrait','landscape'):shape={'portrait':'humanoid','landscape':'creature'}[body.aspect]

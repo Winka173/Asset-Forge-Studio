@@ -20,6 +20,7 @@ MODELS=Path.home()/'Tools/kimodo/models'
 WORKER=store.ROOT/'engines/kimodo_worker.py'
 CONVERT=store.ROOT/'pipelines/blender/bvh_to_clip.py'
 RETARGET=store.ROOT/'pipelines/blender/retarget_clip.py'
+ATTACH=store.ROOT/'pipelines/blender/attach_props.py'
 LIMITATIONS=['Experimental: first real run 2026-10-25 (3 s clip, 22 s, 1.1 GB VRAM); motion quality needs artist review','Skeleton-only clip on the SOMA 77-joint skeleton (Hips/Spine1/LeftArm naming)',
              'Unity Humanoid mapping expected from the joint names, not tested','Applying to an AFS auto-rigged character finds its bones by shape (biped only); fingers keep their rest pose',
              'Auto-rig skin weights can drag worn or held props (swords, capes) with the arms on large motions; review the result']
@@ -206,4 +207,33 @@ def retarget(job,folder,worker,config,clip,safe,glb,meta,blender):
     animated=store.add_artifact(report['glb'],'animated_character',f"{clip} / on {character['name']}",meta|dict(parent_id=glb['id'],character_artifact_id=character['id'],bone_map=report['bone_map'],
                                 skeleton='AFS auto-rig (UniRig)',max_extremity_travel_m=report['max_extremity_travel_m']))
     store.add_artifact(output/'retarget.json','qa_report','Retarget report',dict(project_id=meta['project_id'],asset_id=meta['asset_id'],job_id=job['id'],parent_id=animated['id']))
+    return equip(job,folder,worker,report['glb'],character,animated,meta,clip,safe,blender)
+
+
+def companions(character):
+    """(GLB path, socket, real length) of the character's held props that already have a model (held_items.py)."""
+    from .held_items import PROPS
+    try:held=studio.asset(character['metadata'].get('asset_id'))['resolved_specification'].get('held_items') or []
+    except Exception:return []
+    found=[]
+    for entry in held:
+        kind=entry['item'].rsplit('–',1)[-1].strip().lower()
+        with store.connect() as db:row=db.execute("SELECT * FROM artifacts WHERE asset_id=? AND role='candidate' ORDER BY created_at DESC LIMIT 1",(entry['asset_id'],)).fetchone()
+        if row and kind in PROPS:found.append((store.safe_path(store.artifact(row)['relative_path']),entry['socket'],PROPS[kind][0]))
+    return found
+
+
+def equip(job,folder,worker,animated_glb,character,animated,meta,clip,safe,blender):
+    """Also deliver the clip with the character's sword/shield in its hands (parented to the hand bones). Props that
+    are not generated yet are skipped; the bare-handed clip stays either way."""
+    props=companions(character)
+    if not props:return True
+    output=folder/'output/equipped';output.mkdir(parents=True,exist_ok=True);target=output/f'{safe}.glb'
+    command=[blender,'-b','--factory-startup','--python-exit-code','1','--python',str(ATTACH),'--','--character',str(animated_glb),'--output',str(target),'--report',str(output/'attach.json')]
+    for path,socket,length in props:command+=['--prop',str(path),socket,str(length)]
+    with (folder/'worker.log').open('a',encoding='utf-8') as log:
+        if not _run(command,store.ROOT,log,job,worker,'Blender / put the held props in the hands'):return False
+    report=json.loads((output/'attach.json').read_text(encoding='utf-8'))
+    store.add_artifact(target,'animated_character',f"{clip} / on {character['name']} with {', '.join(a['prop'] for a in report['attached'])}",
+                       meta|dict(parent_id=animated['id'],character_artifact_id=character['id'],held_props=report['attached']))
     return True

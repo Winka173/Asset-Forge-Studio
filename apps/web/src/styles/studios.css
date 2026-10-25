@@ -116,3 +116,12 @@ nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-
 .fx-texture-grid a { display: grid; gap: 4px; color: var(--text-2); text-decoration: none; }
 .fx-texture-grid span { aspect-ratio: 1; border-radius: var(--r-md); background-size: 50% 50%; background-repeat: repeat; border: 1px solid var(--border); }
 .fx-texture-grid small { font-size: var(--fs-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Asset type selector (Create and Batch rows). */
+.asset-kind-field { display: grid; gap: 4px; }
+.asset-kind-field small { color: var(--text-3); font-size: var(--fs-xs); }
+.asset-kind-field.compact { display: inline-grid; min-width: 150px; }
+.asset-kind-field.compact small { white-space: nowrap; }
+.asset-kind-conflict { display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--warning); border-radius: var(--r-md); background: color-mix(in srgb, var(--warning) 10%, transparent); font-size: var(--fs-sm); }
+.asset-kind-conflict > span { display: flex; flex-wrap: wrap; gap: 6px; }
+.asset-kind-conflict button { min-height: 30px; padding: 4px 12px; font-size: var(--fs-sm); }
+.asset-kind-warn, .asset-kind-note { color: var(--warning); font-size: var(--fs-xs); }

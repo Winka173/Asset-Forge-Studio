@@ -107,8 +107,11 @@ def resolve_specs(item,project,snapshot):
     for i,key in enumerate(('target_width_m','target_depth_m','target_height_m')):
         if item.get(key) is not None:provenance.setdefault(key,dict(kind='explicit',source='source field or user override',value=item[key]));continue
         inherited_value=inherited.get(key) if isinstance(inherited,dict) else None
-        if key=='target_height_m' and inherited_value is None:inherited_value=project.get('target_height_m')
-        if isinstance(inherited_value,(int,float)) and 0<inherited_value<=1000:value,kind,origin=inherited_value,'inherited','Project Art Bible / '+family
+        # The project-wide height is a default for every type (measured: it made a hero, his sword and shield 10 m tall);
+        # the type rule (person 1.8 m, barrel 0.6 m) replaces it. A family's own Art Bible size stays authoritative.
+        project_default=key=='target_height_m' and inherited_value is None and isinstance(project.get('target_height_m'),(int,float)) and 0<project.get('target_height_m')<=1000
+        if project_default:value,kind,origin=project['target_height_m'],'defaulted','Project default height; replaced by the asset type rule when one matches'
+        elif isinstance(inherited_value,(int,float)) and 0<inherited_value<=1000:value,kind,origin=inherited_value,'inherited','Project Art Bible / '+family
         elif measured and len(measured)==3:value,kind,origin=measured[(0,2,1)[i]],'inferred','Approved related master '+master['id']
         else:
             semantic=item.get('semantic_metadata',{});suggestions=[r.get('suggestions',{}).get(('width_m','depth_m','height_m')[i]) for r in semantic.get('chunks',[]) if r.get('suggestions',{}).get(('width_m','depth_m','height_m')[i]) is not None] if semantic.get('source_sha256')==item.get('source_sha256') else []
@@ -289,6 +292,8 @@ def advance(identifier):
                 if ask_questions(value,item,current,auto):
                     if auto['status']!='waiting_for_answers':active_assets.add(item['asset_id'])
                     continue
+                from .clarify import settle_kind
+                settle_kind(item)
                 from .prompt_intent import admit
                 if admit(value,item,current,auto):active_assets.add(item['asset_id']);continue
                 from .asset_strategy import admit as plan_strategy

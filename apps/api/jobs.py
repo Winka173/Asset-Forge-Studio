@@ -121,7 +121,9 @@ def ensure_blender(job):
                 export=json.loads(row['payload']).get('automation',{}).get('export_settings')
                 if export is not None:export_fbx=bool(export.get('fbx'))
         asset=db.execute('SELECT payload FROM assets WHERE id=?',(payload['asset_id'],)).fetchone()
-        water=dict(optional=True) if asset and holds_water(json.loads(asset['payload']).get('name','')) else None
+        model=json.loads(asset['payload']) if asset else {}
+        # Only buildings and nature pieces (well, fountain, pond) get water; a chosen character or prop never does.
+        water=dict(optional=True) if asset and model.get('kind','auto') in ('auto','building','nature') and holds_water(model.get('name','')) else None
         return enqueue(dict(kind='blender',artifact_id=manifest['candidate_artifact'],normalize=bool(height),target_height_m=height,water=water,
             batch_id=payload.get('batch_id'),batch_attempt=payload.get('batch_attempt',0),project_id=payload['project_id'],asset_id=payload['asset_id'],
             effective_config=payload.get('effective_config'),effective_config_hash=payload.get('effective_config_hash'),

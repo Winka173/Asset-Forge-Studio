@@ -1,3 +1,4 @@
+import { AssetKindField } from "./asset-kind";
 import {ArrowUpToLine as IcArrowUpToLine,CircleX as IcCircleX,Copy as IcCopy,Download as IcDownload,Eye as IcEye,FolderOpen as IcFolderOpen,Pencil as IcPencil,RefreshCw as IcRefreshCw,RotateCcw as IcRotateCcw,Save as IcSave,SkipForward as IcSkipForward} from "lucide-react";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
 import { Select } from "./select";
@@ -21,6 +22,8 @@ type Version = {
   metadata?: { triangles?: number; engine?: string };
 };
 type ManifestItem = {
+  kind?: string;
+  kind_note?: { chosen: string; used: string; reason: string };
   asset_id: string;
   triangle_budget?: number | null;
   source_asset_id?: string;
@@ -540,6 +543,13 @@ export function BatchStudio({
       setNotice(`${item.name}: ${action}. Approved Masters are kept separately.`);
     });
   }
+  async function setKind(item: ManifestItem, kind: string) {
+    if (!batch) return;
+    await execute(async () => {
+      await call(`/api/batches/${batch.id}/items/${item.asset_id}/kind`, { kind });
+      await refresh(batch.id);
+    });
+  }
   function edit(item: ManifestItem) {
     setEditing({
       ...item,
@@ -1028,6 +1038,8 @@ export function BatchStudio({
                       </td>
                       <td>
                         <div className="batch-row-actions">
+                          <AssetKindField compact value={item.kind || "auto"} prompt={item.prompt || item.name} onChange={kind => setKind(item, kind)}/>
+                          {item.kind_note && <small className="asset-kind-note" title={item.kind_note.reason}>Auto chose {item.kind_note.used} (you picked {item.kind_note.chosen})</small>}
                           <button className="batch-edit-action" title="Edit this asset prompt, dimensions and generation settings. Does not start generation." onClick={() => edit(item)}><IcPencil size={15} aria-hidden="true"/>Edit settings</button>
                           {item.concept_artifact_id &&
                             (["Concept Ready", "Awaiting Approval"].includes(

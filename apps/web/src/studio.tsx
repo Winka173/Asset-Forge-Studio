@@ -24,6 +24,7 @@ import { QualityLab } from "./quality-lab";
 import {LibraryStudio} from "./library";
 import { ProductionWorkspace } from "./production";
 import { BatchStudio } from "./batch-studio";
+import { AssetKindField } from "./asset-kind";
 import { OutputContract, CapabilityRegistry } from "./platform-panel";
 import { WorldStudio } from "./world-studio";
 import { FxStudio } from "./fx-studio";
@@ -144,6 +145,10 @@ type Draft = {
   sizeConfirmed?: boolean;
   // Size step: estimate the size from the description when the step opens (default on).
   autoSize?: boolean;
+  // Asset type for the type-specific steps; auto lets the app detect it from the description.
+  kind?: string;
+  // The user kept a type the description contradicts (asked inline); Auto will not switch it.
+  kindConfirmed?: boolean;
   sizeEstimate?: { prompt: string; reason?: string | null; source?: string };
   engines?: string[];
   texturer?: 'mvadapter' | 'trellis2';
@@ -656,6 +661,8 @@ export function Studio() {
         prompt: draft.prompt,
         reference_ids: draft.source ? [draft.source] : [],
         settings: draft,
+        kind: draft.kind || "auto",
+        kind_confirmed: Boolean(draft.kindConfirmed),
       });
       return existing;
     }
@@ -666,6 +673,8 @@ export function Studio() {
       reference_ids: draft.source ? [draft.source] : [],
       settings: draft,
       category: "Unsorted",
+      kind: draft.kind || "auto",
+      kind_confirmed: Boolean(draft.kindConfirmed),
     });
     change({ assetId: created.id });
     setAssetId(created.id);
@@ -1238,6 +1247,7 @@ export function Studio() {
                     />
                     <small>Shape, materials, colours and style. One sentence is enough.</small>
                   </label>
+                  {draft.output!=="sprite"&&<AssetKindField value={draft.kind||"auto"} prompt={draft.prompt} onChange={kind=>change({kind,kindConfirmed:false})} confirmed={draft.kindConfirmed} onConfirm={()=>change({kindConfirmed:true})}/>}
                   {draft.output!=="sprite"&&<label className="create-auto-size"><input type="checkbox" checked={draft.autoSize!==false} onChange={e=>change({autoSize:e.target.checked})}/> Work out the size from my description <small>AI reads it on the next step (local, a few seconds) and fills in width, depth and height; you can still adjust them.</small></label>}
                   <PromptExamples mode="single"/>
                   <div className="reference-field">

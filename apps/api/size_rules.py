@@ -25,6 +25,8 @@ RULES = [
     ('siege', 'Siege engine', (3, 5, 4), r'catapult|ballista|trebuchet|siege', r'máy bắn đá|công thành', 'door'),
     ('cart', 'Cart / wagon', (1.6, 3, 1.8), r'cart|wagon|carriage', r'xe kéo|xe ngựa|xe đẩy', 'door'),
     ('dragon', 'Dragon', (12, 16, 8), r'dragon|wyvern', r'rồng', 'castle'),
+    # Giant bosses: 'stone golem' must not fall to the rock rule (measured: 2.4 m).
+    ('golem', 'Golem / giant', (3, 2.5, 6), r'golem|titan|colossus|troll|ogre|cyclops|treant|behemoth', r'người đá|khổng lồ|quỷ khổng lồ', 'character'),
     ('golem', 'Golem / giant', (3, 2, 5), r'golem|titan|giant|troll|ogre', r'người đá|quỷ khổng lồ', 'human'),
     ('horse', 'Horse', (1, 2.4, 1.8), r'horse|steed|mount', r'ngựa', 'barrel'),
     ('beast', 'Wolf / beast', (0.7, 1.5, 1), r'wolf|bear|boar|beast|hound|lion|tiger', r'sói|gấu|lợn rừng|thú|chó|sư tử|hổ', 'barrel'),

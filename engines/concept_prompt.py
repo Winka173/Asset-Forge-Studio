@@ -28,6 +28,8 @@ FORTIFIED=re.compile(r'\b(?:castle|fortress|fort|citadel|keep|stronghold|tower|t
 GIANT=re.compile(r'\b(?:giant|colossal|titanic|gigantic|enormous|huge)\b|khổng lồ|to lớn|siêu lớn',re.I)
 RUINED=re.compile(r'\b(?:ruin|ruined|ruins|broken|destroyed|abandoned|crumbling|damaged)\b|đổ nát|tàn tích|hoang tàn|bị phá',re.I)
 ENTERABLE=re.compile(r'\b(?:temple|shrine|chapel|church|barracks|building|hall|guild|library|academy|lodge|warehouse|granary)s?\b|đền|chùa|nhà',re.I)
+# Chosen buildings people do not walk into keep no door rule.
+OPEN_STRUCTURE=re.compile(r'\b(?:well|fountain|wall|bridge|statue|fence|platform|pillar|obelisk|monument|altar|gate)s?\b|giếng|đài phun|tường|cầu|tượng|hàng rào|cột',re.I)
 HUMAN_SCALE='human-scale building, entrance door sized for a person to walk through, windows at people height'
 CONDITIONING_WORDS=160
 FRAMING='single standalone 3D game asset, three-quarter view, full object centered with clear margin, plain neutral studio background'
@@ -105,7 +107,7 @@ def short_style(style,max_words=18):
     return ' '.join(style.replace(';',',').split()[:max_words]).rstrip(',;:')
 
 
-def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directives=(),framing='asset_3d'):
+def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directives=(),framing='asset_3d',kind='auto'):
     """Directives (reference colours, subject hints, repair instructions) are kept verbatim; only the description is bounded."""
     directives=[d.strip() for d in directives if d and d.strip()]
     if policy<6 and directives:description='\n'.join([description,*directives]);directives=[]  # earlier policies appended them to the text
@@ -122,18 +124,25 @@ def compose(description,style='',quality=None,policy=COMPOSITION_POLICY,directiv
             name=_heading(description).rstrip(',;:.!? ');restated=name and _restated(name,description)
             if restated:description=f'{name}. {restated}'
         description='\n'.join([_bounded(description),*directives])
-    rig=rig_class(anchor) if policy>=7 and framing=='asset_3d' else None
-    scale,negative=building_scale(anchor) if policy>=9 and framing=='asset_3d' and not rig else ('',NEGATIVE_PROMPT)
+    rig=rig_for(anchor,kind) if policy>=7 and framing=='asset_3d' else None
+    # An explicit asset type (engines/asset_kind.py) replaces the subject detection; Auto keeps it.
+    scale,negative=building_scale(anchor,forced=kind=='building') if policy>=9 and framing=='asset_3d' and not rig and kind in ('auto','building') else ('',NEGATIVE_PROMPT)
     head=f'{anchor}, {RIG_FRAMINGS[rig] if rig else FRAMINGS[framing]}'+(f', {scale}' if scale else '')+(f', {short_style(style)}' if style else '')+'.'
     return (head+'\n'+description+('\nVisual style: '+style if style else '')+detail),negative
 
 
-def building_scale(anchor):
+def rig_for(anchor,kind='auto'):
+    """Pose class for the concept: chosen character/creature, none for other chosen kinds, detected under Auto."""
+    if kind in ('character','creature'):return 'humanoid' if kind=='character' else 'creature'
+    return rig_class(anchor) if kind in ('auto','',None) else None
+
+
+def building_scale(anchor,forced=False):
     """(extra framing, negative prompt) for a building subject; giant requests keep their own scale."""
-    if not BUILDING.search(anchor) and not DWELLING.search(anchor):return '',NEGATIVE_PROMPT
+    if not forced and not BUILDING.search(anchor) and not DWELLING.search(anchor):return '',NEGATIVE_PROMPT
     negative=NEGATIVE_PROMPT
     if not RUINED.search(anchor):negative+=', ruins, rubble, debris, broken fragments, crumbling walls'
     if DWELLING.search(anchor) and not FORTIFIED.search(anchor):negative+=', castle, fortress, battlements, turrets'
     # Wells, fountains, walls, bridges and statues have no door to measure a person against.
-    enterable=DWELLING.search(anchor) or FORTIFIED.search(anchor) or ENTERABLE.search(anchor)
+    enterable=DWELLING.search(anchor) or FORTIFIED.search(anchor) or ENTERABLE.search(anchor) or (forced and not OPEN_STRUCTURE.search(anchor))
     return ('' if GIANT.search(anchor) or not enterable else HUMAN_SCALE),negative

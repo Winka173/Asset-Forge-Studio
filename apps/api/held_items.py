@@ -21,6 +21,15 @@ ITEMS = [
 # Items the subject's name implies even when not written ('a swordsman' carries a sword).
 IMPLIED = [(r'\bswordsm(?:a|e)n\b|kiếm sĩ', 'sword'), (r'\barchers?\b|cung thủ', 'bow'), (r'\bspearm(?:a|e)n\b', 'spear'), (r'\bmages?\b|\bwizards?\b|pháp sư', 'staff')]
 SOCKETS = {item: socket for item, _, _, socket in ITEMS}
+# Real size (metres, upright) and how the prop stands in its concept. Measured 2026-10-25: a companion prompt that named
+# the character ("a sword for a Hero knight") was drawn as a whole knight, framed in A-pose, auto-rigged and scaled to
+# 10 m. Companions are therefore described as the item alone, typed Prop and sized here.
+PROPS = dict(sword=(1.0, 'a longsword standing upright, blade pointing up, hilt at the bottom'), shield=(0.75, 'a kite shield standing upright, front face visible'),
+             bow=(1.4, 'a longbow standing upright, unstrung string visible'), crossbow=(0.7, 'a crossbow lying flat seen from above at an angle'),
+             spear=(2.2, 'a spear standing upright, point at the top'), axe=(0.8, 'a battle axe standing upright, head at the top'),
+             hammer=(0.9, 'a war hammer standing upright, head at the top'), staff=(1.7, 'a magic staff standing upright'), dagger=(0.35, 'a dagger standing upright, blade pointing up'))
+MATERIALS = re.compile(r'\b(?:steel|iron|gold(?:en)?|silver|bronze|copper|wood(?:en)?|oak|leather|bone|crystal|obsidian|blue|red|green|white|black|purple|crimson|azure|navy|ivory|teal|cyan|orange|brown|grey|gray)\b', re.I)
+NOT_A_CHARACTER = ['person', 'character', 'knight', 'warrior', 'soldier', 'human', 'figure', 'armour', 'armor', 'body', 'hands', 'arms', 'helmet', 'face']
 
 
 def detect(text):
@@ -37,8 +46,11 @@ def body_directive(items):
     return 'Both hands empty and open; no weapon, shield or held item (they are separate assets).' if items else ''
 
 
-def companion_prompt(item, subject, style_hint=''):
-    return f'A single {item} for a {subject}, matching its armour and materials, standalone game prop on its own, no hands or character.' + (f' {style_hint}' if style_hint else '')
+def companion_prompt(item, request, style_hint=''):
+    """The item alone: never the character's name or role, which made SDXL draw the whole character."""
+    words = list(dict.fromkeys(w.lower() for w in MATERIALS.findall(request)))
+    return (f'A single {item}: {PROPS[item][1]}, standalone game prop on its own, nothing else in the image, no person, no hands.'
+            + (f' Colours and materials: {", ".join(words[:6])}.' if words else '') + (f' {style_hint}' if style_hint else ''))
 
 
 def ensure_companions(value, item, project, snapshot_loader):
@@ -57,10 +69,11 @@ def ensure_companions(value, item, project, snapshot_loader):
     from .automation import resolve_specs
     snapshot = snapshot_loader(); created = []
     for name in items:
-        asset = studio.create_asset(studio.AssetInput(project_id=value['project_id'], name=f"{item['name']} – {name}", prompt=companion_prompt(name, subject), category='Held item'))
+        asset = studio.create_asset(studio.AssetInput(project_id=value['project_id'], name=f"{item['name']} – {name}", prompt=companion_prompt(name, item['prompt']), category='Held item',
+                                                      kind='prop', kind_confirmed=True))
         row = ManifestItem(name=asset['name'], prompt=asset['prompt'], asset_id=asset['id'], preferred_engine=item.get('preferred_engine', 'auto'), candidates=1,
-                           quality=item['quality'], category='Held item', confirmed=True).model_dump()
-        row.update(attempt=0, started=True, version=1, quality_lock=item.get('quality_lock'), seeds=[42], companion_of=item['asset_id'], socket=SOCKETS[name],
+                           quality=item['quality'], category='Held item', confirmed=True, kind='prop', target_height_m=PROPS[name][0]).model_dump()
+        row.update(attempt=0, started=True, version=1, quality_lock=item.get('quality_lock'), seeds=[42], companion_of=item['asset_id'], socket=SOCKETS[name], kind_confirmed=True, kind_checked=True,
                    interpret_prompt=False, style_reference_ids=item.get('style_reference_ids', []), intent_reference_scope=item.get('intent_reference_scope'),
                    automation=dict(enabled=True, engines=item.get('automation', {}).get('engines'), attempt=0, status='queued', stage='pending', checkpoints={}))
         resolve_specs(row, project, snapshot)
@@ -72,5 +85,6 @@ def ensure_companions(value, item, project, snapshot_loader):
 
 def concept_conditioning(item):
     """(directives, negative terms) that keep the character's hands empty when its items are separate assets."""
+    if item.get('companion_of'): return [], NOT_A_CHARACTER  # the prop alone, never a figure holding it
     items = item.get('held_items') or []
     return ([body_directive(items)] if items else []), items

@@ -243,6 +243,24 @@ def options(identifier:str,body:Options):
     return detail(value)
 
 
+class Kind(BaseModel):
+    kind:Literal['auto','building','character','creature','prop','vehicle','nature']
+
+
+@router.post('/{identifier}/items/{asset_id}/kind')
+def item_kind(identifier:str,asset_id:str,body:Kind):
+    """Asset type of one item (engines/asset_kind.py); stages that already ran keep their output."""
+    with LOCK:
+        value=batch(identifier);item=next((i for i in value['items'] if i['asset_id']==asset_id),None)
+        if not item:raise HTTPException(404,'Unknown batch item')
+        # Chosen in the batch row next to the detected type: deliberate, so Auto never switches it.
+        item.update(kind=body.kind,kind_confirmed=True,kind_checked=True);item.pop('kind_note',None);save(value)
+        with store.connect() as db:
+            row=db.execute('SELECT payload FROM assets WHERE id=?',(asset_id,)).fetchone()
+            if row:model=json.loads(row['payload']);model['kind']=body.kind;db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(model),asset_id))
+    return detail(value)
+
+
 @router.post('/{identifier}/models')
 def models(identifier:str,body:Models):
     """Batch-wide model choice for items that have not started; started items keep their recorded configuration."""

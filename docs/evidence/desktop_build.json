@@ -1,28 +1,38 @@
 ﻿{
-    "version":  "0.9.31",
-    "timestamp_utc":  "20261025T110038Z",
-    "git_commit":  "45a37c1cd88dc4385723f8357c309806a522433f",
+    "version":  "0.9.33",
+    "timestamp_utc":  "20261025T120528Z",
+    "git_commit":  "22a3c60b73faf7942bb5a7bdbf45b0faccf1d480",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/automation.py",
+                          " M apps/api/batch.py",
+                          " M apps/api/clarify.py",
+                          " M apps/api/held_items.py",
                           " M apps/api/jobs.py",
                           " M apps/api/main.py",
-                          " M apps/api/revisions.py",
-                          " M apps/web/src/asset-management.tsx",
-                          " M apps/web/src/prompt-chat.css",
-                          " M apps/web/src/prompt-chat.tsx",
+                          " M apps/api/manifest.py",
+                          " M apps/api/motion.py",
+                          " M apps/api/rigging.py",
+                          " M apps/api/size_rules.py",
+                          " M apps/api/studio.py",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/studio.tsx",
+                          " M apps/web/src/styles/studios.css",
+                          " M docs/ASSET_MANAGEMENT_WORKFLOW.md",
+                          " M engines/concept_prompt.py",
                           " M package-lock.json",
                           " M package.json",
-                          " M pipelines/blender/add_water.py",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_asset_management.py",
-                          "?? engines/chat_intent.py",
+                          " M tests/test_concept_prompt.py",
+                          "?? apps/web/src/asset-kind.tsx",
+                          "?? engines/asset_kind.py",
+                          "?? pipelines/blender/attach_props.py",
+                          "?? pipelines/blender/humanoid_names.py",
                           "?? prompt/",
-                          "?? tests/test_chat_intent.py",
-                          "?? tests/test_water_request.py"
+                          "?? tests/test_asset_kind_settle.py"
                       ],
     "changed_features":  [
                              "Tauri Windows shell and bundled API",
@@ -31,7 +41,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261025T110038Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261025T120528Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -42,13 +52,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio_0.9.31_x64-setup.exe":  "b71e4c681fd4535cfd537dae45c6fd4a7f9e5433a847ea1ffee82852f525c414",
-                            "Asset Forge Studio.exe":  "279749f4c808eefba386046c65ccfda2d6ae574bd8ae0cc4ad534c347f479aa0",
-                            "afs-backend.exe":  "1bac6f5e8d752c08caea4f3199eb2367b03e04628cab3994d8e03d2682c44051"
+                            "Asset Forge Studio_0.9.33_x64-setup.exe":  "d3fb59d8ab381169c56e8b4a80226e9a0d27a1bf610c2739bf49d876b60f35f4",
+                            "Asset Forge Studio.exe":  "e5bd3f710ed72c94603ee5c5464184c0fa2adf5d887e7aed71ca9304e0bb8661",
+                            "afs-backend.exe":  "2bbf00cba39d0dbefcaabed491c157a2c985951d08794c39b56b15485102010c"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-25T11-06-25-090Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-25T12-11-20-835Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.9.31_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.9.33_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }
