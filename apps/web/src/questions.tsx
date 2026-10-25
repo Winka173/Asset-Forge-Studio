@@ -45,6 +45,8 @@ export function usePendingQuestions(): [Pending[], () => Promise<void>] {
 export function QuestionsButton({ onAnswered }: { onAnswered?: () => void }) {
   const [pending, load] = usePendingQuestions();
   const [open, setOpen] = useState(false);
+  // Escape closes the dialog wherever focus is (the backdrop handler only saw keys from inside it).
+  useEffect(() => { if (!open) return; const close = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); }; window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, [open]);
   const [focus, setFocus] = useState<string | undefined>();
   const [toast, setToast] = useState("");
   const known = useRef<Set<string> | null>(null);

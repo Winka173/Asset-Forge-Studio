@@ -7,7 +7,7 @@ from engines import intent_adapter
 
 
 def capability():
-    return dict(available=intent_adapter.available(),model='qwen3-vl:4b-instruct-q4_K_M',
+    return dict(available=intent_adapter.available(),model=intent_adapter.intent_runtime.MODEL,
         input_modalities=['text','image'],execution='CPU only / shared queue',
         verification='Local interpretation is inferred, not artistic approval. Critical constraints remain reviewable.',
         reason=None if intent_adapter.available() else 'Local Qwen3-VL weights/runtime not available. No paid/cloud fallback or automatic download.')

@@ -771,7 +771,7 @@ export function BatchStudio({
               ))}
             </Select>
           </label>
-          <label className="studio-field">Output<Select aria-label="Batch output" value={output} onChange={e=>setOutput(e.target.value as "auto"|"3d"|"2d")}><option value="auto">Auto · 2D when the prompt says 2D / sprite / icon</option><option value="3d">3D models</option><option value="2d">2D sprites (transparent PNG)</option></Select></label>
+          <label className="studio-field">Output<Select aria-label="Batch output" value={output} onChange={e=>setOutput(e.target.value as "auto"|"3d"|"2d")}><option value="auto">Auto (from the prompt)</option><option value="3d">3D models</option><option value="2d">2D sprites</option></Select></label>
           <label className="batch-keep-final"><input type="checkbox" checked={keepFinal} onChange={e=>setKeepFinal(e.target.checked)}/> Keep final only after each delivery <small>Once an item is delivered, its concepts, candidates, checks and working files are deleted; the final GLB, its source model and a thumbnail stay. Saves several GB per batch.</small></label>
           <details className="advanced batch-models"><summary>Models <span>{models.length>1?`${models.length} models per item`:models[0]==='trellis2_community'?'TRELLIS.2 (default)':models[0]}</span></summary>
             <EnginePicker engines={engineList} value={models} onChange={(ids)=>setModels(ids.length?ids:["trellis2_community"])}/>
@@ -983,14 +983,13 @@ export function BatchStudio({
                           onClick={() => edit(item)}
                         >
                           {item.name}
+                          {item.output === "2d" && <span className="batch-output-chip" title="2D sprite: concept and cutout, no 3D model">2D</span>}
                         </button>
-                        {item.output === "2d" && <span className="batch-output-chip" title="2D sprite: concept and cutout, no 3D model">2D</span>}
                         <span className="batch-row-meta">
                           {item.asset_family ||
                             item.category ||
                             "Uncategorized"}{" "}
-                          · {item.candidates} candidate
-                          {item.candidates !== 1 ? "s" : ""}
+                          · {item.output === "2d" ? "3 sprite options" : `${item.candidates} candidate${item.candidates !== 1 ? "s" : ""}`}
                           {item.priority > 0
                             ? ` · priority ${item.priority}`
                             : ""}
@@ -1002,6 +1001,7 @@ export function BatchStudio({
                         {item.source_status && <span className="batch-source-status">Source: {item.source_status}{item.source_status.toLowerCase()==='future'?' · select individually to include':''}</span>}
                       </td>
                       <td>
+                        {item.output === "2d" ? <><span className="batch-dimensions">2D sprite</span><span className="batch-row-meta">Transparent PNG · 256 / 512 / 1024 px</span></> : <>
                         <span
                           className={
                             dimensionsValid(item)
@@ -1024,7 +1024,7 @@ export function BatchStudio({
                             : item.missing_fields?.length
                               ? `Missing: ${item.missing_fields.join(", ")}`
                               : "Needs confirmation"}
-                        </span>
+                        </span></>}
                       </td>
                       <td>
                         <span

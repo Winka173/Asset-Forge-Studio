@@ -160,7 +160,7 @@ def test_chat_reads_messages_together_splits_blender_edits_and_takes_versions_ba
     # The production detail the chat panel reads must carry the waiting messages.
     assert [q['prompt'] for q in client.get(f'/api/production/assets/{model["id"]}').json()['asset']['chat_queue']]==['make it look older','cao 18m nhé']
     seen={}
-    def read(messages,history,current):seen.update(messages=messages,current=current);return dict(revert_to_version=None,instructions=['Uniformly scale to height 18 m','Make it look older'],summary='Older look, then 18 m tall.')
+    def read(messages,history,current,conversation=()):seen.update(messages=messages,current=current);return dict(revert_to_version=None,instructions=['Uniformly scale to height 18 m','Make it look older'],summary='Older look, then 18 m tall.')
     monkeypatch.setattr(intent,'interpret',read);revisions.read_chat(model['id'])
     current=studio.asset(model['id']);assert seen==dict(messages=['make it look older','cao 18m nhé'],current=1)
     # Everything Blender cannot edit directly is one regeneration that runs first; the verified scale edit follows it.
@@ -173,7 +173,7 @@ def test_chat_reads_messages_together_splits_blender_edits_and_takes_versions_ba
     for j in jobs.listing():jobs.transition(j['id'],'CANCELLED','unit')
     current['revisions'][-1].update(state='staged',artifact_id='v2-artifact',completed_at=store.now());revisions.save_asset(current)
     client.post(url,json=dict(parent_artifact_id=record['id'],prompt='thôi giữ chiều cao cũ',request_id='chat-unit-undo'))
-    monkeypatch.setattr(intent,'interpret',lambda messages,history,current:dict(revert_to_version=1,instructions=[],summary='Back to the original height.') if history==[(2,'Uniformly scale to height 18 m')] and current==2 else None)
+    monkeypatch.setattr(intent,'interpret',lambda messages,history,current,conversation=():dict(revert_to_version=1,instructions=[],summary='Back to the original height.') if history==[(2,'Uniformly scale to height 18 m',1)] and current==2 and ('user','cao 18m nhé') in conversation else None)
     revisions.read_chat(model['id']);current=studio.asset(model['id'])
     assert current['chat_head']['artifact_id']==record['id'] and current['chat_notes'][-1]['reverted_to']==record['id'] and not current['chat_queue']
     assert revisions.chat_head(current,None)==record['id'] and len(jobs.listing())==1

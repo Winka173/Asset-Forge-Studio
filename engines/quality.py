@@ -29,16 +29,15 @@ def checkpoints(engine):
 
 def resolve_concept(prompt,seed,steps,size,project,quality):
     from .concept_adapter import CONCEPT_ADAPTER
-    from .concept_conditioning import identity
     source, _ = CONCEPT_ADAPTER.paths()
     paths=sorted(CONCEPT_ADAPTER.weights().rglob('*.safetensors'))
     hashes=_hash_checkpoints(tuple((str(p),p.stat().st_size,p.stat().st_mtime_ns) for p in paths))
-    return dict(schema_version=1,stage='concept',engine_id='sdxl_local',engine_version=CONCEPT_ADAPTER.version,
+    return dict(schema_version=1,stage='concept',engine_id=CONCEPT_ADAPTER.id,engine_version=CONCEPT_ADAPTER.version,
         checkpoint=dict(manifest_hash=fingerprint(hashes),files=hashes),input_prompt=prompt,reference_hashes=[],
-        resolution=size,inference_steps=steps,guidance=7,seed=seed,precision='fp16 with upstream VAE float32 upcast',
+        resolution=size,inference_steps=steps,guidance=1.0,seed=seed,precision='bfloat16 (distilled schedule)',
         geometry=None,texture=None,blender=None,lod=None,export=dict(format='png'),candidate_count=1,
         quality=quality,quality_lock=quality=='Maximum',project_style_hash=fingerprint(project),
-        conditioning=identity(CONCEPT_ADAPTER.weights(),source/'venv',store.ROOT/'engines'),
+        conditioning=None,worker_sha256=store.digest(store.ROOT/'engines/klein_worker.py'),
         qa=dict(image_validity=True,human_concept_approval=True,automatic_3d_generation=False))
 
 

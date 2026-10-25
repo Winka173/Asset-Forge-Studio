@@ -407,7 +407,7 @@ def concept(body: ConceptInput):
     prompt,negative=compose(base if suffix else directed,style,body.quality,directives=[*suffix.strip().split('\n'),*body.directives],framing=body.framing,kind=subject_kind)
     if body.negative_terms:negative=', '.join(dict.fromkeys(t.strip() for t in body.negative_terms if t.strip()))+', '+negative
     from engines.quality import resolve_concept,fingerprint
-    size=768 if body.quality=='Fast' else 1024;steps={'Fast':20,'Balanced':32,'Maximum':50}[body.quality]
+    size=768 if body.quality=='Fast' else 1024;steps=4  # FLUX.2 klein is distilled for 4 steps; more steps do not improve it, so every quality uses the one schedule it was trained for
     # Native SDXL aspect buckets: a standing character fills a square frame top to bottom (measured: every policy-7
     # swordsman touched the frame), so full-body characters render in portrait and wide creatures in landscape.
     from engines.concept_prompt import rig_for,subject_anchor

@@ -7,7 +7,8 @@ import time
 import urllib.request
 from pathlib import Path
 
-MODEL='qwen3-vl:4b-instruct-q4_K_M'
+# qwen3.6:35b (MoE, vision) replaced qwen3-vl 4B on 2026-10-26: chat reading 8/8 and concept/model checks 3/3 on measured cases, same per-image time.
+MODEL='qwen3.6:35b'
 HOME=Path.home()/'Tools/afs-ollama'
 EXECUTABLE=HOME/'v0.40.8/ollama.exe'
 MODELS=HOME/'models'
@@ -16,7 +17,7 @@ _process=None
 
 
 def installed():
-    return EXECUTABLE.is_file() and (MODELS/'manifests/registry.ollama.ai/library/qwen3-vl/4b-instruct-q4_K_M').is_file()
+    return EXECUTABLE.is_file() and (MODELS/'manifests/registry.ollama.ai/library/qwen3.6/35b').is_file()
 
 
 def ping():

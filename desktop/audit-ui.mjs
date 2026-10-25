@@ -39,7 +39,7 @@ await shot('01-home',()=>nav('Projects'));
 await shot('02-create-cards',async()=>{await nav('Create');const change=page.getByRole('button',{name:'Change workflow'});if(await change.count())await change.click();});
 for(const[name,title]of[['03-create-single','Single asset'],['04-create-batch','Batch assets'],['05-create-map','Map / World'],['06-create-effects','Effects'],['07-create-motion','Motion'],['08-create-video','Video / Cinematic']]){
   await shot(name,async()=>{await nav('Create');for(const label of ['Change workflow','Choose workflow']){const b=page.getByRole('button',{name:label});if(await b.count()){await b.first().click();break;}}await page.locator('.create-workflow-card',{hasText:title}).first().click();},['06-create-effects','07-create-motion'].includes(name));}
-await sleep(8000);await shot('09-production',async()=>{await nav('Production');await page.mouse.move(900,600);const row=page.locator('.production-explorer').getByText(/Shockwave/).first();if(await row.count())await row.click();});
+await sleep(8000);await shot('09-production',async()=>{await nav('Production');await page.mouse.move(900,600);const row=page.locator('.production-explorer').getByText(/ArcherTowerLOD2/).first();if(await row.count())await row.click();});
 for(const tab of['Overview','Sources','Checks','Refine','Log'])await shot('10-inspector-'+tab.toLowerCase(),()=>page.getByRole('tab',{name:tab}).click());
 await shot('11-library',()=>nav('Library'));
 await shot('12-library-detail',()=>page.locator('.library-managed-card').first().click());
@@ -48,6 +48,13 @@ await shot('14-export-modal',async()=>{await nav('Production');const b=page.getB
 await shot('15-notifications',()=>page.locator('button[aria-label*="otification"]').first().click());await closeModal();
 await shot('16-settings',()=>nav('Settings'));
 await shot('17-questions',async()=>{await nav('Production');await page.locator('.questions-trigger').first().click();});await closeModal();
+// 0.9.34 screens: a 2D batch (structured list, no AI), Create with a contradicted asset type, map/effect reference pickers.
+const twoD=await api('/api/batches/analyze',{project_id:project.id,name:'Audit 2D',master_prompt:['- hiệp sĩ 2d','- chiến binh 2d','- cung thủ 2d'].join(String.fromCharCode(10)),mode:'Maximum Quality Batch',output:'2d'}).catch(e=>{errors.push('2d '+e.message);return null;});
+const openWorkflow=async title=>{await nav('Create');for(const label of ['Change workflow','Choose workflow']){const b=page.getByRole('button',{name:label});if(await b.count()){await b.first().click();break;}}await page.locator('.create-workflow-card',{hasText:title}).first().click();};
+await shot('18-batch-2d',async()=>{await openWorkflow('Batch assets');if(twoD)await page.locator('select#batch-history').selectOption({label:'Audit 2D'},{force:true}).catch(()=>{});await sleep(1500);await page.locator('.batch-row-actions').first().scrollIntoViewIfNeeded().catch(()=>{});});
+await shot('19-create-kind-conflict',async()=>{await openWorkflow('Single asset');const t=page.locator('textarea').first();await t.fill('Old stone castle with four towers');await page.locator('select[aria-label="Asset type"]').first().selectOption('vehicle',{force:true}).catch(()=>{});await sleep(1500);},true);
+await shot('20-map-references',()=>openWorkflow('Map / World'),true);
+await shot('21-effects-references',()=>openWorkflow('Effects'),true);
 fs.writeFileSync(path.join(run,'report.json'),JSON.stringify({executable,project:project.id,batch:batch?.id,shots:report,errors},null,2));
 await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close')).catch(()=>{});for(let n=0;n<60&&child.exitCode===null;n++)await sleep(250);
 await browser.close().catch(()=>{});

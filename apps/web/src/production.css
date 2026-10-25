@@ -278,3 +278,7 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
 .production-version-bar > button { min-height: 30px; padding: 0 10px; gap: 6px; font-size: var(--fs-sm); background: var(--surface-1); }
 .production-version-bar > button strong { color: var(--accent); }
 .production-version-bar > button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+/* A single-asset row (no group) keeps dot + text side by side like asset rows (it inherited the stacked group layout). */
+.production-row button:has(> .production-dot) { flex-direction: row !important; align-items: flex-start; gap: var(--sp-3); }
+.production-row:not(.asset-row) button:has(> .production-dot) { padding-left: calc(var(--sp-3) * 2); }
+.production-row button .production-row-progress { width: 100%; margin-top: 4px; }

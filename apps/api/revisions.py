@@ -320,7 +320,11 @@ def read_chat(asset_id):
             model['chat_reading']=True;save_asset(model)
         fallback=queue[0]['parent_artifact_id'];chain,root=lineage(model,chat_head(model,fallback))
         from engines.chat_intent import interpret
-        try:intent=interpret([e['prompt'] for e in queue],[(r['number'],r['prompt']) for r in chain],chain[-1]['number'] if chain else 1)
+        # The model reads the version tree (what made each version, from which) and the recent conversation as context.
+        number_of={r['artifact_id']:r['number'] for r in model.get('revisions',[]) if r.get('artifact_id')}
+        tree=[(r['number'],r['prompt'],number_of.get(r['parent_artifact_id'],1)) for r in chain]
+        conversation=[turn for note in model.get('chat_notes',[])[-8:] for turn in [*(('user',m) for m in note.get('messages',[])),('assistant',note.get('summary',''))]]
+        try:intent=interpret([e['prompt'] for e in queue],tree,chain[-1]['number'] if chain else 1,conversation)
         except Exception as exc:  # The messages still run as written.
             intent=dict(revert_to_version=None,instructions=[e['prompt'] for e in queue],summary='Local AI could not read the messages; running them as written. '+str(exc)[:120])
         with batch.LOCK:

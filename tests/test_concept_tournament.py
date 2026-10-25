@@ -58,11 +58,10 @@ def test_anchor_palette_prefers_matching_style(tmp_path):
     assert rank([(dict(id='orange'), orange), (dict(id='navy'), navy)], anchor)[0][0]['id'] == 'navy'
 
 
-def test_style_anchor_lock_has_no_machine_paths(monkeypatch):
-    monkeypatch.setattr(style_anchor, 'adapter_dir', lambda: None)
-    assert style_anchor.resolve('runavelle', dict(style_anchor_artifact_id='x'), ()) is None
-    anchor = dict(artifact_id='a', path='C:/x.png', sha256='s', adapter_dir='C:/hub', weight_name='w', scale=0.35)
-    assert style_anchor.locked(anchor) == dict(artifact_id='a', sha256='s', weight_name='w', scale=0.35)
+def test_style_anchor_lock_has_no_machine_paths():
+    assert style_anchor.resolve('runavelle', dict(), ()) is None
+    anchor = dict(artifact_id='a', path='C:/x.png', sha256='s', mode='native_reference_image')
+    assert style_anchor.locked(anchor) == dict(artifact_id='a', sha256='s', mode='native_reference_image')
 
 
 def test_requested_colour_outranks_anchor_palette(tmp_path):

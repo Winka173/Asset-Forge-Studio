@@ -126,3 +126,16 @@ nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-
 .asset-kind-conflict button { min-height: 30px; padding: 4px 12px; font-size: var(--fs-sm); }
 .asset-kind-warn, .asset-kind-note { color: var(--warning); font-size: var(--fs-xs); }
 .batch-output-chip { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: var(--r-full); border: 1px solid var(--accent-line); background: var(--accent-soft); color: var(--accent); font-size: var(--fs-xs); font-weight: 600; vertical-align: middle; }
+.asset-kind-field.compact { min-width: 170px; }
+.asset-kind-field.compact.conflict .afs-select > button { border-color: var(--warning); }
+/* FX checkboxes on their own rows (they wrapped in the selector grid); map options summary on two lines. */
+.fx-check { grid-column: 1 / -1; }
+.fx-check > span { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: var(--fs-sm); font-weight: 400; }
+.fx-check > span input[type="checkbox"] { margin: 0; flex: none; }
+.world-options > summary { flex-wrap: wrap; row-gap: 2px; }
+.world-options > summary span { flex-basis: 100%; padding-left: 16px; color: var(--text-3); font-size: var(--fs-xs); font-weight: 400; }
+/* Cinematic "Import GLBs": the native file button styled like the app's buttons; files import at once, so no "No file chosen" text. */
+.cinematic-import { display: grid; gap: 6px; }
+.cinematic-import input[type="file"] { color: transparent; font-size: var(--fs-sm); max-width: 100%; }
+.cinematic-import input[type="file"]::file-selector-button { margin-right: 0; padding: 6px var(--sp-4); border: 1px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface-2); color: var(--text); font: inherit; font-weight: 500; cursor: pointer; }
+.cinematic-import input[type="file"]:hover::file-selector-button { background: var(--surface-3); }

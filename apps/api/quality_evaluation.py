@@ -62,7 +62,7 @@ def roof_color_check(path,hex_color):
 
 def evaluator_key(artifact,prompt,references,module,renders=None):
     from engines import intent_runtime
-    manifest=intent_runtime.MODELS/'manifests/registry.ollama.ai/library/qwen3-vl/4b-instruct-q4_K_M'
+    manifest=intent_runtime.MODELS/'manifests/registry.ollama.ai/library/qwen3.6/35b'
     return fingerprint(dict(artifact_sha256=artifact['sha256'],prompt_sha256=fingerprint(prompt),references=references,renders=renders or [],
         evaluator_script_sha256=store.digest(store.ROOT/'engines'/module),model=intent_runtime.MODEL,
         model_manifest_sha256=store.digest(manifest) if manifest.is_file() else None,execution=dict(num_gpu=0,num_ctx=8192,temperature=0)))

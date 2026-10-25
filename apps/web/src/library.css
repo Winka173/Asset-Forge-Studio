@@ -161,3 +161,5 @@ button.library-card-open:hover:not(:disabled) { background: transparent; border:
 .library-card-select input:checked { background: var(--accent); border-color: var(--accent); }
 .library-card-select input:checked::after { content: ''; width: 5px; height: 10px; margin-top: -2px; border: solid var(--text-inverse); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .library-card-select input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Card footer (versions · model size · library size) wraps instead of being cut off. */
+.library-managed-card small:last-child { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.5; }

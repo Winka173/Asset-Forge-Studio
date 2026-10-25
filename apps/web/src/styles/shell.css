@@ -374,3 +374,6 @@ button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var
 @media (max-width: 1750px) { .host-chip:not(.warn) { display: none; } }
 .questions-prompt > summary { cursor: pointer; color: var(--text-3); font-size: var(--fs-sm); list-style: none; }
 .questions-prompt > small { display: block; max-height: 220px; overflow: auto; margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-md); background: var(--surface-2); white-space: pre-wrap; }
+/* Unread count as a corner badge on the bell: inline it overflowed onto the RAM chip once the label was hidden. */
+.notification-trigger { margin-right: 6px; }
+.notification-trigger .notification-count { position: absolute; top: 0; right: -6px; min-width: 15px; height: 15px; padding: 0 3px; font-size: 9px; line-height: 15px; box-shadow: 0 0 0 2px var(--bg); pointer-events: none; }

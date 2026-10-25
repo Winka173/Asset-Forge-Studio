@@ -44,10 +44,10 @@ def registry():
             resource='gpu',min_vram_gb=adapter.min_vram_gb,tested_platforms=['Windows 11 / RTX 5070 Ti 16GB'],
             evidence=['docs/evidence/maximum_quality_comparison.json' if not is_tripo else 'docs/evidence/all_runs.json'],
             constraints=['Existing isolated environment; no automatic weight download','Human quality approval pending']+(['Shape only; no invented PBR'] if is_tripo else ['Measured community CPU-offload profile; not official native 16GB support'])))
-    values.append(Capability(id='sdxl_local',label='Local concept image',asset_types=[AssetType.static_3d],inputs=['text'],outputs=['png'],
+    values.append(Capability(id=CONCEPT_ADAPTER.id,label='Local concept image',asset_types=[AssetType.static_3d],inputs=['text'],outputs=['png'],
         installed=CONCEPT_ADAPTER.installed,status='experimental' if CONCEPT_ADAPTER.installed else 'unavailable',dependency_health=CONCEPT_ADAPTER.probe(),
-        license=Provenance(source_code='Apache-2.0 diffusers',model_weights='CreativeML Open RAIL++-M',commercial='review_required',restrictions=['Model use restrictions and input rights apply']),
-        resource='gpu',min_vram_gb=6,tested_platforms=['Windows 11 / RTX 5070 Ti 16GB'],evidence=['docs/evidence/sdxl_local_concept.json'],constraints=['Requires concept approval; prompt fidelity not guaranteed']))
+        license=Provenance(source_code='Apache-2.0 diffusers',model_weights='Apache-2.0 (FLUX.2 [klein] 4B)',commercial='review_required',restrictions=['Input rights apply']),
+        resource='gpu',min_vram_gb=13,tested_platforms=['Windows 11 / RTX 5070 Ti 16GB'],evidence=['docs/evidence/sdxl_local_concept.json'],constraints=['Requires concept approval; prompt fidelity not guaranteed']))
     # Detect paths without invoking the broad system audit (which starts external tools).
     import os,shutil
     from .local_tools import executable
@@ -124,7 +124,7 @@ def route(body:RouteRequest):
                 recovery='human_review' if approval else 'retry_exact_config',acceptance=['Requested files exist and hashes match','Technical QA and human approval remain distinct'],evidence_paths=['jobs/{job_id}/manifest.json']))
         previous=[]
         if uses_concept:
-            add('concept','sdxl_local',Operation.generate,'gpu',['png']);previous=['concept']
+            add('concept',CONCEPT_ADAPTER.id,Operation.generate,'gpu',['png']);previous=['concept']
             add('concept_review','human',Operation.review,'human',['approved_concept'],previous,True);previous=['concept_review']
         elif source and source['metadata'].get('requires_concept_approval'):
             add('concept_review','human',Operation.review,'human',['approved_concept'],approval=True);previous=['concept_review']

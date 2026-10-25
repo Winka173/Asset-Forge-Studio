@@ -403,13 +403,6 @@ class Worker:
                 if payload['kind']=='concept' and effective.get('composition_policy',0)>=2:
                     if any(payload.get(k)!=effective.get(v) for k,v in [('prompt','input_prompt'),('negative_prompt','negative_prompt'),('steps','inference_steps'),('size','resolution'),('seed','seed')]):
                         transition(identifier,'BLOCKED','Concept execution differs from locked conditioning; no automatic config changes');return
-                if payload['kind']=='concept' and effective.get('conditioning') is not None:
-                    from engines.concept_adapter import CONCEPT_ADAPTER
-                    from engines.concept_conditioning import verify_request
-                    source, _ = CONCEPT_ADAPTER.paths()
-                    try:verify_request(payload, CONCEPT_ADAPTER.weights(), source/'venv', store.ROOT/'engines')
-                    except (OSError, ValueError) as exc:
-                        transition(identifier,'BLOCKED',str(exc));return
                 if payload['kind']=='inference':
                     actual=dict(engine=payload['engine'],steps=payload['steps'],seed=payload['seed'],pipeline=payload['pipeline_type'],
                                 texture=payload['texture_size'],blender=payload['auto_blender'])
@@ -713,7 +706,7 @@ class Worker:
             generation=json.loads((folder/'output/generation.json').read_text())
             if generation['status']!='GENERATED_NEEDS_REVIEW':raise ValueError('Concept inference did not succeed')
             record=store.add_artifact(folder/'output/concept.png','concept',payload.get('name','Local concept'),inspection | dict(
-                project_id=payload['project_id'],asset_id=payload['asset_id'],job_id=identifier,origin='sdxl_local',
+                project_id=payload['project_id'],asset_id=payload['asset_id'],job_id=identifier,origin=CONCEPT_ADAPTER.id,
                 requires_concept_approval=True,generation=generation,license=CONCEPT_ADAPTER.license))
             (folder/'manifest.json').write_text(json.dumps(dict(concept_artifact=record['id'],source_prompt=payload['prompt'],human_approval='REQUIRED'),indent=2),encoding='utf-8')
             transition(identifier,'REVIEW_REQUIRED')

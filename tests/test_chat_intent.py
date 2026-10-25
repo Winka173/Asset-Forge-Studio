@@ -1,19 +1,16 @@
-from engines.chat_intent import Message, merge
+import json
+import engines.chat_intent as chat_intent
 
 
-def label(n, kind, text='', earlier=None, version=None):
-    return Message(message=n, kind=kind, instruction=text, earlier_message=earlier, version=version)
+def answer(monkeypatch, plan):
+    monkeypatch.setattr(chat_intent, 'model', lambda: dict(name='qwen3.6:35b', digest='d'))
+    monkeypatch.setattr(chat_intent.local_semantics, 'request', lambda path, payload, timeout: dict(message=dict(content=json.dumps(dict(analysis='ok', **plan)))))
 
 
-def test_corrections_replace_and_cancellations_drop_earlier_messages():
-    result = merge([label(1, 'new_change', 'Add water inside'), label(2, 'corrects_earlier_message', 'Add purple water inside', earlier=1),
-                    label(3, 'new_change', 'Make it taller'), label(4, 'cancels_earlier_message', earlier=3), label(5, 'not_a_change')], [])
-    assert result == dict(revert_to_version=None, instructions=['Add purple water inside'])
-
-
-def test_taking_back_a_version_returns_to_the_one_before_it_and_keeps_new_edits():
-    applied = [2, 3]
-    assert merge([label(1, 'takes_back_version', version=3), label(2, 'new_change', 'Make the walls taller')], applied) == dict(revert_to_version=2, instructions=['Make the walls taller'])
-    assert merge([label(1, 'takes_back_version', version=2)], applied)['revert_to_version'] == 1
-    # A version outside the current chain cannot be taken back.
-    assert merge([label(1, 'takes_back_version', version=7)], applied)['revert_to_version'] is None
+def test_the_model_decides_the_version_and_edits_and_code_only_checks_the_version(monkeypatch):
+    tree = [(2, 'Remove weapons', 1), (3, 'Remove weapons', 2)]
+    answer(monkeypatch, dict(summary='Về v1 rồi bỏ hết vũ khí', start_from_version=1, instructions=['Remove all weapons', ' ']))
+    assert chat_intent.interpret(['back về v1 và bỏ hết vũ khí'], tree, 3) == dict(revert_to_version=1, instructions=['Remove all weapons'], summary='Về v1 rồi bỏ hết vũ khí', model='qwen3.6:35b')
+    # A version that does not exist in this lineage keeps the current one.
+    answer(monkeypatch, dict(summary='x', start_from_version=7, instructions=['Remove all weapons']))
+    assert chat_intent.interpret(['thử lại'], tree, 3)['revert_to_version'] is None

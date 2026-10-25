@@ -56,7 +56,7 @@ def stat(path):
 def identity(payload):
     from engines.adapters import ADAPTERS
     from engines.concept_adapter import CONCEPT_ADAPTER
-    kind=payload['kind'];engine=payload.get('engine') if kind=='inference' else 'sdxl_local' if kind=='concept' else None
+    kind=payload['kind'];engine=payload.get('engine') if kind=='inference' else CONCEPT_ADAPTER.id if kind=='concept' else None
     if payload['kind'] in ('blender','procedural_geometry'):
         from .local_tools import executable
         blender=executable('blender')
@@ -66,7 +66,7 @@ def identity(payload):
             profile={k:cfg.get(k) for k in ('engine_version','checkpoint','geometry','texture','quality')})
         return hashlib.sha256(json.dumps(value,sort_keys=True).encode()).hexdigest(),value
     if not engine:return None
-    adapter=CONCEPT_ADAPTER if engine=='sdxl_local' else ADAPTERS.get(engine)
+    adapter=CONCEPT_ADAPTER if engine==CONCEPT_ADAPTER.id else ADAPTERS.get(engine)
     if not adapter:return None
     source,python=adapter.paths();site=python.parent.parent/'Lib/site-packages'
     packages=[stat(p/'METADATA') for pattern in ('torch-*.dist-info','diffusers-*.dist-info','transformers-*.dist-info','xformers-*.dist-info','flash_attn*.dist-info','nvdiffrast*.dist-info','spconv*.dist-info','cumesh*.dist-info') for p in sorted(site.glob(pattern))]
@@ -74,7 +74,7 @@ def identity(payload):
     cfg=payload.get('effective_config') or {}
     profile={k:cfg.get(k) for k in ('engine_version','checkpoint','resolution','inference_steps','precision','geometry','texture','quality')}
     if isinstance(profile.get('checkpoint'),dict):profile['checkpoint']=profile['checkpoint'].get('manifest_hash')
-    wrapper=store.ROOT/'engines'/('sdxl_worker.py' if engine=='sdxl_local' else 'trellis2_worker.py' if engine=='trellis2_community' else 'triposg_worker.py')
+    wrapper=store.ROOT/'engines'/('klein_worker.py' if engine==CONCEPT_ADAPTER.id else 'trellis2_worker.py' if engine=='trellis2_community' else 'triposg_worker.py')
     value=dict(engine=engine,version=adapter.version,environment=stat(python),packages=packages,extensions=extensions,wrapper_sha256=store.digest(wrapper),device=device(),profile=profile)
     key=hashlib.sha256(json.dumps(value,sort_keys=True).encode()).hexdigest()
     return key,value
