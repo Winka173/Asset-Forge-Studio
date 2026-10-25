@@ -155,7 +155,7 @@ class TexturedShapeAdapter(LocalAdapter):
 
 # Measured on this RTX 5070 Ti (16 GB VRAM, 64 GB RAM) with the house concept, 2026-10-24 (data/engine-compare/house-t2).
 REQUIREMENTS = {
-    'trellis2_community': dict(peak_vram_gb=16, free_ram_gb=36, seconds=290),
+    'trellis2_community': dict(peak_vram_gb=16, free_ram_gb=25, seconds=290),  # 22.8 GiB resident peak measured 2026-10-25
     'triposg': dict(peak_vram_gb=14.3, shape_seconds=67, texture_seconds=225),
     'trellis_v1': dict(peak_vram_gb=14.3, shape_seconds=43, texture_seconds=159),
     'hunyuan3d21': dict(peak_vram_gb=14.3, shape_seconds=145, texture_seconds=154),

@@ -86,6 +86,7 @@ class ProjectInput(BaseModel):
     auto_rig: bool | None = None
     # After a game delivery, working files (checkpoints, .blend, extra LODs, render passes) are deleted unless this is False.
     cleanup_intermediates: bool | None = None
+    keep_final_only: bool | None = None
     art_bible: dict = Field(default_factory=dict)
     palette: list[str] = Field(default_factory=list, max_length=32)
     material_language: str = Field(default='', max_length=10000)

@@ -47,8 +47,24 @@ def admit(value, item, current, auto):
     questions = [q for q in (json.loads(path.read_text(encoding='utf-8'))['questions'] if path.is_file() else []) if q['id'] not in asked and q['question'].casefold() not in asked]
     if not questions:
         state.update(state='answered' if state.get('asked') else 'none', questions=[]); item['clarification'] = state; return False
+    questions = with_reference_option(questions, item)
     item['clarification'] = state | dict(state='waiting', round=round_, questions=questions, asked_at=store.now())
     auto.update(status='waiting_for_answers', stage='Waiting for your answers (other assets continue)'); return True
+
+
+def reference_kind(item):
+    """'image' when the asset has a reference image, 'model' when it starts from an existing model, else None."""
+    if item.get('processing_source'): return 'model'
+    return 'image' if item.get('reference_ids') else None
+
+
+def with_reference_option(questions, item):
+    """Every question gets a 'follow the reference' answer when there is a reference to follow."""
+    kind = reference_kind(item)
+    if not kind: return questions
+    vi = clarify.vietnamese(item.get('prompt', ''))
+    label = ('Theo hình tham chiếu' if kind == 'image' else 'Theo model tham chiếu') if vi else ('Follow the reference image' if kind == 'image' else 'Follow the reference model')
+    return [q | dict(options=[o for o in q['options'] if o != label][:9] + [label]) for q in questions]
 
 
 def confirmed(state):
@@ -90,8 +106,14 @@ def answer(identifier: str, asset_id: str, body: Answers):
     return state
 
 
+def reference_url(item):
+    try: return store.get_artifact(item['reference_ids'][0])['url'] if item.get('reference_ids') and not item.get('processing_source') else None
+    except Exception: return None
+
+
 @router.get('/questions/pending')
 def pending(project_id: str | None = None):
     with store.connect() as db: values = [json.loads(r['payload']) for r in db.execute('SELECT payload FROM batches WHERE ? IS NULL OR project_id=?', (project_id, project_id))]
-    return [dict(batch_id=v['id'], asset_id=i['asset_id'], name=i['name'], prompt=i['prompt'], questions=i['clarification']['questions'], asked_at=i['clarification'].get('asked_at'))
+    return [dict(batch_id=v['id'], asset_id=i['asset_id'], name=i['name'], prompt=i['prompt'], questions=i['clarification']['questions'], asked_at=i['clarification'].get('asked_at'),
+                 reference_url=reference_url(i))
             for v in values for i in v['items'] if (i.get('clarification') or {}).get('state') == 'waiting' and not i.get('production_cancelled')]

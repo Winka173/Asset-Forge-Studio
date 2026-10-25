@@ -92,3 +92,7 @@ def test_answers_get_a_follow_up_round_until_nothing_important_is_left(client, m
     assert state['state'] == 'answered'
     analysis = next(j for j in jobs.listing() if j['payload'].get('asset_id') == asset_id and j['payload']['kind'] == 'prompt_analysis')
     assert 'Loại rồng? Wyvern' in analysis['payload']['original_prompt'] and 'Tư thế? Bay' in analysis['payload']['original_prompt']
+
+def test_pending_questions_route_answers(client):
+    response=client.get('/api/batches/questions/pending')
+    assert response.status_code==200 and isinstance(response.json(),list)

@@ -88,7 +88,7 @@ def test_separate_resident_and_commit_allowances_allow_safe_measured_profile(tmp
     assert 'Windows commit' in receipt['reason'] and jobs.get(job['id'])['status']=='QUEUED'
     assert json.dumps(jobs.get(job['id'])['payload'],sort_keys=True)==before
     monkeypatch.setattr(host,'commit_memory',lambda:dict(status='measured',available_bytes=64*host.GIB))
-    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=8*host.GIB))
+    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=7*host.GIB))  # 5 GiB peak -> 5.9 GiB allowance + 2 GiB reserve
     assert host.check(job,'cpu')[0]['reason_code']=='HOST_RAM_ADMISSION'
     assert not list(store.DATA.rglob('*.glb'))
 
@@ -171,7 +171,7 @@ def test_lone_gpu_stage_may_page_but_commit_stays_a_hard_gate(tmp_path,monkeypat
     need=host.estimate(job['payload'])['bytes']
     monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-4*host.GIB))
     assert host.check(job,'gpu')[0]['allowed'] and not host.check(job,'cpu')[0]['allowed']
-    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-8*host.GIB))
+    monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-12*host.GIB))  # beyond the 10 GiB paging tolerance
     assert host.check(job,'gpu')[0]['reason_code']=='HOST_RAM_ADMISSION'
     monkeypatch.setattr(host.psutil,'virtual_memory',lambda:SimpleNamespace(available=need-4*host.GIB))
     monkeypatch.setattr(host,'commit_memory',lambda:dict(status='measured',available_bytes=8*host.GIB))

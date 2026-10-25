@@ -544,3 +544,17 @@ button > svg.lucide, a > svg.lucide { flex: none; vertical-align: -3px; margin-r
 .material-tile { background: repeating-linear-gradient(0deg, #6b2f24 0 4px, #8d4030 4px 7px); }
 .material-thatch { background: repeating-linear-gradient(75deg, #c9a45a 0 2px, #a8843f 2px 4px); }
 .questions-item .questions-options button.selected .answer-visual i { border-color: rgb(0 0 0 / 0.4); }
+.create-auto-size { display: flex; align-items: flex-start; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-2); }
+.create-auto-size small { flex-basis: 100%; padding-left: 24px; color: var(--text-3); }
+.create-size-reason { margin: 0; color: var(--text-2); font-size: var(--fs-sm); font-style: italic; }
+.create-size-estimating { margin: 0 0 var(--sp-2); color: var(--accent); font-size: var(--fs-sm); }
+.answer-reference { width: 22px; height: 22px; border-radius: 5px; object-fit: cover; border: 1px solid rgb(255 255 255 / 0.25); display: block; }
+.answer-reference-model { background: linear-gradient(135deg, #8d939b, #d2d6db 50%, #6d737b); }
+/* Inspector tabs: icon + label; in a narrow panel only the selected tab keeps its label */
+.production-inspector, .library-asset-detail { container-type: inline-size; }
+.inspector-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+@container (max-width: 420px) {
+  .inspector-tabs button:not([aria-selected="true"]) > span { display: none; }
+  .inspector-tabs button[aria-selected="true"] { flex: 2.4; }
+}
+.requirements-empty { color: var(--text-2); font-size: var(--fs-sm); margin: 0; }

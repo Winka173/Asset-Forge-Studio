@@ -176,3 +176,5 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .scale-lineup-item[data-kind="unknown"] rect, .scale-lineup-item[data-kind="defaulted"] rect { stroke: var(--warning); fill: none; }
 .scale-lineup-item:hover rect, .scale-lineup-item:focus-visible rect { fill: var(--accent); fill-opacity: 0.35; }
 .scale-lineup-item text { fill: var(--text-3); font-size: 10px; }
+.batch-keep-final { display: flex; align-items: flex-start; gap: var(--sp-2); flex-wrap: wrap; margin: var(--sp-2) 0; }
+.batch-keep-final small { flex-basis: 100%; padding-left: 24px; color: var(--text-3); }

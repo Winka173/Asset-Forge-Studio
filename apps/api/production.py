@@ -80,6 +80,20 @@ def wait_context(all_jobs,models):
     return dict(paused_since=pause.get('updated_at') if pause.get('paused') else None,running=running,queued=queued,name=name)
 
 
+def source_engine(job):
+    """Which 3D model a finishing/check stage works on (multi-model items): the engine of its source GLB or that GLB's parent."""
+    payload=job['payload']
+    if payload.get('kind')=='inference':return payload.get('engine')
+    identifier=payload.get('artifact_id')
+    for _ in range(3):
+        if not identifier:return None
+        try:record=store.get_artifact(identifier)
+        except KeyError:return None
+        if record['metadata'].get('engine'):return record['metadata']['engine']
+        identifier=record['metadata'].get('parent_id')
+    return None
+
+
 def wait_reason(i,group,related,auto,context):
     """Why a started asset is not running right now (None while it runs or is finished)."""
     if not context or not i.get('started') or auto.get('status') in ('exported','completed','failed','blocked','cancelled'):return None
@@ -209,7 +223,7 @@ def detail(asset_id:str):
         layout_qa=json.loads(layout.read_text(encoding='utf-8')) if layout.is_file() else None
         visual=folder/'model_visual_check.json'
         if visual.is_file():layout_qa=json.loads(visual.read_text(encoding='utf-8'))
-        stages.append(job_summary(j)|dict(events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation','pbr_preservation')} if qa else layout_qa)))
+        stages.append(job_summary(j)|dict(source_engine=source_engine(j),events=j['payload'].get('stage_events',[]),duration_seconds=metrics.get('duration_seconds'),started_at=metrics.get('started_at') or next((e['at'] for e in j['payload'].get('stage_events',[]) if e['state']=='RUNNING'),None),finished_at=metrics.get('finished_at'),logs=tail,qa=({k:qa.get(k) for k in ('status','checks','after','materials','dimensions_xyz_m_blender','animation','deformation','pbr_preservation')} if qa else layout_qa)))
     from .export_profiles import export_history
     return dict(asset={k:model.get(k) for k in ('id','name','project_id','prompt','status','tags','recovery_notice','reference_ids','master_artifact_id','settings','original_prompt','resolved_specification','quality_evaluations','review_policy','art_reviews','revisions','published_artifact_id','publication_history','approvals','attention_reasons',*FIELDS)},artifacts=[artifact_info(a) for a in artifacts],stages=stages,exports=export_history(asset_id))
 

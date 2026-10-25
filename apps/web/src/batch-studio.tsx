@@ -212,7 +212,7 @@ export function BatchStudio({
     [prompt, setPrompt] = useState(""),
     [format, setFormat] = useState("auto"),
     [mode, setMode] = useState<Mode>("Maximum Quality Batch"),
-    [models, setModels] = useState<string[]>(["trellis2_community"]), [texturer, setTexturer] = useState(""), [engineList, setEngineList] = useState<{id:string;installed:boolean}[]>([]),
+    [models, setModels] = useState<string[]>(["trellis2_community"]), [keepFinal, setKeepFinal] = useState(true), [texturer, setTexturer] = useState(""), [engineList, setEngineList] = useState<{id:string;installed:boolean}[]>([]),
     [references, setReferences] = useState<string[]>([]);
   const [sourceFile, setSourceFile] = useState<{name:string;bytes:number}|null>(null);
   const [exportSettingsBusy,setExportSettingsBusy]=useState(false);
@@ -455,6 +455,7 @@ export function BatchStudio({
         source_filename: filename,
       });
       if (models.join() !== 'trellis2_community' || texturer) created = await call<Batch>(`/api/batches/${created.id}/models`, { engines: models, texturer });
+      if (keepFinal) created = await call<Batch>(`/api/batches/${created.id}/options`, { keep_final_only: true });
       adopt(created);
       await refresh(created.id);
       setNotice(
@@ -758,6 +759,7 @@ export function BatchStudio({
               ))}
             </Select>
           </label>
+          <label className="batch-keep-final"><input type="checkbox" checked={keepFinal} onChange={e=>setKeepFinal(e.target.checked)}/> Keep final only after each delivery <small>Once an item is delivered, its concepts, candidates, checks and working files are deleted; the final GLB, its source model and a thumbnail stay. Saves several GB per batch.</small></label>
           <details className="advanced batch-models"><summary>Models <span>{models.length>1?`${models.length} models per item`:models[0]==='trellis2_community'?'TRELLIS.2 (default)':models[0]}</span></summary>
             <EnginePicker engines={engineList} value={models} onChange={(ids)=>setModels(ids.length?ids:["trellis2_community"])}/>
             {models.some(id=>["triposg","trellis_v1","hunyuan3d21"].includes(id))&&<label className="studio-field">Texturing for shape models<Select aria-label="Batch shape model texturing" value={texturer||"mvadapter"} onChange={e=>setTexturer(e.target.value==="mvadapter"?"":e.target.value)}><option value="mvadapter">MV-Adapter (tested)</option><option value="trellis2">TRELLIS.2 texturing (experimental)</option></Select></label>}

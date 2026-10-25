@@ -16,7 +16,14 @@ GIB=1024**3
 HEADROOM=2*GIB
 # A lone GPU stage may start this far below its physical allowance: Windows pages idle apps to disk (slower, never lower quality).
 # The commit check below still needs the full allowance, so the stage cannot run out of memory.
-PAGING_TOLERANCE=6*GIB
+PAGING_TOLERANCE=10*GIB
+# Allowance over a measured peak. Measured on the 64 GB workstation (2026-10-25): TRELLIS.2 22.8 GiB resident,
+# shape engine + MV-Adapter 33 GiB, SDXL concept 8.3 GiB, Blender 4.6 GiB; whole machine peaked near 45/64 GB.
+MARGIN=1.08;MARGIN_FIXED=GIB//2
+
+
+def allowance(peak):
+    return int(peak*MARGIN)+MARGIN_FIXED
 _estimates={}
 
 
@@ -28,7 +35,7 @@ def peaks(samples):
 def observation(rss,private,identifier,previous=None):
     old=previous or {};rss=max(rss,old.get('rss_peak_bytes',old.get('peak_bytes',0)))
     private=max(private,old.get('private_peak_bytes',old.get('peak_bytes',0)))
-    physical=int(rss*1.15)+GIB;commit=int(max(private,rss)*1.15)+GIB
+    physical=allowance(rss);commit=allowance(max(private,rss))
     return dict(schema_version=2,peak_bytes=max(rss,private),rss_peak_bytes=rss,private_peak_bytes=private,
         physical_allowance_bytes=physical,commit_allowance_bytes=commit,allowance_bytes=max(physical,commit),
         job_id=identifier,at=store.now(),scope='Resident RSS and private committed bytes measured separately; each allowance keeps 15% + 1 GiB margin. No quality-setting changes.')
@@ -71,7 +78,8 @@ def estimate(payload):
     if cached and time.monotonic()-cached[0]<2:return cached[1]
     # Conservative planning allowances, not hard engine requirements or guarantees.
     # Full TRELLIS allowance covers the retained 15.7M-triangle castle experiment.
-    floor=32 if kind=='inference' and engine=='trellis2_community' and not value['finishing_only'] else 10 if kind=='inference' and value['finishing_only'] else 24 if kind=='inference' else 12 if kind=='concept' else 8 if kind in ('rig','blender','unity_import','world_unity','cinematic_render') else 6 if kind in ('prompt_analysis','prompt_questions','concept_layout','style_profile','sprite_cutout','model_visual_check','batch_semantics','animation_retime') else 4
+    # Floors only cover a first run with no measurement yet; afterwards the measured peak (plus margin) decides.
+    floor=24 if kind=='inference' and engine=='trellis2_community' and not value['finishing_only'] else 8 if kind=='inference' and value['finishing_only'] else 24 if kind=='inference' else 10 if kind=='concept' else 6 if kind in ('rig','blender','unity_import','world_unity','cinematic_render') else 6 if kind in ('prompt_analysis','prompt_questions','concept_layout','style_profile','sprite_cutout','model_visual_check','batch_semantics','animation_retime') else 4
     if kind=='inference':
         from engines.adapters import ADAPTERS
         adapter=ADAPTERS.get(engine)
@@ -83,8 +91,13 @@ def estimate(payload):
         row=db.execute('SELECT payload FROM drafts WHERE project_id=?',(key,)).fetchone()
         observed=recover_observation(json.loads(row['payload']) if row else None,payload,db)
     measured=observed or {}
-    result=dict(profile_key=key,profile=value,bytes=max(floor*GIB,measured.get('physical_allowance_bytes',measured.get('allowance_bytes',0))),
-        commit_bytes=max(floor*GIB,measured.get('commit_allowance_bytes',measured.get('allowance_bytes',0))),
+    # Recompute from the stored peaks so a margin change applies to profiles measured earlier.
+    physical=allowance(measured['rss_peak_bytes']) if measured.get('rss_peak_bytes') else measured.get('physical_allowance_bytes',measured.get('allowance_bytes',0))
+    commit=allowance(max(measured.get('private_peak_bytes',0),measured['rss_peak_bytes'])) if measured.get('rss_peak_bytes') else measured.get('commit_allowance_bytes',measured.get('allowance_bytes',0))
+    measured_known=bool(measured.get('rss_peak_bytes') or measured.get('allowance_bytes'))
+    # With a measurement the floor no longer applies: it exists only for a first run.
+    result=dict(profile_key=key,profile=value,bytes=physical if measured_known else floor*GIB,
+        commit_bytes=commit if measured_known else floor*GIB,
         planning_floor_gib=floor,observed=observed,basis='Separate resident-RAM and system-commit allowances. Legacy mixed estimates remain conservative unless original samples prove both. Not a guarantee against external allocations.')
     _estimates[cache_key]=(time.monotonic(),result);return result
 

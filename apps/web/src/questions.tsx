@@ -2,10 +2,11 @@ import { Sparkles as IcSparkles } from "lucide-react";
 import { createPortal } from "react-dom";
 import { AnswerVisual } from "./answer-visuals";
 import { useEffect, useRef, useState } from "react";
-import { apiFetch } from "./api";
+import { apiFetch, apiUrl } from "./api";
 
 type Question = { id: string; question: string; options: string[]; importance: number };
-type Pending = { batch_id: string; asset_id: string; name: string; prompt: string; questions: Question[] };
+type Pending = { batch_id: string; asset_id: string; name: string; prompt: string; questions: Question[]; reference_url?: string | null };
+const REFERENCE = /tham chiếu|reference/i;
 
 type Scope = "single" | "batch";
 const KEYS: Record<Scope, string> = { single: "afs.allowQuestions", batch: "afs.allowQuestions.batch" };
@@ -112,7 +113,7 @@ function QuestionsList({ pending, reload, onAnswered }: { pending: Pending[]; re
                   <div className="questions-item-head"><span className="questions-number">{index + 1}</span><strong>{q.question}</strong>
                     <button type="button" className="questions-ai" aria-pressed={ai} title="Only this question: AI chooses the answer" onClick={() => set(entry.asset_id, q.id, ai ? "" : AI)}><IcSparkles size={14} aria-hidden="true" />Let AI decide</button></div>
                   <div className="questions-options" aria-disabled={ai || undefined}>
-                    {q.options.map((option) => <button key={option} type="button" className={value === option ? "selected" : ""} aria-pressed={value === option} disabled={ai} onClick={() => set(entry.asset_id, q.id, value === option ? "" : option)}><AnswerVisual text={option} />{option}</button>)}
+                    {q.options.map((option) => <button key={option} type="button" className={value === option ? "selected" : ""} aria-pressed={value === option} disabled={ai} onClick={() => set(entry.asset_id, q.id, value === option ? "" : option)}>{REFERENCE.test(option)?(entry.reference_url?<img className="answer-reference" src={apiUrl(entry.reference_url)} alt="" />:<i className="answer-reference answer-reference-model" aria-hidden="true" />):<AnswerVisual text={option} />}{option}</button>)}
                   </div>
                   <input className="questions-other" aria-label={`Other answer: ${q.question}`} placeholder="Or type your own answer…" disabled={ai} value={ai || q.options.includes(value) ? "" : value} onChange={(e) => set(entry.asset_id, q.id, e.target.value)} />
                 </li>

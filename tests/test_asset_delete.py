@@ -39,3 +39,10 @@ def test_batch_model_choice_applies_only_to_items_not_started(client):
     with m.patch.object(batches,'detail',lambda v:dict(items=v['items'])),m.patch.object(batches,'save',lambda v:None),m.patch.object(batches,'batch',lambda i:value):
         out=client.post('/api/batches/bm/models',json=dict(engines=['triposg'],texturer='trellis2')).json()
     a,b=out['items'];assert out['models_applied']==1 and a['preferred_engine']=='auto' and b['preferred_engine']=='triposg' and b['texturer']=='trellis2'
+
+def test_batch_keep_final_option_is_saved(client):
+    from apps.api import batch as batches
+    value=dict(id='bk',project_id='runavelle',name='B',mode='Quality Batch',paused=True,items=[])
+    import unittest.mock as m
+    with m.patch.object(batches,'detail',lambda v:v),m.patch.object(batches,'save',lambda v:None),m.patch.object(batches,'batch',lambda i:value):
+        assert client.post('/api/batches/bk/options',json=dict(keep_final_only=True)).json()['keep_final_only'] is True

@@ -90,6 +90,21 @@ def suggest_route(text: str = ''):
     return suggest(text) or dict(rule=None, label='Unknown type', dims=dict(w=1, d=1, h=1), scale_factor=1.0)
 
 
+@router.get('/estimate')
+def estimate_route(text: str = '', project_id: str | None = None):
+    """Size estimated from the description by the local model (CPU), anchored on the rule; the rule alone if unavailable."""
+    hint = suggest(text)
+    try:
+        from engines.size_estimate import estimate
+        style = ''
+        if project_id:
+            from . import studio
+            style = studio.project(project_id).get('style', '') or ''
+        return estimate(text[:2000], hint, style) | dict(rule=hint['rule'] if hint else None)
+    except Exception as error:  # model missing or busy: the deterministic rule still answers
+        return (hint or suggest_route('')) | dict(source='asset-type rule (local AI unavailable: ' + type(error).__name__ + ')', reason=None)
+
+
 SOURCE = 'Asset-type size rule'
 
 

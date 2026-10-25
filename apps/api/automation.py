@@ -458,6 +458,10 @@ def advance(identifier):
                 if not staged and intermediates.enabled(studio.project(value['project_id'])):
                     model['settings']['intermediate_cleanup']=intermediates.prune(item['asset_id'],export_settings);intermediates.forget(item['asset_id'])
                 studio.save_asset(model)
+                if not staged and (value.get('keep_final_only') or studio.project(value['project_id']).get('keep_final_only')):
+                    # Keep only the delivered GLB, its source model and the thumbnail; failures leave everything in place.
+                    try:intermediates.finalize(item['asset_id'])
+                    except Exception as exc:auto['keep_final_error']=str(getattr(exc,'detail',exc))[:300]
             except RouteWaiting as exc:
                 auto.update(status='queued',stage=exc.hold['reason'],waiting_engine_key=exc.hold['health_key']);auto.pop('error',None)
             except Exception as exc:

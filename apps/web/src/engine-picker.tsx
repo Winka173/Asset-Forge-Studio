@@ -1,10 +1,10 @@
 // 3D model choice in Create → Advanced. TRELLIS.2 stays the default; ticking several makes candidates with each,
 // and the best technically valid result is delivered (others stay as versions).
 export const ENGINE_INFO: Record<string, { label: string; detail: string; needs: string; note?: string }> = {
-  trellis2_community: { label: "TRELLIS.2", detail: "Best detail and full PBR (basecolor, metal, roughness)", needs: "GPU 16 GB · RAM ~36 GB free · ~5 min (measured)" },
-  triposg: { label: "TripoSG + MV-Adapter texture", detail: "Sharp shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · ~5 min (67 s shape + 225 s texture, measured)" },
-  trellis_v1: { label: "TRELLIS (v1) + MV-Adapter texture", detail: "Fastest; clean shape, basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · ~3.5 min (43 s shape + 159 s texture, measured)" },
-  hunyuan3d21: { label: "Hunyuan3D-2.1 + MV-Adapter texture", detail: "Cleanest detailed shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · ~5 min (145 s shape + 154 s texture, measured)", note: "License excludes the EU, UK and South Korea" },
+  trellis2_community: { label: "TRELLIS.2", detail: "Best detail and full PBR (basecolor, metal, roughness)", needs: "GPU 16 GB · RAM ~25 GB · ~5 min (measured)" },
+  triposg: { label: "TripoSG + MV-Adapter texture", detail: "Sharp shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · RAM ~36 GB · ~3.5 min (67 s shape + 209 s texture, measured)" },
+  trellis_v1: { label: "TRELLIS (v1) + MV-Adapter texture", detail: "Fastest; clean shape, basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · RAM ~36 GB · ~3.5 min (43 s shape + 159 s texture, measured)" },
+  hunyuan3d21: { label: "Hunyuan3D-2.1 + MV-Adapter texture", detail: "Cleanest detailed shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · RAM ~36 GB · ~5 min (145 s shape + 154 s texture, measured)", note: "License excludes the EU, UK and South Korea" },
 };
 
 export function EnginePicker({ engines, value, onChange }: { engines: { id: string; installed: boolean }[]; value: string[]; onChange: (ids: string[]) => void }) {

@@ -142,6 +142,9 @@ type Draft = {
   width?: number | null;
   depth?: number | null;
   sizeConfirmed?: boolean;
+  // Size step: estimate the size from the description when the step opens (default on).
+  autoSize?: boolean;
+  sizeEstimate?: { prompt: string; reason?: string | null; source?: string };
   engines?: string[];
   texturer?: 'mvadapter' | 'trellis2';
 };
@@ -193,6 +196,18 @@ const icons: Record<string, LucideIcon> = {
   Compare: Columns2, Settings: Settings2, Cube: Box, Motion: PersonStanding, Image: ImageIcon, Arrow: ArrowRight,
   Check: Check, Star: Star, Upload: Upload, Close: X, Search: Search, Download: Download,
 };
+// Calls the local size estimate once per description when the Size step opens (unless the user turned it off or already set a size).
+function AutoSizeEstimate({draft,projectId,onEstimate}:{draft:Draft;projectId:string;onEstimate:(dims:{w:number;d:number;h:number},info:{prompt:string;reason?:string|null;source?:string})=>void}){
+  const [busy,setBusy]=useState(false);
+  const wanted=draft.output!=="sprite"&&draft.autoSize!==false&&Boolean(draft.prompt.trim())&&draft.sizeEstimate?.prompt!==draft.prompt&&!(draft.sizeConfirmed&&!draft.sizeEstimate);
+  useEffect(()=>{if(!wanted)return;let alive=true;setBusy(true);
+    apiFetch(`/api/size-rules/estimate?text=${encodeURIComponent(draft.prompt.slice(0,2000))}&project_id=${encodeURIComponent(projectId)}`).then(r=>r.ok?r.json():null).then(v=>{if(alive&&v?.dims)onEstimate(v.dims,{prompt:draft.prompt,reason:v.reason,source:v.source});}).catch(()=>{}).finally(()=>{if(alive)setBusy(false);});
+    return()=>{alive=false;};
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[wanted,draft.prompt]);
+  return busy?<p className="create-size-estimating" role="status">AI is working out the size from your description…</p>:null;
+}
+
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const Glyph = icons[name] || Box;
   return <Glyph size={size} strokeWidth={1.75} aria-hidden="true" />;
@@ -1223,6 +1238,7 @@ export function Studio() {
                     />
                     <small>Shape, materials, colours and style. One sentence is enough.</small>
                   </label>
+                  {draft.output!=="sprite"&&<label className="create-auto-size"><input type="checkbox" checked={draft.autoSize!==false} onChange={e=>change({autoSize:e.target.checked})}/> Work out the size from my description <small>AI reads it on the next step (local, a few seconds) and fills in width, depth and height; you can still adjust them.</small></label>}
                   <PromptExamples mode="single"/>
                   <div className="reference-field">
                     <div className="reference-field-head"><span>Reference image <em>Optional</em></span>{source&&<button className="text-button" onClick={()=>change({source:''})}>Remove</button>}</div>
@@ -1272,15 +1288,16 @@ export function Studio() {
                   </div>
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(0)}>Back</button><button className="primary" disabled={busy||(!draft.prompt.trim()&&!source)} onClick={()=>setCreateStep(draft.output==="sprite"?3:2)}>Continue <Icon name="Arrow" size={17}/></button></div>
                   </div>}
+                  {createStep===2&&<AutoSizeEstimate draft={draft} projectId={projectId} onEstimate={(dims,info)=>change({width:dims.w,depth:dims.d,height:dims.h,sizeConfirmed:true,sizeEstimate:info})}/>}
                   {createStep===2&&<div className="create-settings-step create-size-step">
                   <div className="create-input-recap">{source&&<img src={apiUrl(source.url)} alt="" />}<div><strong>{draft.name.trim()||autoAssetName(draft.prompt)||'New asset'}</strong><p>{draft.prompt.trim()||(source?.name||'Reference image')}</p></div><button className="quiet-button" onClick={()=>setCreateStep(1)}>Edit input</button></div>
                   {draft.output!=="sprite"&&(()=>{const suggested=suggestedSize;const dims=draft.height?{w:draft.width??suggested.w,d:draft.depth??suggested.d,h:draft.height}:suggested;
                     const libraryReferences:SizeReference[]=data.assets.filter(a=>a.id!==selectedAsset?.id).flatMap(a=>{const spec=(a as Asset&{resolved_specification?:{dimensions?:Record<string,number|null>}}).resolved_specification?.dimensions;const glb=a.versions.filter(v=>v.role==="candidate"&&v.metadata.stage==="blender_processed").at(-1);
                       return spec?.target_height_m&&glb?[{id:a.id,label:a.name,url:apiUrl(glb.url),dims:{w:spec.target_width_m??1,d:spec.target_depth_m??1,h:spec.target_height_m}}]:[];}).slice(0,12);
-                    return <div className="create-size"><p className="create-size-status">{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeConfirmed?"your size — the delivered model is scaled to this height":"AI decides — this is the suggestion; AI may refine it from the prompt"}`}</p>
+                    return <div className="create-size"><p className="create-size-status">{`${dims.w} × ${dims.d} × ${dims.h} m · ${draft.sizeEstimate?.prompt===draft.prompt&&draft.sizeConfirmed?"estimated by AI from your description — drag to adjust":draft.sizeConfirmed?"your size — the delivered model is scaled to this height":"AI decides — this is the suggestion; AI may refine it from the prompt"}`}</p>{draft.sizeEstimate?.prompt===draft.prompt&&draft.sizeEstimate.reason&&<p className="create-size-reason">{draft.sizeEstimate.reason}</p>}
                       <SizePreview value={dims} prompt={draft.prompt} confirmed={!!draft.sizeConfirmed} libraryReferences={libraryReferences}
                         modelUrl={candidate?.metadata.stage==="blender_processed"?apiUrl(candidate.url):undefined}
-                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true})}
+                        onChange={next=>change({width:next.w,depth:next.d,height:next.h,sizeConfirmed:true,sizeEstimate:undefined})}
                         onAuto={()=>change({width:null,depth:null,height:project?.target_height_m??null,sizeConfirmed:false})}/>
                     </div>;})()}
                   <div className="create-step-actions"><button className="quiet-button" onClick={()=>setCreateStep(1)}>Back</button><button className="primary" onClick={()=>setCreateStep(3)}>Continue to options <Icon name="Arrow" size={17}/></button></div>
@@ -1934,16 +1951,17 @@ export function Studio() {
                       Working files after delivery
                       <Select
                         aria-label="Working files after delivery"
-                        value={(project as Project & {cleanup_intermediates?: boolean | null}).cleanup_intermediates === false ? "keep" : "clean"}
+                        value={(project as Project & {keep_final_only?: boolean | null}).keep_final_only ? "final" : (project as Project & {cleanup_intermediates?: boolean | null}).cleanup_intermediates === false ? "keep" : "clean"}
                         onChange={(e) =>
                           run(async () => {
-                            await request(`/api/projects/${projectId}`, { ...project, cleanup_intermediates: e.target.value === "clean" });
+                            await request(`/api/projects/${projectId}`, { ...project, cleanup_intermediates: e.target.value !== "keep", keep_final_only: e.target.value === "final" });
                             await reload();
-                            setNotice(e.target.value === "clean" ? "Checkpoints, .blend scenes, extra LODs and render passes are deleted once the GLB is delivered." : "All working files are kept after delivery.");
+                            setNotice(e.target.value === "final" ? "After each delivery only the final GLB, its source model and a thumbnail are kept." : e.target.value === "clean" ? "Checkpoints, .blend scenes, extra LODs and render passes are deleted once the GLB is delivered." : "All working files are kept after delivery.");
                           })
                         }
                       >
                         <option value="clean" data-description="Keeps the delivered GLB, the raw model, concepts and previews (about 160 MB per asset). Deletes checkpoints, .blend scenes, extra LODs and render passes (about 640 MB) unless an export setting needs them.">Delete working files (keep final GLB)</option>
+                        <option value="final" data-description="After each delivery keeps only the final GLB, the model it came from and one thumbnail; concepts, candidates and checks are deleted. Smallest library; regenerating needs the GPU again.">Keep final only (smallest)</option>
                         <option value="keep" data-description="Keeps every intermediate file (about 800 MB per asset) for re-finishing without the GPU.">Keep everything</option>
                       </Select>
                     </label>

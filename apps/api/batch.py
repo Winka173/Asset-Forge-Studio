@@ -231,6 +231,18 @@ class Models(BaseModel):
     texturer:Literal['','mvadapter','trellis2']=''
 
 
+class Options(BaseModel):
+    keep_final_only:bool
+
+
+@router.post('/{identifier}/options')
+def options(identifier:str,body:Options):
+    """Batch-level delivery housekeeping: after each delivered item keep only the final files."""
+    with LOCK:
+        value=batch(identifier);value['keep_final_only']=body.keep_final_only;save(value)
+    return detail(value)
+
+
 @router.post('/{identifier}/models')
 def models(identifier:str,body:Models):
     """Batch-wide model choice for items that have not started; started items keep their recorded configuration."""
