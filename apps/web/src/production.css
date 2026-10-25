@@ -229,3 +229,14 @@ progress.production-row-progress { width: 100%; height: 3px; margin-top: var(--s
 
 /* Automatic decision that replaced a manual checkpoint; informational, not a warning. */
 .production-auto-decision { align-self: center; padding: 2px var(--sp-2); border-radius: var(--r-full); background: var(--info-soft); color: var(--info); font-size: var(--fs-xs); font-weight: 600; white-space: nowrap; cursor: help; }
+
+/* Collapse controls sit inside each panel; a slim rail reopens a collapsed panel. */
+.production-panel-title .production-collapse { margin-left: auto; flex: none; }
+.production-inspector > .production-panel-title .production-collapse { margin-left: 0; margin-right: var(--sp-2); }
+.production-rail { align-self: flex-start; flex: none; margin: var(--sp-2) var(--sp-1); }
+/* Inspector actions: one tidy two-column grid, Regenerate across the full width. */
+.production-scope-controls.production-asset-actions { display: block; }
+.production-inspector .production-asset-actions[role="group"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.production-inspector .production-asset-actions[role="group"] > button { width: 100%; justify-content: center; min-width: 0; }
+.production-inspector .production-asset-actions .production-regenerate-action { grid-column: 1 / -1; }
+.production-id { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

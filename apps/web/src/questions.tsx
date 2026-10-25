@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "./api";
 
@@ -55,7 +56,7 @@ export function QuestionsButton({ onAnswered }: { onAnswered?: () => void }) {
   useEffect(() => { const show = (e: Event) => { setFocus((e as CustomEvent<string | undefined>).detail); setOpen(true); }; addEventListener("afs-open-questions", show); return () => removeEventListener("afs-open-questions", show); }, []);
   useEffect(() => { if (open && !pending.length) setOpen(false); }, [open, pending.length]);
   const shown = focus && pending.some((p) => p.asset_id === focus) ? pending.filter((p) => p.asset_id === focus) : pending;
-  const toastView = toast && <div className="questions-toast" role="status"><span>{toast}</span><button type="button" className="primary" onClick={() => { setToast(""); setFocus(undefined); setOpen(true); }}>Answer</button><button type="button" className="quiet-button" aria-label="Dismiss" onClick={() => setToast("")}>✕</button></div>;
+  const toastView = toast && createPortal(<div className="questions-toast" role="status"><span>{toast}</span><button type="button" className="primary" onClick={() => { setToast(""); setFocus(undefined); setOpen(true); }}>Answer</button><button type="button" className="quiet-button" aria-label="Dismiss" onClick={() => setToast("")}>✕</button></div>, document.body);
   if (!pending.length) return toastView || null;
   const count = pending.reduce((sum, entry) => sum + entry.questions.length, 0);
   return (
@@ -64,14 +65,14 @@ export function QuestionsButton({ onAnswered }: { onAnswered?: () => void }) {
       <button type="button" className="questions-trigger" onClick={() => { setFocus(undefined); setOpen(true); }} title={`${pending.length} asset${pending.length > 1 ? "s" : ""} waiting for your answers; other work continues`}>
         <span className="questions-trigger-dot" aria-hidden="true" />Questions <b>{count}</b>
       </button>
-      {open && (
-        <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
+      {open && createPortal(
+        <div className="modal-backdrop questions-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false); }} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
           <div className="studio-modal questions-dialog" role="dialog" aria-modal="true" aria-label="Questions waiting for you">
             <header className="modal-heading"><div><h2>Questions waiting for you</h2><small>{pending.length} asset{pending.length > 1 ? "s" : ""} · only these wait, other work continues</small></div><button type="button" className="quiet-button" onClick={() => setOpen(false)} aria-label="Close">✕</button></header>
             {focus && shown.length < pending.length && <button type="button" className="text-button" onClick={() => setFocus(undefined)}>Show all {pending.length} assets</button>}
             <QuestionsList pending={shown} reload={load} onAnswered={() => { dispatchEvent(new Event("afs-questions-changed")); onAnswered?.(); }} />
           </div>
-        </div>
+        </div>, document.body
       )}
     </>
   );

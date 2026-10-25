@@ -512,3 +512,4 @@ button > svg.lucide, a > svg.lucide { flex: none; vertical-align: -3px; margin-r
 .engine-option .engine-needs { font-family: var(--font-mono, monospace); color: var(--text); }
 .engine-option .engine-note { color: var(--warning, #f0a94b); }
 .engine-option.unavailable { opacity: .55; cursor: not-allowed; }
+.questions-backdrop { z-index: 20000; }
