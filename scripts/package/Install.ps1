@@ -86,6 +86,7 @@ foreach ($root in $roots) {
     foreach ($cfg in (Get-ChildItem $root -Recurse -Filter pyvenv.cfg -Depth 4 -ErrorAction SilentlyContinue)) {
         $text = Get-Content $cfg.FullName -Raw
         $text = $text.Replace("$old\AppData\Local\Programs\Python\Python311", $pyDir)
+        $text = $text.Replace($old, $home_)   # bundled pythons (for example Tools	rellis2	ools\python) live under the profile
         Set-Content -Path $cfg.FullName -Value $text -NoNewline -Encoding ASCII
         $site = Join-Path $cfg.DirectoryName 'Lib\site-packages'
         if (Test-Path $site) {
@@ -101,7 +102,8 @@ foreach ($root in $roots) {
 foreach ($v in $manifest.venvs | Where-Object { $Profile -eq 'Full' -or -not $_.optional }) {
     $py = if ($v.base -eq 'workspace') { Join-Path $workspace $v.path } else { Join-Path $home_ $v.path }
     if (-not (Test-Path $py)) { Fail "Missing environment $($v.path)" }
-    $line = & $py -c "import sys; print('ok', sys.version.split()[0])"
+    $line = & $py -c "import sys; print('ok', sys.version.split()[0], sys.base_prefix)"
+    if ($line -match [regex]::Escape($old)) { Fail "Environment still points at the build machine: $($v.path)" }
     if ($LASTEXITCODE -ne 0) { Fail "Environment does not start: $($v.path)" }
     Write-Host "  starts: $($v.path) ($line)"
 }

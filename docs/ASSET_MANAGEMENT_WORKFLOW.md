@@ -84,3 +84,7 @@ Batch Describe step is three numbered columns (describe, configure, references a
 ## 0.9.41
 
 Settings → Support report → Export full log: one zip (app logs, system/GPU facts, engine status, latest failed jobs and their worker logs) in the library folder `diagnostics-exports`, prompts and personal paths redacted. `scripts/package/` holds the offline tester package installer.
+
+## 0.9.42
+
+Support report: disk facts survive unreadable drives, app version recorded. Tester package verified on a clean profile (blank library, one asset generated end to end).

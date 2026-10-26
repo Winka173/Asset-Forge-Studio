@@ -37,12 +37,14 @@ def run(command):
 
 
 def system_facts():
-    facts = dict(created_at=store.now(), app_version=os.environ.get('AFS_VERSION') or 'see app title', os=platform.platform(), python=platform.python_version(),
+    facts = dict(created_at=store.now(), app_version=__import__('apps.api.main', fromlist=['app']).app.version, os=platform.platform(), python=platform.python_version(),
                  gpu=run(['nvidia-smi', '--query-gpu=name,driver_version,memory.total,memory.used', '--format=csv,noheader']))
     try:
         import psutil
-        facts.update(ram_gb=round(psutil.virtual_memory().total / 2**30, 1), ram_free_gb=round(psutil.virtual_memory().available / 2**30, 1),
-                     disk_free_gb={str(p.mountpoint): round(shutil.disk_usage(p.mountpoint).free / 2**30, 1) for p in psutil.disk_partitions() if 'cdrom' not in p.opts})
+        facts.update(ram_gb=round(psutil.virtual_memory().total / 2**30, 1), ram_free_gb=round(psutil.virtual_memory().available / 2**30, 1), disk_free_gb={})
+        for part in psutil.disk_partitions():
+            try: facts['disk_free_gb'][str(part.mountpoint)] = round(shutil.disk_usage(part.mountpoint).free / 2**30, 1)
+            except OSError: pass
     except Exception as error: facts['resources'] = f'unavailable: {error}'
     try:
         from engines.adapters import ADAPTERS

@@ -37,7 +37,7 @@ if (-not $Finish) {
     Write-Host 'STAGED'
     exit 0
 }
-$list = foreach ($i in $items) { [ordered]@{path = $i.path; base = $(if ($i.base) { $i.base } else { 'home' }); optional = $i.optional; bytes = (Bytes (Join-Path $payload $i.path))} }
+$list = foreach ($i in $items) { [pscustomobject][ordered]@{path = $i.path; base = $(if ($i.base) { $i.base } else { 'home' }); optional = $i.optional; bytes = (Bytes (Join-Path $payload $i.path))} }
 $venvs = @(
     [ordered]@{path = 'Tools\trellis2\code\venv\Scripts\python.exe'; base = 'home'; optional = $false},
     [ordered]@{path = 'Tools\sdxl\venv\Scripts\python.exe'; base = 'home'; optional = $false},
