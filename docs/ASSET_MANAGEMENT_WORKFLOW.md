@@ -108,3 +108,7 @@ UI pass: VRAM, RAM and Disk chips share one style and open portal popovers that 
 ## 0.9.47
 
 Every Create workflow (Batch, Map, Effects, Motion, Video) now shows the same step bar as Single asset, starting with "Choose workflow", driven by the workflow's real state. Resource chips never wrap.
+
+## 0.9.48
+
+Sidebar: Projects is now Dashboard; Diagnostics removed (Job history with readable job names lives in Settings and the command palette); Library bulk export actions appear only when assets are selected (More export menu for the rest); Compare is a plain side-by-side page with the quality gates under Advanced.

@@ -1,33 +1,24 @@
 ﻿{
-    "version":  "0.9.47",
-    "timestamp_utc":  "20261026T095227Z",
-    "git_commit":  "a160f074708e30498af41aedc2a5a4bf6feab2d8",
+    "version":  "0.9.48",
+    "timestamp_utc":  "20261026T100513Z",
+    "git_commit":  "b61dcc8b603b516ad2dca8c00c05850338a0690f",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
                           " M apps/api/main.py",
-                          " M apps/web/src/batch-studio.tsx",
-                          " M apps/web/src/batch.css",
-                          " M apps/web/src/fx-studio.tsx",
-                          " M apps/web/src/motion-studio.tsx",
-                          " M apps/web/src/prompt-chat.tsx",
+                          " M apps/web/src/library.css",
+                          " M apps/web/src/library.tsx",
+                          " M apps/web/src/quality-lab.tsx",
                           " M apps/web/src/studio.tsx",
-                          " M apps/web/src/styles/shell.css",
-                          " M apps/web/src/styles/studios.css",
-                          " M apps/web/src/video-studio.tsx",
-                          " M apps/web/src/world-studio.tsx",
+                          " M apps/web/src/styles/app.css",
+                          " M apps/web/src/workspace-tools.tsx",
                           " M desktop/audit-ui.mjs",
                           " M docs/ASSET_MANAGEMENT_WORKFLOW.md",
-                          " M docs/evidence/desktop_build.json",
-                          " M docs/evidence/desktop_smoke.json",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? apps/web/src/create-stepper.tsx",
-                          "?? apps/web/src/project-dashboard.tsx",
-                          "?? apps/web/src/resource-chips.tsx",
                           "?? prompt/"
                       ],
     "changed_features":  [
@@ -37,7 +28,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T095227Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T100513Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -48,13 +39,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "bf40145f08938acb1b708e566041ee6fb86f1ca4ae3e6b9c9c909fa06fb8007a",
-                            "Asset Forge Studio_0.9.47_x64-setup.exe":  "292f9381a6eaa9b1cd16e86bd24941f4775b6785e68615db71ca261aa3f30c72",
-                            "afs-backend.exe":  "c28a9e399c31974f133e55a5ebf07dfe75bfe11d5cac8fdf40e937c5163534f9"
+                            "Asset Forge Studio.exe":  "8bb4e824769b3d34e35c7f10d1481de1349e057b6e5b17e9dd457513d9c828e0",
+                            "afs-backend.exe":  "42a474230a06455a5be442a253996b25ff0797676fa083dad8b2095dcd23d74d",
+                            "Asset Forge Studio_0.9.48_x64-setup.exe":  "af381a6e4ba97891003bf58b0348d2253a0520d7cb42f3714be255d9deb981d1"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T09-57-18-661Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T10-10-41-236Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.9.47_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.9.48_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

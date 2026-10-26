@@ -940,7 +940,7 @@ export function Studio() {
       await reload();
       if (result.job)
         setNotice(
-          `Export in progress · job ${result.job.id.slice(0, 8)}. Files appear in Diagnostics when finished.`,
+          `Export in progress · job ${result.job.id.slice(0, 8)}. Files appear in Settings → Job history when finished.`,
         );
     });
   }
@@ -1044,7 +1044,7 @@ export function Studio() {
               >
                 {page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}
                 <Icon name={p} size={18} />
-                <span className="nav-label">{p==='Home'?'Projects':p}</span>
+                <span className="nav-label">{p==='Home'?'Dashboard':p}</span>
                 {p === "Production" && activeJobs.length > 0 && (
                   <span className="nav-count">{activeJobs.length}</span>
                 )}
@@ -1052,7 +1052,7 @@ export function Studio() {
             ))}
           </nav>
           <button className="production-secondary-label sidebar-group-toggle" aria-expanded={toolsOpen} onClick={()=>{const next=!toolsOpen;setToolsOpen(next);try{localStorage.setItem('afs.sidebar.tools',next?'open':'closed');}catch{/* Preference only. */}}}>Tools<ChevronDown size={14} aria-hidden="true"/></button>
-          <nav aria-label="Secondary navigation" className="sidebar-tools" data-open={toolsOpen||page==='Compare'||page==='Jobs'}>{(['Compare','Jobs'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p==='Jobs'?'Diagnostics':p} data-tooltip={p==='Jobs'?'Diagnostics':p} aria-current={page===p?'page':undefined}>{page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name={p} size={18}/><span className="nav-label">{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
+          <nav aria-label="Secondary navigation" className="sidebar-tools" data-open={toolsOpen||page==='Compare'||page==='Jobs'}>{(['Compare'] as Page[]).map(p=><a key={p} href={`#${p.toLowerCase()}`} className={page===p?'current':''} aria-label={p} title={p==='Jobs'?'Diagnostics':p} data-tooltip={p==='Jobs'?'Diagnostics':p} aria-current={page===p?'page':undefined}>{page===p&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name={p} size={18}/><span className="nav-label">{p==='Jobs'?'Diagnostics':p}</span></a>)}</nav>
         </div>
         <nav aria-label="Settings navigation" className="sidebar-settings">
           <a href="#settings" className={page==='Settings'?'current':''} aria-label="Settings" title="Settings" data-tooltip="Settings" aria-current={page==='Settings'?'page':undefined}>{page==='Settings'&&<motion.span layoutId="nav-active" className="nav-indicator" transition={{type:'spring',stiffness:520,damping:40}}/>}<Icon name="Settings" size={18}/><span className="nav-label">Settings</span></a>
@@ -1077,7 +1077,7 @@ export function Studio() {
             </button>
             <span className="crumb-project">{project?.name || projectId || "Your workspace"}</span>
             <span className="crumb-sep" aria-hidden="true">/</span>
-            <strong>{page==="Home"?"Projects":page==="Jobs"?"Diagnostics":page}</strong>
+            <strong>{page==="Home"?"Dashboard":page==="Jobs"?"Job history":page}</strong>
           </div>
           <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
 
@@ -1934,6 +1934,7 @@ export function Studio() {
                   )}
                 </section>
                 <ComponentsSetup/><UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><SupportReport/>
+                <section className="settings-panel job-history-panel" id="job-history" aria-label="Job history"><JobHistory embedded names={Object.fromEntries(data.assets.map((a) => [a.id, a.name]))} jobs={data.jobs} onRefresh={reload} onError={setError} busy={busy} run={run} /></section>
                 <CapabilityRegistry/>
                 <section className="settings-panel engine-settings">
                   <div className="panel-heading">
@@ -2387,13 +2388,24 @@ function CandidateGallery({
   );
 }
 
+const JOB_LABEL: Record<string, string> = { inference: "3D generation", blender: "Blender processing", concept: "Concept image", concept_layout: "Concept check", prompt_analysis: "Prompt analysis", model_visual_check: "Model check", sprite_cutout: "2D cut-out", blender_fx_mesh: "Mesh effect", fx_flipbook: "Flipbook effect", fx_texture: "Effect texture", world_unity: "Map build", cinematic: "Video render", motion: "Motion", rig: "Rigging" };
+function jobTitle(job: { kind?: string; payload: { engine?: string; asset_id?: string } }, names: Record<string, string>) {
+  const kind = job.kind || "";
+  const label = JOB_LABEL[kind] || (kind ? kind.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()) : job.payload.engine ? "3D generation" : "Local job");
+  const name = job.payload.asset_id ? names[job.payload.asset_id] : "";
+  return name ? `${label} · ${name}` : label;
+}
 function JobHistory({
   jobs,
   onRefresh,
   onError,
   busy,
   run,
+  embedded = false,
+  names = {},
 }: {
+  embedded?: boolean;
+  names?: Record<string, string>;
   jobs: Job[];
   onRefresh: () => Promise<void>;
   onError: (s: string) => void;
@@ -2427,7 +2439,8 @@ function JobHistory({
   }, [selected]);
   return (
     <>
-      <div className="page-heading">
+      {embedded && <h2>Job history <small>{jobs.filter((j) => activeStates.includes(j.status)).length} active · sequential GPU queue</small></h2>}
+      {!embedded && <div className="page-heading">
         <div>
           <div className="overline">LOCAL PROCESSING QUEUE</div>
           <h1>Every run. Every result.</h1>
@@ -2440,7 +2453,7 @@ function JobHistory({
           {jobs.filter((j) => activeStates.includes(j.status)).length} active ·
           sequential GPU queue
         </span>
-      </div>
+      </div>}
       <div className="jobs-filter segmented">
         {[
           ["all", "All jobs"],
@@ -2488,7 +2501,7 @@ function JobHistory({
                 </div>
                 <div>
                   <strong>
-                    {job.payload.engine || job.kind || "Local pipeline"}{" "}
+                    {jobTitle(job, names)}{" "}
                     <span className="mono">{job.id.slice(0, 8)}</span>
                   </strong>
                   <p>

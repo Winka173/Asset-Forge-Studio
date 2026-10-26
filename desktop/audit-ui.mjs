@@ -36,7 +36,7 @@ async function health(name){const ok=await Promise.race([page.evaluate(()=>docum
 async function shot(name,action,full=false){try{if(action)await action();await sleep(900);await page.screenshot({path:path.join(shots,name+'.png'),fullPage:full});report.push({name,ok:true});await health(name);}catch(e){report.push({name,ok:false,error:String(e.message||e).slice(0,200)});}}
 const nav=label=>page.locator('.studio-sidebar nav a',{hasText:label}).first().click();
 const closeModal=async()=>{await page.keyboard.press('Escape');await sleep(300);};
-await shot('01-home',()=>nav('Projects'));
+await shot('01-home',()=>nav('Dashboard'));
 await shot('02-create-cards',async()=>{await nav('Create');const change=page.getByRole('button',{name:'Change workflow'});if(await change.count())await change.click();});
 for(const[name,title]of[['03-create-single','Single asset'],['04-create-batch','Batch assets'],['05-create-map','Map / World'],['06-create-effects','Effects'],['07-create-motion','Motion'],['08-create-video','Video / Cinematic']]){
   await shot(name,async()=>{await nav('Create');for(const label of ['Change workflow','Choose workflow']){const b=page.getByRole('button',{name:label});if(await b.count()){await b.first().click();break;}}await page.locator('.create-workflow-card',{hasText:title}).first().click();},['06-create-effects','07-create-motion'].includes(name));}
@@ -58,8 +58,8 @@ await shot('20-map-references',()=>openWorkflow('Map / World'),true);
 await shot('21-effects-references',()=>openWorkflow('Effects'),true);
 await shot('22-gpu-popover',async()=>{await nav('Production');await page.locator('button.gpu-chip').click();await sleep(600);});await page.keyboard.press('Escape');
 await shot('23-compare',()=>nav('Compare'));
-await shot('24-diagnostics',()=>nav('Diagnostics'));
-await shot('25-projects',()=>nav('Projects'),true);
+await shot('24-settings-jobs',async()=>{await nav('Settings');await page.locator('#job-history').scrollIntoViewIfNeeded();},true);
+await shot('25-projects',()=>nav('Dashboard'),true);
 fs.writeFileSync(path.join(run,'report.json'),JSON.stringify({executable,project:project.id,batch:batch?.id,shots:report,errors},null,2));
 await page.evaluate(()=>window.__TAURI__.core.invoke('desktop_request_close')).catch(()=>{});for(let n=0;n<60&&child.exitCode===null;n++)await sleep(250);
 await browser.close().catch(()=>{});

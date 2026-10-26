@@ -558,3 +558,4 @@ button > svg.lucide, a > svg.lucide { flex: none; vertical-align: -3px; margin-r
   .inspector-tabs button[aria-selected="true"] { flex: 2.4; }
 }
 .requirements-empty { color: var(--text-2); font-size: var(--fs-sm); margin: 0; }
+.gate-details > summary { cursor: pointer; color: var(--text-2); margin-bottom: var(--sp-3); }

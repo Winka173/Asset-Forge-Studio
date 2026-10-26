@@ -246,14 +246,14 @@ export function QualityLab({
       <main>
         <header>
           <div>
-            <div className="eyebrow">QUALITY LOOP / GATE A</div>
+            <div className="eyebrow">COMPARE</div>
             <h1>
-              {projectName || "Project"} <span>Quality Lab</span>
+              Compare <span>{projectName || "Project"}</span>
             </h1>
-            <p>Concept → local AI → Blender → GLB → reference comparison</p>
+            <p>Put a concept image, a model or two versions side by side from the same camera.</p>
           </div>
-          <span className="badge">{status.gate_a}</span>
         </header>
+        <details className="gate-details"><summary>Advanced · quality checks</summary>
         <div className="gate-strip" aria-label="Quality verification steps">
           {[
             ["01", "Benchmark", status.gate_a],
@@ -270,12 +270,12 @@ export function QualityLab({
               <div>
                 <b>{title}</b>
                 <small className={`state state-${state.toLowerCase()}`}>
-                  {state}
+                  {state.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}
                 </small>
               </div>
             </div>
           ))}
-        </div>
+        </div></details>
         {error && (
           <div className="message error" role="alert">
             {error}
