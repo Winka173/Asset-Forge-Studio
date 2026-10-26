@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 from . import store, jobs
 
-ROOT = Path(os.environ.get('AFS_UNIRIG_ROOT', r'C:\Users\Winka\Tools\unirig'))
+ROOT = Path(os.environ.get('AFS_UNIRIG_ROOT', str(Path.home() / 'Tools/unirig')))
 ENGINE = 'unirig@6793c664'
 LIMITATIONS = ['Experimental automatic rig: review skin weights where clothing or held props touch the body',
                'Bipeds get Mixamo bone names (Hips, Spine, LeftArm, LeftUpLeg...) for Unity Humanoid auto-mapping (Unity import not tested); other shapes keep generic bone_N names',

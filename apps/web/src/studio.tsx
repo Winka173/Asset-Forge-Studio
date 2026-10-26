@@ -33,6 +33,7 @@ import { Lightbox, openImages } from "./lightbox";
 import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
+import { SupportReport } from "./support-report";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Production" | "Compare" | "Settings";
@@ -2041,7 +2042,7 @@ export function Studio() {
                     <pre>{JSON.stringify(environment, null, 2)}</pre>
                   )}
                 </section>
-                <UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/>
+                <UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><SupportReport/>
                 <CapabilityRegistry/>
                 <section className="settings-panel engine-settings">
                   <div className="panel-heading">

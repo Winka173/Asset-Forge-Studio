@@ -80,3 +80,7 @@ TripoSG, Hunyuan3D-2.1, MV-Adapter and the TRELLIS.2 texturer were removed from 
 ## 0.9.40
 
 Batch Describe step is three numbered columns (describe, configure, references and automation) with one sticky action bar and a clearer 3-step bar; Effects shows one tool at a time (Unity recipe or simulated flipbook) in tabs.
+
+## 0.9.41
+
+Settings → Support report → Export full log: one zip (app logs, system/GPU facts, engine status, latest failed jobs and their worker logs) in the library folder `diagnostics-exports`, prompts and personal paths redacted. `scripts/package/` holds the offline tester package installer.

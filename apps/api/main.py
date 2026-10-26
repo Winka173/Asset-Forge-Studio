@@ -34,7 +34,7 @@ async def lifespan(app):
         close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.9.40", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.9.41", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -339,6 +339,8 @@ def job_file(identifier: str, name: str):
 
 
 from .studio import router as studio_router
+from .diagnostics_export import router as diagnostics_export_router
+app.include_router(diagnostics_export_router)
 app.include_router(studio_router)
 from .style_profile import router as style_profile_router
 app.include_router(style_profile_router)

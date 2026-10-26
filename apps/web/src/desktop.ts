@@ -6,7 +6,7 @@ type Native = {core: {invoke: <T>(command: string,args?:Record<string,unknown>)=
 declare global {interface Window {__TAURI__?:Native; __TAURI_INTERNALS__?:unknown;}}
 export const isDesktop = () => !!window.__TAURI_INTERNALS__;
 function native<T>(command:string,args?:Record<string,unknown>):Promise<T> {if(!window.__TAURI__) return Promise.reject(new Error('Native desktop bridge unavailable'));return window.__TAURI__.core.invoke<T>(command,args);}
-export async function openDesktopFolder(scope:'library'|'workspace'|'logs') {return native<void>('desktop_open_folder',{scope});}
+export async function openDesktopFolder(scope:'library'|'workspace'|'logs'|'reports') {return native<void>('desktop_open_folder',{scope});}
 export async function configureDesktopDirectory(kind:'library'|'workspace') {return native<string|null>('desktop_pick_directory',{kind});}
 export async function configureDesktopBlender() {return native<string|null>('desktop_pick_blender');}
 export async function desktopInfo() {const value=await native<Session>('desktop_bootstrap');return {phase:value.phase,workspace:value.workspace,library:value.library,logs:value.logs,version:value.version,backend_pid:value.backend_pid};}
