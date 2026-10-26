@@ -147,3 +147,27 @@ nav[aria-label="Video creation steps"] > button:is([aria-current="step"], [aria-
 .fx-tabs > button[aria-selected="true"] { background: var(--surface-2); border-color: var(--border); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
 .fx-studio[data-tab="unity"] > .fx-flipbook { display: none; }
 .fx-studio[data-tab="flipbook"] > .fx-studio-layout { display: none; }
+
+/* One-click AI component setup */
+.components-setup .components-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.components-meta { color: var(--text-3); font-size: var(--fs-sm); }
+.components-total { position: relative; height: 22px; border-radius: var(--r-full); background: var(--surface-3); overflow: hidden; margin: var(--sp-3) 0; }
+.components-total > span { display: block; height: 100%; background: var(--accent); transition: width .6s var(--ease); }
+.components-total > b { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--fs-xs); color: var(--text); }
+.components-list { list-style: none; padding: 0; margin: var(--sp-3) 0 0; display: grid; gap: var(--sp-2); }
+.components-list > li { display: grid; grid-template-columns: 1fr auto; gap: var(--sp-1) var(--sp-3); padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--r-md, 8px); background: var(--surface-2); }
+.components-list small { color: var(--text-3); display: block; }
+.components-state { align-self: center; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2); }
+.components-list > li[data-status="installed"] .components-state { color: var(--success); }
+.components-list > li[data-status="failed"] .components-state { color: var(--danger, #e5484d); }
+.components-list > li[data-status="running"] { border-color: var(--accent); }
+.components-bar { grid-column: 1 / -1; height: 6px; border-radius: var(--r-full); background: var(--surface-3); overflow: hidden; }
+.components-bar > span { display: block; height: 100%; background: var(--accent); transition: width .6s var(--ease); }
+.components-bar > span[data-indeterminate="true"] { animation: afs-slide 1.6s var(--ease) infinite alternate; }
+.components-list .components-text { grid-column: 1 / -1; overflow-wrap: anywhere; }
+@keyframes afs-slide { from { margin-left: 0; } to { margin-left: 70%; } }
+.components-features { display: grid; gap: var(--sp-2); border: 1px solid var(--border); border-radius: var(--r-md, 8px); padding: var(--sp-3); margin: var(--sp-3) 0; }
+.components-features > legend { padding: 0 var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
+.components-features > label { display: flex; gap: var(--sp-3); align-items: flex-start; }
+.components-features > label.unavailable { opacity: .55; }
+.components-features small { display: block; color: var(--text-3); }

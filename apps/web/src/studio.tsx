@@ -34,6 +34,7 @@ import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
 import { SupportReport } from "./support-report";
+import { ComponentsSetup } from "./components-setup";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
 type Page = "Home" | "Create" | "Library" | "Jobs" | "Production" | "Compare" | "Settings";
@@ -1127,6 +1128,7 @@ export function Studio() {
             <small>AI runs locally. Exported files are organised by project.</small>
           </section> : <div className="studio-empty" role="status">Loading your local workspace…</div>)}
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
+            <ComponentsSetup banner/>
             <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':createStep===2?'How big is it?':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.',motion:'Animate a movement.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':createStep===2?'Compare it with real buildings and characters, drag the handles, then use the size.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
             <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Size & scale','Options & generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
             {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Fire, smoke, magic, sparks, slashes, shockwaves and tileable effect textures.',hint:'Unity effect / Flipbook / GLB / Texture',tone:'purple'},{id:'motion',icon:'Motion',title:'Motion',detail:'Describe a movement and get an animation clip for a humanoid.',hint:'Kimodo / FBX / GLB (experimental)',tone:'green'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
@@ -2042,7 +2044,7 @@ export function Studio() {
                     <pre>{JSON.stringify(environment, null, 2)}</pre>
                   )}
                 </section>
-                <UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><SupportReport/>
+                <ComponentsSetup/><UpdatesSettings/><LocalToolsSettings/><EngineHealthSettings/><SupportReport/>
                 <CapabilityRegistry/>
                 <section className="settings-panel engine-settings">
                   <div className="panel-heading">
