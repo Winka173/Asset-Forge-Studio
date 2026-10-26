@@ -72,3 +72,7 @@ Verified Stable is also published at `dist/windows/stable/latest/Asset Forge Stu
 ## 0.9.38 – TRELLIS.2 is the only 3D engine
 
 TripoSG, Hunyuan3D-2.1, MV-Adapter and the TRELLIS.2 texturer were removed from Create (their textures were base colour only). Single, Batch, Map, Effects, Motion and Video are unchanged. Old items or manifests that name a removed engine are dropped from the engine plan instead of failing. Weights, environments and sources were moved (not deleted) to `D:\AFS_archive\removed_engines_20261026\`; restore recipe, commits, measurements and lessons: `docs/REMOVED_ENGINES.md` (git tag `pre-single-engine-0.9.37`).
+
+## 0.9.39
+
+2D sprite assets that finished (concepts + cut-outs) no longer stay on the "in the queue" placeholder; the canvas shows the sprite image.

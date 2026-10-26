@@ -1,6 +1,6 @@
 [package]
 name = "asset-forge-studio"
-version = "0.9.38"
+version = "0.9.39"
 description = "Local Windows studio for high quality 3D assets"
 authors = ["Asset Forge Studio"]
 edition = "2021"
