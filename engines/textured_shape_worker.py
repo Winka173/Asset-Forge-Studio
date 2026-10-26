@@ -1,6 +1,6 @@
 """Shape engine + MV-Adapter texturing as one inference job, so every engine delivers a textured GLB.
 
-The shape worker (TripoSG, TRELLIS v1 or Hunyuan3D-2.1, each in its own environment) writes output/shape/;
+The shape worker (TripoSG or Hunyuan3D-2.1, each in its own environment) writes output/shape/;
 MV-Adapter then textures that mesh from the same alpha concept into output/texture/. The textured mesh becomes
 output/raw.glb (the usual candidate contract); the untextured shape stays as output/shape/raw.glb for provenance.
 """

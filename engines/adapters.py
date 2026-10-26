@@ -86,17 +86,13 @@ class LocalAdapter:
 
 HOME = Path.home()
 # Engines that build a shape from an alpha image and are textured by MV-Adapter in the same job.
-SHAPE_ENGINES = ('triposg', 'trellis_v1', 'hunyuan3d21')
+SHAPE_ENGINES = ('triposg', 'hunyuan3d21')
 MVADAPTER = dict(engine=store.WORKSPACE / '.local/engines/MV-Adapter', python=store.WORKSPACE / '.local/envs/mvadapter/Scripts/python.exe')
 # Shape stage per engine: environment, worker, extra request fields and the files that prove the weights are present.
 SHAPES = {
     'triposg': dict(python=store.WORKSPACE / '.local/envs/triposg/Scripts/python.exe', worker='engines/triposg_worker.py', source=store.WORKSPACE / '.local/engines/TripoSG',
                     extra=dict(weights=str(store.WORKSPACE / 'models/triposg'), dense_depth=7, octree_depth=9, decode_chunk_size=10000, min_free_vram_gb=8),
                     required=[store.WORKSPACE / 'models/triposg/transformer/diffusion_pytorch_model.safetensors'], checkpoints=[store.WORKSPACE / 'models/triposg']),
-    'trellis_v1': dict(python=store.WORKSPACE / '.local/envs/trellis_v1/Scripts/python.exe', worker='engines/sparse_research_worker.py', source=store.WORKSPACE / '.local/engines/TRELLIS-v1',
-                       extra=dict(engine='trellis_v1', weights=str(HOME / 'Tools/trellis2/code/MODELS/hub/models--microsoft--TRELLIS-image-large/snapshots/25e0d31ffbebe4b5a97464dd851910efc3002d96')),
-                       required=[HOME / 'Tools/trellis2/code/MODELS/hub/models--microsoft--TRELLIS-image-large/snapshots/25e0d31ffbebe4b5a97464dd851910efc3002d96/pipeline.json'],
-                       checkpoints=[HOME / 'Tools/trellis2/code/MODELS/hub/models--microsoft--TRELLIS-image-large']),
     'hunyuan3d21': dict(python=store.WORKSPACE / '.local/envs/hunyuan3d21/Scripts/python.exe', worker='engines/hunyuan_worker.py', source=HOME / 'Tools/hunyuan3d21/code',
                         extra=dict(engine_path=str(HOME / 'Tools/hunyuan3d21/code'), models=str(HOME / 'Tools/hunyuan3d21/models'), hf_home=str(HOME / 'Tools/hunyuan3d21/hf_home'), steps=50, octree_resolution=384),
                         required=[HOME / 'Tools/hunyuan3d21/models/tencent/Hunyuan3D-2.1/hunyuan3d-dit-v2-1/config.yaml'], checkpoints=[HOME / 'Tools/hunyuan3d21/models/tencent/Hunyuan3D-2.1/hunyuan3d-dit-v2-1']),
@@ -157,7 +153,6 @@ class TexturedShapeAdapter(LocalAdapter):
 REQUIREMENTS = {
     'trellis2_community': dict(peak_vram_gb=16, free_ram_gb=25, seconds=290),  # 22.8 GiB resident peak measured 2026-10-25
     'triposg': dict(peak_vram_gb=14.3, shape_seconds=67, texture_seconds=225),
-    'trellis_v1': dict(peak_vram_gb=14.3, shape_seconds=43, texture_seconds=159),
     'hunyuan3d21': dict(peak_vram_gb=14.3, shape_seconds=145, texture_seconds=154),
 }
 
@@ -165,8 +160,6 @@ ADAPTERS: dict[str, EngineAdapter] = {
     'trellis2_community': LocalAdapter('trellis2_community', 'local Windows StableProjectorz bundle, source hashes per run', 'EVALUATION_ONLY_PENDING_AUDIT', ('image_to_mesh', 'seed', 'pbr', 'stage_cpu_offload'), 10),
     'triposg': TexturedShapeAdapter('triposg', 'fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c+optional-diso; MV-Adapter 4277e00', 'MIT (TripoSG); Apache-2.0 (MV-Adapter); SDXL OpenRAIL++-M',
                                     ('image_to_mesh', 'seed', 'basecolor_texture'), 14),
-    'trellis_v1': TexturedShapeAdapter('trellis_v1', '442aa1e1afb9014e80681d3bf604e8d728a86ee7; MV-Adapter 4277e00', 'MIT (TRELLIS); Apache-2.0 (MV-Adapter); SDXL OpenRAIL++-M',
-                                       ('image_to_mesh', 'seed', 'basecolor_texture'), 14),
     'hunyuan3d21': TexturedShapeAdapter('hunyuan3d21', 'Hunyuan3D-2.1 shape DiT; MV-Adapter 4277e00', 'Tencent Hunyuan Community License (not EU/UK/KR); Apache-2.0 (MV-Adapter)',
                                         ('image_to_mesh', 'seed', 'basecolor_texture'), 14),
 }

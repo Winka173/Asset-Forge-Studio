@@ -148,3 +148,9 @@ def test_one_sentence_request_lists_named_assets_as_2d_sprites(client,monkeypatc
     assert studio.asset(batch['items'][0]['asset_id'])['asset_type']=='sprite_2d' and batch['import_diagnostics']['parser_method']=='local_ai_request_split'
     rejected=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt='x'*3100,mode='Maximum Quality Batch'))
     assert rejected.status_code==400
+
+
+def test_every_item_of_a_batch_draws_with_one_shared_style(client):
+    batch = client.post('/api/batches/analyze', json=dict(project_id='runavelle', master_prompt='- knight\n- archer', mode='Maximum Quality Batch')).json()
+    from apps.api import batch as batches
+    assert batches.batch(batch['id'])['batch_style'] == 'test shared style'

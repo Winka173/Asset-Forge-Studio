@@ -24,3 +24,12 @@ def single_concept_by_default(monkeypatch):
 def no_implicit_local_llm_inference(monkeypatch):
     """Unit/API suites never start installed multi-GB models implicitly. Real acceptance is separate."""
     monkeypatch.setenv("AFS_INTENT_ENABLED","0")
+
+
+@pytest.fixture(autouse=True)
+def _no_real_batch_style(monkeypatch):
+    """Batch analysis writes a shared style with the local model; tests must not load it."""
+    import engines.batch_style as batch_style
+    monkeypatch.setattr(batch_style, 'derive', lambda *a, **k: 'test shared style')
+    from apps.api import batch
+    monkeypatch.setattr(batch, 'STYLE_ASYNC', False)

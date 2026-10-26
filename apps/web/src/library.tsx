@@ -31,7 +31,7 @@ function heroTransition(source:Element|null,open:()=>void){
  source.style.viewTransitionName='asset-hero';
  doc.startViewTransition(()=>{source.style.viewTransitionName='';flushSync(open);});
 }
-const MODEL_NAME:Record<string,string>={trellis2_community:'TRELLIS.2',triposg:'TripoSG',trellis_v1:'TRELLIS v1',hunyuan3d21:'Hunyuan3D-2.1',blender_procedural:'Blender assembly'};
+const MODEL_NAME:Record<string,string>={trellis2_community:'TRELLIS.2',triposg:'TripoSG',hunyuan3d21:'Hunyuan3D-2.1',blender_procedural:'Blender assembly'};
 // "TRELLIS.2 · finished" / "TripoSG · raw · seed 7": processed copies take the engine of the raw model they came from.
 function modelLabel(a:{id:string;name:string;metadata:Record<string,unknown>},all:{id:string;metadata:Record<string,unknown>}[]){
  let engine=a.metadata.engine as string|undefined;let parent=a.metadata.parent_id as string|undefined;

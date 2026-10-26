@@ -187,4 +187,4 @@ def test_auto_uses_the_default_engine_and_ticked_engines_run_each(monkeypatch):
     assert plan_engines(item, alpha) == ['trellis2_community']
     assert plan_engines(dict(item, engines=['trellis2_community', 'hunyuan3d21', 'triposg']), alpha) == ['trellis2_community', 'hunyuan3d21', 'triposg']
     # Shape engines cut the subject out themselves, so an image without alpha (or a concept still to come) keeps them.
-    assert plan_engines(dict(item, engines=['trellis2_community', 'trellis_v1']), None) == ['trellis2_community', 'trellis_v1']
+    assert plan_engines(dict(item, engines=['trellis2_community', 'triposg']), None) == ['trellis2_community', 'triposg']

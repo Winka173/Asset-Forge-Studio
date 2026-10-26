@@ -124,6 +124,12 @@ def material_inventory(objects, folder):
     return result
 
 
+def set_image_kind(settings, file_format):
+    """Blender 5.x made multilayer a media type (the OPEN_EXR_MULTILAYER format is only offered under it); 4.x lists it directly."""
+    if hasattr(settings, 'media_type'): settings.media_type = 'MULTI_LAYER_IMAGE' if file_format == 'OPEN_EXR_MULTILAYER' else 'IMAGE'
+    settings.file_format = file_format
+
+
 def render_views(objects, output, cfg, resolutions, selected_views):
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -179,12 +185,12 @@ def render_views(objects, output, cfg, resolutions, selected_views):
             # Mask pass excludes metric markers and lighting geometry, based on true transparency.
             for extra in extras:
                 if extra.type == 'MESH': extra.hide_render = True
-            scene.render.image_settings.file_format = 'OPEN_EXR_MULTILAYER'
+            set_image_kind(scene.render.image_settings, 'OPEN_EXR_MULTILAYER')
             scene.render.filepath = str(output / (stem + '_passes.exr'))
             bpy.ops.render.render(write_still=True)
             files.append(stem + '_passes.exr')
             # Save raw asset beauty RGBA; its alpha is the silhouette, unaffected by scale markers.
-            scene.render.image_settings.file_format = 'PNG'
+            set_image_kind(scene.render.image_settings, 'PNG')
             bpy.data.images['Render Result'].save_render(str(output / (stem + '_asset.png')), scene=scene)
             files.append(stem + '_asset.png')
             for extra in extras:

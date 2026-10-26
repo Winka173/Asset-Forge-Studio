@@ -10,7 +10,7 @@ def test_every_shape_engine_builds_a_textured_job(monkeypatch, tmp_path):
         events = []
         command, cwd, request = adapter.generate(dict(request_path=str(tmp_path / 'r.json'), image='c.png', output=str(tmp_path / engine), seed=42, texture_size=2048), events.append)
         assert command[-3].endswith('textured_shape_worker.py') and command[-1] == str(tmp_path / 'r.json')
-        assert request['shape_command'][-1].endswith({'triposg': 'triposg_worker.py', 'trellis_v1': 'sparse_research_worker.py', 'hunyuan3d21': 'hunyuan_worker.py'}[engine])
+        assert request['shape_command'][-1].endswith({'triposg': 'triposg_worker.py', 'hunyuan3d21': 'hunyuan_worker.py'}[engine])
         assert request['uv_size'] == 2048 and request['texture_worker'].endswith('mvadapter_texture_worker.py') and request['u2net_home']
         assert events and events[0]['engine'] == engine
 

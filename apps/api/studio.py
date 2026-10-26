@@ -390,6 +390,7 @@ def concept(body: ConceptInput):
     overrides=value.get('settings',{}).get('style_overrides',{})
     if overrides:inherited.append('Asset style overrides: '+json.dumps(overrides,ensure_ascii=False))
     style='; '.join(filter(None,[style,*inherited]))
+    if body.batch_id and parent.get('batch_style'):style='; '.join(filter(None,[style,'Shared batch style: '+parent['batch_style']]))
     # Profile mode: the anchor contributes materials/colours/rendering as text only, never its silhouette.
     from .style_profile import concept_style
     palette_only=bool(body.batch_id) and any(i['asset_id']==value['id'] and i.get('intent_reference_scope')=='palette_only' for i in parent['items'])
@@ -456,7 +457,7 @@ def approve_concept(identifier:str,artifact_id:str,body:ConceptApproval):
 class Generate(BaseModel):
     asset_id: str
     request_id: str = Field(min_length=8, max_length=100)
-    engine: Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21'] = 'auto'
+    engine: Literal['auto','trellis2_community','triposg','hunyuan3d21'] = 'auto'
     quality: Literal['Fast', 'Balanced', 'Maximum'] = 'Maximum'
     artifact_id: str
     prompt: str | None = Field(default=None, max_length=100000)
@@ -519,7 +520,7 @@ def generate(body: Generate):
                    steps=body.steps or (50 if engine in ('triposg', 'hunyuan3d21') else {'Fast': 12, 'Balanced': 24, 'Maximum': 32}[quality]),
                    pipeline_type=body.pipeline_type or ('512' if quality == 'Fast' else '1024_cascade'),
                    texture_size=body.texture_size or (2048 if quality == 'Fast' else 4096),
-                   texturer=(body.texturer or 'mvadapter') if engine in ('triposg','trellis_v1','hunyuan3d21') else None,
+                   texturer=(body.texturer or 'mvadapter') if engine in ('triposg','hunyuan3d21') else None,
                    auto_blender=body.auto_blender, benchmark_height_m=body.benchmark_height_m or config.get('target_height_m'), triangle_budget=body.triangle_budget, game_texture_size=body.game_texture_size,
                    tournament_id=uuid.uuid4().hex, purpose='evaluation_only', quality=quality,
                    prompt_conditioning='NOT_SUPPORTED_RECORDED_ONLY', auto_selection='prefer proven textured engine, not measured universal quality ranking')

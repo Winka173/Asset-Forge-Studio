@@ -225,6 +225,14 @@ def advance(identifier):
     with batch.LOCK:
         value=batch.batch(identifier)
         if not value.get('automation'):return batch.detail(value)
+        if value.get('batch_style_state')=='pending':
+            # The shared style is written in the background right after Analyze (about 40 s on CPU); concepts wait for it, but never
+            # forever: a restart that lost the job releases the batch after three minutes.
+            import datetime
+            try:age=(datetime.datetime.now(datetime.timezone.utc)-datetime.datetime.fromisoformat(value['created_at'])).total_seconds()
+            except (KeyError,ValueError):age=0
+            if age<180:return batch.detail(value)
+            value['batch_style_state']='unavailable';batch.save(value)
         settings=value['automation']['settings'];snapshot=studio.studio(value['project_id']);all_jobs=snapshot['jobs'];artifacts=snapshot['artifacts']
         for job in all_jobs:
             if job['payload'].get('batch_id')==identifier and recover_checkpoint(job):job['status']='REVIEW_REQUIRED';job['error']=None
@@ -543,9 +551,9 @@ class Single(BaseModel):
     asset_id:str
     request_id:str=Field(min_length=8,max_length=100)
     quality:Literal['Fast','Balanced','Maximum']='Maximum'
-    engine:Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21']='auto'
+    engine:Literal['auto','trellis2_community','triposg','hunyuan3d21']='auto'
     # Generate candidates with each of these engines (Advanced); empty uses `engine`.
-    engines:list[Literal['trellis2_community','triposg','trellis_v1','hunyuan3d21']]=Field(default_factory=list,max_length=4)
+    engines:list[Literal['trellis2_community','triposg','hunyuan3d21']]=Field(default_factory=list,max_length=4)
     texturer:Literal['','mvadapter','trellis2']=''
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     triangle_budget:int|None=Field(default=None,ge=500,le=5_000_000)

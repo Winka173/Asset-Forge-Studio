@@ -1,6 +1,6 @@
 """Texture a shape-only mesh from its concept image with MV-Adapter (Apache-2.0), fully offline.
 
-Used after TripoSG, TRELLIS v1 and Hunyuan3D-2.1 shape stages so every engine delivers a textured GLB.
+Used after TripoSG and Hunyuan3D-2.1 shape stages so every engine delivers a textured GLB.
 Six geometry-conditioned SDXL views (768 px) are generated from the concept, then projected onto a UV atlas,
 upscaled (RealESRGAN x2) and inpainted (LaMa). CV-CUDA ops run on OpenCV (engines/mvadapter_opencv_ops.patch).
 

@@ -106,13 +106,8 @@ def check():
         hub=Path.home()/'Tools/trellis2/code/MODELS/hub'
         specs=[('ffmpeg',media_item,()),('blender',editor_item,('blender',)),('unity',editor_item,('unity',)),
             ('trellis2',model_item,('trellis2','TRELLIS.2','microsoft/TRELLIS.2-4B',hub/'models--microsoft--TRELLIS.2-4B/refs/main')),
-            ('trellis_v1',model_item,('trellis_v1','TRELLIS v1','microsoft/TRELLIS-image-large',hub/'models--microsoft--TRELLIS-image-large/snapshots/25e0d31ffbebe4b5a97464dd851910efc3002d96')),
-            ('hi3dgen',model_item,('hi3dgen','Hi3DGen geometry','Stable-X/trellis-normal-v0-1',store.WORKSPACE/'models/hi3dgen')),
-            ('hi3dgen_normal',model_item,('hi3dgen_normal','Hi3DGen normal estimator','Stable-X/yoso-normal-v1-8-1',store.WORKSPACE/'models/hi3dgen_normal')),
             ('triposg',model_item,('triposg','TripoSG','VAST-AI/TripoSG',store.WORKSPACE/'models/triposg')),
             ('sdxl',model_item,('sdxl','SDXL concept','stabilityai/stable-diffusion-xl-base-1.0',CONCEPT_ADAPTER.weights())),
-            ('trellis_v1_code',code_item,('trellis_v1_code','TRELLIS v1','microsoft/TRELLIS',store.WORKSPACE/'.local/engines/TRELLIS-v1')),
-            ('hi3dgen_code',code_item,('hi3dgen_code','Hi3DGen','bytedance/Hi3DGen',store.WORKSPACE/'.local/engines/Hi3DGen')),
             ('triposg_code',code_item,('triposg_code','TripoSG','VAST-AI-Research/TripoSG',store.WORKSPACE/'.local/engines/TripoSG'))]
         items=[]
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:

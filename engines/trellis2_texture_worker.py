@@ -1,6 +1,6 @@
 """Texture a shape-only mesh with the TRELLIS.2 texturing pipeline (MIT; upstream microsoft/TRELLIS.2), fully offline.
 
-Experimental alternative to MV-Adapter for TripoSG, TRELLIS v1 and Hunyuan3D-2.1 shapes. INFERENCE NOT YET TESTED.
+Experimental alternative to MV-Adapter for TripoSG and Hunyuan3D-2.1 shapes. INFERENCE NOT YET TESTED.
 The mesh is voxelised, a texture latent is sampled from the concept (DINOv3 conditioning) and decoded to native PBR:
 base colour, metallic and roughness, baked to a UV atlas (CuMesh unwrap, nvdiffrast raster). No colour finish pass:
 the model's own material channels are kept.

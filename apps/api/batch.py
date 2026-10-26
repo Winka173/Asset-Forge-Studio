@@ -129,8 +129,31 @@ async def import_file(file:UploadFile=File(...),project_id:str=Form(...),name:st
     return analyze_source(body,content)
 
 
+STYLE_ASYNC=True  # tests derive inline
+
+
+def derive_batch_style(identifier,job):
+    """One shared look for the whole set (engines/batch_style.py), written after Analyze returns; concepts wait for it.
+    A failure leaves every item to the project style as before."""
+    style=None
+    try:
+        from engines.batch_style import derive
+        style=derive(job['prompt'],job['names'],job['style'])
+    except Exception:pass
+    with LOCK:
+        try:value=batch(identifier)
+        except Exception:return
+        value['batch_style']=style;value['batch_style_state']='ready' if style else 'unavailable';value.pop('batch_style_job',None);save(value)
+
+
 def analyze_source(body:Analyze,source_bytes:bytes|None=None):
-    with LOCK:return _analyze_source(body,source_bytes)
+    with LOCK:result=_analyze_source(body,source_bytes)
+    job=(batch(result['id']) if result.get('id') else {}).get('batch_style_job') if not result.get('reused_import') else None
+    if job:
+        import threading
+        if STYLE_ASYNC:threading.Thread(target=derive_batch_style,args=(result['id'],job),daemon=True).start()
+        else:derive_batch_style(result['id'],job)
+    return result
 
 
 def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
@@ -162,6 +185,7 @@ def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
         except Exception as failure:raise HTTPException(400,str(exc)+' (Local AI could not split the request: '+str(failure)[:200]+')')
         warnings=[f'Local AI ({split_model}, CPU) listed the {len(rows)} assets named in your request; nothing was added. Check names and prompts before Generate.']
     identifier=uuid.uuid4().hex;items=[]
+    style_job=dict(prompt=body.master_prompt[:1500],names=[r['name'] for r in rows][:40],style=project.get('default_style','')) if len(rows)>1 else None
     report=diagnostics(body.master_prompt,body.format,rows,warnings)
     if split_model:report.update(parser_method='local_ai_request_split',local_ai_used=True,parsed_count=len(rows),primary_count=len(rows))
     from engines.request_split import TWO_D
@@ -199,6 +223,7 @@ def _analyze_source(body:Analyze,source_bytes:bytes|None=None):
                 history.extend(h for h in model['source_import_history'] if h['batch_id']==identifier and not any(old['batch_id']==identifier for old in history))
                 db.execute('UPDATE assets SET payload=? WHERE id=?',(json.dumps(latest),model['id']))
             else:db.execute('INSERT INTO assets VALUES (?,?,?)',(model['id'],body.project_id,json.dumps(model)))
+        value['batch_style']=None;value['batch_style_state']='pending' if style_job else 'none';value['batch_style_job']=style_job
         db.execute('INSERT INTO batches VALUES (?,?,?)',(identifier,body.project_id,json.dumps(value)))
     return detail(value)
 
@@ -241,7 +266,7 @@ def selection(identifier:str,body:Selection):
 
 
 class Models(BaseModel):
-    engines:list[Literal['trellis2_community','triposg','trellis_v1','hunyuan3d21']]=Field(default_factory=list,max_length=4)
+    engines:list[Literal['trellis2_community','triposg','hunyuan3d21']]=Field(default_factory=list,max_length=4)
     texturer:Literal['','mvadapter','trellis2']=''
 
 
@@ -342,7 +367,7 @@ def advance(identifier):
                     source=studio.scoped_artifact(item['concept_artifact_id'],value['project_id'])
                     engines=[item['preferred_engine']]
                     if engines==['auto']:
-                        engines=[e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e not in ('triposg','trellis_v1','hunyuan3d21') or source['metadata'].get('has_transparency'))]
+                        engines=[e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e not in ('triposg','hunyuan3d21') or source['metadata'].get('has_transparency'))]
                         if value['mode']!='Maximum Quality Batch':engines=engines[:1]
                     if not engines:raise ValueError('No installed engine supports this input; no fallback or quality downgrade')
                     for engine in engines:

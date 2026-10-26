@@ -38,9 +38,9 @@ class ManifestItem(BaseModel):
     dependencies: list[str] = Field(default_factory=list,max_length=100)
     asset_family: str = ''
     quality: Literal['Fast','Balanced','Maximum'] = 'Balanced'
-    preferred_engine: Literal['auto','trellis2_community','triposg','trellis_v1','hunyuan3d21'] = 'auto'
-    engines: list[Literal['trellis2_community','triposg','trellis_v1','hunyuan3d21']] = Field(default_factory=list,max_length=4)
-    # Texturing for the shape engines (TripoSG, TRELLIS v1, Hunyuan3D-2.1); empty = MV-Adapter, the tested default.
+    preferred_engine: Literal['auto','trellis2_community','triposg','hunyuan3d21'] = 'auto'
+    engines: list[Literal['trellis2_community','triposg','hunyuan3d21']] = Field(default_factory=list,max_length=4)
+    # Texturing for the shape engines (TripoSG, Hunyuan3D-2.1); empty = MV-Adapter, the tested default.
     texturer: Literal['','mvadapter','trellis2'] = ''
     candidates: int = Field(default=1,ge=1,le=5)
     # Optional game-ready triangle budget; the master keeps full detail and the delivered derivative is decimated to it.
