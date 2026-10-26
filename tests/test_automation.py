@@ -187,3 +187,11 @@ def test_auto_uses_the_default_engine_and_ticked_engines_run_each(monkeypatch):
     assert plan_engines(dict(item, engines=['trellis2_community']), alpha) == ['trellis2_community']
     # Ids of archived engines left on old items are dropped instead of crashing.
     assert plan_engines(dict(item, engines=['triposg', 'trellis2_community']), None) == ['trellis2_community']
+
+
+def test_generate_is_refused_with_a_clear_message_until_the_engines_are_installed(client, monkeypatch):
+    from engines.adapters import ADAPTERS
+    monkeypatch.setattr(ADAPTERS['trellis2_community'], 'probe', lambda: dict(installed=False))
+    value = client.post('/api/batches/analyze', json=dict(project_id='runavelle', master_prompt=json.dumps([dict(name='Tower', prompt='Tower')]), format='json')).json()
+    response = client.post(f"/api/batches/{value['id']}/run-all", json=dict(request_id='guard-test-0001'))
+    assert response.status_code == 409 and 'Download & install' in response.text and 'TRELLIS.2' in response.text

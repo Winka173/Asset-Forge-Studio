@@ -141,6 +141,16 @@ def plan_engines(item,source=None):
     return compatible
 
 
+def missing_engines(items):
+    """Refuse to queue work that cannot run because the AI parts were never installed (the first-run setup offers them)."""
+    from engines.adapters import ADAPTERS
+    from engines.concept_adapter import CONCEPT_ADAPTER
+    items=list(items);missing=[]
+    if any(i.get('output')!='2d' for i in items) and not ADAPTERS['trellis2_community'].installed:missing.append('the 3D engine (TRELLIS.2)')
+    if any(not i.get('reference_ids') and not i.get('processing_source') for i in items) and not CONCEPT_ADAPTER.installed:missing.append('the concept image engine (FLUX.2 klein)')
+    if missing:raise HTTPException(409,'Install '+' and '.join(missing)+' first: open Settings and press Download & install under "Set up what you want to create". You can still browse, import and prepare work meanwhile.')
+
+
 def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=None,regenerate_completed=False,allow_questions=False):
     from . import batch
     from .export_profiles import resolve_project_settings
@@ -149,6 +159,7 @@ def start(identifier,selected_ids=None,workflow=None,dry_run=False,request_id=No
         if settings['mode']=='expert':settings['mode']='auto'  # this endpoint is an explicit automatic action
         ids=set(selected_ids if selected_ids is not None else [i['asset_id'] for i in value['items']])
         if ids-{i['asset_id'] for i in value['items']}:raise HTTPException(400,'Asset selection is outside this batch')
+        if not dry_run:missing_engines(i for i in value['items'] if i['asset_id'] in ids)
         digest,reused=batch.prepare_generation(value,ids,request_id,regenerate_completed,dry_run)
         if reused:return batch.detail(value)
         snapshot=studio.studio(value['project_id']);project=studio.project(value['project_id'])

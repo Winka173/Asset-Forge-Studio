@@ -96,3 +96,7 @@ One-click AI component setup (Settings and the top of Create): pick what to crea
 ## 0.9.44
 
 The first-run wizard now embeds the same one-click component setup (choose what to create, press one button); the manual workspace and Blender pickers moved under Advanced.
+
+## 0.9.45
+
+Generate (Single/Batch) is refused with a clear message while the 3D or concept engine is not installed, pointing to Settings → Set up what you want to create. The studio can be opened with nothing installed.

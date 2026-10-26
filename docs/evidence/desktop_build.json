@@ -1,20 +1,19 @@
 ﻿{
-    "version":  "0.9.44",
-    "timestamp_utc":  "20261026T090313Z",
-    "git_commit":  "1b0e41a8288ec9169190d4ffe0468b91681465dc",
+    "version":  "0.9.45",
+    "timestamp_utc":  "20261026T091844Z",
+    "git_commit":  "fd2eb4418743aa86247aa83fe00cf043dd22aa4c",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
+                          " M apps/api/automation.py",
                           " M apps/api/main.py",
-                          " M apps/web/src/desktop.css",
-                          " M apps/web/src/desktop.ts",
                           " M docs/ASSET_MANAGEMENT_WORKFLOW.md",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          "?? apps/web/src/setup-embed.tsx",
+                          " M tests/test_automation.py",
                           "?? prompt/"
                       ],
     "changed_features":  [
@@ -24,7 +23,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T090313Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T091844Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -35,13 +34,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "921ca2146eecaa762251588c40d73fb23221fef1ecd243782f2d34fbbc1aeb79",
-                            "afs-backend.exe":  "1bda8098c10d6a414caa3aafe43fa94bdaeb868bbd85f8a6f87afba61f746216",
-                            "Asset Forge Studio_0.9.44_x64-setup.exe":  "1d2c2f49d60805fd7e62a47cb19bdb9d610e5d0d59a6b8fc2e42bd8e20d6417a"
+                            "Asset Forge Studio.exe":  "35eae8820b231013f53c600c4450a2588b162dad182067a3375e9662b14105f0",
+                            "Asset Forge Studio_0.9.45_x64-setup.exe":  "045897bbc7d8a2fc2dac55fd180dace3a49dce9bc8860844b1739b1c5c7bf62a",
+                            "afs-backend.exe":  "21e5c331c4861f3ced08c5544fbc1bf0e7ce0159e6a76f005bb3c00487f41649"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T09-07-35-430Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T09-23-17-422Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.9.44_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.9.45_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }
