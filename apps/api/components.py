@@ -251,7 +251,7 @@ def install_qwen():
     stop = _session['stop']
     exe = TOOLS / f'afs-ollama/{OLLAMA_VERSION}/ollama.exe'; models = TOOLS / 'afs-ollama/models'
     # A private server on its own port, so another Ollama on the usual port can never receive (or satisfy) the download.
-    port = 11435
+    port = 11437
     env = os.environ.copy(); env.update(OLLAMA_HOST=f'127.0.0.1:{port}', OLLAMA_MODELS=str(models), OLLAMA_NO_CLOUD='1')
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     def up():
