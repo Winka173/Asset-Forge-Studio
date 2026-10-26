@@ -24,12 +24,12 @@
 .batch-edit-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-3); }
 
 /* Intake: brief + context */
-.batch-intake { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr); gap: var(--sp-4); align-items: start; }
-.batch-brief, .batch-context, .batch-preflight, .batch-export, .batch-manifest {
+.batch-intake { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr) minmax(260px, 1fr); gap: var(--sp-4); align-items: start; counter-reset: batch-col; }
+.batch-brief, .batch-context, .batch-extras, .batch-preflight, .batch-export, .batch-manifest {
   display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; padding: var(--sp-5);
   border: 1px solid var(--border); border-radius: var(--r-xl); background: var(--surface-1);
 }
-.batch-brief > *, .batch-context > *, .batch-preflight > *, .batch-export > *, .batch-manifest > * { margin: 0; }
+.batch-brief > *, .batch-context > *, .batch-extras > *, .batch-preflight > *, .batch-export > *, .batch-manifest > * { margin: 0; }
 .batch-panel-title { display: flex; align-items: center; gap: var(--sp-3); }
 .batch-panel-title > svg { color: var(--text-3); }
 .batch-panel-title h2, .batch-panel-title strong { font-size: var(--fs-lg); }
@@ -143,6 +143,7 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .batch-dimensions-editor { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--sp-3); }
 .batch-override-panel, .batch-quality-override, .batch-analysis { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface-2); }
 
+@media (max-width: 1500px) { .batch-intake { grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); } .batch-extras { grid-column: 1 / -1; } }
 @media (max-width: 1100px) { .batch-intake, .batch-bottom { grid-template-columns: 1fr; } }
 
 /* Steps: one concern per screen; every section stays mounted so state and automation are unaffected. */
@@ -178,3 +179,15 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .scale-lineup-item text { fill: var(--text-3); font-size: 10px; }
 .batch-keep-final { display: flex; align-items: flex-start; gap: var(--sp-2); flex-wrap: wrap; margin: var(--sp-2) 0; }
 .batch-keep-final small { flex-basis: 100%; padding-left: 24px; color: var(--text-3); }
+
+/* Describe step: three numbered columns (what to build, how, references and automation) and one action bar. */
+:is(.batch-brief, .batch-context, .batch-extras) > .batch-panel-title::before { counter-increment: batch-col; content: counter(batch-col); display: grid; place-items: center; flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--text-inverse); font-size: var(--fs-xs); font-weight: 700; }
+:is(.batch-brief, .batch-context, .batch-extras) > .batch-panel-title > svg { display: none; }
+.batch-extras .batch-workflow-disclosure { margin: 0; }
+.batch-footer-bar { position: sticky; bottom: 0; z-index: 3; margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--r-lg, 12px); background: var(--surface-2); box-shadow: 0 -8px 24px rgba(0,0,0,.25); }
+.batch-footer-bar .batch-intake-actions { margin: 0; }
+.batch-steps > button { flex-direction: row; align-items: center; }
+.batch-steps > button > b { font-weight: 600; }
+.batch-steps > button > small { color: var(--text-3); font-size: var(--fs-xs); }
+.batch-steps > button[aria-current="step"] > small { color: var(--text-2); }
+@media (max-width: 700px) { .batch-steps > button > small { display: none; } }

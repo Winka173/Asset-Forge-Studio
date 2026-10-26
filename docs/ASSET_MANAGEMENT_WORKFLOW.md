@@ -76,3 +76,7 @@ TripoSG, Hunyuan3D-2.1, MV-Adapter and the TRELLIS.2 texturer were removed from 
 ## 0.9.39
 
 2D sprite assets that finished (concepts + cut-outs) no longer stay on the "in the queue" placeholder; the canvas shows the sprite image.
+
+## 0.9.40
+
+Batch Describe step is three numbered columns (describe, configure, references and automation) with one sticky action bar and a clearer 3-step bar; Effects shows one tool at a time (Unity recipe or simulated flipbook) in tabs.
