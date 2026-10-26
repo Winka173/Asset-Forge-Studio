@@ -51,16 +51,16 @@ def test_manifest_review_pause_resume_and_no_fabricated_outputs(client):
 def test_single_batch_quality_parity_retry_and_hash_guard(client):
     from engines.adapters import ADAPTERS
     from engines.quality import fingerprint
-    if not ADAPTERS['triposg'].installed:pytest.skip('Requires actual preinstalled local engine/checkpoints')
+    if not ADAPTERS['trellis2_community'].installed:pytest.skip('Requires actual preinstalled local engine/checkpoints')
     pixels=io.BytesIO();Image.new('RGBA',(32,32),(0,0,0,0)).save(pixels,format='PNG')
     ref=client.post('/api/import/reference',files=dict(file=('qa.png',pixels.getvalue()))).json()
     single=client.post('/api/assets',json=dict(project_id='runavelle',name='QA Single',prompt='Archer Tower')).json()
-    manifest=[dict(name='QA Batch',prompt='Archer Tower',preferred_engine='triposg',candidates=2,reference_ids=[ref['id']],target_width_m=3,target_depth_m=3,target_height_m=10,confirmed=True)]
+    manifest=[dict(name='QA Batch',prompt='Archer Tower',preferred_engine='trellis2_community',candidates=2,reference_ids=[ref['id']],target_width_m=3,target_depth_m=3,target_height_m=10,confirmed=True)]
     batch=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt=json.dumps(manifest),format='json',mode='Maximum Quality Batch')).json()
     item=batch['items'][0]
     approved=client.post(f'/api/assets/{item["asset_id"]}/concepts/{ref["id"]}/approve',json=dict(reviewer='QA config parity only'))
     assert approved.status_code==200
-    first=client.post('/api/studio/generate',json=dict(asset_id=single['id'],artifact_id=ref['id'],request_id='single-parity-request',engine='triposg',quality='Maximum',seeds=[42,43],auto_blender=True,benchmark_height_m=10)).json()
+    first=client.post('/api/studio/generate',json=dict(asset_id=single['id'],artifact_id=ref['id'],request_id='single-parity-request',engine='trellis2_community',quality='Maximum',seeds=[42,43],auto_blender=True,benchmark_height_m=10)).json()
     assert all(j['payload']['blender_export_fbx'] is False for j in first['jobs'])
     result=client.post(f'/api/batches/{batch["id"]}/run',json=dict(selected_ids=[item['asset_id']]))
     assert result.status_code==200,result.text
@@ -76,7 +76,7 @@ def test_single_batch_quality_parity_retry_and_hash_guard(client):
     job=batched[0];jobs.transition(job['id'],'BLOCKED','OOM verification fixture; not an executed GPU run')
     retried=jobs.retry(job['id'])
     assert retried['payload']['effective_config']==job['payload']['effective_config']
-    assert retried['payload']['steps']==50 and retried['payload']['engine']=='triposg'
+    assert retried['payload']['steps']==32 and retried['payload']['engine']=='trellis2_community'
     corrupt=dict(job['payload']);corrupt['effective_config']=dict(corrupt['effective_config'],inference_steps=1)
     invalid=jobs.enqueue(corrupt);jobs.Worker().execute(invalid)
     assert jobs.get(invalid['id'])['status']=='BLOCKED'

@@ -104,7 +104,7 @@ def route(body:RouteRequest):
     if uses_concept and not body.prompt.strip():gaps.append('A prompt or an approved reference image is required')
     if body.input_mode=='Image' and source is None:gaps.append('Image input is missing')
     chosen=body.engine
-    if chosen=='auto':chosen=next((e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e!='triposg' or (source and source['metadata'].get('has_transparency')))),None)
+    if chosen=='auto':chosen=next((e for e in ['trellis2_community'] if ADAPTERS[e].installed),None)
     provider=next((p for p in caps['providers'] if p['id']==chosen),None)
     if not provider or not provider['installed']:gaps.append('No compatible installed local 3D adapter; no fallback will run')
     shape_engine=chosen in ('triposg','hunyuan3d21')

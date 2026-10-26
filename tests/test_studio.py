@@ -62,11 +62,11 @@ def test_human_master_selection_and_actual_export_keep_versions(client):
 
 def test_generation_request_is_atomic_and_idempotent(client):
     from engines.adapters import ADAPTERS
-    if not ADAPTERS['triposg'].installed: pytest.skip('Needs real local engine installation to enqueue')
+    if not ADAPTERS['trellis2_community'].installed: pytest.skip('Needs real local engine installation to enqueue')
     a = client.post('/api/assets', json={'project_id': 'runavelle', 'name': 'QA enqueue only'}).json()
     image = io.BytesIO(); Image.new('RGBA', (16, 16), (0, 0, 0, 0)).save(image, format='PNG')
     ref = client.post('/api/import/reference', params={'asset_id': a['id']}, files={'file': ('qa.png', image.getvalue())}).json()
-    request = dict(asset_id=a['id'], artifact_id=ref['id'], request_id='qa-generation-once', engine='triposg', seeds=[42])
+    request = dict(asset_id=a['id'], artifact_id=ref['id'], request_id='qa-generation-once', engine='trellis2_community', seeds=[42])
     first = client.post('/api/studio/generate', json=request)
     assert first.status_code == 201, first.text
     repeated = client.post('/api/studio/generate', json=request).json()
@@ -92,11 +92,11 @@ def test_old_database_migrates_without_changing_bytes(tmp_path, monkeypatch):
 
 def test_five_distinct_results_are_durable_idempotent_and_never_parallel_gpu(client):
     from engines.adapters import ADAPTERS
-    if not ADAPTERS['triposg'].installed:pytest.skip('Real installed TripoSG needed for admission only')
+    if not ADAPTERS['trellis2_community'].installed:pytest.skip('Real installed TripoSG needed for admission only')
     asset=client.post('/api/assets',json=dict(project_id='runavelle',name='Five seed admission',prompt='Blue roof archer tower',settings={'inspirationGame':'Reference game context'})).json()
     image=io.BytesIO();Image.new('RGBA',(16,16),(0,0,0,0)).save(image,format='PNG')
     reference=client.post('/api/import/reference',params={'asset_id':asset['id']},files={'file':('input.png',image.getvalue())}).json()
-    body=dict(asset_id=asset['id'],artifact_id=reference['id'],request_id='five-real-admission',engine='triposg',seeds=[42,43,44,45,46])
+    body=dict(asset_id=asset['id'],artifact_id=reference['id'],request_id='five-real-admission',engine='trellis2_community',seeds=[42,43,44,45,46])
     response=client.post('/api/studio/generate',json=body);assert response.status_code==201,response.text
     queued=response.json()['jobs'];assert len(queued)==5 and len(jobs.listing())==5
     assert [j['payload']['seed'] for j in queued]==body['seeds']

@@ -266,7 +266,7 @@ def selection(identifier:str,body:Selection):
 
 
 class Models(BaseModel):
-    engines:list[Literal['trellis2_community','triposg','hunyuan3d21']]=Field(default_factory=list,max_length=4)
+    engines:list[Literal['trellis2_community']]=Field(default_factory=list,max_length=4)
     texturer:Literal['','mvadapter','trellis2']=''
 
 
@@ -367,7 +367,7 @@ def advance(identifier):
                     source=studio.scoped_artifact(item['concept_artifact_id'],value['project_id'])
                     engines=[item['preferred_engine']]
                     if engines==['auto']:
-                        engines=[e for e in ['trellis2_community','triposg'] if ADAPTERS[e].installed and (e not in ('triposg','hunyuan3d21') or source['metadata'].get('has_transparency'))]
+                        engines=[e for e in ['trellis2_community'] if ADAPTERS[e].installed]
                         if value['mode']!='Maximum Quality Batch':engines=engines[:1]
                     if not engines:raise ValueError('No installed engine supports this input; no fallback or quality downgrade')
                     for engine in engines:

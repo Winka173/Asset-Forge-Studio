@@ -106,9 +106,7 @@ def check():
         hub=Path.home()/'Tools/trellis2/code/MODELS/hub'
         specs=[('ffmpeg',media_item,()),('blender',editor_item,('blender',)),('unity',editor_item,('unity',)),
             ('trellis2',model_item,('trellis2','TRELLIS.2','microsoft/TRELLIS.2-4B',hub/'models--microsoft--TRELLIS.2-4B/refs/main')),
-            ('triposg',model_item,('triposg','TripoSG','VAST-AI/TripoSG',store.WORKSPACE/'models/triposg')),
-            ('sdxl',model_item,('sdxl','SDXL concept','stabilityai/stable-diffusion-xl-base-1.0',CONCEPT_ADAPTER.weights())),
-            ('triposg_code',code_item,('triposg_code','TripoSG','VAST-AI-Research/TripoSG',store.WORKSPACE/'.local/engines/TripoSG'))]
+            ('sdxl',model_item,('sdxl','SDXL concept','stabilityai/stable-diffusion-xl-base-1.0',CONCEPT_ADAPTER.weights()))]
         items=[]
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
             futures=[(identifier,pool.submit(fn,*args)) for identifier,fn,args in specs]

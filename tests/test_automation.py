@@ -58,10 +58,9 @@ def test_single_auto_idempotency_and_source_seeds(client):
 
 
 def test_explicit_engine_policy_not_silently_changed(client):
-    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt=json.dumps([dict(name='Shape only',prompt='Tower',preferred_engine='triposg')]),format='json')).json()
+    value=client.post('/api/batches/analyze',json=dict(project_id='runavelle',master_prompt=json.dumps([dict(name='Explicit engine',prompt='Tower',preferred_engine='trellis2_community')]),format='json')).json()
     result=automation.start(value['id'])
-    # The explicit engine is kept (never swapped for the default); it cuts the subject out itself, so no alpha is required.
-    assert result['items'][0]['automation']['engines']==['triposg']
+    assert result['items'][0]['automation']['engines']==['trellis2_community']
 
 
 def test_project_edit_preserves_workflow_and_delivery_preferences(client):
@@ -185,6 +184,6 @@ def test_auto_uses_the_default_engine_and_ticked_engines_run_each(monkeypatch):
     alpha = dict(metadata=dict(has_transparency=True))
     item = dict(preferred_engine='auto', quality='Maximum')
     assert plan_engines(item, alpha) == ['trellis2_community']
-    assert plan_engines(dict(item, engines=['trellis2_community', 'hunyuan3d21', 'triposg']), alpha) == ['trellis2_community', 'hunyuan3d21', 'triposg']
-    # Shape engines cut the subject out themselves, so an image without alpha (or a concept still to come) keeps them.
-    assert plan_engines(dict(item, engines=['trellis2_community', 'triposg']), None) == ['trellis2_community', 'triposg']
+    assert plan_engines(dict(item, engines=['trellis2_community']), alpha) == ['trellis2_community']
+    # Ids of archived engines left on old items are dropped instead of crashing.
+    assert plan_engines(dict(item, engines=['triposg', 'trellis2_community']), None) == ['trellis2_community']

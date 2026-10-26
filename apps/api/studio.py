@@ -457,7 +457,7 @@ def approve_concept(identifier:str,artifact_id:str,body:ConceptApproval):
 class Generate(BaseModel):
     asset_id: str
     request_id: str = Field(min_length=8, max_length=100)
-    engine: Literal['auto','trellis2_community','triposg','hunyuan3d21'] = 'auto'
+    engine: Literal['auto','trellis2_community'] = 'auto'
     quality: Literal['Fast', 'Balanced', 'Maximum'] = 'Maximum'
     artifact_id: str
     prompt: str | None = Field(default=None, max_length=100000)
@@ -511,8 +511,7 @@ def generate(body: Generate):
         raise HTTPException(400, 'Cần 1–5 seed nguyên không trùng trong 0..4294967295')
     engine = body.engine
     if engine == 'auto':
-        engine = next((e for e in ('trellis2_community', 'triposg') if ADAPTERS[e].installed and
-                       (e != 'triposg' or source['metadata'].get('has_transparency'))), '')
+        engine = next((e for e in ('trellis2_community',) if ADAPTERS[e].installed), '')
     if engine not in ADAPTERS or not ADAPTERS[engine].installed: raise HTTPException(409, 'Chưa có engine local phù hợp. Không tạo output giả.')
     quality = body.quality
     payload = dict(kind='inference', batch_id=body.batch_id, batch_attempt=body.batch_attempt,project_id=value['project_id'], asset_id=value['id'], artifact_id=source['id'], engine=engine,

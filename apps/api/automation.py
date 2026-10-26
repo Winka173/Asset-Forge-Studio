@@ -136,7 +136,7 @@ def plan_engines(item,source=None):
     explicit=bool(item.get('engines')) or item['preferred_engine']!='auto'
     names=list(item.get('engines') or []) or ([item['preferred_engine']] if item['preferred_engine']!='auto' else ['trellis2_community'])
     # Shape engines cut the subject out themselves (local u2net) when the image has no alpha.
-    compatible=[name for name in names if ADAPTERS[name].installed]
+    compatible=[name for name in names if name in ADAPTERS and ADAPTERS[name].installed]  # ids of archived engines (docs/REMOVED_ENGINES.md) on old items are dropped
     if item['quality']!='Maximum' and not explicit:compatible=compatible[:1]
     return compatible
 
@@ -551,9 +551,9 @@ class Single(BaseModel):
     asset_id:str
     request_id:str=Field(min_length=8,max_length=100)
     quality:Literal['Fast','Balanced','Maximum']='Maximum'
-    engine:Literal['auto','trellis2_community','triposg','hunyuan3d21']='auto'
+    engine:Literal['auto','trellis2_community']='auto'
     # Generate candidates with each of these engines (Advanced); empty uses `engine`.
-    engines:list[Literal['trellis2_community','triposg','hunyuan3d21']]=Field(default_factory=list,max_length=4)
+    engines:list[Literal['trellis2_community']]=Field(default_factory=list,max_length=4)
     texturer:Literal['','mvadapter','trellis2']=''
     seeds:list[int]=Field(default=[42],min_length=1,max_length=5)
     triangle_budget:int|None=Field(default=None,ge=500,le=5_000_000)

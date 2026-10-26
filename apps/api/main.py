@@ -34,7 +34,7 @@ async def lifespan(app):
         close_intent_runtime()
 
 
-app = FastAPI(title="Asset Forge Studio", version="0.9.37", lifespan=lifespan)
+app = FastAPI(title="Asset Forge Studio", version="0.9.38", lifespan=lifespan)
 
 
 @app.exception_handler(RequestValidationError)
@@ -271,7 +271,7 @@ def queue_blender(body: BlenderJob):
 
 
 class Tournament(BaseModel):
-    engine: Literal['triposg', 'trellis2_community']
+    engine: Literal['trellis2_community']
     artifact_id: str
     seeds: list[int] = Field(default=[42, 43], min_length=1, max_length=4)
     steps: int = Field(default=24, ge=1, le=100)
@@ -289,8 +289,6 @@ def tournament(body: Tournament):
     try: record = store.get_artifact(body.artifact_id)
     except KeyError: raise HTTPException(404, 'Unknown input')
     if record['role'] not in {'concept', 'reference'}: raise HTTPException(400, 'Input must be a concept/reference image')
-    if body.engine == 'triposg' and not record['metadata'].get('has_transparency'):
-        raise HTTPException(400, 'TripoSG requires supplied alpha image; import one or use preserved TRELLIS source_alpha.png')
     if not ADAPTERS[body.engine].probe()['installed']: raise HTTPException(409, 'Engine offline installation incomplete; no auto download')
     group = uuid.uuid4().hex
     payload = body.model_dump(exclude={'seeds'}) | {'kind': 'inference', 'tournament_id': group, 'purpose': 'evaluation_only'}

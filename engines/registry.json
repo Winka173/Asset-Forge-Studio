@@ -3,27 +3,6 @@
   "runtime_policy": "local-only, one GPU worker at a time, isolated env, no implicit downloads",
   "engines": [
     {
-      "id": "triposg",
-      "version": "upstream main pinned in engine_sources.json",
-      "license": "MIT code/weights; bundled RMBG-1.4 separately restricted",
-      "capabilities": [
-        "image_to_mesh",
-        "seed",
-        "basecolor_texture"
-      ],
-      "input_modalities": [
-        "single_image"
-      ],
-      "output_formats": [
-        "GLB with MV-Adapter basecolor texture"
-      ],
-      "min_vram_gb_documented": 8,
-      "installed": false,
-      "inference": "NOT_TESTED",
-      "blocker": null,
-      "repo": "https://github.com/VAST-AI-Research/TripoSG"
-    },
-    {
       "id": "sf3d",
       "version": "upstream main pinned in engine_sources.json",
       "license": "Stability Community; commercial registration and revenue conditions",
@@ -44,29 +23,6 @@
       "inference": "NOT_TESTED",
       "blocker": "Gated weights; download authorization; Windows experimental CUDA baking build",
       "repo": "https://github.com/Stability-AI/stable-fast-3d"
-    },
-    {
-      "id": "hunyuan3d21",
-      "version": "2.1",
-      "license": "Tencent Hunyuan Community License: not licensed in the EU, UK or South Korea",
-      "capabilities": [
-        "image_to_mesh",
-        "seed",
-        "basecolor_texture"
-      ],
-      "input_modalities": [
-        "single_image"
-      ],
-      "output_formats": [
-        "GLB with MV-Adapter basecolor texture"
-      ],
-      "min_vram_gb_documented": 10,
-      "paint_vram_gb_documented": 21,
-      "installed": false,
-      "inference": "NOT_TESTED",
-      "blocker": null,
-      "repo": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
-      "note": "Shape DiT only; texture by MV-Adapter (Hunyuan3D-Paint needs ~21 GB and is not used)"
     },
     {
       "id": "spar3d",
@@ -111,48 +67,6 @@
       "inference": "NOT_TESTED",
       "blocker": "Community opt-in pending; official Linux/24GB differs; local low-VRAM success not demonstrated",
       "repo": "https://github.com/IgorAherne/TRELLIS.2-stableprojectorz"
-    },
-    {
-      "id": "trellis_v1",
-      "version": "microsoft/TRELLIS 442aa1e",
-      "license": "MIT core; Apache-2.0 DINOv2/FlexiCubes",
-      "capabilities": [
-        "image_to_mesh",
-        "seed",
-        "basecolor_texture"
-      ],
-      "input_modalities": [
-        "single_image"
-      ],
-      "output_formats": [
-        "GLB with MV-Adapter basecolor texture"
-      ],
-      "min_vram_gb_documented": 8,
-      "installed": false,
-      "inference": "NOT_TESTED",
-      "blocker": null,
-      "repo": "https://github.com/microsoft/TRELLIS"
-    },
-    {
-      "id": "mvadapter_texture",
-      "version": "huanngzh/MV-Adapter 4277e00",
-      "license": "Apache-2.0; SDXL base CreativeML OpenRAIL++-M",
-      "capabilities": [
-        "mesh_texturing"
-      ],
-      "input_modalities": [
-        "mesh",
-        "single_image"
-      ],
-      "output_formats": [
-        "GLB basecolor 4096"
-      ],
-      "min_vram_gb_documented": 14,
-      "installed": false,
-      "inference": "NOT_TESTED",
-      "blocker": null,
-      "repo": "https://github.com/huanngzh/MV-Adapter",
-      "note": "Texture stage shared by TripoSG, TRELLIS v1 and Hunyuan3D-2.1"
     }
   ]
 }

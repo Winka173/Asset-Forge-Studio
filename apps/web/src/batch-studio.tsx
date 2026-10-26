@@ -775,7 +775,6 @@ export function BatchStudio({
           <label className="batch-keep-final"><input type="checkbox" checked={keepFinal} onChange={e=>setKeepFinal(e.target.checked)}/> Keep final only after each delivery <small>Once an item is delivered, its concepts, candidates, checks and working files are deleted; the final GLB, its source model and a thumbnail stay. Saves several GB per batch.</small></label>
           <details className="advanced batch-models"><summary>Models <span>{models.length>1?`${models.length} models per item`:models[0]==='trellis2_community'?'TRELLIS.2 (default)':models[0]}</span></summary>
             <EnginePicker engines={engineList} value={models} onChange={(ids)=>setModels(ids.length?ids:["trellis2_community"])}/>
-            {models.some(id=>["triposg","hunyuan3d21"].includes(id))&&<label className="studio-field">Texturing for shape models<Select aria-label="Batch shape model texturing" value={texturer||"mvadapter"} onChange={e=>setTexturer(e.target.value==="mvadapter"?"":e.target.value)}><option value="mvadapter">MV-Adapter (tested)</option><option value="trellis2">TRELLIS.2 texturing (experimental)</option></Select></label>}
             <small>Applies to every item in this import. Items can still be changed one by one before they start.</small>
           </details>
           <div className="batch-mode-note">
@@ -1395,7 +1394,6 @@ export function BatchStudio({
                   <option value="trellis2_community">
                     TRELLIS.2 community
                   </option>
-                  <option value="triposg">TripoSG · shape only</option>
                 </Select>
               </label>
               <label className="studio-field">

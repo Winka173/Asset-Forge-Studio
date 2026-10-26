@@ -74,7 +74,7 @@ def identity(payload):
     cfg=payload.get('effective_config') or {}
     profile={k:cfg.get(k) for k in ('engine_version','checkpoint','resolution','inference_steps','precision','geometry','texture','quality')}
     if isinstance(profile.get('checkpoint'),dict):profile['checkpoint']=profile['checkpoint'].get('manifest_hash')
-    wrapper=store.ROOT/'engines'/('klein_worker.py' if engine==CONCEPT_ADAPTER.id else 'trellis2_worker.py' if engine=='trellis2_community' else 'triposg_worker.py')
+    wrapper=store.ROOT/'engines'/('klein_worker.py' if engine==CONCEPT_ADAPTER.id else 'trellis2_worker.py')
     value=dict(engine=engine,version=adapter.version,environment=stat(python),packages=packages,extensions=extensions,wrapper_sha256=store.digest(wrapper),device=device(),profile=profile)
     key=hashlib.sha256(json.dumps(value,sort_keys=True).encode()).hexdigest()
     return key,value

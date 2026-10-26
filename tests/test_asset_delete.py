@@ -37,8 +37,8 @@ def test_batch_model_choice_applies_only_to_items_not_started(client):
     with store.connect() as db:db.execute('INSERT INTO batches VALUES (?,?,?)',('bm','runavelle',json.dumps(value)))
     import unittest.mock as m
     with m.patch.object(batches,'detail',lambda v:dict(items=v['items'])),m.patch.object(batches,'save',lambda v:None),m.patch.object(batches,'batch',lambda i:value):
-        out=client.post('/api/batches/bm/models',json=dict(engines=['triposg'],texturer='trellis2')).json()
-    a,b=out['items'];assert out['models_applied']==1 and a['preferred_engine']=='auto' and b['preferred_engine']=='triposg' and b['texturer']=='trellis2'
+        out=client.post('/api/batches/bm/models',json=dict(engines=['trellis2_community'])).json()
+    a,b=out['items'];assert out['models_applied']==1 and a['preferred_engine']=='auto'
 
 def test_batch_keep_final_option_is_saved(client):
     from apps.api import batch as batches

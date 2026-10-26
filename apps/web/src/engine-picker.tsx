@@ -2,8 +2,6 @@
 // and the best technically valid result is delivered (others stay as versions).
 export const ENGINE_INFO: Record<string, { label: string; detail: string; needs: string; note?: string }> = {
   trellis2_community: { label: "TRELLIS.2", detail: "Best detail and full PBR (basecolor, metal, roughness)", needs: "GPU 16 GB · RAM ~25 GB · ~5 min (measured)" },
-  triposg: { label: "TripoSG + MV-Adapter texture", detail: "Sharp shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · RAM ~36 GB · ~3.5 min (67 s shape + 209 s texture, measured)" },
-  hunyuan3d21: { label: "Hunyuan3D-2.1 + MV-Adapter texture", detail: "Cleanest detailed shape; basecolor texture painted from the concept", needs: "GPU 14.3 GB peak · RAM ~36 GB · ~5 min (145 s shape + 154 s texture, measured)", note: "License excludes the EU, UK and South Korea" },
 };
 
 export function EnginePicker({ engines, value, onChange }: { engines: { id: string; installed: boolean }[]; value: string[]; onChange: (ids: string[]) => void }) {
@@ -12,6 +10,7 @@ export function EnginePicker({ engines, value, onChange }: { engines: { id: stri
     const next = value.includes(id) ? value.filter((v) => v !== id) : [...value, id];
     onChange(next.length ? known.filter((k) => next.includes(k)) : ["trellis2_community"]);
   };
+  if (known.length < 2) return null; // one engine (TRELLIS.2): nothing to choose; returns when more engines are restored
   return (
     <fieldset className="engine-picker">
       <legend>3D models <small>tick several to compare; the best result is delivered</small></legend>
