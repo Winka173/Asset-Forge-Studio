@@ -30,7 +30,7 @@ export function PromptChat({asset,artifacts,currentArtifactId,onSelectVersion,on
   // Shown at once after Enter until the server lists it (waiting, or read into a note).
   const unseen=sent.filter(m=>!queue.some(q=>q.id===m.id)&&!notes.some(n=>n.messages.includes(m.prompt)));
   const running=revisions.some(r=>!DONE.includes(r.state));const working=queue.length>0||Boolean(asset.chat_reading)||running;
-  const timeline=[...notes.map(n=>({at:n.at,note:n,revision:undefined})),...revisions.map(r=>({at:r.created_at,note:undefined,revision:r}))].sort((a,b)=>a.at.localeCompare(b.at));
+  const timeline=[...notes.map(n=>({at:n.at||'',note:n,revision:undefined})),...revisions.map(r=>({at:r.created_at||'',note:undefined,revision:r}))].sort((a,b)=>a.at.localeCompare(b.at));
   // Show the version the chat went back to; notes that existed when the panel mounted do not move the viewer.
   const seen=useRef(new Set(notes.map(n=>n.id+n.at)));
   useEffect(()=>{for(const n of notes){if(seen.current.has(n.id+n.at))continue;seen.current.add(n.id+n.at);if(n.reverted_to)onSelectVersion?.(n.reverted_to);}},[notes,onSelectVersion]);

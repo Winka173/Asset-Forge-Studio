@@ -1,19 +1,33 @@
 ﻿{
-    "version":  "0.9.45",
-    "timestamp_utc":  "20261026T091844Z",
-    "git_commit":  "fd2eb4418743aa86247aa83fe00cf043dd22aa4c",
+    "version":  "0.9.47",
+    "timestamp_utc":  "20261026T095227Z",
+    "git_commit":  "a160f074708e30498af41aedc2a5a4bf6feab2d8",
     "git_branch":  "main",
     "git_dirty":  true,
     "changed_files":  [
-                          " M apps/api/automation.py",
                           " M apps/api/main.py",
+                          " M apps/web/src/batch-studio.tsx",
+                          " M apps/web/src/batch.css",
+                          " M apps/web/src/fx-studio.tsx",
+                          " M apps/web/src/motion-studio.tsx",
+                          " M apps/web/src/prompt-chat.tsx",
+                          " M apps/web/src/studio.tsx",
+                          " M apps/web/src/styles/shell.css",
+                          " M apps/web/src/styles/studios.css",
+                          " M apps/web/src/video-studio.tsx",
+                          " M apps/web/src/world-studio.tsx",
+                          " M desktop/audit-ui.mjs",
                           " M docs/ASSET_MANAGEMENT_WORKFLOW.md",
+                          " M docs/evidence/desktop_build.json",
+                          " M docs/evidence/desktop_smoke.json",
                           " M package-lock.json",
                           " M package.json",
                           " M src-tauri/Cargo.lock",
                           " M src-tauri/Cargo.toml",
                           " M src-tauri/tauri.conf.json",
-                          " M tests/test_automation.py",
+                          "?? apps/web/src/create-stepper.tsx",
+                          "?? apps/web/src/project-dashboard.tsx",
+                          "?? apps/web/src/resource-chips.tsx",
                           "?? prompt/"
                       ],
     "changed_features":  [
@@ -23,7 +37,7 @@
                          ],
     "status":  "PASS_BUILD_AND_NATIVE_SMOKE",
     "build_type":  "Bundled native desktop and Python API; external AI environments, model weights and Blender required",
-    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T091844Z",
+    "candidate":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-build\\candidates\\20261026T095227Z",
     "tests":  [
                   "Frontend TypeScript and production build PASS",
                   "Actual backend pytest suite PASS",
@@ -34,13 +48,13 @@
                          "Editor/browser tests do not establish mobile performance or Meshy visual parity"
                      ],
     "artifact_sha256":  {
-                            "Asset Forge Studio.exe":  "35eae8820b231013f53c600c4450a2588b162dad182067a3375e9662b14105f0",
-                            "Asset Forge Studio_0.9.45_x64-setup.exe":  "045897bbc7d8a2fc2dac55fd180dace3a49dce9bc8860844b1739b1c5c7bf62a",
-                            "afs-backend.exe":  "21e5c331c4861f3ced08c5544fbc1bf0e7ce0159e6a76f005bb3c00487f41649"
+                            "Asset Forge Studio.exe":  "bf40145f08938acb1b708e566041ee6fb86f1ca4ae3e6b9c9c909fa06fb8007a",
+                            "Asset Forge Studio_0.9.47_x64-setup.exe":  "292f9381a6eaa9b1cd16e86bd24941f4775b6785e68615db71ca261aa3f30c72",
+                            "afs-backend.exe":  "c28a9e399c31974f133e55a5ebf07dfe75bfe11d5cac8fdf40e937c5163534f9"
                         },
-    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T09-23-17-422Z\\smoke-report.json",
+    "smoke_report":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\.local\\desktop-smoke\\2026-10-26T09-57-18-661Z\\smoke-report.json",
     "executable":  "Asset Forge Studio.exe",
     "channel":  "stable",
-    "installer":  "Asset Forge Studio_0.9.45_x64-setup.exe",
+    "installer":  "Asset Forge Studio_0.9.47_x64-setup.exe",
     "delivery_location":  "C:\\Users\\Winka\\Projects\\Asset-Forge-Studio\\dist\\windows\\stable\\latest"
 }

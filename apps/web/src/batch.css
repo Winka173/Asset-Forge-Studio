@@ -152,7 +152,11 @@ a.batch-export-primary:hover { background: var(--accent-hover); color: var(--tex
 .batch-steps > button > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--surface-3); font-size: var(--fs-xs); font-weight: 600; }
 .batch-steps > button[aria-current="step"] { background: var(--surface-2); border-color: var(--border); color: var(--text); }
 .batch-steps > button[aria-current="step"] > span { background: var(--accent); color: var(--text-inverse); }
-.batch-studio[data-stage="brief"] :is(.batch-manifest, .batch-bottom) { display: none; }
+.batch-studio[data-stage="brief"] :is(.batch-manifest, .batch-bottom, .batch-context, .batch-extras) { display: none; }
+.batch-studio[data-stage="options"] :is(.batch-manifest, .batch-bottom, .batch-brief) { display: none; }
+.batch-studio[data-stage="brief"] .batch-intake { grid-template-columns: minmax(0, 860px); }
+.batch-studio[data-stage="options"] .batch-intake { grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr); }
+.batch-studio[data-stage="options"] .batch-extras { grid-column: auto; }
 .batch-studio[data-stage="manifest"] :is(.batch-workflow-disclosure, .batch-source-options, .batch-bottom, .batch-start-note) { display: none; }
 .batch-studio[data-stage="export"] :is(.batch-workflow-disclosure, .batch-source-options, .batch-manifest, .batch-start-note) { display: none; }
 .batch-studio > :is(.batch-manifest, .batch-bottom, .batch-source-options) { animation: afs-rise var(--dur-slow) var(--ease); }

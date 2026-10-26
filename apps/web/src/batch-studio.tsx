@@ -1,3 +1,4 @@
+import {CreateStepper} from "./create-stepper";
 import { AssetKindField } from "./asset-kind";
 import {ArrowUpToLine as IcArrowUpToLine,CircleX as IcCircleX,Copy as IcCopy,Download as IcDownload,Eye as IcEye,FolderOpen as IcFolderOpen,Pencil as IcPencil,RefreshCw as IcRefreshCw,RotateCcw as IcRotateCcw,Save as IcSave,SkipForward as IcSkipForward} from "lucide-react";
 import {publishWorkflow,useWorkflowUpdates} from "./workflow-state";
@@ -263,7 +264,7 @@ export function BatchStudio({
   mountedProject.current = projectId;
   selectedRef.current = selectedBatch;
   // Steps keep one concern on screen: write the brief, review/produce the manifest, then export what exists.
-  const [stage, setStage] = useState<'brief' | 'manifest' | 'export'>('brief');
+  const [stage, setStage] = useState<'brief' | 'options' | 'manifest' | 'export'>('brief');
   useEffect(() => { setStage(batch ? 'manifest' : 'brief'); }, [batch?.id]);
   useEffect(() => { apiFetch('/api/engines').then(r => r.json()).then(v => setEngineList(v.engines || [])).catch(() => setEngineList([])); }, []);
   const selectedItems =
@@ -683,7 +684,7 @@ export function BatchStudio({
       {draftWarning && <p className="batch-storage-warning" role="status">{draftWarning}</p>}
       {busy && <ActivityIndicator label={analyzing ? 'Analyzing your source file' : 'Updating local batch'} detail={analyzing ? 'Reading the complete prompt and building the manifest. GPU production has not started.' : 'Waiting for the local backend to finish this action.'}/>}
       {!busy && (batch?.progress.active||0)>0 && <ActivityIndicator label="Producing assets locally" detail={`${batch!.progress.active} active · ${batch!.progress.completed}/${batch!.progress.total} completed · outputs stay in Library`}/>}
-      <nav className="batch-steps" aria-label="Batch steps">{([['brief','Describe','What to build'],['manifest','Review & produce','Check assets, then run'],['export','Deliver','Files for the game']] as const).map(([id,label,hint],index)=><button key={id} type="button" aria-current={stage===id?'step':undefined} disabled={id!=='brief'&&!batch} onClick={()=>setStage(id)}><span>{index+1}</span><b>{label}</b><small>{hint}</small></button>)}</nav>
+      <CreateStepper workflow label="Batch steps" steps={['Brief','Options','Review & produce','Deliver']} current={['brief','options','manifest','export'].indexOf(stage)} onGo={i=>setStage((['brief','options','manifest','export'] as const)[i])} disabledFrom={batch?undefined:2}/>
 <details className="batch-source-options" open={!batch}><summary>{batch?'Source and batch configuration · original preserved':'Add a prompt or manifest'}</summary><div className="batch-intake">
         <section className="batch-brief">
           <div className="batch-panel-title">
@@ -788,6 +789,8 @@ export function BatchStudio({
               <option value="csv">CSV manifest</option>
               <option value="markdown">Markdown manifest</option>
             </Select>
+            {stage === "brief" && <button type="button" onClick={() => setStage("options")}>Options →</button>}
+            {stage === "options" && <button type="button" onClick={() => setStage("brief")}>← Brief</button>}
             <button
               className="primary"
               disabled={busy || !workflowReady || !projectId || !prompt.trim()}

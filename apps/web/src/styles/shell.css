@@ -377,3 +377,15 @@ button.gpu-chip[aria-expanded="true"] { background: var(--surface-3); color: var
 /* Unread count as a corner badge on the bell: inline it overflowed onto the RAM chip once the label was hidden. */
 .notification-trigger { margin-right: 6px; }
 .notification-trigger .notification-count { position: absolute; top: 0; right: -6px; min-width: 15px; height: 15px; padding: 0 3px; font-size: 9px; line-height: 15px; box-shadow: 0 0 0 2px var(--bg); pointer-events: none; }
+
+/* Resource chips: one style for VRAM, RAM and Disk; popovers live in a portal above everything (toasts, modals, sidebar). */
+.res-chips { display: flex; align-items: center; gap: var(--sp-1); }
+button.res-chip { gap: var(--sp-2); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-2); }
+button.res-chip[aria-expanded="true"] { background: var(--surface-3); color: var(--text); }
+button.res-chip.warn { color: var(--warning, #f0a94b); }
+button.res-chip.warn .live-dot { background: var(--warning, #f0a94b); }
+.gpu-popover.res-popover { position: fixed; z-index: 40000; max-width: calc(100vw - 16px); }
+.res-popover > button { align-self: flex-start; }
+@media (max-width: 1300px) { button.res-chip:not(.gpu-chip) .res-text { display: none; } }
+@media (max-width: 760px) { button.res-chip .res-text { display: none; } }
+button.res-chip, button.res-chip .res-text { white-space: nowrap; }

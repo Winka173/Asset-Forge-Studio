@@ -34,6 +34,9 @@ import { UnityImportPanel } from "./unity-panel";
 import { SingleSelectiveExport, BatchExportSettings } from "./export-settings";
 import { ActivityIndicator } from "./activity-indicator";
 import { SupportReport } from "./support-report";
+import { ProjectDashboard } from "./project-dashboard";
+import { CreateStepper } from "./create-stepper";
+import { ResourceChips } from "./resource-chips";
 import { ComponentsSetup } from "./components-setup";
 import { isDesktop, desktopInfo, configureDesktopDirectory, configureDesktopBlender, openDesktopFolder } from "./desktop";
 
@@ -357,17 +360,7 @@ export function Studio() {
   }, [draft.source, draft.prompt, draft.mode, loadedProject, projectId]);
   const [quickPrompt, setQuickPrompt] = useState("");
   const [toolsOpen, setToolsOpen] = useState(() => { try { return localStorage.getItem("afs.sidebar.tools") !== "closed"; } catch { return true; } });
-  const [gpuOpen, setGpuOpen] = useState(false);
-  const gpuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!gpuOpen) return;
-    const close = (event: MouseEvent | KeyboardEvent) => {
-      if (event instanceof KeyboardEvent ? event.key === "Escape" : !gpuRef.current?.contains(event.target as Node)) setGpuOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", close);
-    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", close); };
-  }, [gpuOpen]);
+  useEffect(() => { const back = () => setCreateStep(0); window.addEventListener('afs-change-workflow', back); return () => window.removeEventListener('afs-change-workflow', back); }, []);
   function toggleSidebar(next = !collapsed) {
     setCollapsed(next);
     localStorage.setItem("afs.sidebar", next ? "collapsed" : "expanded");
@@ -422,10 +415,10 @@ export function Studio() {
     )
     .sort((a, b) =>
       sort === "name"
-        ? a.name.localeCompare(b.name)
+        ? (a.name || "").localeCompare(b.name || "")
         : sort === "oldest"
-          ? a.updated_at.localeCompare(b.updated_at)
-          : b.updated_at.localeCompare(a.updated_at),
+          ? (a.updated_at || "").localeCompare(b.updated_at || "")
+          : (b.updated_at || "").localeCompare(a.updated_at || ""),
     );
   const categories = Array.from(
     new Set(data.assets.map((a) => a.category || "Unsorted")),
@@ -1088,28 +1081,7 @@ export function Studio() {
           </div>
           <div className="topbar-meta"><WorkspaceTools projectId={projectId} assets={loadedProject===projectId?data.assets.map(a=>({id:a.id,name:a.name,updated_at:a.updated_at,source_id:String((a.settings as Record<string,unknown>).source_asset_id||'')})):[]} onCreate={()=>newAsset()} onNavigate={destination=>navigate(destination as Page)} onAsset={openLibraryAsset} onProduction={selection=>openProduction(selection)}/>
 
-            {gpu?.host&&(()=>{const h=gpu.host;const tight=h.ram_available_gib<36;const low=h.disk_free_gib<50;return <div className="host-chips" aria-label="Machine resources">
-              <span className={`host-chip${tight?' warn':''}`} title={`RAM ${h.ram_used_gib} of ${h.ram_total_gib} GB used, ${h.ram_available_gib} GB free.${tight?' A 3D (TRELLIS) stage needs about 36 GB free and may wait or page to disk.':''}`}>RAM {h.ram_used_gib} / {h.ram_total_gib} GB</span>
-              <span className="host-chip" title="CPU load">CPU {Math.round(h.cpu_percent)}%</span>
-              <span className={`host-chip${low?' warn':''}`} title={`Library disk: ${h.disk_free_gib} GB free of ${h.disk_total_gib} GB. Each delivered asset keeps about 160 MB after working-file cleanup.`}>Disk {h.disk_free_gib} / {h.disk_total_gib} GB free</span>
-            </div>;})()}
-            <div className="gpu-chip-wrap" ref={gpuRef}>
-              <button className="quiet-button gpu-chip" aria-expanded={gpuOpen} aria-label="GPU status" onClick={()=>setGpuOpen(v=>!v)}>
-                <span className="live-dot" />
-                {gpu?.available ? `VRAM ${((gpu.used_mib || 0) / 1024).toFixed(1)} / ${((gpu.total_mib || 0) / 1024).toFixed(1)} GB` : "GPU"}
-              </button>
-              {gpuOpen && <div className="gpu-popover" role="dialog" aria-label="GPU details">
-                <strong className="gpu-name" title={gpu?.name}>{gpu?.available ? gpu.name?.replace("NVIDIA GeForce ", "") : "GPU status unavailable"}</strong>
-                {gpu?.available && (
-                  <div className="gpu-meter">
-                    <span style={{ width: `${Math.min(100, ((gpu.used_mib || 0) / (gpu.total_mib || 1)) * 100)}%` }} />
-                    <small>{((gpu.used_mib || 0) / 1024).toFixed(1)} / {((gpu.total_mib || 0) / 1024).toFixed(1)} GB VRAM</small>
-                  </div>
-                )}
-                {gpu?.available&&<div className="gpu-live-details" aria-label="Live GPU measurements" data-sampled-at={gpu.sampled_at} data-vram-mib={gpu.used_mib} data-utilization={gpu.utilization_percent}><small>GPU {gpu.utilization_percent?.toFixed(0)}% · peak {((gpu.peak_mib||0)/1024).toFixed(1)} GB</small><small>Live · 2s sampling · whole GPU</small></div>}
-                <small className="studio-version">Local inference only · weights & assets stay on this PC</small>
-              </div>}
-            </div>
+            <ResourceChips gpu={gpu}/>
             <button className="quiet-button" onClick={() => navigate("Production")}>
               <Icon name="Jobs" size={15} />
               {globalQueue ? `${globalQueue.running} active · ${globalQueue.queued} queued${globalQueue.paused?' · paused':''}` : 'Queue status unavailable'}
@@ -1130,7 +1102,7 @@ export function Studio() {
           {projectId && page==='Create' && <section className="create-flow" aria-label="Create workflow">
             <ComponentsSetup banner/>
             <div className="create-flow-top"><div><div className="overline">{project?.name || 'YOUR GAME'} / CREATE</div><h1>{createStep===0?'What would you like to create?':creationMode==='single'?(createStep===1?'Describe your asset.':createStep===2?'How big is it?':'Ready to create.'):{batch:'Build an asset collection.',world:'Design your world.',fx:'Create a realtime effect.',video:'Direct your cinematic.',motion:'Animate a movement.'}[creationMode]}</h1><p>{createStep===0?'Choose a workflow. Your project style and export preferences come with you.':creationMode==='single'?(createStep===1?'A short prompt or a concept image is enough to start.':createStep===2?'Compare it with real buildings and characters, drag the handles, then use the size.':'Maximum Quality and your project defaults are ready. Adjust only what you need.'):'Your work is saved locally. Change workflows without starting a generation.'}</p></div>{createStep>0&&<button className="quiet-button" onClick={()=>setCreateStep(0)}>Change workflow</button>}</div>
-            <ol className="create-stepper" aria-label="Creation steps">{(creationMode==='single'?['Choose workflow','Describe asset','Size & scale','Options & generate']:['Choose workflow','Create & preview']).map((label,index)=><li key={index}><button aria-current={index===createStep?'step':undefined} disabled={busy||index>createStep} onClick={()=>setCreateStep(index)}><span>{index<createStep?<Icon name="Check" size={14}/>:index+1}</span>{label}</button></li>)}</ol>
+            {createStep>0&&creationMode==='single'&&<CreateStepper steps={creationMode==='single'?['Choose workflow','Describe asset','Size & scale','Options & generate']:['Choose workflow','Create & preview']} current={createStep} onGo={setCreateStep} disabledFrom={createStep+1}/>}
             {createStep===0&&<div className="create-workflow-cards">{([{id:'single',icon:'Cube',title:'Single asset',detail:'One prompt or image into a game-ready 3D model.',hint:'Concept / Model / GLB',tone:'amber'},{id:'batch',icon:'Library',title:'Batch assets',detail:'Import a collection of prompts and deliver assets incrementally.',hint:'Markdown / JSON / CSV / Text',tone:'blue'},{id:'world',icon:'Home',title:'Map / World',detail:'Build editable terrain and layouts using real Library prefabs.',hint:'Procedural World Plan / Unity',tone:'green'},{id:'video',icon:'Cube',title:'Video / Cinematic',detail:'Compose real GLBs, direct camera shots and render local MP4.',hint:'Scene Composer / Blender / Video',tone:'blue'},{id:'fx',icon:'Star',title:'Effects',detail:'Fire, smoke, magic, sparks, slashes, shockwaves and tileable effect textures.',hint:'Unity effect / Flipbook / GLB / Texture',tone:'purple'},{id:'motion',icon:'Motion',title:'Motion',detail:'Describe a movement and get an animation clip for a humanoid.',hint:'Kimodo / FBX / GLB (experimental)',tone:'green'}] as const).map(option=><button className={'create-workflow-card tone-'+option.tone} key={option.id} disabled={loadedProject!==projectId||busy} onClick={()=>{if(creationMode!==option.id){setAssetId('');change({assetId:''});history.replaceState(null,'','#create');}setCreationMode(option.id);setCreateStep(1);}}><span className="create-workflow-icon"><Icon name={option.icon} size={28}/></span><h2>{option.title}</h2><p>{option.detail}</p><small>{option.hint}</small><span className="create-card-arrow"><Icon name="Arrow" size={20}/></span></button>)}</div>}
           </section>}
           {projectId && page==='Create' && createStep>0 && creationMode==='video' && <VideoStudio key={`${projectId}:${selectedAsset?.asset_type==='cinematic'?selectedAsset.id:'new'}`} projectId={projectId} assetId={selectedAsset?.asset_type==='cinematic'?selectedAsset.id:undefined} onSaved={id=>{if(projectRef.current!==projectId)return;setAssetId(id);change({assetId:id});location.hash=`create/${id}`;reload();}} onProduction={id=>openProduction('job/'+id)}/>}
@@ -1140,94 +1112,11 @@ export function Studio() {
           {projectId && page==='Create' && createStep>0 && creationMode==='batch' && <BatchStudio key={projectId} projectId={projectId} projectName={project?.name} project={project} artifacts={data.artifacts} onRefresh={reload} onSubmitted={id=>openProduction(id)} onOpenAsset={id=>{setCreationMode('single');const model=data.assets.find(a=>a.id===id);if(model)openAsset(model);else request<StudioData>(`/api/studio?project_id=${projectId}`).then(s=>{setData(s);const a=s.assets.find(v=>v.id===id);if(a)openAsset(a);});}}/>}
           {error&&<ErrorNotice message={error} onRefresh={()=>reload().catch(e=>setError(String(e)))} onEdit={page==='Create'&&creationMode==='single'?()=>setCreateStep(1):undefined} onDismiss={()=>setError('')}/>}
           <ToastNotice message={notice} onDismiss={()=>setNotice('')}/>
-          {projectId && page === "Home" && (
-            <>
-              <section className="home-hero quick-create" aria-label="Quick create">
-                <div className="hero-copy">
-                  <div className="overline">{project?.name || 'Your workspace'} · local 3D studio</div>
-                  <h2>What do you want to make?</h2>
-                  <form className="quick-create-form" onSubmit={(event)=>{event.preventDefault();const prompt=quickPrompt.trim();if(!prompt)return;newAsset();setDraft(d=>({...d,prompt}));setCreateStep(1);setQuickPrompt('');}}>
-                    <textarea aria-label="Quick create prompt" rows={2} value={quickPrompt} onChange={e=>setQuickPrompt(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();e.currentTarget.form?.requestSubmit();}}} placeholder="e.g. A stylized wooden watchtower with a stone base" />
-                    <button className="primary" type="submit" disabled={!quickPrompt.trim()}><Icon name="Arrow" size={17}/><span>Continue</span></button>
-                  </form>
-                  <span className="hero-footnote">Enter to continue · add a reference image on the next step · Shift+Enter for a new line</span>
-                </div>
-                <div className="hero-reference">
-                  {(data.artifacts.find((a) => a.id === project?.cover_artifact_id) || data.artifacts.find((a) => a.role === "concept"))?.url ? (
-                    <>
-                      <img src={apiUrl((data.artifacts.find((a) => a.id === project?.cover_artifact_id) || data.artifacts.find((a) => a.role === "concept"))!.url)} alt="Actual project reference image" />
-                      <span>PROJECT REFERENCE · IMAGE ONLY</span>
-                    </>
-                  ) : (
-                    <div className="hero-empty"><Icon name="Cube" size={96} /><span>Your preview starts with your idea</span></div>
-                  )}
-                </div>
-              </section>
-              {data.assets.length>0&&<div className="dashboard-panels">
-                <section className="dashboard-panel" aria-label="Active now">
-                  <header><h3>Active now</h3><button className="text-button" onClick={()=>navigate('Production')}>Production <Icon name="Arrow" size={14}/></button></header>
-                  {activeJobs.length?activeJobs.slice(0,5).map(job=><button key={job.id} className="dashboard-row" onClick={()=>openProduction('job/'+job.id)}><span className="production-dot state-running"/><span><strong>{data.assets.find(a=>a.id===job.payload.asset_id)?.name||job.kind||'Local job'}</strong><small>{sentenceStatus(job.progress?.stage||job.status)}</small></span>{typeof job.progress?.percent==='number'&&<b>{Math.round(job.progress.percent)}%</b>}</button>):<p className="dashboard-empty">Nothing is running. New work starts only when you press Generate.</p>}
-                </section>
-                <section className="dashboard-panel" aria-label="Needs attention">
-                  <header><h3>Needs attention</h3><button className="text-button" onClick={()=>navigate('Library')}>Library <Icon name="Arrow" size={14}/></button></header>
-                  {(()=>{const items=data.assets.filter(a=>/fail|error|block|reject|review/i.test(a.status));return items.length?items.slice(0,5).map(a=><button key={a.id} className="dashboard-row" onClick={()=>openLibraryAsset(a.id)}><span className={`production-dot state-${/fail|error|block|reject/i.test(a.status)?'failed':'paused'}`}/><span><strong>{a.name}</strong><small>{a.status.replaceAll('_',' ')}</small></span></button>):<p className="dashboard-empty">All clear. Nothing is failed or waiting for review.</p>;})()}
-                </section>
-              </div>}
-              {data.assets.length>0&&<><div className="workspace-stats">
-                <div>
-                  <span>Project assets</span>
-                  <strong>{data.assets.length}</strong>
-                </div>
-                <div>
-                  <span>Candidate versions</span>
-                  <strong>
-                    {data.assets.reduce((n, a) => n + a.versions.length, 0)}
-                  </strong>
-                </div>
-                <div>
-                  <span>Human approved</span>
-                  <strong>
-                    {data.assets.filter((a) => a.status === "Approved").length}
-                  </strong>
-                </div>
-                <div>
-                  <span>Active jobs</span>
-                  <strong>{activeJobs.length}</strong>
-                </div>
-              </div>
-              <div className="collection-heading">
-                <h2>
-                  Recent assets <span>{project?.name}</span>
-                </h2>
-                <button
-                  className="text-button"
-                  onClick={() => navigate("Library")}
-                >
-                  View library <Icon name="Arrow" size={14} />
-                </button>
-              </div>
-              {data.assets.length ? (
-                <div className="asset-grid">
-                  {data.assets
-                    .slice()
-                    .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
-                    .slice(0, 4)
-                    .map(assetCard)}
-                </div>
-              ) : (
-                <div className="studio-empty">
-                  <Icon name="Library" size={36} />
-                  <h3>A library built from your work.</h3>
-                  <p>
-                    Add your first prompt or image to begin. This project has no assets yet.
-                  </p>
-                  <button className="secondary" onClick={() => newAsset()}>
-                    Create first asset
-                  </button>
-                </div>
-              )}</>}
-            </>
-          )}
+          {projectId && page === "Home" && <ProjectDashboard projectId={projectId} projectName={project?.name || "Your workspace"} assetCount={data.assets.length}
+            versionCount={data.assets.reduce((n, a) => n + a.versions.length, 0)} approvedCount={data.assets.filter((a) => a.status === "Approved").length}
+            assetCards={data.assets.slice().sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || "")).slice(0, 4).map(assetCard)}
+            onNavigate={(destination) => navigate(destination as never)} onOpenProduction={openProduction} diskFreeGb={gpu?.host?.disk_free_gib}
+            onQuickCreate={(prompt) => { newAsset(); setDraft((d) => ({ ...d, prompt })); setCreateStep(1); }} onNewAsset={() => newAsset()} />}
           {projectId && page === "Create" && createStep>0 && creationMode==='single' && (
             <>
               <div className="create-flow-draft"><span className="draft-indicator" role="status">{draftStatus}</span>{selectedAsset&&<span>Editing {selectedAsset.name}</span>}</div>

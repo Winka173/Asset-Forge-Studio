@@ -100,3 +100,11 @@ The first-run wizard now embeds the same one-click component setup (choose what 
 ## 0.9.45
 
 Generate (Single/Batch) is refused with a clear message while the 3D or concept engine is not installed, pointing to Settings → Set up what you want to create. The studio can be opened with nothing installed.
+
+## 0.9.46
+
+UI pass: VRAM, RAM and Disk chips share one style and open portal popovers that nothing can cover; the Create hub shows no step bar before a workflow is chosen; Map and Batch use the same step bar as Single asset; Batch Brief/Options are separate steps (Analyze stays available on both); Projects page is now a dashboard (KPIs, overall progress, runs, attention, recent assets). Fixed a renderer crash when an asset had no updated_at (unsafe localeCompare sorts).
+
+## 0.9.47
+
+Every Create workflow (Batch, Map, Effects, Motion, Video) now shows the same step bar as Single asset, starting with "Choose workflow", driven by the workflow's real state. Resource chips never wrap.

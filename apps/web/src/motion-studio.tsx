@@ -1,3 +1,4 @@
+import {CreateStepper} from './create-stepper';
 import {Download as IcDownload,ExternalLink as IcExternalLink,PersonStanding as IcPerson} from "lucide-react";
 import {useEffect,useRef,useState} from 'react';
 import {apiFetch,apiUrl} from './api';
@@ -22,6 +23,7 @@ export function MotionStudio({projectId,assetId,onSaved,onProduction}:{projectId
  const job=view?.jobs.at(-1),clips=(view?.clips||[]).filter(c=>c.metadata.job_id===job?.id);
  async function generate(){if(sending)return;setSending(true);setError('');try{const body={project_id:projectId,prompt,duration,seed,character_artifact_id:character||null,rig_job_id:!character&&rigJob?rigJob.id:null,await_rig_of_asset:!character&&!rigJob&&imageAsset?imageAsset.id:null,asset_id:assetId||null},key='afs.motion.'+projectId,signature=JSON.stringify(body);let prior;try{prior=JSON.parse(localStorage.getItem(key)||'null');}catch{}const request_id=prior?.signature===signature?prior.id:crypto.randomUUID();localStorage.setItem(key,JSON.stringify({signature,id:request_id}));const result=await managementCall<{asset_id:string}>('/api/motion',{...body,request_id});onSaved(result.asset_id);}catch(e){setError(String(e));}finally{setSending(false);}}
  return <section className="fx-studio motion-studio" aria-label="Motion studio">
+ <CreateStepper workflow label="Motion steps" steps={['Describe','Generate','Review']} current={view?.clips?.length?2:view?.jobs?.some(j=>!['REVIEW_REQUIRED','COMPLETED','FAILED','BLOCKED','CANCELLED'].includes(j.status))?1:0}/>
   <header><div className="overline">TEXT TO MOTION / KIMODO (EXPERIMENTAL)</div><h2>Animation clip</h2><p>Describe a movement. Kimodo generates it on a standard humanoid skeleton and Blender exports FBX and GLB clips.</p></header>
   {error&&<ErrorNotice message={error} onDismiss={()=>setError('')}/>}
   {caps&&!caps.installed&&<p role="status" className="world-notice">Kimodo is not installed. Run scripts/install_kimodo.sh (about {caps.needs.disk_gb} GB).</p>}
