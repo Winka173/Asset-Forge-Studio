@@ -32,3 +32,7 @@
 .desktop-checkpoint-exit p { color: var(--text-2); font-size: var(--fs-sm); }
 .desktop-checkpoint-exit button { align-self: flex-start; background: var(--accent); border-color: var(--accent); color: var(--text-inverse); font-weight: 600; }
 .desktop-checkpoint-exit[data-desktop-closing=waiting] strong::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: var(--sp-2); border-radius: 50%; background: var(--accent); animation: afs-pulse 1.2s ease-in-out infinite; }
+.desktop-setup-panel { max-width: 760px; max-height: calc(100vh - 48px); overflow-y: auto; }
+.desktop-setup-components .components-setup { padding: 0; border: 0; background: transparent; box-shadow: none; }
+.desktop-setup-advanced > summary { cursor: pointer; color: var(--text-3); font-size: var(--fs-sm); }
+.desktop-setup-advanced > button { margin: var(--sp-2) var(--sp-2) 0 0; }

@@ -92,3 +92,7 @@ Support report: disk facts survive unreadable drives, app version recorded. Test
 ## 0.9.43
 
 One-click AI component setup (Settings and the top of Create): pick what to create (2D sprites, 3D models, effects, maps, video) and only the needed parts are downloaded from pinned official sources (Blender 5.2.3, Ollama + Qwen3.6, FLUX.2 klein from Hugging Face at a pinned commit, the TRELLIS.2 package and its own installer), verified by SHA-256, resumable, with progress. Verified end to end on a clean profile: all Core parts installed and one 3D asset generated. Motion/rigging parts are not downloadable yet. A private Ollama port (11435) is used for the model download.
+
+## 0.9.44
+
+The first-run wizard now embeds the same one-click component setup (choose what to create, press one button); the manual workspace and Blender pickers moved under Advanced.
